@@ -105,9 +105,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                 value: _selectedCategory,
                 focusNode: _categoryFocusNode,
                 hint: const Text('카테고리 선택'),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(border: OutlineInputBorder()),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedCategory = newValue;
@@ -116,8 +114,9 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                     FocusScope.of(context).requestFocus(_needleTypeFocusNode);
                   });
                 },
-                items:
-                    _categories.map<DropdownMenuItem<String>>((String value) {
+                items: _categories.map<DropdownMenuItem<String>>((
+                  String value,
+                ) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -129,9 +128,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                 value: _selectedNeedleType,
                 focusNode: _needleTypeFocusNode,
                 hint: const Text('바늘 종류 선택'),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(border: OutlineInputBorder()),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedNeedleType = newValue;
@@ -141,8 +138,9 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                     FocusScope.of(context).requestFocus(_needleSizeFocusNode);
                   });
                 },
-                items: _needleSizes.keys
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: _needleSizes.keys.map<DropdownMenuItem<String>>((
+                  String value,
+                ) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -154,9 +152,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                 value: _selectedNeedleSize,
                 focusNode: _needleSizeFocusNode,
                 hint: const Text('바늘 사이즈 선택'),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(border: OutlineInputBorder()),
                 onChanged: _selectedNeedleType == null
                     ? null
                     : (String? newValue) {
@@ -164,19 +160,21 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                           _selectedNeedleSize = newValue;
                         });
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          FocusScope.of(context)
-                              .requestFocus(_lotNumberFocusNode);
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(_lotNumberFocusNode);
                         });
                       },
                 items: _selectedNeedleType == null
                     ? []
                     : _needleSizes[_selectedNeedleType]!
-                        .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                          .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          })
+                          .toList(),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -211,7 +209,8 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                     FocusScope.of(context).requestFocus(_projectNameFocusNode);
                   } else {
                     print(
-                        '프로젝트 이름: ${_projectNameController.text}, 카테고리: ${_selectedCategory ?? '선택 안됨'}, 바늘 종류: ${_selectedNeedleType ?? '선택 안됨'}, 바늘 사이즈: ${_selectedNeedleSize ?? '선택 안됨'}, Lot Number: ${_lotNumberController.text}, 메모: ${_notesController.text}');
+                      '프로젝트 이름: ${_projectNameController.text}, 카테고리: ${_selectedCategory ?? '선택 안됨'}, 바늘 종류: ${_selectedNeedleType ?? '선택 안됨'}, 바늘 사이즈: ${_selectedNeedleSize ?? '선택 안됨'}, Lot Number: ${_lotNumberController.text}, 메모: ${_notesController.text}',
+                    );
                     Navigator.pop(context);
                   }
                 },
