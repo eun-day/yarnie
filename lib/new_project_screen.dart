@@ -54,7 +54,45 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
   final FocusNode _lotNumberFocusNode = FocusNode();
   final FocusNode _notesFocusNode = FocusNode();
 
+  Future<void> _ensureVisible(FocusNode node) async {
+    // 키보드 인셋 적용 타이밍 대기
+    await Future.delayed(const Duration(milliseconds: 220));
+    // FocusNode가 붙어있는 BuildContext 획득 (없으면 현재 포커스에서 보조 획득)
+    final ctx = node.context ?? FocusManager.instance.primaryFocus?.context;
+    if (!mounted || ctx == null) return;
+
+    await Scrollable.ensureVisible(
+      ctx,
+      alignment: 0.2, // 너무 위로 붙지 않게
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
   String? _projectNameErrorText;
+
+  @override
+  void initState() {
+    super.initState();
+    _projectNameFocusNode.addListener(() {
+      if (_projectNameFocusNode.hasFocus) _ensureVisible(_projectNameFocusNode);
+    });
+    _categoryFocusNode.addListener(() {
+      if (_categoryFocusNode.hasFocus) _ensureVisible(_categoryFocusNode);
+    });
+    _needleTypeFocusNode.addListener(() {
+      if (_needleTypeFocusNode.hasFocus) _ensureVisible(_needleTypeFocusNode);
+    });
+    _needleSizeFocusNode.addListener(() {
+      if (_needleSizeFocusNode.hasFocus) _ensureVisible(_needleSizeFocusNode);
+    });
+    _lotNumberFocusNode.addListener(() {
+      if (_lotNumberFocusNode.hasFocus) _ensureVisible(_lotNumberFocusNode);
+    });
+    _notesFocusNode.addListener(() {
+      if (_notesFocusNode.hasFocus) _ensureVisible(_notesFocusNode);
+    });
+  }
 
   @override
   void dispose() {
@@ -73,12 +111,18 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('새 프로젝트 생성'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(title: const Text('새 프로젝트 생성')),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent, // 빈 공간 탭도 감지
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            MediaQuery.viewInsetsOf(context).bottom + 16,
+          ),
           child: Column(
             children: [
               TextField(
