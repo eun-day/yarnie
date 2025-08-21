@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/db/di.dart';
 
 class NewProjectScreen extends StatefulWidget {
   const NewProjectScreen({super.key});
@@ -62,6 +64,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
     if (!mounted || ctx == null) return;
 
     await Scrollable.ensureVisible(
+      // ignore: use_build_context_synchronously
       ctx,
       alignment: 0.2, // 너무 위로 붙지 않게
       duration: const Duration(milliseconds: 200),
@@ -252,8 +255,13 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                     });
                     FocusScope.of(context).requestFocus(_projectNameFocusNode);
                   } else {
-                    print(
-                      '프로젝트 이름: ${_projectNameController.text}, 카테고리: ${_selectedCategory ?? '선택 안됨'}, 바늘 종류: ${_selectedNeedleType ?? '선택 안됨'}, 바늘 사이즈: ${_selectedNeedleSize ?? '선택 안됨'}, Lot Number: ${_lotNumberController.text}, 메모: ${_notesController.text}',
+                    appDb.createProject(
+                      name: _projectNameController.text,
+                      category: _selectedCategory,
+                      needleType: _selectedNeedleType,
+                      needleSize: _selectedNeedleSize,
+                      lotNumber: _lotNumberController.text,
+                      memo: _notesController.text,
                     );
                     Navigator.pop(context);
                   }

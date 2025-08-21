@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/counter_screen.dart';
+import 'package:yarnie/db/di.dart';
 import 'package:yarnie/stopwatch_screen.dart';
 import 'package:yarnie/new_project_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final projects = await appDb.watchAll().first;
+  for (final project in projects) {
+    print('📌Project: id=${project.id}, name=${project.name}, category=${project.category}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}');
+  }
+
   runApp(const MyApp());
 }
 
