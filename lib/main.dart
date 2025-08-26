@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/counter_screen.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/root/root_scaffold.dart';
 import 'package:yarnie/stopwatch_screen.dart';
 import 'package:yarnie/new_project_screen.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Yarnie Home'),
+      home: const RootScaffold(),
     );
   }
 }
