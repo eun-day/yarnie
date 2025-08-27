@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/new_project_screen.dart';
+import 'package:yarnie/project_detail_screen.dart';
 import '../../db/app_db.dart';
 import '../../db/di.dart'; // appDb
 
 class ProjectsRoot extends StatefulWidget {
   final ScrollController controller;
-  final bool debugForceEmpty; // ⬅️ 임시
-  const ProjectsRoot({super.key, required this.controller, this.debugForceEmpty = true});
+  const ProjectsRoot({super.key, required this.controller});
 
   @override
   State<ProjectsRoot> createState() => _ProjectsRootState();
@@ -18,10 +18,7 @@ class _ProjectsRootState extends State<ProjectsRoot> {
   @override
   void initState() {
     super.initState();
-    //_stream = appDb.watchAll(); // 한 번만 생성
-    _stream = widget.debugForceEmpty
-    ? Stream.value(const <Project>[])          // ⬅️ 강제로 빈 목록
-    : appDb.watchAll();
+    _stream = appDb.watchAll(); // 한 번만 생성
   }
 
   @override
@@ -64,7 +61,7 @@ class _ProjectsRootState extends State<ProjectsRoot> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => ProjectDetailPage(project: p),
+                      builder: (_) => ProjectDetailScreen(projectId: p.id),
                     ),
                   ),
                 ),
@@ -122,54 +119,6 @@ class _EmptyView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// 상세 페이지 (간단 버전)
-class ProjectDetailPage extends StatelessWidget {
-  final Project project;
-  const ProjectDetailPage({super.key, required this.project});
-
-  @override
-  Widget build(BuildContext context) {
-    final created = project.createdAt.toLocal();
-    final updated = project.updatedAt?.toLocal();
-    String fmt(DateTime dt) =>
-        '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-
-    return Scaffold(
-      appBar: AppBar(title: Text(project.name)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _kv('카테고리', project.category ?? '-'),
-          _kv('바늘 종류', project.needleType ?? '-'),
-          _kv('바늘 호수', project.needleSize ?? '-'),
-          _kv('Lot No.', project.lotNumber ?? '-'),
-          _kv('메모', project.memo?.isNotEmpty == true ? project.memo! : '-'),
-          const Divider(height: 24),
-          _kv('생성일', fmt(created)),
-          _kv('수정일', updated != null ? fmt(updated) : '-'),
-        ],
-      ),
-    );
-  }
-
-  Widget _kv(String k, String v) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 88,
-            child: Text(k, style: const TextStyle(fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(v)),
-        ],
       ),
     );
   }

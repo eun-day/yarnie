@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/project_detail_screen.dart';
 
 class NewProjectScreen extends StatefulWidget {
   const NewProjectScreen({super.key});
@@ -248,14 +248,14 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_projectNameController.text.trim().isEmpty) {
                     setState(() {
                       _projectNameErrorText = '이름을 작성해주세요';
                     });
                     FocusScope.of(context).requestFocus(_projectNameFocusNode);
                   } else {
-                    appDb.createProject(
+                    final id = await appDb.createProject(
                       name: _projectNameController.text,
                       category: _selectedCategory,
                       needleType: _selectedNeedleType,
@@ -263,7 +263,14 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                       lotNumber: _lotNumberController.text,
                       memo: _notesController.text,
                     );
-                    Navigator.pop(context);
+
+                    if (!context.mounted) return;
+
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => ProjectDetailScreen(projectId: id),
+                      ),
+                    );
                   }
                 },
                 child: const Text('프로젝트 생성'),

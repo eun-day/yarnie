@@ -50,4 +50,7 @@ class AppDb extends _$AppDb {
 
   Stream<List<Project>> watchAll() =>
       (select(projects)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+
+  Stream<Project> watchProject(int id) =>
+      (select(projects)..where((t) => t.id.equals(id))).watchSingle();
 }
