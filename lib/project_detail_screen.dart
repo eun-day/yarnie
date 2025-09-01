@@ -3,66 +3,67 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/stopwatch_panel.dart';
 import 'package:yarnie/widget/project_info_section.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final int projectId;
   const ProjectDetailScreen({super.key, required this.projectId});
 
-String _fmt(DateTime dt) =>
+  String _fmt(DateTime dt) =>
       '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')} '
       '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
-
     // Drift 스트림으로 단건 구독 (없으면 아래 주석 참고)
     final stream = appDb.watchProject(projectId);
 
     return StreamBuilder<Project>(
-          stream: stream,
-          builder: (ctx, snap) {
-            if (snap.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (!snap.hasData) {
-              return const Scaffold(
-                body: Center(child: Text('프로젝트를 찾을 수 없어요.')),
-              );
-            }
+      stream: stream,
+      builder: (ctx, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (!snap.hasData) {
+          return const Scaffold(body: Center(child: Text('프로젝트를 찾을 수 없어요.')));
+        }
 
-            final project = snap.data!;
-            final created = project.createdAt.toLocal();
-            final updated = project.updatedAt?.toLocal();
+        final project = snap.data!;
+        final created = project.createdAt.toLocal();
+        final updated = project.updatedAt?.toLocal();
 
-            return Scaffold(
-              appBar: AppBar(title: Text(project.name)),
-              body: Column(
-                children: [
-                  ProjectInfoSection(
-                    title: '프로젝트 정보',
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _kv('카테고리', project.category ?? '-'),
-                        _kv('바늘 종류', project.needleType ?? '-'),
-                        _kv('바늘 호수', project.needleSize ?? '-'),
-                        _kv('Lot No.', project.lotNumber ?? '-'),
-                        _kv('메모', project.memo?.isNotEmpty == true ? project.memo! : '-'),
-                        const Divider(height: 24),
-                        _kv('생성일', _fmt(created)),
-                        _kv('수정일', updated != null ? _fmt(updated) : '-'),
-                      ],
+        return Scaffold(
+          appBar: AppBar(title: Text(project.name)),
+          body: Column(
+            children: [
+              ProjectInfoSection(
+                title: '프로젝트 정보',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _kv('카테고리', project.category ?? '-'),
+                    _kv('바늘 종류', project.needleType ?? '-'),
+                    _kv('바늘 호수', project.needleSize ?? '-'),
+                    _kv('Lot No.', project.lotNumber ?? '-'),
+                    _kv(
+                      '메모',
+                      project.memo?.isNotEmpty == true ? project.memo! : '-',
                     ),
-                  ),
-                  const Divider(height: 1),
-                  const Expanded(child: ProjectDetailTabs()),
-                ],
+                    const Divider(height: 24),
+                    _kv('생성일', _fmt(created)),
+                    _kv('수정일', updated != null ? _fmt(updated) : '-'),
+                  ],
+                ),
               ),
-            );
-          }
+              const Divider(height: 1),
+              const Expanded(child: ProjectDetailTabs()),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -107,8 +108,14 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: CupertinoSegmentedControl<int>(
               children: const {
-                0: Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('스톱워치')),
-                1: Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('카운터')),
+                0: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text('스톱워치'),
+                ),
+                1: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text('카운터'),
+                ),
               },
               groupValue: _cupertinoIndex,
               onValueChanged: (v) => setState(() => _cupertinoIndex = v),
@@ -116,12 +123,13 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _cupertinoIndex == 0
-                  ? const _StopwatchView(key: ValueKey('stopwatch'))
-                  : const _CounterView(key: ValueKey('counter')),
-            ),
+            child: IndexedStack(
+              index: _cupertinoIndex,
+              children: const [
+                  StopwatchPanel(key: ValueKey('stopwatch')),
+                  _CounterView(key: ValueKey('counter')),
+              ],
+          ),
           ),
         ],
       );
@@ -141,29 +149,12 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
           Expanded(
             child: TabBarView(
               children: [
-                _StopwatchView(),
+                StopwatchPanel(),
                 _CounterView(),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// --- 아래는 임시 화면(나중에 실제 기능로 대체) ---
-
-class _StopwatchView extends StatelessWidget {
-  const _StopwatchView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: 실제 스톱워치 UI로 교체
-    return Center(
-      child: Text(
-        '스톱워치 화면',
-        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }
