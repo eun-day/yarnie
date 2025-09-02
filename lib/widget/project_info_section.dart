@@ -11,7 +11,7 @@ class ProjectInfoSection extends StatefulWidget {
     super.key,
     required this.title,
     required this.child,
-    this.initiallyExpanded = true,
+    this.initiallyExpanded = false,
   });
 
   @override

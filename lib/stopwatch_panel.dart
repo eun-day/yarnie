@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'dart:async';
+import 'dart:ui' show FontFeature;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+
   // 라벨
   late List<String> labels = [...widget.initialLabels];
   String? currentLabel = null; // null => 미분류
@@ -69,32 +71,45 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     });
   }
 
-  void _lap() {
-    final now = _sw.elapsed;
-    final segment = now - _lastLapAt;
-    _laps.insert(
-      0,
-      _Lap(
-        index: _laps.length + 1,
-        timeFromStart: now,
-        segment: segment,
-        label: currentLabel ?? '미분류',
-      ),
-    );
-    _lastLapAt = now;
-    setState(() {});
+bool get _canSaveLap =>
+    _sw.elapsedMilliseconds > _lastLapAt.inMilliseconds;
+
+void _saveLap() {
+  // 1) 달리는 중이면 먼저 멈춤( _elapsed 업데이트 포함 )
+  if (_sw.isRunning) {
+    _pause(); // _sw.stop() + _ticker cancel + setState(_elapsed)
   }
 
-  String _fmt(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    final cs = (d.inMilliseconds.remainder(1000) / 10)
-        .floor()
-        .toString()
-        .padLeft(2, '0');
-    return h > 0 ? '$h:$m:$s' : '$m:$s.$cs';
+  // 2) 일시정지 상태에서 now 기준으로 구간 계산
+  final now = _sw.elapsed;
+  final segment = now - _lastLapAt;
+
+  if (segment <= Duration.zero) {
+    // 저장할 시간이 없으면 무시
+    return;
   }
+
+  _laps.insert(
+    0,
+    _Lap(
+      index: _laps.length + 1,
+      timeFromStart: now,
+      segment: segment,
+      label: currentLabel ?? '미분류',
+    ),
+  );
+
+  // 3) 기준점(now) 업데이트. 상태는 '일시정지' 유지
+  _lastLapAt = now;
+  setState(() {});
+}
+
+String _fmt(Duration d) {
+  final h = d.inHours.toString().padLeft(2, '0');
+  final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+  final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return '$h:$m:$s';
+}
 
   Future<void> _openLabelPicker() async {
     await showModalBottomSheet(
@@ -133,9 +148,8 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                           setState(() => labels = updated);
                           if (currentLabel != null &&
                               !labels.contains(currentLabel)) {
-                            currentLabel = labels.isNotEmpty
-                                ? labels.first
-                                : null;
+                            currentLabel =
+                                labels.isNotEmpty ? labels.first : null;
                           }
                         }
                       },
@@ -234,8 +248,9 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                           ),
                           onSubmitted: (v) {
                             final t = v.trim();
-                            if (t.isNotEmpty && !temp.contains(t))
+                            if (t.isNotEmpty && !temp.contains(t)) {
                               setSB(() => temp.add(t));
+                            }
                             controller.clear();
                           },
                         ),
@@ -244,8 +259,9 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                       ElevatedButton(
                         onPressed: () {
                           final t = controller.text.trim();
-                          if (t.isNotEmpty && !temp.contains(t))
+                          if (t.isNotEmpty && !temp.contains(t)) {
                             setSB(() => temp.add(t));
+                          }
                           controller.clear();
                         },
                         child: const Text('추가'),
@@ -277,63 +293,17 @@ class _StopwatchPanelState extends State<StopwatchPanel>
 
   @override
   Widget build(BuildContext context) {
-    const chipHeight = 40.0;
+    super.build(context);
+
     return Column(
       children: [
-        // // 라벨: 가로 스크롤 + 더보기
-        // SizedBox(
-        //   height: chipHeight + 16,
-        //   child: Row(
-        //     children: [
-        //       Expanded(
-        //         child: ListView.separated(
-        //           padding: const EdgeInsets.symmetric(
-        //             horizontal: 12,
-        //             vertical: 8,
-        //           ),
-        //           scrollDirection: Axis.horizontal,
-        //           itemBuilder: (_, i) {
-        //             if (i < labels.length) {
-        //               final l = labels[i];
-        //               return ChoiceChip(
-        //                 label: Text(l),
-        //                 selected: currentLabel == l,
-        //                 onSelected: (_) => setState(() => currentLabel = l),
-        //               );
-        //             } else {
-        //               return ActionChip(
-        //                 label: const Text('더보기'),
-        //                 avatar: const Icon(Icons.expand_more),
-        //                 onPressed: _openLabelPicker,
-        //               );
-        //             }
-        //           },
-        //           separatorBuilder: (_, __) => const SizedBox(width: 8),
-        //           itemCount: labels.length + 1,
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        buildLabelBar(
-          labels: labels,
-          currentLabel: currentLabel,
-          onChanged: (v) => setState(() => currentLabel = v),
-          onMore: _openLabelPicker,
-          height: chipHeight + 16,
-        ),
-        const Divider(height: 1),
-
-        // 큰 타이머
-        Expanded(
-          child: Center(
-            child: Text(
-              _fmt(_elapsed),
-              style: const TextStyle(
-                fontSize: 64,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
-            ),
+        // ── 타이머 카드(라벨 + 시간) ───────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: _TimerCard(
+            timeText: _fmt(_elapsed),
+            labelText: currentLabel ?? '미분류',
+            onTapLabel: _openLabelPicker,
           ),
         ),
 
@@ -346,8 +316,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                 child: ElevatedButton.icon(
                   icon: Icon(_sw.isRunning ? Icons.pause : Icons.play_arrow),
                   label: Text(_sw.isRunning ? '일시정지' : '시작'),
-                  onPressed: () =>
-                      setState(() => _sw.isRunning ? _pause() : _start()),
+                  onPressed: () => setState(() => _sw.isRunning ? _pause() : _start()),
                 ),
               ),
               const SizedBox(width: 8),
@@ -355,7 +324,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.flag),
                   label: const Text('랩'),
-                  onPressed: _sw.isRunning ? _lap : null,
+                  onPressed: _canSaveLap ? _saveLap : null, // ← 달리든 멈추든 가능, 0초 방지
                 ),
               ),
               const SizedBox(width: 8),
@@ -365,7 +334,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
                 icon: const Icon(Icons.refresh),
               ),
             ],
-          ),
+          )
         ),
 
         // 랩 리스트
@@ -392,111 +361,137 @@ class _StopwatchPanelState extends State<StopwatchPanel>
       ],
     );
   }
+}
 
-  Widget buildLabelBar({
-    required List<String> labels,
-    required String? currentLabel,
-    required ValueChanged<String?> onChanged,
-    required VoidCallback onMore,
-    double height = 56, // chipHeight + 여백
-  }) {
+/// 카드 위젯: 상단 중앙 라벨 + 중앙 큰 시간
+class _TimerCard extends StatelessWidget {
+  const _TimerCard({
+    required this.timeText,
+    required this.labelText,
+    required this.onTapLabel,
+  });
+
+  final String timeText;
+  final String labelText;
+  final VoidCallback onTapLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isIOS = Platform.isIOS;
 
-    return SizedBox(
-      height: height,
-      child: Row(
+    return Container(
+      height: 180,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withOpacity(0.6),
+        ),
+        boxShadow: kElevationToShadow[1],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // 라벨 (상단 중앙)
+          Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 12),
+            child: _LabelPill(
+              text: labelText,
+              onTap: onTapLabel,
+              isIOS: isIOS,
+            ),
+          ),
+          // 큰 시간
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              scrollDirection: Axis.horizontal,
-              itemCount: labels.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (_, i) {
-                if (i < labels.length) {
-                  final l = labels[i];
-                  final selected = currentLabel == l;
-                  return _buildLabelChip(
-                    label: l,
-                    selected: selected,
-                    onTap: () => onChanged(l),
-                    isIOS: isIOS,
-                  );
-                } else {
-                  return _buildMoreButton(isIOS: isIOS, onTap: onMore);
-                }
-              },
+            child: Center(
+              child: Text(
+                timeText,
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: const [FontFeature.tabularFigures()], // ← 숫자 폭 고정
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildLabelChip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-    required bool isIOS,
-  }) {
-    if (isIOS) {
-      // iOS: 사각에 가까운 얕은 라운드(세그먼트 느낌)
-      return GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: selected
-                ? CupertinoColors.activeBlue
-                : CupertinoColors.systemGrey5,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: DefaultTextStyle(
-            style: TextStyle(
-              color: selected ? CupertinoColors.white : CupertinoColors.black,
-              fontSize: 14,
-            ),
-            child: Text(label),
-          ),
-        ),
-      );
-    } else {
-      // Android(Material): 칩 스타일, 약간 둥글게
-      return ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        onSelected: (_) => onTap(),
-      );
-    }
-  }
 
-  Widget _buildMoreButton({required bool isIOS, required VoidCallback onTap}) {
+class _LabelPill extends StatelessWidget {
+  const _LabelPill({
+    required this.text,
+    required this.onTap,
+    required this.isIOS,
+  });
+
+  final String text;
+  final VoidCallback onTap;
+  final bool isIOS;
+
+  @override
+  Widget build(BuildContext context) {
     if (isIOS) {
       return CupertinoButton(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        minSize: 32,
-        color: CupertinoColors.systemGrey5,
-        borderRadius: BorderRadius.circular(6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        borderRadius: BorderRadius.circular(20),
+        color: CupertinoColors.systemGrey6,
         onPressed: onTap,
-        child: Row(
-          children: const [
-            Text('더보기', style: TextStyle(color: CupertinoColors.black)),
-            SizedBox(width: 4),
-            Icon(
-              CupertinoIcons.chevron_down,
-              size: 16,
-              color: CupertinoColors.black,
-            ),
-          ],
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 26), // 칩 높이 느낌
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                text,
+                style: const TextStyle(
+                  color: CupertinoColors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(CupertinoIcons.chevron_down,
+                  size: 16, color: CupertinoColors.black),
+            ],
+          ),
         ),
       );
     } else {
-      return ActionChip(
-        label: const Text('더보기'),
-        avatar: const Icon(Icons.expand_more),
-        onPressed: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: Color.alphaBlend(
+              Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+              Theme.of(context).colorScheme.surface,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                text,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(Icons.expand_more, size: 18),
+            ],
+          ),
+        ),
       );
     }
   }
