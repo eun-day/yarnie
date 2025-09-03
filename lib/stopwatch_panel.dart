@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:ui' show FontFeature;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// 스톱워치 패널(Scaffold 없음) — 화면 어디든 끼워 넣기용
 class StopwatchPanel extends StatefulWidget {
@@ -71,8 +72,184 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     });
   }
 
-bool get _canSaveLap =>
-    _sw.elapsedMilliseconds > _lastLapAt.inMilliseconds;
+bool get _canSaveLap => _sw.elapsed > _lastLapAt;
+
+Future<void> _saveLapFlow() async {
+  // 1) 달리는 중이면 멈추기 (now 고정)
+  if (_sw.isRunning) _pause();
+
+  final now = _sw.elapsed;
+  final segment = now - _lastLapAt;
+  if (segment <= Duration.zero) return; // 0초 랩 방지
+
+  String? tempLabel = currentLabel;
+  final memoCtl = TextEditingController();
+
+  final confirmed = await (Platform.isIOS
+      ? showCupertinoModalBottomSheet<bool>(
+          context: context,
+          expand: false,
+          backgroundColor: CupertinoColors.systemBackground,
+          builder: (ctx) {
+            final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
+            return SafeArea(
+              top: false,
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: CupertinoColors.label,        // ← 기본 라벨 컬러 강제
+                  decoration: TextDecoration.none,     // ← 밑줄 제거
+                ),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
+                  child: StatefulBuilder(
+                    builder: (_, setSB) => SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // 상단 중앙 라벨
+                          Align(
+                            alignment: Alignment.center,
+                            child: _LabelPill(
+                              text: tempLabel ?? '미분류',
+                              isIOS: true,
+                              onTap: () async {
+                                final picked = await _openLabelPicker(initial: tempLabel);
+                                setSB(() => tempLabel = picked);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // 메모
+                          const Text('작업 메모',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: CupertinoColors.label,
+                                  ) // iOS 기본 라벨 색
+                                ),
+                          const SizedBox(height: 6),
+                          CupertinoTextField(
+                            controller: memoCtl,
+                            maxLines: 4,
+                            placeholder: '메모를 입력하세요',
+                          ),
+                          const SizedBox(height: 16),
+                          // 안내
+                          Text(
+                            '작업 시간 ${_fmt(segment)}을 저장하시겠습니까?',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: CupertinoColors.label, // 라이트모드 검정 / 다크모드 흰색
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // 액션
+                          Row(
+                            children: [
+                              CupertinoButton(
+                                child: const Text('취소'),
+                                onPressed: () => Navigator.pop(ctx, false),
+                              ),
+                              const Spacer(),
+                              CupertinoButton.filled(
+                                child: const Text('저장'),
+                                onPressed: () => Navigator.pop(ctx, true),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            );
+          },
+        )
+      : showModalBottomSheet<bool>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (ctx) {
+            final mq = MediaQuery.of(ctx);
+            final bottomPad = mq.viewInsets.bottom + mq.viewPadding.bottom;
+            return Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
+              child: StatefulBuilder(
+                builder: (_, setSB) => SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // 상단 중앙 라벨
+                      Align(
+                        alignment: Alignment.center,
+                        child: _LabelPill(
+                          text: tempLabel ?? '미분류',
+                          isIOS: false,
+                          onTap: () async {
+                            final picked = await _openLabelPicker(initial: tempLabel);
+                            setSB(() => tempLabel = picked);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 메모
+                      TextField(
+                        controller: memoCtl,
+                        maxLines: 4,
+                        decoration: const InputDecoration(
+                          hintText: '메모를 입력하세요',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 안내
+                      Text('작업 시간 ${_fmt(segment)}을 저장하시겠습니까?',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(height: 16),
+                      // 액션
+                      Row(
+                        children: [
+                          OutlinedButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('취소'),
+                          ),
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.save),
+                            label: const Text('저장'),
+                            onPressed: () => Navigator.pop(ctx, true),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ));
+
+  if (confirmed != true) return;
+
+  // 3) 실제 저장 (상태는 일시정지 유지)
+  _laps.insert(
+    0,
+    _Lap(
+      index: _laps.length + 1,
+      timeFromStart: now,
+      segment: segment,
+      label: tempLabel ?? '미분류',
+      note: memoCtl.text.trim().isEmpty ? null : memoCtl.text.trim(),
+    ),
+  );
+  _lastLapAt = now;
+  setState(() {});
+}
 
 void _saveLap() {
   // 1) 달리는 중이면 먼저 멈춤( _elapsed 업데이트 포함 )
@@ -111,33 +288,131 @@ String _fmt(Duration d) {
   return '$h:$m:$s';
 }
 
-  Future<void> _openLabelPicker() async {
-    await showModalBottomSheet(
+// iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
+Future<String?> _openLabelPicker({String? initial}) async {
+  if (Platform.isIOS) {
+    // iOS: Cupertino 스타일 (modal_bottom_sheet 사용)
+    return showCupertinoModalBottomSheet<String>(
+      context: context,
+      expand: false,
+      backgroundColor: CupertinoColors.systemBackground,
+      builder: (ctx) {
+        final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
+        return SafeArea(
+          top: false,
+          child: DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 14,
+              color: CupertinoColors.label,        // ← 기본 라벨 컬러 강제
+              decoration: TextDecoration.none,     // ← 밑줄 제거
+            ),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 상단 제목 + 라벨 관리 버튼
+                  Row(
+                    children: [
+                      const Text(
+                        '라벨 선택',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        child: const Icon(CupertinoIcons.pencil),
+                        onPressed: () async {
+                          final updated = await _openLabelManager(ctx, labels);
+                          if (updated != null) {
+                            setState(() => labels = updated);
+                            if (currentLabel != null &&
+                                !labels.contains(currentLabel)) {
+                              currentLabel = labels.isNotEmpty ? labels.first : null;
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  CupertinoScrollbar(
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        spacing: 8, runSpacing: 8,
+                        children: [
+                          for (final l in labels)
+                            CupertinoButton(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              borderRadius: BorderRadius.circular(20),
+                              color: (initial == l)
+                                  ? CupertinoColors.activeBlue
+                                  : CupertinoColors.systemGrey6,
+                              onPressed: () => Navigator.pop(ctx, l),
+                              child: Text(
+                                l,
+                                style: TextStyle(
+                                  color: (initial == l)
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 16, fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          CupertinoButton(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            borderRadius: BorderRadius.circular(20),
+                            color: (initial == null)
+                                ? CupertinoColors.activeBlue
+                                : CupertinoColors.systemGrey6,
+                            onPressed: () => Navigator.pop(ctx, null),
+                            child: Text(
+                              '미분류',
+                              style: TextStyle(
+                                color: (initial == null)
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                fontSize: 16, fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        );
+      },
+    );
+  } else {
+    // Android: Material 바텀시트 + ChoiceChip
+    return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) {
-        final mq = MediaQuery.of(ctx);
-        final bottomPad = mq.viewInsets.bottom + mq.viewPadding.bottom;
-
+        final bottomPad = MediaQuery.of(ctx).viewInsets.bottom +
+            MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
-          top: true,
-          left: true,
-          right: true,
-          bottom: false,
+          top: true, left: true, right: true, bottom: false,
           child: Padding(
             padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 상단 제목 + 라벨 관리 버튼
                 Row(
                   children: [
                     const Text(
                       '라벨 선택',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                     IconButton(
@@ -148,8 +423,7 @@ String _fmt(Duration d) {
                           setState(() => labels = updated);
                           if (currentLabel != null &&
                               !labels.contains(currentLabel)) {
-                            currentLabel =
-                                labels.isNotEmpty ? labels.first : null;
+                            currentLabel = labels.isNotEmpty ? labels.first : null;
                           }
                         }
                       },
@@ -159,25 +433,18 @@ String _fmt(Duration d) {
                 ),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 8, runSpacing: 8,
                   children: [
                     for (final l in labels)
                       ChoiceChip(
                         label: Text(l),
-                        selected: currentLabel == l,
-                        onSelected: (_) {
-                          setState(() => currentLabel = l);
-                          Navigator.pop(ctx);
-                        },
+                        selected: initial == l,
+                        onSelected: (_) => Navigator.pop(ctx, l),
                       ),
                     ChoiceChip(
                       label: const Text('미분류'),
-                      selected: currentLabel == null,
-                      onSelected: (_) {
-                        setState(() => currentLabel = null);
-                        Navigator.pop(ctx);
-                      },
+                      selected: initial == null,
+                      onSelected: (_) => Navigator.pop(ctx, null),
                     ),
                   ],
                 ),
@@ -188,6 +455,8 @@ String _fmt(Duration d) {
       },
     );
   }
+}
+
 
   Future<List<String>?> _openLabelManager(
     BuildContext ctx,
@@ -303,7 +572,12 @@ String _fmt(Duration d) {
           child: _TimerCard(
             timeText: _fmt(_elapsed),
             labelText: currentLabel ?? '미분류',
-            onTapLabel: _openLabelPicker,
+            onTapLabel: () async {
+              final picked = await _openLabelPicker(initial: currentLabel);
+              if (picked != null || picked == null) {
+                setState(() => currentLabel = picked);
+              }
+            },
           ),
         ),
 
@@ -324,7 +598,7 @@ String _fmt(Duration d) {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.flag),
                   label: const Text('랩'),
-                  onPressed: _canSaveLap ? _saveLap : null, // ← 달리든 멈추든 가능, 0초 방지
+                  onPressed: _canSaveLap ? _saveLapFlow : null,
                 ),
               ),
               const SizedBox(width: 8),
@@ -351,9 +625,11 @@ String _fmt(Duration d) {
                       dense: true,
                       leading: Text('Lap ${lap.index}'),
                       title: Text(_fmt(lap.segment)),
-                      subtitle: Text(
-                        '라벨: ${lap.label} • 누적: ${_fmt(lap.timeFromStart)}',
-                      ),
+                      subtitle: Text([
+                        '라벨: ${lap.label}',
+                        '누적: ${_fmt(lap.timeFromStart)}',
+                        if (lap.note != null && lap.note!.isNotEmpty) '메모: ${lap.note}'
+                      ].join(' • ')),
                     );
                   },
                 ),
@@ -502,10 +778,12 @@ class _Lap {
   final Duration timeFromStart;
   final Duration segment;
   final String label;
+  final String? note;
   _Lap({
     required this.index,
     required this.timeFromStart,
     required this.segment,
     required this.label,
+    this.note,
   });
 }
