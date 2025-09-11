@@ -59,7 +59,7 @@ class ProjectDetailScreen extends StatelessWidget {
                 ),
               ),
               const Divider(height: 1),
-              const Expanded(child: ProjectDetailTabs()),
+              Expanded(child: ProjectDetailTabs(projectId: project.id)),
             ],
           ),
         );
@@ -86,7 +86,8 @@ class ProjectDetailScreen extends StatelessWidget {
 }
 
 class ProjectDetailTabs extends StatefulWidget {
-  const ProjectDetailTabs({super.key});
+  final int projectId;
+  const ProjectDetailTabs({super.key, required this.projectId});
 
   @override
   State<ProjectDetailTabs> createState() => _ProjectDetailTabsState();
@@ -125,9 +126,9 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
           Expanded(
             child: IndexedStack(
               index: _cupertinoIndex,
-              children: const [
-                  StopwatchPanel(key: ValueKey('stopwatch')),
-                  _CounterView(key: ValueKey('counter')),
+              children: [
+                  StopwatchPanel(key: const ValueKey('stopwatch'), projectId: widget.projectId,),
+                  const _CounterView(key: ValueKey('counter')),
               ],
           ),
           ),
@@ -139,8 +140,8 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
     return DefaultTabController(
       length: 2,
       child: Column(
-        children: const [
-          TabBar(
+        children: [
+          const TabBar(
             tabs: [
               Tab(text: '스톱워치', icon: Icon(Icons.timer_outlined)),
               Tab(text: '카운터', icon: Icon(Icons.exposure_plus_1)),
@@ -149,8 +150,8 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
           Expanded(
             child: TabBarView(
               children: [
-                StopwatchPanel(),
-                _CounterView(),
+                StopwatchPanel(projectId: widget.projectId),
+                const _CounterView(),
               ],
             ),
           ),
