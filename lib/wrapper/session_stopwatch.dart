@@ -6,6 +6,7 @@ class SessionStopwatch {
 
   void start({int initialElapsedMs = 0}) {
     _baseElapsedMs = initialElapsedMs;
+    _sw.reset();
     _sw.start();
   }
 
