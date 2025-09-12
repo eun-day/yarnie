@@ -202,7 +202,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
         memo: (res.memo?.isEmpty ?? true) ? null : res.memo,    // 전달 시 업데이트, null이면 유지
       );
 
-    // await _refreshFromDB(); // 새로고침하면 초 단위로 잘리므로, 로컬의 정확한 값(_elapsed)을 유지.
+      await _refreshFromDB();
 
     // 4) 로컬 상태 정리 (UI 반영)
     _lastLapAt = freezeNow;
