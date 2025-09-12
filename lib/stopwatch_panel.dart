@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 import 'dart:async';
-import 'dart:ui' show FontFeature;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -47,6 +46,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
   bool _busy = false;
   bool _lapBusy = false;
   late final Stream<List<WorkSession>> _stream;
+  int _lastSegment = 0;
 
   @override
   void initState() {
@@ -177,11 +177,11 @@ class _StopwatchPanelState extends State<StopwatchPanel>
       // 1) now 고정 + 달리는 중이면 먼저 일시정지
       print('stopwatch elapsed ms : ${_sw.elapsedMs}');
       final freezeNow = _sw.elapsed;
-      int segment = 0;
+      
       if (_sw.isRunning) 
       {
-        segment = await _pause(); // _pause는 _elapsed를 갱신함
-        print('puased session elapsedSec: $segment');
+        _lastSegment = await _pause(); // _pause는 _elapsed를 갱신함 -> 타이머 실행 중에만 업데이트
+        print('puased session elapsedSec: $_lastSegment');
       }
       
       if (!mounted) return;
@@ -189,7 +189,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
       // 시트 호출
       final res = await showEndSessionSheet(
         context: context,
-        segment: Duration(seconds: segment),
+        segment: Duration(seconds: _lastSegment),
         initialLabel: currentLabel,
         onPickLabel: (initial) => _openLabelPicker(initial: initial),
       );
@@ -206,6 +206,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
 
     // 4) 로컬 상태 정리 (UI 반영)
     _lastLapAt = freezeNow;
+    _lastSegment = 0;
     setState(() {});
   } finally {
     _lapBusy = false;
