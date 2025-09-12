@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/model/session_status.dart';
 import 'connection.dart';
 
@@ -98,7 +99,6 @@ class AppDb extends _$AppDb {
   // 1) START: 활성 세션이 없어야 새로 시작
   Future<int> startSession({
     required int projectId,
-    required int nowMs,
     String? label,
     String? memo,
   }) async {
@@ -107,6 +107,9 @@ class AppDb extends _$AppDb {
       if (active != null) {
         throw StateError('활성 세션이 이미 존재합니다.');
       }
+
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+
       return await into(workSessions).insert(WorkSessionsCompanion.insert(
         projectId: projectId,
         startedAt: nowMs,
@@ -123,39 +126,44 @@ class AppDb extends _$AppDb {
   }
 
   // 2) PAUSE: RUNNING -> PAUSED
-  Future<void> pauseSession({
+  // Elapsed Time을 초 단위로 리턴
+  Future<int> pauseSession({
     required int projectId,
-    required int nowMs,
   }) async {
-    await transaction(() async {
+    return transaction(() async {
       final s = await getActiveSession(projectId);
       if (s == null || s.status != SessionStatus.running) {
-       throw StateError('RUNNING 세션이 없습니다.');
+        throw StateError('RUNNING 세션이 없습니다.');
       }
 
-      final add = (nowMs - s.lastStartedAt!).clamp(0, 1 << 30);
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      final addMs = (nowMs - s.lastStartedAt!).clamp(0, 1 << 31);
+      final newElapsedMs = s.elapsedMs + addMs;
       
       await (update(workSessions)..where((t) => t.id.equals(s.id))).write(
         WorkSessionsCompanion(
-          elapsedMs: Value(s.elapsedMs + add),
+          elapsedMs: Value(newElapsedMs),
           lastStartedAt: const Value(null),
           updatedAt: Value(nowMs),
           status: Value(SessionStatus.paused)
         ),
       );
+
+      return newElapsedMs.toSec();
     });
   }
 
   // 3) RESUME: PAUSED -> RUNNING 
   Future<void> resumeSession({
     required int projectId,
-    required int nowMs,
   }) async {
     await transaction(() async {
       final s = await getActiveSession(projectId);
       if (s == null || s.status != SessionStatus.paused) {
         throw StateError('PAUSED 세션이 없습니다.');
       }
+
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
 
       await (update(workSessions)..where((t) => t.id.equals(s.id))).write(
         WorkSessionsCompanion(
@@ -170,7 +178,6 @@ class AppDb extends _$AppDb {
   // 4) STOP: RUNNING이면 먼저 경과분 합산 후 종료, PAUSED면 그대로 종료
   Future<void> stopSession({
     required int projectId,
-    required int nowMs,
     String? label, // 선택: 전달 시 세션 라벨 업데이트
     String? memo,  // 선택: 전달 시 세션 메모 업데이트
   }) async {
@@ -178,6 +185,7 @@ class AppDb extends _$AppDb {
       final s = await getActiveSession(projectId);
       if (s == null) throw StateError('활성 세션이 없습니다.');
 
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
       int newElapsed = s.elapsedMs;
       if (s.status == SessionStatus.running && s.lastStartedAt != null) {
         final add = nowMs - s.lastStartedAt!;
@@ -219,11 +227,11 @@ class AppDb extends _$AppDb {
   }
 
   // 6) 프로젝트 총 누적 (진행 중/일시정지 제외 = STOPPED만 합산)
-  Future<int> totalElapsedMs({
+  Future<int> totalElapsedSec({
     required int projectId,
   }) async {
     final row = await customSelect(
-      'SELECT COALESCE(SUM(elapsed_ms), 0) AS t '
+      'SELECT COALESCE(SUM(elapsed_ms / 1000), 0) AS t '
       'FROM work_sessions '
       'WHERE project_id = ?1 AND status = ?2;',
       variables: [

@@ -65,30 +65,29 @@ class _StopwatchPanelState extends State<StopwatchPanel>
   Future<void> _start() async {
     if (_sw.isRunning) return;
 
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
     final active = await appDb.getActiveSession(widget.projectId);
 
     if (active == null) {
       // NO → 새 세션 생성 ⇒ RUNNING
-      await appDb.startSession(projectId: widget.projectId, nowMs: nowMs);
+      await appDb.startSession(projectId: widget.projectId);
     } else {
       // 이어하기/새로 시작 선택
       final resume = await _askResumeOrNew();
       if (resume == true) {
         // 이어하기: 상태별 처리
         if (active.status == SessionStatus.paused) {
-        await appDb.resumeSession(projectId: widget.projectId, nowMs: nowMs);
+          await appDb.resumeSession(projectId: widget.projectId);
         }
         // running이면 DB 호출 불필요
       } else {
         // 새로 시작: 기존 미종료 세션 정리 후 새 세션
-        await appDb.stopSession(projectId: widget.projectId, nowMs: nowMs);
-        await appDb.startSession(projectId: widget.projectId, nowMs: nowMs);
+        await appDb.stopSession(projectId: widget.projectId);
+        await appDb.startSession(projectId: widget.projectId);
       }
     }
 
   // ⬇️ 화면에 보이는 값(_elapsed) 그대로부터 카운트 시작
-  _sw.start(initialElapsed: _elapsed.inMilliseconds);
+  _sw.start(initialElapsed: _elapsed.inSeconds);
 
     // UI 틱 시작
     _ticker?.cancel();
@@ -115,24 +114,25 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     );
   }
 
-  Future<void> _pause() async {
-    if (!_sw.isRunning) return;
+  Future<int> _pause() async {
+    if (!_sw.isRunning) return -1;
 
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
-
-    // 1) DB에 세션 상태 반영
-    await appDb.pauseSession(projectId: widget.projectId, nowMs: nowMs);
-
-    // 2) 래퍼 스톱워치 멈춤
+    // 1) 래퍼 스톱워치 멈춤
     _sw.pause();
 
-    // 3) UI 틱 중단
+    // 2) UI 틱 중단
     _ticker?.cancel();
+
+    // 3) DB에 세션 상태 반영
+    final newElapsedSec = await appDb.pauseSession(projectId: widget.projectId);
+
 
     // 4) 화면 상태 갱신
     setState(() {
       _elapsed = _sw.elapsed; // Duration 타입
     });
+
+    return newElapsedSec;
   }
 
   Future<void> _resetSession() async {
@@ -142,57 +142,62 @@ class _StopwatchPanelState extends State<StopwatchPanel>
 
   Future<void> _refreshFromDB() async {
     // 1) 종료된 세션 합계 (stopped만)
-    final totalDone = await appDb.totalElapsedMs(projectId: widget.projectId);
+    final totalDone = await appDb.totalElapsedSec(projectId: widget.projectId);
+    print('totalDone sec : $totalDone');
 
     // 2) 현재 활성 세션 (running/paused)
     final active = await appDb.getActiveSession(widget.projectId);
 
-    int viewMs = totalDone;
+    int viewSec = totalDone;
 
     if (active != null) {
-      final base = active.elapsedMs;
+      final base = (active.elapsedMs).toSec();
 
       // 진행 중이면 lastStartedAt부터 지금까지 더해줌
       final add = (active.status == SessionStatus.running && active.lastStartedAt != null)
-          ? (DateTime.now().millisecondsSinceEpoch - active.lastStartedAt!).clamp(0, 1 << 30)
+          ? (DateTime.now().millisecondsSinceEpoch - active.lastStartedAt!)
+              .clamp(0, 1 << 30)
+              .toSec()
           : 0;
 
-      viewMs += base + add;
+      viewSec += base + add;
+      print('active session elapsedSec: $base, addSec: $add');
     }
 
     // 3) UI 갱신
     setState(() {
-      _elapsed = Duration(milliseconds: viewMs);
+      _elapsed = Duration(seconds: viewSec);
     });
   }
-
-  bool get _canSaveLap => _sw.elapsed > _lastLapAt;
 
   Future<void> _saveLapFlow() async {
     if (_lapBusy) return; // 재진입 방지
     _lapBusy = true;
     try {
       // 1) now 고정 + 달리는 중이면 먼저 일시정지
+      print('stopwatch elapsed ms : ${_sw.elapsedMs}');
       final freezeNow = _sw.elapsed;
-      if (_sw.isRunning) _pause(); // _pause는 _elapsed를 갱신함
-
-      final segment = freezeNow - _lastLapAt;
-      if (segment <= Duration.zero) return; // 0초 랩 방지
+      int segment = 0;
+      if (_sw.isRunning) 
+      {
+        segment = await _pause(); // _pause는 _elapsed를 갱신함
+        print('puased session elapsedSec: $segment');
+      }
+      
+      if (!mounted) return;
 
       // 시트 호출
       final res = await showEndSessionSheet(
         context: context,
-        segment: segment,
+        segment: Duration(seconds: segment),
         initialLabel: currentLabel,
         onPickLabel: (initial) => _openLabelPicker(initial: initial),
       );
-      if (!mounted || res == null || res.confirmed != true) return;
+      if (res == null || res.confirmed != true) return;
       
       // 3) DB: 세션 종료 & 라벨/메모 동시 저장
-      final nowMs = DateTime.now().millisecondsSinceEpoch;
       await appDb.stopSession(
         projectId: widget.projectId,               // ← 너의 현재 프로젝트 ID
-        nowMs: nowMs,
         label: res.label,                    // 전달 시 업데이트, null이면 유지
         memo: (res.memo?.isEmpty ?? true) ? null : res.memo,    // 전달 시 업데이트, null이면 유지
       );
@@ -531,7 +536,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.flag),
                   label: const Text('랩'),
-                  onPressed: _canSaveLap ? _saveLapFlow : null,
+                  onPressed: _saveLapFlow,
                 ),
               ),
               const SizedBox(width: 8),
@@ -566,7 +571,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
 
                   // 표시용 값들
                   final lapNo = i + 1;
-                  final segment = Duration(milliseconds: s.elapsedMs); // 세션 소요시간
+                  final segment = Duration(seconds: s.elapsedMs.toSec()); // 세션 소요시간
                   final started = DateTime.fromMillisecondsSinceEpoch(s.startedAt);
                   final stopped = (s.stoppedAt != null)
                       ? DateTime.fromMillisecondsSinceEpoch(s.stoppedAt!)
