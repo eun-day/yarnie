@@ -87,7 +87,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     }
 
   // ⬇️ 화면에 보이는 값(_elapsed) 그대로부터 카운트 시작
-  _sw.start(initialElapsed: _elapsed.inSeconds);
+  _sw.start(initialElapsedMs: _elapsed.inMilliseconds);
 
     // UI 틱 시작
     _ticker?.cancel();
@@ -125,7 +125,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
 
     // 3) DB에 세션 상태 반영
     final newElapsedSec = await appDb.pauseSession(projectId: widget.projectId);
-
+    _lastSegment = newElapsedSec;
 
     // 4) 화면 상태 갱신
     setState(() {
@@ -180,7 +180,7 @@ class _StopwatchPanelState extends State<StopwatchPanel>
       
       if (_sw.isRunning) 
       {
-        _lastSegment = await _pause(); // _pause는 _elapsed를 갱신함 -> 타이머 실행 중에만 업데이트
+        await _pause(); // _pause는 _elapsed를 갱신함 -> 타이머 실행 중에만 업데이트
         print('puased session elapsedSec: $_lastSegment');
       }
       
@@ -521,7 +521,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
                         _busy = true;
                         try {
                           if (_sw.isRunning) {
-                            await _pause();   
+                            await _pause();
                           } else {
                             await _start();   // active 체크→ 이어/새로 로직 포함
                           }
