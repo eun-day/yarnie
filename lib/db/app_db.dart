@@ -244,6 +244,32 @@ class AppDb extends _$AppDb {
     return (row?.data['t'] as int?) ?? 0;
   }
 
+  Future<Duration> totalElapsedDuration({required int projectId}) async {
+    // 1) 종료된 세션 합계 (stopped만)
+    final totalDone = await totalElapsedSec(projectId: projectId);
+
+    // 2) 현재 활성 세션 (running/paused)
+    final active = await getActiveSession(projectId);
+
+    int viewSec = totalDone;
+
+    if (active != null) {
+      final base = (active.elapsedMs).toSec();
+
+      // 진행 중이면 lastStartedAt부터 지금까지 더해줌
+      final add =
+          (active.status == SessionStatus.running && active.lastStartedAt != null)
+              ? (DateTime.now().millisecondsSinceEpoch - active.lastStartedAt!)
+                  .clamp(0, 1 << 30)
+                  .toSec()
+              : 0;
+
+      viewSec += base + add;
+    }
+
+    return Duration(seconds: viewSec);
+  }
+
   // 공통: 상태 집합으로 조회 (최신 시작순)
   Stream<List<WorkSession>> watchByStatuses(
       int projectId, List<SessionStatus> statuses) {

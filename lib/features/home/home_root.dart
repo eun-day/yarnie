@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/counter_screen.dart';
 import 'package:yarnie/new_project_screen.dart';
-import 'package:yarnie/stopwatch_screen.dart';
 
 class HomeRoot extends StatelessWidget {
   final ScrollController? controller;
@@ -36,19 +35,7 @@ class HomeRoot extends StatelessWidget {
               controller: controller,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const StopwatchScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Stopwatch'),
-                  ),
-                  const SizedBox(height: 20),
+                children: <Widget>[                  
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(

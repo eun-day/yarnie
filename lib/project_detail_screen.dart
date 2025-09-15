@@ -1,18 +1,17 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/providers/stopwatch_provider.dart';
 import 'package:yarnie/stopwatch_panel.dart';
 import 'package:yarnie/widget/project_info_section.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final int projectId;
   const ProjectDetailScreen({super.key, required this.projectId});
-
-  String _fmt(DateTime dt) =>
-      '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')} '
-      '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +52,15 @@ class ProjectDetailScreen extends StatelessWidget {
                       project.memo?.isNotEmpty == true ? project.memo! : '-',
                     ),
                     const Divider(height: 24),
-                    _kv('생성일', _fmt(created)),
-                    _kv('수정일', updated != null ? _fmt(updated) : '-'),
+                    _kv('생성일', ymdHm(created)),
+                    _kv('수정일', updated != null ? ymdHm(updated) : '-'),
                   ],
                 ),
               ),
               const Divider(height: 1),
-              Expanded(child: ProjectDetailTabs(projectId: project.id)),
+              Expanded(
+                child: ProjectDetailTabs(projectId: project.id),
+              ),
             ],
           ),
         );
@@ -127,10 +128,13 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
             child: IndexedStack(
               index: _cupertinoIndex,
               children: [
-                  StopwatchPanel(key: const ValueKey('stopwatch'), projectId: widget.projectId,),
-                  const _CounterView(key: ValueKey('counter')),
+                StopwatchPanel(
+                  key: const ValueKey('stopwatch'),
+                  projectId: widget.projectId,
+                ),
+                const _CounterView(key: ValueKey('counter')),
               ],
-          ),
+            ),
           ),
         ],
       );
@@ -161,39 +165,86 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
   }
 }
 
-class _CounterView extends StatefulWidget {
+class _CounterView extends ConsumerStatefulWidget {
   const _CounterView({super.key});
 
   @override
-  State<_CounterView> createState() => _CounterViewState();
+  ConsumerState<_CounterView> createState() => _CounterViewState();
 }
 
-class _CounterViewState extends State<_CounterView> {
-  int count = 0;
+class _CounterViewState extends ConsumerState<_CounterView> {
+  int _counter = 0;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: 실제 카운터(단수/패턴 등) UI로 교체
+    final swState = ref.watch(stopwatchProvider);
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('카운트: $count', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () => setState(() => count++),
-              icon: const Icon(Icons.add),
-              label: const Text('증가'),
+        if (swState.isRunning)
+          Container(
+            color: Colors.grey.shade200,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const Icon(Icons.timer_outlined, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  fmt(swState.elapsed),
+                  style: const TextStyle(
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  height: 32,
+                  child: IconButton(
+                    onPressed: () =>
+                        ref.read(stopwatchProvider.notifier).pause(),
+                    icon: const Icon(Icons.pause),
+                  ),
+                )
+              ],
             ),
-            OutlinedButton.icon(
-              onPressed: () => setState(() => count = 0),
-              icon: const Icon(Icons.refresh),
-              label: const Text('리셋'),
-            ),
-          ],
+          ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () => setState(() => _counter--),
+                    icon: const Icon(Icons.remove),
+                    iconSize: 40,
+                  ),
+                  const SizedBox(width: 24),
+                  Text(
+                    '$_counter',
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  const SizedBox(width: 24),
+                  IconButton(
+                    onPressed: () => setState(() => _counter++),
+                    icon: const Icon(Icons.add),
+                    iconSize: 40,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              onPressed: () => setState(() => _counter = 0),
+              icon: const Icon(Icons.refresh),
+            ),
+          ),
+        )
       ],
     );
   }
