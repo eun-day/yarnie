@@ -53,7 +53,7 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
 
   Future<void> _start() async {
     final swNotifier = ref.read(stopwatchProvider.notifier);
-    if (swNotifier.state.isRunning) return;
+    if (ref.read(stopwatchProvider).isRunning) return;
 
     final active = await appDb.getActiveSession(widget.projectId);
 
@@ -101,7 +101,7 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
 
   Future<int> _pause() async {
     final swNotifier = ref.read(stopwatchProvider.notifier);
-    if (!swNotifier.state.isRunning) return -1;
+    if (!ref.read(stopwatchProvider).isRunning) return -1;
 
     // 1) 래퍼 스톱워치 멈춤
     swNotifier.pause();
@@ -127,12 +127,11 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
   }
 
   Future<void> _saveLapFlow() async {
-    final swNotifier = ref.read(stopwatchProvider.notifier);
     if (_lapBusy) return; // 재진입 방지
     _lapBusy = true;
     try {
       // 1) now 고정 + 달리는 중이면 먼저 일시정지
-      if (swNotifier.state.isRunning) {
+      if (ref.read(stopwatchProvider).isRunning) {
         await _pause(); // _pause는 _elapsed를 갱신함 -> 타이머 실행 중에만 업데이트
       }
 
