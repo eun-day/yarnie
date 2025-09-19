@@ -1,5 +1,5 @@
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';     
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -16,10 +16,11 @@ class StopwatchPanel extends ConsumerStatefulWidget {
   final List<String> initialLabels;
   final int projectId;
 
-  const StopwatchPanel(
-      {super.key,
-      this.initialLabels = const ['소매', '몸통', '목둘레'],
-      required this.projectId});
+  const StopwatchPanel({
+    super.key,
+    this.initialLabels = const ['소매', '몸통', '목둘레'],
+    required this.projectId,
+  });
   @override
   ConsumerState<StopwatchPanel> createState() => _StopwatchPanelState();
 }
@@ -76,7 +77,9 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
       }
     }
 
-    final elapsed = await appDb.totalElapsedDuration(projectId: widget.projectId);
+    final elapsed = await appDb.totalElapsedDuration(
+      projectId: widget.projectId,
+    );
     swNotifier.start(initialElapsed: elapsed);
   }
 
@@ -89,11 +92,13 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
         content: const Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('새로 시작')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('새로 시작'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('이어하기')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('이어하기'),
+          ),
         ],
       ),
     );
@@ -122,7 +127,9 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
 
   Future<void> _refreshFromDB() async {
     final swNotifier = ref.read(stopwatchProvider.notifier);
-    final elapsed = await appDb.totalElapsedDuration(projectId: widget.projectId);
+    final elapsed = await appDb.totalElapsedDuration(
+      projectId: widget.projectId,
+    );
     swNotifier.setElapsed(elapsed);
   }
 
@@ -165,7 +172,7 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
     }
   }
 
-// iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
+  // iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
   Future<String?> _openLabelPicker({String? initial}) async {
     if (Platform.isIOS) {
       // iOS: Cupertino 스타일 (modal_bottom_sheet 사용)
@@ -176,85 +183,73 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
         builder: (ctx) {
           final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
           return SafeArea(
-              top: false,
-              child: DefaultTextStyle(
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: CupertinoColors.label, // ← 기본 라벨 컬러 강제
-                  decoration: TextDecoration.none, // ← 밑줄 제거
-                ),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // 상단 제목 + 라벨 관리 버튼
-                      Row(
-                        children: [
-                          const Text(
-                            '라벨 선택',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+            top: false,
+            child: DefaultTextStyle(
+              style: const TextStyle(
+                fontSize: 14,
+                color: CupertinoColors.label, // ← 기본 라벨 컬러 강제
+                decoration: TextDecoration.none, // ← 밑줄 제거
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 상단 제목 + 라벨 관리 버튼
+                    Row(
+                      children: [
+                        const Text(
+                          '라벨 선택',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const Spacer(),
-                          CupertinoButton(
-                            padding: EdgeInsets.zero,
-                            child: const Icon(CupertinoIcons.pencil),
-                            onPressed: () async {
-                              final updated =
-                                  await _openLabelManager(ctx, labels);
-                              if (updated != null) {
-                                setState(() => labels = updated);
-                                if (currentLabel != null &&
-                                    !labels.contains(currentLabel)) {
-                                  currentLabel =
-                                      labels.isNotEmpty ? labels.first : null;
-                                }
+                        ),
+                        const Spacer(),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Icon(CupertinoIcons.pencil),
+                          onPressed: () async {
+                            final updated = await _openLabelManager(
+                              ctx,
+                              labels,
+                            );
+                            if (updated != null) {
+                              setState(() => labels = updated);
+                              if (currentLabel != null &&
+                                  !labels.contains(currentLabel)) {
+                                currentLabel = labels.isNotEmpty
+                                    ? labels.first
+                                    : null;
                               }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      CupertinoScrollbar(
-                        child: SingleChildScrollView(
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (final l in labels)
-                                CupertinoButton(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 6),
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: (initial == l)
-                                      ? CupertinoColors.activeBlue
-                                      : CupertinoColors.systemGrey6,
-                                  onPressed: () => Navigator.pop(ctx, l),
-                                  child: Text(
-                                    l,
-                                    style: TextStyle(
-                                      color: (initial == l)
-                                          ? CupertinoColors.white
-                                          : CupertinoColors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    CupertinoScrollbar(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final l in labels)
                               CupertinoButton(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 6),
+                                  horizontal: 14,
+                                  vertical: 6,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: (initial == null)
+                                color: (initial == l)
                                     ? CupertinoColors.activeBlue
                                     : CupertinoColors.systemGrey6,
-                                onPressed: () => Navigator.pop(ctx, null),
+                                onPressed: () => Navigator.pop(ctx, l),
                                 child: Text(
-                                  '미분류',
+                                  l,
                                   style: TextStyle(
-                                    color: (initial == null)
+                                    color: (initial == l)
                                         ? CupertinoColors.white
                                         : CupertinoColors.black,
                                     fontSize: 16,
@@ -262,14 +257,36 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            CupertinoButton(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 6,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              color: (initial == null)
+                                  ? CupertinoColors.activeBlue
+                                  : CupertinoColors.systemGrey6,
+                              onPressed: () => Navigator.pop(ctx, null),
+                              child: Text(
+                                '미분류',
+                                style: TextStyle(
+                                  color: (initial == null)
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ));
+              ),
+            ),
+          );
         },
       );
     } else {
@@ -281,7 +298,8 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
-          final bottomPad = MediaQuery.of(ctx).viewInsets.bottom +
+          final bottomPad =
+              MediaQuery.of(ctx).viewInsets.bottom +
               MediaQuery.of(ctx).viewPadding.bottom;
           return SafeArea(
             top: true,
@@ -300,20 +318,22 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
                       const Text(
                         '라벨 선택',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Spacer(),
                       IconButton(
                         tooltip: '라벨 관리',
                         onPressed: () async {
-                          final updated =
-                              await _openLabelManager(ctx, labels);
+                          final updated = await _openLabelManager(ctx, labels);
                           if (updated != null) {
                             setState(() => labels = updated);
                             if (currentLabel != null &&
                                 !labels.contains(currentLabel)) {
-                              currentLabel =
-                                  labels.isNotEmpty ? labels.first : null;
+                              currentLabel = labels.isNotEmpty
+                                  ? labels.first
+                                  : null;
                             }
                           }
                         },
@@ -474,46 +494,49 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
 
         // 컨트롤 버튼
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: Icon(swState.isRunning ? Icons.pause : Icons.play_arrow),
-                    label: Text(swState.isRunning ? '일시정지' : '시작'),
-                    onPressed: _busy
-                        ? null
-                        : () async {
-                            _busy = true;
-                            try {
-                              if (swState.isRunning) {
-                                await _pause();
-                              } else {
-                                await _start(); // active 체크→ 이어/새로 로직 포함
-                              }
-                              setState(() {}); // 아이콘/라벨 갱신
-                            } finally {
-                              _busy = false;
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: Icon(
+                    swState.isRunning ? Icons.pause : Icons.play_arrow,
+                  ),
+                  label: Text(swState.isRunning ? '일시정지' : '시작'),
+                  onPressed: _busy
+                      ? null
+                      : () async {
+                          _busy = true;
+                          try {
+                            if (swState.isRunning) {
+                              await _pause();
+                            } else {
+                              await _start(); // active 체크→ 이어/새로 로직 포함
                             }
-                          },
-                  ),
+                            setState(() {}); // 아이콘/라벨 갱신
+                          } finally {
+                            _busy = false;
+                          }
+                        },
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.flag),
-                    label: const Text('랩'),
-                    onPressed: _saveLapFlow,
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.flag),
+                  label: const Text('랩'),
+                  onPressed: _saveLapFlow,
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  tooltip: '세션 초기화',
-                  onPressed: _resetSession,
-                  icon: const Icon(Icons.refresh),
-                ),
-              ],
-            )),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                tooltip: '세션 초기화',
+                onPressed: _resetSession,
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
+        ),
         // 종료된 세션 리스트
         Expanded(
           child: StreamBuilder<List<WorkSession>>(
@@ -537,9 +560,12 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
 
                   // 표시용 값들
                   final lapNo = i + 1;
-                  final segment = Duration(seconds: s.elapsedMs.toSec()); // 세션 소요시간
-                  final started =
-                      DateTime.fromMillisecondsSinceEpoch(s.startedAt);
+                  final segment = Duration(
+                    seconds: s.elapsedMs.toSec(),
+                  ); // 세션 소요시간
+                  final started = DateTime.fromMillisecondsSinceEpoch(
+                    s.startedAt,
+                  );
                   final stopped = (s.stoppedAt != null)
                       ? DateTime.fromMillisecondsSinceEpoch(s.stoppedAt!)
                       : null;
@@ -548,13 +574,15 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
                     dense: true,
                     leading: Text('Lap $lapNo'),
                     title: Text(fmt(segment)), // hh:mm:ss
-                    subtitle: Text([
-                      if ((s.label ?? '').isNotEmpty) '라벨: ${s.label}',
-                      if (stopped != null)
-                        '기간: ${ymdHm(started)} ~ ${ymdHm(stopped)}',
-                      '누적: ${fmt(segment)}',
-                      if ((s.memo ?? '').isNotEmpty) '메모: ${s.memo}',
-                    ].join(' • ')),
+                    subtitle: Text(
+                      [
+                        if ((s.label ?? '').isNotEmpty) '라벨: ${s.label}',
+                        if (stopped != null)
+                          '기간: ${ymdHm(started)} ~ ${ymdHm(stopped)}',
+                        '누적: ${fmt(segment)}',
+                        if ((s.memo ?? '').isNotEmpty) '메모: ${s.memo}',
+                      ].join(' • '),
+                    ),
                   );
                 },
               );
@@ -589,7 +617,12 @@ class _TimerCard extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.6),
+          color: Color.fromRGBO(
+            theme.colorScheme.outlineVariant.red,
+            theme.colorScheme.outlineVariant.green,
+            theme.colorScheme.outlineVariant.blue,
+            0.6,
+          ),
         ),
         boxShadow: kElevationToShadow[1],
       ),
@@ -599,11 +632,7 @@ class _TimerCard extends StatelessWidget {
           // 라벨 (상단 중앙)
           Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 12),
-            child: LabelPill(
-              text: labelText,
-              onTap: onTapLabel,
-              isIOS: isIOS,
-            ),
+            child: LabelPill(text: labelText, onTap: onTapLabel, isIOS: isIOS),
           ),
           // 큰 시간
           Expanded(
@@ -613,7 +642,9 @@ class _TimerCard extends StatelessWidget {
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontSize: 56,
                   fontWeight: FontWeight.w600,
-                  fontFeatures: const [FontFeature.tabularFigures()], // ← 숫자 폭 고정
+                  fontFeatures: const [
+                    FontFeature.tabularFigures(),
+                  ], // ← 숫자 폭 고정
                 ),
               ),
             ),
@@ -622,19 +653,4 @@ class _TimerCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Lap {
-  final int index;
-  final Duration timeFromStart;
-  final Duration segment;
-  final String label;
-  final String? note;
-  _Lap({
-    required this.index,
-    required this.timeFromStart,
-    required this.segment,
-    required this.label,
-    this.note,
-  });
 }

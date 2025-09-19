@@ -34,8 +34,11 @@ class LabelPill extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(CupertinoIcons.chevron_down,
-                  size: 16, color: CupertinoColors.black),
+              const Icon(
+                CupertinoIcons.chevron_down,
+                size: 16,
+                color: CupertinoColors.black,
+              ),
             ],
           ),
         ),
@@ -48,12 +51,22 @@ class LabelPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
             color: Color.alphaBlend(
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+              Color.fromRGBO(
+                Theme.of(context).colorScheme.onSurface.red,
+                Theme.of(context).colorScheme.onSurface.green,
+                Theme.of(context).colorScheme.onSurface.blue,
+                0.06,
+              ),
               Theme.of(context).colorScheme.surface,
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+              color: Color.fromRGBO(
+                Theme.of(context).colorScheme.outlineVariant.red,
+                Theme.of(context).colorScheme.outlineVariant.green,
+                Theme.of(context).colorScheme.outlineVariant.blue,
+                0.4,
+              ),
             ),
           ),
           child: Row(
@@ -62,9 +75,9 @@ class LabelPill extends StatelessWidget {
               Text(
                 text,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(width: 6),
               const Icon(Icons.expand_more, size: 18),
