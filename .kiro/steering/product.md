@@ -1,22 +1,22 @@
-# Product Overview
+# 제품 개요
 
-Yarnie is a Flutter-based project management and time tracking application designed for crafting projects, particularly knitting and yarn work.
+Yarnie는 수공예 프로젝트, 특히 뜨개질과 실 작업을 위해 설계된 Flutter 기반의 프로젝트 관리 및 시간 추적 애플리케이션입니다.
 
-## Core Features
+## 핵심 기능
 
-- **Project Management**: Create and manage crafting projects with details like category, needle type/size, lot numbers, and memos
-- **Time Tracking**: Start, pause, resume, and stop work sessions for projects with detailed elapsed time tracking
-- **Session History**: View completed work sessions with labels and notes
-- **Multi-platform**: Supports Android, iOS, macOS, Linux, Windows, and Web
+- **프로젝트 관리**: 카테고리, 바늘 종류/크기, 로트 번호, 메모 등의 세부 정보와 함께 수공예 프로젝트를 생성하고 관리
+- **시간 추적**: 프로젝트의 작업 세션을 시작, 일시정지, 재개, 중지하며 상세한 경과 시간 추적
+- **세션 기록**: 라벨과 노트가 포함된 완료된 작업 세션 조회
+- **멀티 플랫폼**: Android, iOS, macOS, Linux, Windows, Web 지원
 
-## Key Entities
+## 주요 엔티티
 
-- **Projects**: Main crafting projects with metadata (name, category, needle info, materials)
-- **Work Sessions**: Time tracking sessions linked to projects with status management (running, paused, stopped)
+- **프로젝트(Projects)**: 메타데이터(이름, 카테고리, 바늘 정보, 재료)가 포함된 주요 수공예 프로젝트
+- **작업 세션(Work Sessions)**: 프로젝트에 연결된 시간 추적 세션으로 상태 관리(실행 중, 일시정지, 중지) 포함
 
-## User Interface
+## 사용자 인터페이스
 
-- Bottom navigation with three main sections: Home, Projects, and My
-- Material Design 3 with deep purple color scheme
-- Korean language interface
-- Responsive design with proper safe area handling
+- 홈, 프로젝트, 마이 세 개의 주요 섹션이 있는 하단 네비게이션
+- 딥 퍼플 색상 테마의 Material Design 3
+- 한국어 인터페이스
+- 적절한 안전 영역 처리가 포함된 반응형 디자인
