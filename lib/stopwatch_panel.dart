@@ -182,14 +182,10 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
         backgroundColor: CupertinoColors.systemBackground,
         builder: (ctx) {
           final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
-          return SafeArea(
-            top: false,
-            child: DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 14,
-                color: CupertinoColors.label, // ← 기본 라벨 컬러 강제
-                decoration: TextDecoration.none, // ← 밑줄 제거
-              ),
+          return Material(
+            type: MaterialType.transparency,
+            child: SafeArea(
+              top: false,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
                 child: Column(

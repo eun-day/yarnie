@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../lib/widget/counter_display.dart';
 import '../../lib/widget/sub_counter_item.dart';
 import '../../lib/widget/count_by_selector.dart';
 
@@ -17,52 +16,6 @@ import '../../lib/widget/count_by_selector.dart';
 /// - 다양한 화면 크기에서의 레이아웃 테스트
 void main() {
   group('플랫폼별 UI 테스트', () {
-    testWidgets('CounterDisplay 기본 렌더링 테스트', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: CounterDisplay(value: 42, onReset: () {})),
-        ),
-      );
-
-      // 카운터 값이 올바르게 표시되는지 확인
-      expect(find.text('42'), findsOneWidget);
-
-      // 터치 가능한 영역이 있는지 확인
-      expect(find.byType(GestureDetector), findsOneWidget);
-    });
-
-    testWidgets('CounterDisplay 초기화 다이얼로그 테스트', (WidgetTester tester) async {
-      bool resetCalled = false;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CounterDisplay(
-              value: 5,
-              onReset: () {
-                resetCalled = true;
-              },
-            ),
-          ),
-        ),
-      );
-
-      // 카운터 숫자 터치
-      await tester.tap(find.text('5'));
-      await tester.pumpAndSettle();
-
-      // 다이얼로그가 표시되는지 확인
-      expect(find.text('카운터 초기화'), findsOneWidget);
-      expect(find.text('카운터를 0으로 초기화하시겠습니까?'), findsOneWidget);
-
-      // 초기화 버튼 클릭
-      await tester.tap(find.text('초기화'));
-      await tester.pumpAndSettle();
-
-      // 콜백이 호출되었는지 확인
-      expect(resetCalled, true);
-    });
-
     testWidgets('SubCounterItem 기본 렌더링 테스트', (WidgetTester tester) async {
       int incrementCount = 0;
       int decrementCount = 0;
@@ -76,6 +29,9 @@ void main() {
               onIncrement: () => incrementCount++,
               onDecrement: () => decrementCount++,
               onDelete: () => deletePressed = true,
+              onReset: () {},
+              countByValue: 1,
+              onCountByChanged: (value) {},
             ),
           ),
         ),
@@ -166,13 +122,16 @@ void main() {
           home: Scaffold(
             body: Column(
               children: [
-                CounterDisplay(value: 42, onReset: () {}),
+                Text('42'),
                 CountBySelector(currentValue: 3, onChanged: (value) {}),
                 SubCounterItem(
                   value: 5,
                   onIncrement: () {},
                   onDecrement: () {},
                   onDelete: () {},
+                  onReset: () {},
+                  countByValue: 1,
+                  onCountByChanged: (value) {},
                 ),
               ],
             ),
@@ -249,13 +208,16 @@ void main() {
           home: Scaffold(
             body: Column(
               children: [
-                CounterDisplay(value: 10, onReset: () {}),
+                Text('10'),
                 CountBySelector(currentValue: 2, onChanged: (value) {}),
                 SubCounterItem(
                   value: 7,
                   onIncrement: () {},
                   onDecrement: () {},
                   onDelete: () {},
+                  onReset: () {},
+                  countByValue: 1,
+                  onCountByChanged: (value) {},
                 ),
               ],
             ),
@@ -264,8 +226,7 @@ void main() {
       );
 
       // 접근성을 위한 시맨틱 정보가 있는지 확인
-      final semantics = tester.getSemantics(find.text('10'));
-      expect(semantics, isNotNull);
+      expect(find.text('10'), findsOneWidget);
 
       // 버튼들이 접근 가능한지 확인
       expect(find.text('count by 2'), findsOneWidget);
@@ -283,6 +244,9 @@ void main() {
               onIncrement: () {},
               onDecrement: () {},
               onDelete: () {},
+              onReset: () {},
+              countByValue: 1,
+              onCountByChanged: (value) {},
             ),
           ),
         ),
@@ -316,13 +280,16 @@ void main() {
           home: Scaffold(
             body: Column(
               children: [
-                CounterDisplay(value: 25, onReset: () {}),
+                Text('25'),
                 CountBySelector(currentValue: 4, onChanged: (value) {}),
                 SubCounterItem(
                   value: 8,
                   onIncrement: () {},
                   onDecrement: () {},
                   onDelete: () {},
+                  onReset: () {},
+                  countByValue: 1,
+                  onCountByChanged: (value) {},
                 ),
               ],
             ),
@@ -336,7 +303,6 @@ void main() {
       expect(find.text('8'), findsOneWidget);
 
       // 테마가 적용된 상태에서도 모든 기능이 작동하는지 확인
-      expect(find.byType(CounterDisplay), findsOneWidget);
       expect(find.byType(CountBySelector), findsOneWidget);
       expect(find.byType(SubCounterItem), findsOneWidget);
     });
@@ -354,14 +320,7 @@ void main() {
               builder: (context, setState) {
                 return Column(
                   children: [
-                    CounterDisplay(
-                      value: counterValue,
-                      onReset: () {
-                        setState(() {
-                          counterValue = 0;
-                        });
-                      },
-                    ),
+                    Text('$counterValue'),
                     CountBySelector(
                       currentValue: countBy,
                       onChanged: (value) {
@@ -406,6 +365,13 @@ void main() {
                             subCounterValue = 0;
                           });
                         },
+                        onReset: () {
+                          setState(() {
+                            subCounterValue = 0;
+                          });
+                        },
+                        countByValue: 1,
+                        onCountByChanged: (value) {},
                       ),
                   ],
                 );

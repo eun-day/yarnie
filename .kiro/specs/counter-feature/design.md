@@ -16,7 +16,6 @@ lib/
 ├── model/
 │   └── counter_data.dart (신규)
 ├── widget/
-│   ├── counter_display.dart (신규)
 │   ├── sub_counter_item.dart (신규)
 │   └── count_by_selector.dart (신규)
 └── project_detail_screen.dart (수정)
@@ -80,10 +79,7 @@ class CounterData {
 
 ### 3. UI 컴포넌트들
 
-#### CounterDisplay (lib/widget/counter_display.dart)
-- 메인 카운터 숫자 표시
-- 터치 시 초기화 확인 다이얼로그
-- 플랫폼별 스타일링
+
 
 #### SubCounterItem (lib/widget/sub_counter_item.dart)
 - 서브 카운터 UI (1개만)
@@ -100,17 +96,24 @@ class CounterData {
 
 **기존 코드 대체**: 현재의 간단한 카운터를 완전히 교체
 
+**레이아웃 구조** (위에서 아래 순서):
+1. 스톱워치 연동 표시
+2. 메인 카운터 영역 (스택 쌓기)
+   - +/- 버튼 영역 (가로세로 비율 1:1.5, 화면 너비 반반)
+   - Count by 버튼 (오른쪽 상단)
+   - 메인 카운터 숫자 (크게, 중앙정렬)
+3. "Add SubCounter" 버튼 (중앙정렬)
+4. 서브 카운터 (1개만, 있을 때만 표시)
+   - 서브 카운터 "- [ 숫자 ] +" 형태
+   - 서브 카운터용 count by 설정 버튼
+
 ```dart
 class _CounterView extends ConsumerStatefulWidget {
-  // 스톱워치 연동 표시
-  // 카운터 추가 버튼
-  // 메인 카운터 영역
-  //   - 메인 카운터 숫자 표시
-  //   - 메인 카운터용 count by 설정 버튼
-  // +/- 버튼 영역 (메인 카운터용)
-  // 서브 카운터 (1개만, 있을 때만 표시)
-  //   - 서브 카운터 "- [ 숫자 ] +" 형태
-  //   - 서브 카운터용 count by 설정 버튼
+  // 레이아웃: Column
+  //   - 스톱워치 연동 표시
+  //   - Stack (+/- 버튼들 + 메인 카운터 + count by 버튼)
+  //   - "Add SubCounter" 버튼 (중앙정렬)
+  //   - 서브 카운터 영역 (조건부)
 }
 ```
 
