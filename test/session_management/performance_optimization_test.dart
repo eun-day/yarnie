@@ -3,7 +3,7 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
 
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// 성능 프로파일링 및 최적화 검증 테스트
 void main() {

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
 import 'package:yarnie/providers/stopwatch_provider.dart';
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('7. 에러 처리 및 예외 상황 테스트', () {

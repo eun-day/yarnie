@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
 import 'package:yarnie/common/time_helper.dart';
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('Session Lifecycle Tests', () {

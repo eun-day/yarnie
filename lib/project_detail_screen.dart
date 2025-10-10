@@ -10,7 +10,6 @@ import 'package:yarnie/providers/stopwatch_provider.dart';
 import 'package:yarnie/providers/counter_provider.dart';
 import 'package:yarnie/stopwatch_panel.dart';
 import 'package:yarnie/widget/project_info_section.dart';
-import 'package:yarnie/widget/counter_display.dart';
 import 'package:yarnie/widget/count_by_selector.dart';
 import 'package:yarnie/widget/sub_counter_item.dart';
 
@@ -135,7 +134,10 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
                   key: const ValueKey('stopwatch'),
                   projectId: widget.projectId,
                 ),
-                const _CounterView(key: ValueKey('counter')),
+                _CounterView(
+                  key: const ValueKey('counter'),
+                  projectId: widget.projectId,
+                ),
               ],
             ),
           ),
@@ -158,7 +160,7 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
             child: TabBarView(
               children: [
                 StopwatchPanel(projectId: widget.projectId),
-                const _CounterView(),
+                _CounterView(projectId: widget.projectId),
               ],
             ),
           ),
@@ -180,7 +182,9 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
 /// - 데이터 자동 저장/복원 (요구사항 6, 7)
 /// - 플랫폼별 네이티브 UI (요구사항 8)
 class _CounterView extends ConsumerStatefulWidget {
-  const _CounterView({super.key});
+  final int projectId;
+
+  const _CounterView({super.key, required this.projectId});
 
   @override
   ConsumerState<_CounterView> createState() => _CounterViewState();
@@ -189,6 +193,15 @@ class _CounterView extends ConsumerStatefulWidget {
 class _CounterViewState extends ConsumerState<_CounterView> {
   // 중앙 원(스택) 중심 좌표 계산용
   final GlobalKey _puckStackKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 해당 프로젝트의 카운터 데이터 로드
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(counterProvider.notifier).initializeForProject(widget.projectId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

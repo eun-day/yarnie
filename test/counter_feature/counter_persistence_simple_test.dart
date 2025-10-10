@@ -1,105 +1,145 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../lib/providers/counter_provider.dart';
+import 'package:drift/drift.dart';
+import 'package:yarnie/db/app_db.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('카운터 데이터 지속성 간단 테스트', () {
+    late AppDb db;
+    late int projectId;
+
     setUp(() async {
-      SharedPreferences.setMockInitialValues({});
+      db = createTestDb();
+      projectId = await createTestProject(db);
     });
 
-    test('기본값 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      final state = container.read(counterProvider);
-
-      expect(state.mainCounter, 0);
-      expect(state.mainCountBy, 1);
-      expect(state.hasSubCounter, false);
-      expect(state.subCounter, null);
-      expect(state.subCountBy, 1);
+    tearDown(() async {
+      await db.close();
     });
 
-    test('메인 카운터 증감 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test('기본값 테스트', () async {
+      await db
+          .into(db.projectCounters)
+          .insert(
+            ProjectCountersCompanion.insert(
+              projectId: Value(projectId),
+              mainCounter: Value(0),
+              mainCountBy: Value(1),
+              subCounter: Value(null),
+              subCountBy: Value(1),
+              hasSubCounter: Value(false),
+            ),
+          );
 
-      final notifier = container.read(counterProvider.notifier);
+      final counterData = await (db.select(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(projectId))).getSingleOrNull();
 
-      // 증가 테스트
-      notifier.incrementMain();
-      final state1 = container.read(counterProvider);
-      expect(state1.mainCounter, 1);
-
-      // 감소 테스트
-      notifier.decrementMain();
-      final state2 = container.read(counterProvider);
-      expect(state2.mainCounter, 0);
+      expect(counterData, isA<ProjectCounter>());
+      expect(counterData!.projectId, projectId);
+      expect(counterData.mainCounter, 0);
+      expect(counterData.mainCountBy, 1);
+      expect(counterData.hasSubCounter, false);
+      expect(counterData.subCounter, null);
+      expect(counterData.subCountBy, 1);
     });
 
-    test('서브 카운터 추가/삭제 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test('메인 카운터 증감 테스트', () async {
+      await db
+          .into(db.projectCounters)
+          .insert(
+            ProjectCountersCompanion.insert(
+              projectId: Value(projectId),
+              mainCounter: Value(0),
+              mainCountBy: Value(1),
+              subCounter: Value(null),
+              subCountBy: Value(1),
+              hasSubCounter: Value(false),
+            ),
+          );
 
-      final notifier = container.read(counterProvider.notifier);
+      await (db.update(db.projectCounters)
+            ..where((t) => t.projectId.equals(projectId)))
+          .write(ProjectCountersCompanion(mainCounter: Value(1)));
 
-      // 서브 카운터 추가
-      notifier.addSubCounter();
-      final state1 = container.read(counterProvider);
-      expect(state1.hasSubCounter, true);
-      expect(state1.subCounter, 0);
+      final counterData = await (db.select(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(projectId))).getSingleOrNull();
 
-      // 서브 카운터 삭제
-      notifier.removeSubCounter();
-      final state2 = container.read(counterProvider);
-      expect(state2.hasSubCounter, false);
-      expect(state2.subCounter, null);
+      expect(counterData!.mainCounter, 1);
     });
 
-    test('count by 설정 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test('서브 카운터 추가/삭제 테스트', () async {
+      await db
+          .into(db.projectCounters)
+          .insert(
+            ProjectCountersCompanion.insert(
+              projectId: Value(projectId),
+              mainCounter: Value(0),
+              mainCountBy: Value(1),
+              subCounter: Value(null),
+              subCountBy: Value(1),
+              hasSubCounter: Value(false),
+            ),
+          );
 
-      final notifier = container.read(counterProvider.notifier);
+      await (db.update(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(projectId))).write(
+        ProjectCountersCompanion(
+          hasSubCounter: Value(true),
+          subCounter: Value(0),
+        ),
+      );
 
-      // 메인 카운터 count by 설정
-      notifier.setMainCountBy(3);
-      final state1 = container.read(counterProvider);
-      expect(state1.mainCountBy, 3);
+      final counterData1 = await (db.select(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(projectId))).getSingleOrNull();
 
-      // 서브 카운터 count by 설정
-      notifier.addSubCounter();
-      notifier.setSubCountBy(2);
-      final state2 = container.read(counterProvider);
-      expect(state2.subCountBy, 2);
+      expect(counterData1!.hasSubCounter, true);
+      expect(counterData1.subCounter, 0);
     });
 
-    test('SharedPreferences 저장 테스트', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test('프로젝트별 데이터 격리 테스트', () async {
+      const project1Id = 1;
+      const project2Id = 2;
 
-      final notifier = container.read(counterProvider.notifier);
+      await db
+          .into(db.projectCounters)
+          .insert(
+            ProjectCountersCompanion.insert(
+              projectId: Value(project1Id),
+              mainCounter: Value(3),
+              mainCountBy: Value(3),
+              subCounter: Value(null),
+              subCountBy: Value(1),
+              hasSubCounter: Value(false),
+            ),
+          );
 
-      // 값 설정
-      notifier.setMainCountBy(5);
-      notifier.incrementMain(); // 5
-      notifier.addSubCounter();
-      notifier.setSubCountBy(2);
-      notifier.incrementSub(); // 2
+      await db
+          .into(db.projectCounters)
+          .insert(
+            ProjectCountersCompanion.insert(
+              projectId: Value(project2Id),
+              mainCounter: Value(2),
+              mainCountBy: Value(2),
+              subCounter: Value(null),
+              subCountBy: Value(1),
+              hasSubCounter: Value(false),
+            ),
+          );
 
-      // 저장 대기
-      await Future.delayed(const Duration(milliseconds: 100));
+      final project1Data = await (db.select(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(project1Id))).getSingleOrNull();
 
-      // SharedPreferences에서 직접 확인
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getInt('counter_main_value'), 5);
-      expect(prefs.getInt('counter_main_count_by'), 5);
-      expect(prefs.getBool('counter_has_sub'), true);
-      expect(prefs.getInt('counter_sub_value'), 2);
-      expect(prefs.getInt('counter_sub_count_by'), 2);
+      final project2Data = await (db.select(
+        db.projectCounters,
+      )..where((t) => t.projectId.equals(project2Id))).getSingleOrNull();
+
+      expect(project1Data!.mainCounter, 3);
+      expect(project2Data!.mainCounter, 2);
     });
   });
 }

@@ -3,6 +3,8 @@ import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/db/di.dart';
+import 'package:yarnie/providers/counter_provider.dart';
 
 /// 테스트용 데이터베이스 연결 생성
 DatabaseConnection createTestConnection() {
@@ -101,3 +103,71 @@ void setupTestGroup(String description, Function() body) {
     body();
   });
 }
+
+// ============================================================================
+// 카운터 테스트 헬퍼들
+// ============================================================================
+
+/// 카운터 테스트용 헬퍼 클래스
+class CounterTestHelpers {
+  /// 테스트용 카운터 데이터 생성
+  static Future<void> createTestCounterData(
+    AppDb db,
+    int projectId, {
+    int mainCounter = 0,
+    int mainCountBy = 1,
+    bool hasSubCounter = false,
+    int? subCounter,
+    int subCountBy = 1,
+  }) async {
+    await db.upsertProjectCounter(
+      projectId: projectId,
+      mainCounter: mainCounter,
+      mainCountBy: mainCountBy,
+      hasSubCounter: hasSubCounter,
+      subCounter: subCounter,
+      subCountBy: subCountBy,
+    );
+  }
+
+  /// 카운터 상태 검증 헬퍼
+  static void expectCounterState(
+    dynamic actualState, {
+    required int mainCounter,
+    required int mainCountBy,
+    required bool hasSubCounter,
+    int? subCounter,
+    int? subCountBy,
+  }) {
+    expect(actualState.mainCounter, mainCounter);
+    expect(actualState.mainCountBy, mainCountBy);
+    expect(actualState.hasSubCounter, hasSubCounter);
+    if (hasSubCounter) {
+      expect(actualState.subCounter, subCounter);
+      expect(actualState.subCountBy, subCountBy);
+    }
+  }
+
+  /// 테스트용 카운터 프로바이더 컨테이너 생성
+  static ProviderContainer createCounterTestContainer(AppDb db) {
+    return ProviderContainer(overrides: [appDbProvider.overrideWithValue(db)]);
+  }
+}
+
+/// 테스트용 카운터 프로바이더 (저장 횟수 추적 가능)
+class TestCounterNotifier extends CounterNotifier {
+  int saveCallCount = 0;
+
+  @override
+  Future<void> saveToDatabase() async {
+    saveCallCount++;
+    return super.saveToDatabase();
+  }
+}
+
+/// 테스트용 프로바이더
+final testCounterProvider = NotifierProvider<TestCounterNotifier, CounterState>(
+  () {
+    return TestCounterNotifier();
+  },
+);

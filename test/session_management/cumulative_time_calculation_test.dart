@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yarnie/db/app_db.dart';
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('4. 누적 시간 계산 정확성 테스트', () {

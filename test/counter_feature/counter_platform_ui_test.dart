@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../lib/widget/sub_counter_item.dart';
-import '../../lib/widget/count_by_selector.dart';
+import 'package:yarnie/widget/sub_counter_item.dart';
+import 'package:yarnie/widget/count_by_selector.dart';
 
 /// 플랫폼별 UI 테스트
 ///
@@ -62,8 +62,7 @@ void main() {
     });
 
     testWidgets('CountBySelector 기본 렌더링 테스트', (WidgetTester tester) async {
-      int changedValue = 0;
-
+      int changedValue;
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -83,8 +82,7 @@ void main() {
     });
 
     testWidgets('CountBySelector 피커 테스트', (WidgetTester tester) async {
-      int changedValue = 0;
-
+      int changedValue;
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

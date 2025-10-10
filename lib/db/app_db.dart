@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/model/session_status.dart';
+import 'package:yarnie/model/counter_data.dart';
 import 'connection.dart';
 
 part 'app_db.g.dart'; // <- 코드 생성 파일 연결
@@ -36,7 +37,20 @@ class WorkSessions extends Table {
   )();
 }
 
-@DriftDatabase(tables: [Projects, WorkSessions])
+class ProjectCounters extends Table {
+  IntColumn get projectId => integer()(); // FK: Projects.id
+  IntColumn get mainCounter => integer().withDefault(const Constant(0))();
+  IntColumn get mainCountBy => integer().withDefault(const Constant(1))();
+  IntColumn get subCounter => integer().nullable()();
+  IntColumn get subCountBy => integer().withDefault(const Constant(1))();
+  BoolColumn get hasSubCounter =>
+      boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {projectId};
+}
+
+@DriftDatabase(tables: [Projects, WorkSessions, ProjectCounters])
 class AppDb extends _$AppDb {
   AppDb() : super(openConnection());
 
@@ -330,6 +344,50 @@ class AppDb extends _$AppDb {
       const [SessionStatus.stopped],
       limit: limit,
       offset: offset,
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Counter 관련 메서드들
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /// 프로젝트의 카운터 데이터 조회
+  Future<ProjectCounter?> getProjectCounter(int projectId) {
+    return (select(
+      projectCounters,
+    )..where((t) => t.projectId.equals(projectId))).getSingleOrNull();
+  }
+
+  /// 프로젝트의 카운터 데이터 생성 또는 업데이트
+  Future<void> upsertProjectCounter({
+    required int projectId,
+    required int mainCounter,
+    required int mainCountBy,
+    int? subCounter,
+    required int subCountBy,
+    required bool hasSubCounter,
+  }) async {
+    await into(projectCounters).insertOnConflictUpdate(
+      ProjectCountersCompanion.insert(
+        projectId: Value(projectId),
+        mainCounter: Value(mainCounter),
+        mainCountBy: Value(mainCountBy),
+        subCounter: Value(subCounter),
+        subCountBy: Value(subCountBy),
+        hasSubCounter: Value(hasSubCounter),
+      ),
+    );
+  }
+
+  /// 카운터 데이터를 DB에 저장 (디바운싱용)
+  Future<void> saveProjectCounter(CounterData counterData) async {
+    await upsertProjectCounter(
+      projectId: counterData.projectId,
+      mainCounter: counterData.mainCounter,
+      mainCountBy: counterData.mainCountBy,
+      subCounter: counterData.subCounter,
+      subCountBy: counterData.subCountBy,
+      hasSubCounter: counterData.hasSubCounter,
     );
   }
 }

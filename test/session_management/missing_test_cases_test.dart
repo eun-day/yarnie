@@ -3,7 +3,7 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
 
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// 누락된 테스트 케이스 보완
 void main() {

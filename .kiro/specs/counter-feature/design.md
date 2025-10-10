@@ -24,7 +24,7 @@ lib/
 ### 상태 관리 패턴
 
 - **Riverpod Notifier 패턴**: 기존 `StopwatchProvider`와 동일한 패턴 사용
-- **SharedPreferences**: 카운터 데이터 지속성을 위한 로컬 저장소
+- **Drift Database**: 카운터 데이터 지속성을 위한 로컬 데이터베이스
 - **플랫폼별 UI 분기**: `Platform.isIOS`를 활용한 조건부 렌더링
 
 ## 컴포넌트 및 인터페이스
@@ -35,6 +35,7 @@ lib/
 
 ```dart
 class CounterState {
+  final int projectId; // 현재 프로젝트 ID
   final int mainCounter;
   final int mainCountBy;
   final int? subCounter; // 서브 카운터 값 (null이면 없음)
@@ -43,6 +44,9 @@ class CounterState {
 }
 
 class CounterNotifier extends Notifier<CounterState> {
+  // 초기화
+  void initializeForProject(int projectId);
+  
   // 메인 카운터 조작
   void incrementMain();
   void decrementMain();
@@ -58,17 +62,32 @@ class CounterNotifier extends Notifier<CounterState> {
   void setSubCountBy(int value);
   
   // 데이터 지속성
-  Future<void> _saveToPrefs();
-  Future<void> _loadFromPrefs();
+  Future<void> _saveToDatabase();
+  Future<void> _loadFromDatabase(int projectId);
 }
 ```
 
-### 2. CounterData 모델 (lib/model/counter_data.dart)
+### 2. CounterData 모델 및 DB 테이블
 
-**역할**: 카운터 데이터 구조 정의
+**역할**: 카운터 데이터 구조 정의 및 데이터베이스 테이블
 
 ```dart
+// Drift 테이블 정의 (lib/db/app_db.dart에 추가)
+class ProjectCounters extends Table {
+  IntColumn get projectId => integer()();
+  IntColumn get mainCounter => integer().withDefault(const Constant(0))();
+  IntColumn get mainCountBy => integer().withDefault(const Constant(1))();
+  IntColumn get subCounter => integer().nullable()();
+  IntColumn get subCountBy => integer().withDefault(const Constant(1))();
+  BoolColumn get hasSubCounter => boolean().withDefault(const Constant(false))();
+  
+  @override
+  Set<Column> get primaryKey => {projectId};
+}
+
+// 데이터 모델 클래스 (lib/model/counter_data.dart)
 class CounterData {
+  final int projectId;
   final int mainCounter;
   final int mainCountBy;
   final int? subCounter; // 서브 카운터 값 (null이면 없음)
@@ -78,8 +97,6 @@ class CounterData {
 ```
 
 ### 3. UI 컴포넌트들
-
-
 
 #### SubCounterItem (lib/widget/sub_counter_item.dart)
 - 서브 카운터 UI (1개만)
@@ -92,12 +109,10 @@ class CounterData {
 - 휠피커 팝업
 - 플랫폼별 피커 스타일
 
-### 4. 수정된 _CounterView (project_detail_screen.dart)
-
-**기존 코드 대체**: 현재의 간단한 카운터를 완전히 교체
+### 4. _CounterView (project_detail_screen.dart)
 
 **레이아웃 구조** (위에서 아래 순서):
-1. 스톱워치 연동 표시
+1. 스톱워치 표시 (항상 표시)
 2. 메인 카운터 영역 (스택 쌓기)
    - +/- 버튼 영역 (가로세로 비율 1:1.5, 화면 너비 반반)
    - Count by 버튼 (오른쪽 상단)
@@ -110,7 +125,7 @@ class CounterData {
 ```dart
 class _CounterView extends ConsumerStatefulWidget {
   // 레이아웃: Column
-  //   - 스톱워치 연동 표시
+  //   - 스톱워치 표시 (항상 표시)
   //   - Stack (+/- 버튼들 + 메인 카운터 + count by 버튼)
   //   - "Add SubCounter" 버튼 (중앙정렬)
   //   - 서브 카운터 영역 (조건부)
@@ -119,34 +134,32 @@ class _CounterView extends ConsumerStatefulWidget {
 
 ## 데이터 모델
 
-### SharedPreferences 키 구조
+### 데이터베이스 테이블 구조
 
-```dart
-// 메인 카운터
-'counter_main_value': int
-'counter_main_count_by': int
-
-// 서브 카운터
-'counter_has_sub': bool // 서브 카운터 존재 여부
-'counter_sub_value': int // 서브 카운터 값 (hasSubCounter가 true일 때만 유효)
-'counter_sub_count_by': int // 서브 카운터의 count by 값
-```
+**ProjectCounters 테이블**:
+- `projectId` (INT, PRIMARY KEY): 프로젝트 ID
+- `mainCounter` (INT, DEFAULT 0): 메인 카운터 값
+- `mainCountBy` (INT, DEFAULT 1): 메인 카운터 증감 단위
+- `subCounter` (INT, NULLABLE): 서브 카운터 값 (null이면 서브 카운터 없음)
+- `subCountBy` (INT, DEFAULT 1): 서브 카운터 증감 단위
+- `hasSubCounter` (BOOLEAN, DEFAULT false): 서브 카운터 존재 여부
 
 ### 데이터 흐름
 
-1. **초기화**: 앱 시작 시 SharedPreferences에서 데이터 로드
-2. **상태 변경**: 사용자 액션 → Provider 상태 업데이트 → SharedPreferences 저장
+1. **초기화**: 프로젝트 진입 시 해당 프로젝트 ID로 DB에서 카운터 데이터 로드
+2. **상태 변경**: 사용자 액션 → Provider 상태 업데이트 → DB에 저장
 3. **UI 업데이트**: Provider 상태 변경 → Consumer 위젯 리빌드
+4. **프로젝트별 격리**: 각 프로젝트마다 독립적인 카운터 데이터 유지
 
 ## 에러 처리
 
-### SharedPreferences 에러
-- **문제**: 저장/로드 실패
+### 데이터베이스 에러
+- **문제**: DB 저장/로드 실패
 - **해결**: 기본값으로 폴백, 사용자에게 알림 없이 처리
 
-### 데이터 파싱 에러
-- **문제**: 저장된 JSON 데이터 파싱 실패
-- **해결**: 기본값으로 초기화, 손상된 데이터 삭제
+### 프로젝트 데이터 없음
+- **문제**: 새 프로젝트이거나 카운터 데이터가 없는 경우
+- **해결**: 기본값으로 새 레코드 생성
 
 ### 플랫폼별 UI 에러
 - **문제**: 특정 플랫폼에서 UI 컴포넌트 오류
@@ -156,13 +169,13 @@ class _CounterView extends ConsumerStatefulWidget {
 
 ### 단위 테스트
 - **CounterProvider**: 상태 변경 로직 테스트
-- **데이터 지속성**: SharedPreferences 저장/로드 테스트
-- **모델 클래스**: 직렬화/역직렬화 테스트
+- **데이터 지속성**: 데이터베이스 저장/로드 테스트
+- **프로젝트별 격리**: 서로 다른 프로젝트 ID로 데이터 격리 테스트
 
 ### 위젯 테스트
 - **카운터 UI**: 터치 이벤트 및 표시 테스트
 - **플랫폼별 UI**: iOS/Android 분기 테스트
-- **스톱워치 연동**: 스톱워치 상태에 따른 UI 변화 테스트
+- **스톱워치 표시**: 스톱워치 항상 표시 및 상태 변화 테스트
 
 ### 통합 테스트
 - **전체 플로우**: 카운터 생성 → 사용 → 저장 → 복원
@@ -174,13 +187,44 @@ class _CounterView extends ConsumerStatefulWidget {
 - **서브 카운터**: 최대 1개만 생성 가능
 - **상태 최적화**: 불필요한 리빌드 방지를 위한 적절한 Provider 분리
 
-### 저장 최적화
-- **배치 저장**: 연속된 변경사항을 배치로 처리
-- **디바운싱**: 빠른 연속 클릭 시 저장 요청 최적화
+### 저장 최적화 - 디바운싱 패턴
+- **즉시 UI 업데이트**: 카운터 값 변경 시 메모리 상태만 즉시 업데이트하여 UI 반응성 보장
+- **지연된 DB 저장**: 연속된 카운터 변경 시 200ms 디바운싱을 통해 DB 저장 최적화
+- **타이머 기반 저장**: `Timer`를 사용하여 마지막 변경 후 200ms 뒤에 DB 저장 실행
+- **강제 저장**: 앱 종료, 화면 전환, Provider dispose 시 즉시 저장하여 데이터 손실 방지
+
+```dart
+class CounterNotifier extends Notifier<CounterState> {
+  Timer? _saveTimer;
+  
+  void incrementMain() {
+    // 1. 즉시 메모리 상태 업데이트 (UI 반응성)
+    state = state.copyWith(mainCounter: state.mainCounter + state.mainCountBy);
+    
+    // 2. 디바운싱된 DB 저장 예약
+    _scheduleDbSave();
+  }
+  
+  void _scheduleDbSave() {
+    _saveTimer?.cancel(); // 기존 타이머 취소
+    _saveTimer = Timer(Duration(milliseconds: 200), () {
+      _saveToDatabase(); // 실제 DB 저장
+    });
+  }
+  
+  @override
+  void dispose() {
+    _saveTimer?.cancel();
+    _saveToDatabase(); // 강제 저장
+    super.dispose();
+  }
+}
+```
 
 ### UI 성능
 - **조건부 렌더링**: 서브 카운터 UI의 필요시에만 표시
 - **애니메이션**: 부드러운 카운터 값 변경 애니메이션
+- **연타 대응**: 빠른 연속 탭에도 UI 지연 없이 즉시 반응
 
 ## 플랫폼별 구현 세부사항
 
@@ -198,21 +242,19 @@ class _CounterView extends ConsumerStatefulWidget {
 
 ### 공통 로직
 - **비즈니스 로직**: 플랫폼에 관계없이 동일한 Provider 사용
-- **데이터 저장**: 모든 플랫폼에서 동일한 SharedPreferences 구조
+- **데이터 저장**: 모든 플랫폼에서 동일한 Drift 데이터베이스 구조
 - **상태 관리**: Riverpod을 통한 일관된 상태 관리
 
-## 의존성 추가
-
-### 새로운 의존성
-```yaml
-dependencies:
-  shared_preferences: ^2.2.2  # 데이터 지속성을 위해 추가 필요
-```
+## 의존성
 
 ### 기존 의존성 활용
+- `drift`: 데이터베이스 ORM (이미 프로젝트에 존재)
 - `flutter_riverpod`: 상태 관리
 - `cupertino_icons`: iOS 스타일 아이콘
 - `material_design`: Android 스타일 컴포넌트
+
+### 추가 의존성 없음
+기존 Drift 데이터베이스를 활용하므로 새로운 의존성 추가가 필요하지 않습니다.
 
 ## 마이그레이션 계획
 

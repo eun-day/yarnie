@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('세션 상태 불변 조건 및 데이터 무결성 테스트', () {

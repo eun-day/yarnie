@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
 
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 /// 전체 세션 라이프사이클 통합 테스트
 void main() {

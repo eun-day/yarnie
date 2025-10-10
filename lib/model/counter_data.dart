@@ -1,6 +1,12 @@
+import 'package:drift/drift.dart';
+import '../db/app_db.dart';
+
 /// 카운터 데이터 모델
 /// 메인 카운터와 서브 카운터의 상태를 관리하는 데이터 클래스
 class CounterData {
+  /// 프로젝트 ID
+  final int projectId;
+
   /// 메인 카운터 값
   final int mainCounter;
 
@@ -17,6 +23,7 @@ class CounterData {
   final bool hasSubCounter;
 
   const CounterData({
+    required this.projectId,
     required this.mainCounter,
     required this.mainCountBy,
     this.subCounter,
@@ -25,8 +32,9 @@ class CounterData {
   });
 
   /// 기본값으로 초기화된 CounterData 생성
-  factory CounterData.initial() {
-    return const CounterData(
+  factory CounterData.initial(int projectId) {
+    return CounterData(
+      projectId: projectId,
       mainCounter: 0,
       mainCountBy: 1,
       subCounter: null,
@@ -35,30 +43,33 @@ class CounterData {
     );
   }
 
-  /// JSON에서 CounterData 객체 생성
-  factory CounterData.fromJson(Map<String, dynamic> json) {
+  /// Drift ProjectCounter에서 CounterData 객체 생성
+  factory CounterData.fromProjectCounter(ProjectCounter counter) {
     return CounterData(
-      mainCounter: json['mainCounter'] as int? ?? 0,
-      mainCountBy: json['mainCountBy'] as int? ?? 1,
-      subCounter: json['subCounter'] as int?,
-      subCountBy: json['subCountBy'] as int? ?? 1,
-      hasSubCounter: json['hasSubCounter'] as bool? ?? false,
+      projectId: counter.projectId,
+      mainCounter: counter.mainCounter,
+      mainCountBy: counter.mainCountBy,
+      subCounter: counter.subCounter,
+      subCountBy: counter.subCountBy,
+      hasSubCounter: counter.hasSubCounter,
     );
   }
 
-  /// CounterData 객체를 JSON으로 변환
-  Map<String, dynamic> toJson() {
-    return {
-      'mainCounter': mainCounter,
-      'mainCountBy': mainCountBy,
-      'subCounter': subCounter,
-      'subCountBy': subCountBy,
-      'hasSubCounter': hasSubCounter,
-    };
+  /// CounterData를 Drift ProjectCountersCompanion으로 변환
+  ProjectCountersCompanion toCompanion() {
+    return ProjectCountersCompanion.insert(
+      projectId: Value(projectId),
+      mainCounter: Value(mainCounter),
+      mainCountBy: Value(mainCountBy),
+      subCounter: Value(subCounter),
+      subCountBy: Value(subCountBy),
+      hasSubCounter: Value(hasSubCounter),
+    );
   }
 
   /// 새로운 값으로 복사본 생성
   CounterData copyWith({
+    int? projectId,
     int? mainCounter,
     int? mainCountBy,
     int? subCounter,
@@ -66,6 +77,7 @@ class CounterData {
     bool? hasSubCounter,
   }) {
     return CounterData(
+      projectId: projectId ?? this.projectId,
       mainCounter: mainCounter ?? this.mainCounter,
       mainCountBy: mainCountBy ?? this.mainCountBy,
       subCounter: subCounter ?? this.subCounter,
@@ -77,6 +89,7 @@ class CounterData {
   /// 서브 카운터를 제거한 복사본 생성
   CounterData removeSubCounter() {
     return CounterData(
+      projectId: projectId,
       mainCounter: mainCounter,
       mainCountBy: mainCountBy,
       subCounter: null,
@@ -88,6 +101,7 @@ class CounterData {
   /// 서브 카운터를 추가한 복사본 생성
   CounterData addSubCounter() {
     return CounterData(
+      projectId: projectId,
       mainCounter: mainCounter,
       mainCountBy: mainCountBy,
       subCounter: 0, // 새 서브 카운터는 0으로 시작
@@ -101,6 +115,7 @@ class CounterData {
     if (identical(this, other)) return true;
 
     return other is CounterData &&
+        other.projectId == projectId &&
         other.mainCounter == mainCounter &&
         other.mainCountBy == mainCountBy &&
         other.subCounter == subCounter &&
@@ -110,7 +125,8 @@ class CounterData {
 
   @override
   int get hashCode {
-    return mainCounter.hashCode ^
+    return projectId.hashCode ^
+        mainCounter.hashCode ^
         mainCountBy.hashCode ^
         subCounter.hashCode ^
         subCountBy.hashCode ^
@@ -120,6 +136,7 @@ class CounterData {
   @override
   String toString() {
     return 'CounterData('
+        'projectId: $projectId, '
         'mainCounter: $mainCounter, '
         'mainCountBy: $mainCountBy, '
         'subCounter: $subCounter, '

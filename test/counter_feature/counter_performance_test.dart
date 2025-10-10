@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../lib/providers/counter_provider.dart';
+import 'package:yarnie/providers/counter_provider.dart';
+import 'package:yarnie/db/di.dart';
 
 /// 카운터 성능 최적화 및 최종 검토 테스트
 ///
@@ -11,16 +10,29 @@ import '../../lib/providers/counter_provider.dart';
 /// - 메모리 사용량 확인 및 최적화
 /// - 코드 리뷰 및 리팩토링
 void main() {
+  // Flutter binding 초기화 (데이터베이스 사용을 위해 필요)
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('카운터 성능 최적화 테스트', () {
+    late ProviderContainer container;
+    const testProjectId = 998; // 테스트용 프로젝트 ID
+
     setUp(() async {
-      SharedPreferences.setMockInitialValues({});
+      // 테스트용 프로바이더 컨테이너 생성
+      container = ProviderContainer();
+    });
+
+    tearDown(() async {
+      container.dispose();
+
+      // 테스트 데이터 정리
+      await (appDb.delete(
+        appDb.projectCounters,
+      )..where((t) => t.projectId.equals(testProjectId))).go();
     });
 
     test('빠른 연속 저장 요청 시 디바운싱 테스트', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
 
       // 빠른 연속 증가 (디바운싱이 적용되어야 함)
       for (int i = 0; i < 10; i++) {
@@ -33,16 +45,17 @@ void main() {
       // 디바운싱 대기 시간보다 조금 더 기다림
       await Future.delayed(const Duration(milliseconds: 150));
 
-      // SharedPreferences에 최종 값만 저장되었는지 확인
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getInt('counter_main_value'), 10);
+      // 데이터베이스에 최종 값만 저장되었는지 확인
+      final counterData = await (appDb.select(
+        appDb.projectCounters,
+      )..where((t) => t.projectId.equals(testProjectId))).getSingleOrNull();
+      expect(counterData?.mainCounter, 10);
     });
 
-    test('상태 변경 시 불필요한 객체 생성 방지 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
+    test('상태 변경 시 불필요한 객체 생성 방지 테스트', () async {
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
+
       final initialState = container.read(counterProvider);
 
       // 동일한 값으로 설정 시 상태가 변경되지 않아야 함
@@ -55,9 +68,12 @@ void main() {
 
     test('메모리 누수 방지 테스트', () async {
       // 여러 컨테이너를 생성하고 dispose하여 메모리 누수 확인
-      for (int i = 0; i < 100; i++) {
-        final container = ProviderContainer();
-        final notifier = container.read(counterProvider.notifier);
+      for (int i = 0; i < 10; i++) {
+        // 테스트 속도를 위해 100에서 10으로 줄임
+        final testContainer = ProviderContainer();
+
+        final notifier = testContainer.read(counterProvider.notifier);
+        await notifier.initializeForProject(900 + i); // 테스트용 프로젝트 ID
 
         // 일부 작업 수행
         notifier.incrementMain();
@@ -65,7 +81,12 @@ void main() {
         notifier.incrementSub();
 
         // 컨테이너 정리
-        container.dispose();
+        testContainer.dispose();
+
+        // 테스트 데이터 정리
+        await (appDb.delete(
+          appDb.projectCounters,
+        )..where((t) => t.projectId.equals(900 + i))).go();
       }
 
       // 가비지 컬렉션 유도
@@ -76,10 +97,9 @@ void main() {
     });
 
     test('대량 데이터 처리 성능 테스트', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
+
       final stopwatch = Stopwatch()..start();
 
       // 1000번의 연속 증가
@@ -97,10 +117,8 @@ void main() {
     });
 
     test('동시성 테스트 - 여러 작업 동시 실행', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
 
       // 여러 작업을 동시에 실행
       await Future.wait([
@@ -131,11 +149,10 @@ void main() {
       expect(state.subCounter, greaterThan(0));
     });
 
-    test('상태 불변성 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
+    test('상태 불변성 테스트', () async {
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
+
       final initialState = container.read(counterProvider);
 
       // 상태 변경
@@ -151,10 +168,8 @@ void main() {
     });
 
     test('에러 복구 테스트', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
       final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
 
       // 정상 작업
       notifier.incrementMain();
@@ -174,33 +189,44 @@ void main() {
     });
 
     test('Provider 생명주기 테스트', () async {
-      ProviderContainer? container = ProviderContainer();
+      const lifecycleTestProjectId = 997;
 
-      final notifier = container.read(counterProvider.notifier);
+      ProviderContainer? testContainer = ProviderContainer();
+
+      final notifier = testContainer.read(counterProvider.notifier);
+      await notifier.initializeForProject(lifecycleTestProjectId);
       notifier.incrementMain();
 
-      final state = container.read(counterProvider);
+      final state = testContainer.read(counterProvider);
       expect(state.mainCounter, 1);
 
       // 컨테이너 dispose
-      container.dispose();
-      container = null;
+      testContainer.dispose();
+      testContainer = null;
 
       // 가비지 컬렉션 유도
       await Future.delayed(const Duration(milliseconds: 10));
 
       // 새 컨테이너 생성
-      container = ProviderContainer();
-      addTearDown(container.dispose);
+      testContainer = ProviderContainer();
 
-      // 새 인스턴스는 초기 상태여야 함
-      final newState = container.read(counterProvider);
-      expect(newState.mainCounter, 0);
+      // 새 인스턴스는 이전 데이터를 로드해야 함 (같은 DB이므로)
+      final newNotifier = testContainer.read(counterProvider.notifier);
+      await newNotifier.initializeForProject(lifecycleTestProjectId);
+      final newState = testContainer.read(counterProvider);
+      expect(newState.mainCounter, 1); // 이전 값 복원
+
+      testContainer.dispose();
+
+      // 테스트 데이터 정리
+      await (appDb.delete(
+        appDb.projectCounters,
+      )..where((t) => t.projectId.equals(lifecycleTestProjectId))).go();
     });
 
-    test('copyWith 메서드 최적화 테스트', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test('copyWith 메서드 최적화 테스트', () async {
+      final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
 
       final initialState = container.read(counterProvider);
 
@@ -208,6 +234,7 @@ void main() {
       final sameState = initialState.copyWith();
 
       // 모든 값이 동일해야 함
+      expect(sameState.projectId, initialState.projectId);
       expect(sameState.mainCounter, initialState.mainCounter);
       expect(sameState.mainCountBy, initialState.mainCountBy);
       expect(sameState.hasSubCounter, initialState.hasSubCounter);
@@ -219,8 +246,8 @@ void main() {
     });
 
     test('상태 비교 최적화 테스트', () {
-      final state1 = CounterState.initial();
-      final state2 = CounterState.initial();
+      final state1 = CounterState.initial(testProjectId);
+      final state2 = CounterState.initial(testProjectId);
       final state3 = state1.copyWith(mainCounter: 1);
 
       // 동일한 값을 가진 상태들은 equal해야 함

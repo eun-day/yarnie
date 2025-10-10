@@ -1,22 +1,23 @@
 # 구현 계획
 
-- [x] 1. 프로젝트 설정 및 의존성 추가
-  - pubspec.yaml에 shared_preferences 의존성 추가
-  - flutter pub get 실행하여 의존성 설치
+- [x] 1. 데이터베이스 테이블 추가
+  - lib/db/app_db.dart에 ProjectCounters 테이블 정의 추가
+  - 테이블 스키마: projectId(PK), mainCounter, mainCountBy, subCounter, subCountBy, hasSubCounter
+  - dart run build_runner build 실행하여 코드 생성
   - _요구사항: 6.1, 6.2, 6.3, 6.4_
 
 - [x] 2. 카운터 데이터 모델 생성
   - lib/model/counter_data.dart 파일 생성
-  - CounterData 클래스 구현 (mainCounter, mainCountBy, subCounter, subCountBy, hasSubCounter 필드)
-  - JSON 직렬화/역직렬화 메서드 구현 (toJson, fromJson)
+  - CounterData 클래스 구현 (projectId, mainCounter, mainCountBy, subCounter, subCountBy, hasSubCounter 필드)
+  - Drift 테이블과 연동되는 데이터 모델 구현
   - _요구사항: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3_
 
 - [x] 3. 카운터 프로바이더 구현
 - [x] 3.1 기본 카운터 상태 관리 구현
   - lib/providers/counter_provider.dart 파일 생성
-  - CounterState 클래스 구현 (copyWith 메서드 포함)
+  - CounterState 클래스 구현 (projectId 필드 포함, copyWith 메서드 포함)
   - CounterNotifier 클래스의 기본 구조 구현
-  - 기본 상태 초기화 로직 구현
+  - 프로젝트별 초기화 로직 구현 (initializeForProject 메서드)
   - _요구사항: 3.1, 4.2, 7.4_
 
 - [x] 3.2 메인 카운터 조작 메서드 구현
@@ -32,10 +33,11 @@
   - setSubCountBy 메서드 구현
   - _요구사항: 2.1, 3.1, 4.5_
 
-- [x] 3.4 SharedPreferences 데이터 지속성 구현
-  - _saveToPrefs 메서드 구현 (모든 카운터 값들을 개별 키로 저장)
-  - _loadFromPrefs 메서드 구현 (저장된 값들을 로드하여 상태 복원)
+- [x] 3.4 데이터베이스 데이터 지속성 구현
+  - _saveToDatabase 메서드 구현 (프로젝트별 카운터 데이터를 DB에 저장)
+  - _loadFromDatabase 메서드 구현 (프로젝트 ID로 카운터 데이터 로드)
   - 에러 처리 로직 구현 (저장/로드 실패 시 기본값 사용)
+  - 새 프로젝트 시 기본 레코드 생성 로직 구현
   - _요구사항: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3, 7.4_
 
 - [x] 4. 카운터 표시 위젯 구현
@@ -68,8 +70,8 @@
   - _요구사항: 4.3, 4.4, 8.1, 8.2, 8.3_
 
 - [x] 6. 메인 카운터 화면 UI 구현
-- [x] 6.1 스톱워치 연동 표시 영역 구현
-  - 스톱워치가 실행 중일 때만 표시되는 상단 영역 구현
+- [x] 6.1 스톱워치 표시 영역 구현
+  - 카운터 화면 최상단에 항상 표시되는 스톱워치 영역 구현
   - 스톱워치 시간 표시 및 시작/일시정지 버튼 구현
   - stopwatchProvider와의 연동 로직 구현
   - _요구사항: 1.1, 1.2, 1.3_
@@ -116,12 +118,13 @@
   - 메인 카운터 증감, 초기화 기능 테스트
   - 서브 카운터 생성, 조작, 삭제 기능 테스트
   - count by 설정 기능 테스트
-  - 스톱워치 연동 기능 테스트
+  - 스톱워치 표시 기능 테스트
   - _요구사항: 모든 요구사항_
 
 - [x] 8.2 데이터 지속성 테스트
-  - 앱 재시작 후 카운터 값 복원 테스트
-  - SharedPreferences 저장/로드 기능 테스트
+  - 프로젝트별 카운터 값 저장/복원 테스트
+  - 데이터베이스 저장/로드 기능 테스트
+  - 서로 다른 프로젝트 간 데이터 격리 테스트
   - 에러 상황에서의 기본값 처리 테스트
   - _요구사항: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3, 7.4_
 
@@ -165,7 +168,7 @@
 
 - [x] 9.5 전체 레이아웃 구조 재구성
   - Column 기반의 새로운 레이아웃 구조 구현
-  - 위에서 아래 순서: 스톱워치 → count by 버튼(우측 정렬) → 메인 카운터 숫자 → +/- 버튼 → Add SubCounter(조건부) → 서브 카운터(조건부)
+  - 위에서 아래 순서: 스톱워치(항상 표시) → count by 버튼(우측 정렬) → 메인 카운터 숫자 → +/- 버튼 → Add SubCounter(조건부) → 서브 카운터(조건부)
   - Add SubCounter 버튼과 서브 카운터의 조건부 표시 로직 구현
   - 각 영역 간의 적절한 여백과 비율 설정
   - _요구사항: 3.1, 4.1, 5.1, 5.5_
@@ -196,3 +199,80 @@
   - 시각적 계층 구조와 가독성 확인
   - 필요시 미세 조정 및 최종 완성
   - _요구사항: 모든 요구사항_
+
+- [x] 11. 데이터베이스 구조 변경 (SharedPreferences → Drift DB)
+- [x] 11.1 ProjectCounters 테이블 추가
+  - lib/db/app_db.dart에 ProjectCounters 테이블 클래스 추가
+  - 테이블 스키마 정의: projectId(PK), mainCounter, mainCountBy, subCounter, subCountBy, hasSubCounter
+  - AppDatabase 클래스에 projectCounters 테이블 추가
+  - dart run build_runner build 실행하여 코드 생성
+  - _요구사항: 6.1, 6.2, 6.3, 6.4_
+
+- [x] 11.2 CounterProvider DB 연동 수정
+  - CounterState에 projectId 필드 추가
+  - initializeForProject 메서드 구현 (프로젝트별 초기화)
+  - _saveToDatabase 메서드로 변경 (기존 _saveToPrefs 대체)
+  - _loadFromDatabase 메서드로 변경 (기존 _loadFromPrefs 대체)
+  - 프로젝트별 데이터 격리 로직 구현
+  - _요구사항: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3, 7.4_
+
+- [x] 11.3 CounterData 모델 수정
+  - projectId 필드 추가
+  - Drift 테이블과 연동되는 생성자 및 메서드 구현
+  - 기존 JSON 직렬화 메서드를 DB 연동 메서드로 변경
+  - _요구사항: 6.1, 6.2, 6.3, 6.4_
+
+- [x] 11.4 프로젝트 상세 화면 연동
+  - project_detail_screen.dart에서 프로젝트 ID를 CounterProvider에 전달
+  - 화면 진입 시 해당 프로젝트의 카운터 데이터 로드
+  - 프로젝트 변경 시 카운터 상태 초기화 로직 구현
+  - _요구사항: 모든 요구사항_
+
+- [x] 11.5 기존 SharedPreferences 코드 제거
+  - shared_preferences 의존성 제거 (다른 곳에서 사용하지 않는 경우)
+  - SharedPreferences 관련 코드 정리
+  - 테스트 코드에서 SharedPreferences 모킹 제거
+  - _요구사항: 6.1, 6.2, 6.3, 6.4_
+
+- [x] 11.6 DB 구조 변경에 따른 테스트 수정
+  - 통합 테스트에서 프로젝트별 데이터 격리 테스트 추가
+  - 서로 다른 프로젝트 ID로 카운터 데이터 독립성 확인
+  - 데이터베이스 저장/로드 테스트로 변경
+  - SharedPreferences 관련 테스트를 DB 테스트로 변경
+  - _요구사항: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3, 7.4_
+
+- [x] 12. 성능 최적화 - 디바운싱 구현
+- [x] 12.1 CounterProvider 디바운싱 로직 구현
+  - Timer 기반 디바운싱 메커니즘 구현 (200ms 지연)
+  - 카운터 값 변경 시 즉시 메모리 상태 업데이트
+  - _scheduleDbSave 메서드로 DB 저장 지연 처리
+  - 기존 타이머 취소 후 새 타이머 설정하는 로직 구현
+  - _요구사항: 6.1, 6.2, 6.4_
+
+- [x] 12.2 강제 저장 로직 구현
+  - Provider dispose 시 즉시 DB 저장 처리
+  - 앱 생명주기 변화 감지하여 백그라운드 진입 시 저장
+  - 화면 전환 시 현재 상태 즉시 저장
+  - 타이머 정리 및 메모리 누수 방지 로직 구현
+  - _요구사항: 6.1, 6.2, 6.3_
+
+- [x] 12.3 기존 즉시 저장 로직 제거
+  - incrementMain, decrementMain 등에서 즉시 DB 저장 제거
+  - _loadFromDatabase 호출 제거 (메모리 상태만 사용)
+  - DB 접근 최소화를 통한 성능 향상
+  - 상태 변경 메서드들을 동기 메서드로 변경
+  - _요구사항: 6.1, 6.2, 6.4_
+
+- [x] 12.4 디바운싱 테스트 구현
+  - 연속 카운터 변경 시 DB 저장 횟수 최소화 테스트
+  - 200ms 지연 후 저장되는지 확인하는 테스트
+  - Provider dispose 시 강제 저장 테스트
+  - 메모리 상태와 DB 상태 동기화 테스트
+  - _요구사항: 6.1, 6.2, 6.3, 6.4_
+
+- [x] 12.5 성능 검증 및 최적화
+  - 연속 탭 시 UI 반응성 확인
+  - DB 접근 횟수 모니터링 및 최적화 검증
+  - 메모리 사용량 및 타이머 정리 확인
+  - 실제 사용 시나리오에서 성능 테스트
+  - _요구사항: 6.4_

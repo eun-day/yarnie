@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/session_status.dart';
-import 'test_helpers.dart';
+import '../helpers/test_helpers.dart';
 
 void main() {
   group('3.1 프로젝트별 단일 활성 세션 규칙 테스트', () {

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../lib/providers/counter_provider.dart';
-import '../../lib/providers/stopwatch_provider.dart';
-
-import '../../lib/widget/sub_counter_item.dart';
-import '../../lib/widget/count_by_selector.dart';
+import 'package:yarnie/providers/counter_provider.dart';
+import 'package:yarnie/providers/stopwatch_provider.dart';
+import 'package:yarnie/widget/sub_counter_item.dart';
+import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/db/di.dart';
+import '../helpers/test_helpers.dart';
 
 /// 카운터 기능 전체 플로우 통합 테스트
 ///
@@ -19,17 +18,32 @@ import '../../lib/widget/count_by_selector.dart';
 void main() {
   group('카운터 기능 전체 플로우 테스트', () {
     late ProviderContainer container;
+    late AppDb testDb;
+    late int testProjectId;
 
     setUp(() async {
-      // SharedPreferences 모킹
-      SharedPreferences.setMockInitialValues({});
+      // 테스트용 데이터베이스 생성
+      testDb = createTestDb();
 
-      // 새로운 ProviderContainer 생성
-      container = ProviderContainer();
+      // 테스트용 프로젝트 생성
+      testProjectId = await createTestProject(testDb);
+
+      // 새로운 ProviderContainer 생성 (테스트 DB 오버라이드)
+      container = ProviderContainer(
+        overrides: [
+          // 실제 DB 대신 테스트 DB 사용
+          appDbProvider.overrideWithValue(testDb),
+        ],
+      );
+
+      // 테스트용 프로젝트로 초기화
+      final notifier = container.read(counterProvider.notifier);
+      await notifier.initializeForProject(testProjectId);
     });
 
-    tearDown(() {
+    tearDown(() async {
       container.dispose();
+      await testDb.close();
     });
 
     testWidgets('메인 카운터 증감 및 초기화 기능 테스트', (WidgetTester tester) async {
