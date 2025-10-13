@@ -3,16 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/stopwatch_panel.dart';
-import 'package:yarnie/widget/project_info_section.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final int projectId;
   const ProjectDetailScreen({super.key, required this.projectId});
-
-  String _fmt(DateTime dt) =>
-      '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')} '
-      '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -32,55 +28,47 @@ class ProjectDetailScreen extends StatelessWidget {
         }
 
         final project = snap.data!;
-        final created = project.createdAt.toLocal();
-        final updated = project.updatedAt?.toLocal();
 
         return Scaffold(
-          appBar: AppBar(title: Text(project.name)),
+          appBar: AppBar(
+            title: Text(project.name),
+            actions: [
+              PopupMenuButton<String>(
+                icon: Platform.isIOS
+                    ? const Icon(CupertinoIcons.ellipsis_circle)
+                    : null, // 안드로이드는 기본 아이콘 사용
+                onSelected: (value) {
+                  if (value == 'project_info') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ProjectInfoScreen(projectId: project.id),
+                      ),
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'project_info',
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline),
+                        SizedBox(width: 8),
+                        Text('프로젝트 정보'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           body: Column(
             children: [
-              ProjectInfoSection(
-                title: '프로젝트 정보',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _kv('카테고리', project.category ?? '-'),
-                    _kv('바늘 종류', project.needleType ?? '-'),
-                    _kv('바늘 호수', project.needleSize ?? '-'),
-                    _kv('Lot No.', project.lotNumber ?? '-'),
-                    _kv(
-                      '메모',
-                      project.memo?.isNotEmpty == true ? project.memo! : '-',
-                    ),
-                    const Divider(height: 24),
-                    _kv('생성일', _fmt(created)),
-                    _kv('수정일', updated != null ? _fmt(updated) : '-'),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
               Expanded(child: ProjectDetailTabs(projectId: project.id)),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _kv(String k, String v) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 88,
-            child: Text(k, style: const TextStyle(fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(v)),
-        ],
-      ),
     );
   }
 }
