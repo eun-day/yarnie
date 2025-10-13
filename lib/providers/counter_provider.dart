@@ -208,10 +208,14 @@ class CounterNotifier extends Notifier<CounterState> {
     _scheduleDbSave();
   }
 
-  /// 메인 카운터를 countBy 단위로 감소
+  /// 메인 카운터를 countBy 단위로 감소 (0 이하로는 내려가지 않음)
   void decrementMain() {
+    // 0 이하로 내려가지 않도록 제한
+    final newValue = state.mainCounter - state.mainCountBy;
+    final clampedValue = newValue < 0 ? 0 : newValue;
+
     // 즉시 메모리 상태 업데이트 (UI 반응성 보장)
-    state = state.copyWith(mainCounter: state.mainCounter - state.mainCountBy);
+    state = state.copyWith(mainCounter: clampedValue);
 
     // 디바운싱된 DB 저장 예약
     _scheduleDbSave();
@@ -272,11 +276,15 @@ class CounterNotifier extends Notifier<CounterState> {
     }
   }
 
-  /// 서브 카운터를 countBy 단위로 감소
+  /// 서브 카운터를 countBy 단위로 감소 (0 이하로는 내려가지 않음)
   void decrementSub() {
     if (state.hasSubCounter && state.subCounter != null) {
+      // 0 이하로 내려가지 않도록 제한
+      final newValue = state.subCounter! - state.subCountBy;
+      final clampedValue = newValue < 0 ? 0 : newValue;
+
       // 즉시 메모리 상태 업데이트 (UI 반응성 보장)
-      state = state.copyWith(subCounter: state.subCounter! - state.subCountBy);
+      state = state.copyWith(subCounter: clampedValue);
 
       // 디바운싱된 DB 저장 예약
       _scheduleDbSave();
