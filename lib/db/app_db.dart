@@ -113,14 +113,15 @@ class AppDb extends _$AppDb {
 
   // 활성 세션 삭제 (RUNNING/PAUSED 모두 대상)
   Future<void> discardActiveSession({required int projectId}) async {
-    await (delete(workSessions)..where(
-          (t) =>
-              t.projectId.equals(projectId) &
-              t.status.isIn([
-                SessionStatus.running.index,
-                SessionStatus.paused.index,
-              ]),
-        ))
+    await (delete(workSessions)
+          ..where(
+            (t) =>
+                t.projectId.equals(projectId) &
+                t.status.isIn([
+                  SessionStatus.running.index,
+                  SessionStatus.paused.index,
+                ]),
+          ))
         .go();
   }
 
