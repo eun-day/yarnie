@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:yarnie/common/time_helper.dart';
+import 'package:yarnie/common/session_dialog_helper.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
 import 'package:yarnie/providers/stopwatch_provider.dart';
 import 'package:yarnie/widget/labelpill.dart';
-import 'package:yarnie/model/session_status.dart';
 
 /// 스톱워치 패널(Scaffold 없음) — 화면 어디든 끼워 넣기용
 class StopwatchPanel extends ConsumerStatefulWidget {
@@ -53,54 +53,10 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
   }
 
   Future<void> _start() async {
-    final swNotifier = ref.read(stopwatchProvider.notifier);
-    if (ref.read(stopwatchProvider).isRunning) return;
-
-    final active = await appDb.getActiveSession(widget.projectId);
-
-    if (active == null) {
-      // NO → 새 세션 생성 ⇒ RUNNING
-      await appDb.startSession(projectId: widget.projectId);
-    } else {
-      // 이어하기/새로 시작 선택
-      final resume = await _askResumeOrNew();
-      if (resume == true) {
-        // 이어하기: 상태별 처리
-        if (active.status == SessionStatus.paused) {
-          await appDb.resumeSession(projectId: widget.projectId);
-        }
-        // running이면 DB 호출 불필요
-      } else {
-        // 새로 시작: 기존 미종료 세션 정리 후 새 세션
-        await appDb.stopSession(projectId: widget.projectId);
-        await appDb.startSession(projectId: widget.projectId);
-      }
-    }
-
-    final elapsed = await appDb.totalElapsedDuration(
-      projectId: widget.projectId,
-    );
-    swNotifier.start(initialElapsed: elapsed);
-  }
-
-  // 간단 확인 다이얼로그
-  Future<bool?> _askResumeOrNew() async {
-    return showDialog<bool>(
+    await SessionDialogHelper.startStopwatch(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('진행 중 세션'),
-        content: const Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('새로 시작'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('이어하기'),
-          ),
-        ],
-      ),
+      ref: ref,
+      projectId: widget.projectId,
     );
   }
 
