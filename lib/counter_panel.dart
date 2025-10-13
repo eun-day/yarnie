@@ -203,7 +203,7 @@ class _CounterPanelState extends ConsumerState<CounterPanel> {
                     child: Platform.isIOS
                         ? CupertinoButton(
                             padding: EdgeInsets.zero,
-                            color: CupertinoColors.systemRed,
+                            color: const Color.fromARGB(255, 114, 163, 68),
                             onPressed: () => ref
                                 .read(counterProvider.notifier)
                                 .decrementMain(),
@@ -215,7 +215,7 @@ class _CounterPanelState extends ConsumerState<CounterPanel> {
                           )
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Color.fromRGBO(114, 163, 68, 1.0),
                               foregroundColor: Colors.white,
                               shape: const RoundedRectangleBorder(),
                             ),
@@ -231,7 +231,7 @@ class _CounterPanelState extends ConsumerState<CounterPanel> {
                     child: Platform.isIOS
                         ? CupertinoButton(
                             padding: EdgeInsets.zero,
-                            color: CupertinoColors.systemBlue,
+                            color: const Color.fromARGB(255, 247, 200, 102),
                             onPressed: () => ref
                                 .read(counterProvider.notifier)
                                 .incrementMain(),
@@ -243,7 +243,7 @@ class _CounterPanelState extends ConsumerState<CounterPanel> {
                           )
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: Color.fromRGBO(247, 200, 102, 1.0),
                               foregroundColor: Colors.white,
                               shape: const RoundedRectangleBorder(),
                             ),
