@@ -16,21 +16,25 @@ class SessionDialogHelper {
   /// - `null`: 취소 또는 다이얼로그 닫기
   static Future<bool?> askResumeOrNew(BuildContext context) async {
     if (Platform.isIOS) {
-      return showCupertinoDialog<bool>(
+      return showCupertinoModalPopup<bool>(
         context: context,
-        builder: (ctx) => CupertinoAlertDialog(
-          title: const Text('진행 중 세션'),
-          content: const Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
+        builder: (ctx) => CupertinoActionSheet(
+          title: const Text('진행 중인 세션이 있습니다'),
           actions: [
-            CupertinoDialogAction(
-              child: const Text('새로 시작'),
-              onPressed: () => Navigator.pop(ctx, false),
-            ),
-            CupertinoDialogAction(
-              child: const Text('이어하기'),
+            CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('이어하기'),
+            ),
+            CupertinoActionSheetAction(
+              isDestructiveAction: true,
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('새로 시작'),
             ),
           ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(ctx, null),
+            child: const Text('취소'),
+          ),
         ),
       );
     } else {
