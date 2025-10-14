@@ -35,7 +35,6 @@ class CountBySelector extends StatelessWidget {
       case CountByLabelStyle.short:
         return '+$currentValue'; // 예: +8
       case CountByLabelStyle.full:
-      default:
         return 'count by $currentValue'; // 예: count by 8
     }
   }
@@ -132,81 +131,103 @@ class CountBySelector extends StatelessWidget {
   /// iOS용 Cupertino 피커 표시
   void _showCupertinoPicker(BuildContext context) {
     int selectedValue = currentValue;
+    final controller = FixedExtentScrollController(
+      initialItem: selectedValue - 1, // 1-based to 0-based
+    );
 
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Container(
-            height: 250,
-            color: CupertinoColors.systemBackground.resolveFrom(context),
-            child: Column(
-              children: [
-                // 헤더 영역
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: CupertinoColors.systemGrey4.resolveFrom(context),
-                        width: 0.5,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Material(
+              type: MaterialType.transparency,
+              child: Container(
+                height: 250,
+                color: CupertinoColors.systemBackground.resolveFrom(context),
+                child: Column(
+                  children: [
+                    // 헤더 영역
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('취소'),
-                      ),
-                      const Text(
-                        'Count By 설정',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: CupertinoColors.systemGrey4.resolveFrom(
+                              context,
+                            ),
+                            width: 0.5,
+                          ),
                         ),
                       ),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          onChanged(selectedValue);
-                          Navigator.of(context).pop();
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('취소'),
+                          ),
+                          const Text(
+                            'Count By 설정',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              onChanged(selectedValue);
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('확인'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 피커 영역
+                    Expanded(
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: controller,
+                        onSelectedItemChanged: (int index) {
+                          setState(
+                            () => selectedValue = index + 1,
+                          ); // 0-based to 1-based
                         },
-                        child: const Text('확인'),
+                        children: List.generate(10, (index) {
+                          final value = index + 1;
+                          return GestureDetector(
+                            onTap: () {
+                              // 터치한 아이템으로 휠 애니메이션
+                              controller.animateToItem(
+                                index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: Container(
+                              color: Colors.transparent, // 터치 영역 확보
+                              child: Center(
+                                child: Text(
+                                  '$value',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
                       ),
-                    ],
-                  ),
-                ),
-                // 피커 영역
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 40,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: selectedValue - 1, // 1-based to 0-based
                     ),
-                    onSelectedItemChanged: (int index) {
-                      selectedValue = index + 1; // 0-based to 1-based
-                    },
-                    children: List.generate(10, (index) {
-                      final value = index + 1;
-                      return Center(
-                        child: Text(
-                          '$value',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      );
-                    }),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -281,21 +302,36 @@ class CountBySelector extends StatelessWidget {
                               final value = index + 1;
                               final isSelected = (value == selectedValue);
 
-                              return Center(
-                                child: AnimatedDefaultTextStyle(
-                                  duration: const Duration(milliseconds: 120),
-                                  style: TextStyle(
-                                    fontSize: isSelected ? 24 : 22,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w400,
-                                    color: isSelected
-                                        ? colorScheme.onSurface
-                                        : colorScheme.onSurface.withValues(
-                                            alpha: 0.38,
-                                          ),
+                              return GestureDetector(
+                                onTap: () {
+                                  // 터치한 아이템으로 휠 애니메이션
+                                  controller.animateToItem(
+                                    index,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                                child: Container(
+                                  color: Colors.transparent, // 터치 영역 확보
+                                  child: Center(
+                                    child: AnimatedDefaultTextStyle(
+                                      duration: const Duration(
+                                        milliseconds: 120,
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: isSelected ? 24 : 22,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w400,
+                                        color: isSelected
+                                            ? colorScheme.onSurface
+                                            : colorScheme.onSurface.withValues(
+                                                alpha: 0.38,
+                                              ),
+                                      ),
+                                      child: Text('$value'),
+                                    ),
                                   ),
-                                  child: Text('$value'),
                                 ),
                               );
                             },
@@ -310,7 +346,6 @@ class CountBySelector extends StatelessWidget {
                               margin: const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                // 필요 없으면 투명 유지
                                 color: colorScheme.primary.withValues(
                                   alpha: 0.2,
                                 ),
