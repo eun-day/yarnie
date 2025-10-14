@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/model/session_status.dart';
+import 'package:yarnie/model/counter_data.dart';
 import 'connection.dart';
 
 part 'app_db.g.dart'; // <- 코드 생성 파일 연결
@@ -13,16 +14,16 @@ class Projects extends Table {
   TextColumn get needleSize => text().nullable()();
   TextColumn get lotNumber => text().nullable()();
   TextColumn get memo => text().nullable()();
-  DateTimeColumn get createdAt => dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now().toUtc())();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 }
 
-
 class WorkSessions extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get projectId => integer()();              // FK: Projects.id
-  IntColumn get startedAt => integer()();              // epoch ms
-  IntColumn get stoppedAt => integer().nullable()();   // 완결 시각
+  IntColumn get projectId => integer()(); // FK: Projects.id
+  IntColumn get startedAt => integer()(); // epoch ms
+  IntColumn get stoppedAt => integer().nullable()(); // 완결 시각
   IntColumn get elapsedMs => integer().withDefault(const Constant(0))();
   IntColumn get lastStartedAt => integer().nullable()();
   TextColumn get label => text().nullable()();
@@ -31,20 +32,37 @@ class WorkSessions extends Table {
   IntColumn get updatedAt => integer().nullable()();
 
   // ✅ status: 0=paused, 1=running, 2=stopped (enum 인덱스 저장)
-  IntColumn get status =>
-      intEnum<SessionStatus>()
-          .withDefault(Constant(SessionStatus.running.index))();
+  IntColumn get status => intEnum<SessionStatus>().withDefault(
+    Constant(SessionStatus.running.index),
+  )();
 }
 
-@DriftDatabase(tables: [Projects, WorkSessions])
-class AppDb extends _$AppDb {
-  AppDb() : super(openConnection());
-  @override int get schemaVersion => 1;
+class ProjectCounters extends Table {
+  IntColumn get projectId => integer()(); // FK: Projects.id
+  IntColumn get mainCounter => integer().withDefault(const Constant(0))();
+  IntColumn get mainCountBy => integer().withDefault(const Constant(1))();
+  IntColumn get subCounter => integer().nullable()();
+  IntColumn get subCountBy => integer().withDefault(const Constant(1))();
+  BoolColumn get hasSubCounter =>
+      boolean().withDefault(const Constant(false))();
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) async => m.createAll(),
-  );
+  Set<Column> get primaryKey => {projectId};
+}
+
+@DriftDatabase(tables: [Projects, WorkSessions, ProjectCounters])
+class AppDb extends _$AppDb {
+  AppDb() : super(openConnection());
+
+  /// 테스트용 생성자
+  AppDb.forTesting(DatabaseConnection connection) : super(connection);
+
+  @override
+  int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration =>
+      MigrationStrategy(onCreate: (m) async => m.createAll());
 
   Future<int> createProject({
     required String name,
@@ -71,8 +89,9 @@ class AppDb extends _$AppDb {
     return update(projects).replace(entity.copyWith(updatedAt: Value(now)));
   }
 
-  Stream<List<Project>> watchAll() =>
-      (select(projects)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+  Stream<List<Project>> watchAll() => (select(
+    projects,
+  )..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
 
   Stream<Project> watchProject(int id) =>
       (select(projects)..where((t) => t.id.equals(id))).watchSingle();
@@ -202,8 +221,12 @@ class AppDb extends _$AppDb {
       }
 
       // 전달된 값만 업데이트; 미전달(null)이면 기존 값 유지
-      final Value<String?> labelValue = (label == null) ? const Value.absent() : Value<String?>(label);
-      final Value<String?> memoValue = (memo == null) ? const Value.absent() : Value<String?>(memo);
+      final Value<String?> labelValue = (label == null)
+          ? const Value.absent()
+          : Value<String?>(label);
+      final Value<String?> memoValue = (memo == null)
+          ? const Value.absent()
+          : Value<String?>(memo);
 
       await (update(workSessions)..where((t) => t.id.equals(s.id))).write(
         WorkSessionsCompanion(
@@ -251,6 +274,33 @@ class AppDb extends _$AppDb {
     return (row?.data['t'] as int?) ?? 0;
   }
 
+  Future<Duration> totalElapsedDuration({required int projectId}) async {
+    // 1) 종료된 세션 합계 (stopped만)
+    final totalDone = await totalElapsedSec(projectId: projectId);
+
+    // 2) 현재 활성 세션 (running/paused)
+    final active = await getActiveSession(projectId);
+
+    int viewSec = totalDone;
+
+    if (active != null) {
+      final base = (active.elapsedMs).toSec();
+
+      // 진행 중이면 lastStartedAt부터 지금까지 더해줌
+      final add =
+          (active.status == SessionStatus.running &&
+              active.lastStartedAt != null)
+          ? (DateTime.now().millisecondsSinceEpoch - active.lastStartedAt!)
+                .clamp(0, 1 << 30)
+                .toSec()
+          : 0;
+
+      viewSec += base + add;
+    }
+
+    return Duration(seconds: viewSec);
+  }
+
   // 공통: 상태 집합으로 조회 (최신 시작순)
   Stream<List<WorkSession>> watchByStatuses(
     int projectId,
@@ -295,6 +345,50 @@ class AppDb extends _$AppDb {
       const [SessionStatus.stopped],
       limit: limit,
       offset: offset,
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Counter 관련 메서드들
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /// 프로젝트의 카운터 데이터 조회
+  Future<ProjectCounter?> getProjectCounter(int projectId) {
+    return (select(
+      projectCounters,
+    )..where((t) => t.projectId.equals(projectId))).getSingleOrNull();
+  }
+
+  /// 프로젝트의 카운터 데이터 생성 또는 업데이트
+  Future<void> upsertProjectCounter({
+    required int projectId,
+    required int mainCounter,
+    required int mainCountBy,
+    int? subCounter,
+    required int subCountBy,
+    required bool hasSubCounter,
+  }) async {
+    await into(projectCounters).insertOnConflictUpdate(
+      ProjectCountersCompanion.insert(
+        projectId: Value(projectId),
+        mainCounter: Value(mainCounter),
+        mainCountBy: Value(mainCountBy),
+        subCounter: Value(subCounter),
+        subCountBy: Value(subCountBy),
+        hasSubCounter: Value(hasSubCounter),
+      ),
+    );
+  }
+
+  /// 카운터 데이터를 DB에 저장 (디바운싱용)
+  Future<void> saveProjectCounter(CounterData counterData) async {
+    await upsertProjectCounter(
+      projectId: counterData.projectId,
+      mainCounter: counterData.mainCounter,
+      mainCountBy: counterData.mainCountBy,
+      subCounter: counterData.subCounter,
+      subCountBy: counterData.subCountBy,
+      hasSubCounter: counterData.hasSubCounter,
     );
   }
 }

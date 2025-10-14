@@ -1,47 +1,38 @@
 import 'dart:io' show Platform;
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:yarnie/common/time_helper.dart';
+import 'package:yarnie/common/session_dialog_helper.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
+import 'package:yarnie/providers/stopwatch_provider.dart';
 import 'package:yarnie/widget/labelpill.dart';
-import 'package:yarnie/wrapper/session_stopwatch.dart';
-import 'package:yarnie/model/session_status.dart';
 
 /// 스톱워치 패널(Scaffold 없음) — 화면 어디든 끼워 넣기용
-class StopwatchPanel extends StatefulWidget {
+class StopwatchPanel extends ConsumerStatefulWidget {
   final List<String> initialLabels;
   final int projectId;
 
   const StopwatchPanel({
     super.key,
     this.initialLabels = const ['소매', '몸통', '목둘레'],
-    required this.projectId
+    required this.projectId,
   });
   @override
-  State<StopwatchPanel> createState() => _StopwatchPanelState();
+  ConsumerState<StopwatchPanel> createState() => _StopwatchPanelState();
 }
 
-class _StopwatchPanelState extends State<StopwatchPanel>
+class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   // 라벨
   late List<String> labels = [...widget.initialLabels];
-  String? currentLabel = null; // null => 미분류
-
-  // 타이머
-  final SessionStopwatch _sw = SessionStopwatch();
-  Timer? _ticker;
-  Duration _elapsed = Duration.zero;
-
-  // 랩
-  final List<_Lap> _laps = [];
-  Duration _lastLapAt = Duration.zero;
+  String? currentLabel;
 
   bool _busy = false;
   bool _lapBusy = false;
@@ -51,123 +42,51 @@ class _StopwatchPanelState extends State<StopwatchPanel>
   @override
   void initState() {
     super.initState();
-    if (labels.isNotEmpty) currentLabel = labels.first;
+    currentLabel = widget.initialLabels.firstOrNull;
     _stream = appDb.watchCompletedSessions(widget.projectId);
     WidgetsBinding.instance.addPostFrameCallback((_) => _refreshFromDB());
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
     super.dispose();
   }
 
   Future<void> _start() async {
-    if (_sw.isRunning) return;
-
-    final active = await appDb.getActiveSession(widget.projectId);
-
-    if (active == null) {
-      // NO → 새 세션 생성 ⇒ RUNNING
-      await appDb.startSession(projectId: widget.projectId);
-    } else {
-      // 이어하기/새로 시작 선택
-      final resume = await _askResumeOrNew();
-      if (resume == true) {
-        // 이어하기: 상태별 처리
-        if (active.status == SessionStatus.paused) {
-          await appDb.resumeSession(projectId: widget.projectId);
-        }
-        // running이면 DB 호출 불필요
-      } else {
-        // 새로 시작: 기존 미종료 세션 정리 후 새 세션
-        await appDb.stopSession(projectId: widget.projectId);
-        await appDb.startSession(projectId: widget.projectId);
-      }
-    }
-
-  // ⬇️ 화면에 보이는 값(_elapsed) 그대로부터 카운트 시작
-  _sw.start(initialElapsedMs: _elapsed.inMilliseconds);
-
-    // UI 틱 시작
-    _ticker?.cancel();
-    _ticker = Timer.periodic(
-      const Duration(milliseconds: 100),
-      (_) => setState(() => _elapsed = _sw.elapsed),
-    );
-
-    setState(() {}); // 버튼 상태 갱신
-  }
-
-  // 간단 확인 다이얼로그
-  Future<bool?> _askResumeOrNew() async {
-    return showDialog<bool>(
+    await SessionDialogHelper.startStopwatch(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('진행 중 세션'),
-        content: const Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('새로 시작')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true),  child: const Text('이어하기')),
-        ],
-      ),
+      ref: ref,
+      projectId: widget.projectId,
     );
   }
 
   Future<int> _pause() async {
-    if (!_sw.isRunning) return -1;
+    final swNotifier = ref.read(stopwatchProvider.notifier);
+    if (!ref.read(stopwatchProvider).isRunning) return -1;
 
     // 1) 래퍼 스톱워치 멈춤
-    _sw.pause();
+    swNotifier.pause();
 
-    // 2) UI 틱 중단
-    _ticker?.cancel();
-
-    // 3) DB에 세션 상태 반영
+    // 2) DB에 세션 상태 반영
     final newElapsedSec = await appDb.pauseSession(projectId: widget.projectId);
     _lastSegment = newElapsedSec;
-
-    // 4) 화면 상태 갱신
-    setState(() {
-      _elapsed = _sw.elapsed; // Duration 타입
-    });
 
     return newElapsedSec;
   }
 
   Future<void> _resetSession() async {
+    final swNotifier = ref.read(stopwatchProvider.notifier);
     await appDb.discardActiveSession(projectId: widget.projectId);
+    swNotifier.reset();
     await _refreshFromDB(); // DB 기준으로 누적 시간 복원
   }
 
   Future<void> _refreshFromDB() async {
-    // 1) 종료된 세션 합계 (stopped만)
-    final totalDone = await appDb.totalElapsedSec(projectId: widget.projectId);
-    print('totalDone sec : $totalDone');
-
-    // 2) 현재 활성 세션 (running/paused)
-    final active = await appDb.getActiveSession(widget.projectId);
-
-    int viewSec = totalDone;
-
-    if (active != null) {
-      final base = (active.elapsedMs).toSec();
-
-      // 진행 중이면 lastStartedAt부터 지금까지 더해줌
-      final add = (active.status == SessionStatus.running && active.lastStartedAt != null)
-          ? (DateTime.now().millisecondsSinceEpoch - active.lastStartedAt!)
-              .clamp(0, 1 << 30)
-              .toSec()
-          : 0;
-
-      viewSec += base + add;
-      print('active session elapsedSec: $base, addSec: $add');
-    }
-
-    // 3) UI 갱신
-    setState(() {
-      _elapsed = Duration(seconds: viewSec);
-    });
+    final swNotifier = ref.read(stopwatchProvider.notifier);
+    final elapsed = await appDb.totalElapsedDuration(
+      projectId: widget.projectId,
+    );
+    swNotifier.setElapsed(elapsed);
   }
 
   Future<void> _saveLapFlow() async {
@@ -175,15 +94,10 @@ class _StopwatchPanelState extends State<StopwatchPanel>
     _lapBusy = true;
     try {
       // 1) now 고정 + 달리는 중이면 먼저 일시정지
-      print('stopwatch elapsed ms : ${_sw.elapsedMs}');
-      final freezeNow = _sw.elapsed;
-      
-      if (_sw.isRunning) 
-      {
+      if (ref.read(stopwatchProvider).isRunning) {
         await _pause(); // _pause는 _elapsed를 갱신함 -> 타이머 실행 중에만 업데이트
-        print('puased session elapsedSec: $_lastSegment');
       }
-      
+
       if (!mounted) return;
 
       // 시트 호출
@@ -194,194 +108,217 @@ class _StopwatchPanelState extends State<StopwatchPanel>
         onPickLabel: (initial) => _openLabelPicker(initial: initial),
       );
       if (res == null || res.confirmed != true) return;
-      
+
       // 3) DB: 세션 종료 & 라벨/메모 동시 저장
       await appDb.stopSession(
-        projectId: widget.projectId,               // ← 너의 현재 프로젝트 ID
-        label: res.label,                    // 전달 시 업데이트, null이면 유지
-        memo: (res.memo?.isEmpty ?? true) ? null : res.memo,    // 전달 시 업데이트, null이면 유지
+        projectId: widget.projectId, // ← 너의 현재 프로젝트 ID
+        label: res.label, // 전달 시 업데이트, null이면 유지
+        memo: (res.memo?.isEmpty ?? true)
+            ? null
+            : res.memo, // 전달 시 업데이트, null이면 유지
       );
 
       await _refreshFromDB();
 
-    // 4) 로컬 상태 정리 (UI 반영)
-    _lastLapAt = freezeNow;
-    _lastSegment = 0;
-    setState(() {});
-  } finally {
-    _lapBusy = false;
+      // 4) 로컬 상태 정리 (UI 반영)
+      _lastSegment = 0;
+      setState(() {});
+    } finally {
+      _lapBusy = false;
+    }
   }
-}
 
-// iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
-Future<String?> _openLabelPicker({String? initial}) async {
-  if (Platform.isIOS) {
-    // iOS: Cupertino 스타일 (modal_bottom_sheet 사용)
-    return showCupertinoModalBottomSheet<String>(
-      context: context,
-      expand: false,
-      backgroundColor: CupertinoColors.systemBackground,
-      builder: (ctx) {
-        final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
-        return SafeArea(
-          top: false,
-          child: DefaultTextStyle(
-            style: const TextStyle(
-              fontSize: 14,
-              color: CupertinoColors.label,        // ← 기본 라벨 컬러 강제
-              decoration: TextDecoration.none,     // ← 밑줄 제거
+  // iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
+  Future<String?> _openLabelPicker({String? initial}) async {
+    if (Platform.isIOS) {
+      // iOS: Cupertino 스타일 (modal_bottom_sheet 사용)
+      return showCupertinoModalBottomSheet<String>(
+        context: context,
+        expand: false,
+        backgroundColor: CupertinoColors.systemBackground,
+        builder: (ctx) {
+          final bottomPad = MediaQuery.of(ctx).viewInsets.bottom;
+          return Material(
+            type: MaterialType.transparency,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 상단 제목 + 라벨 관리 버튼
+                    Row(
+                      children: [
+                        const Text(
+                          '라벨 선택',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Icon(CupertinoIcons.pencil),
+                          onPressed: () async {
+                            final updated = await _openLabelManager(
+                              ctx,
+                              labels,
+                            );
+                            if (updated != null) {
+                              setState(() => labels = updated);
+                              if (currentLabel != null &&
+                                  !labels.contains(currentLabel)) {
+                                currentLabel = labels.isNotEmpty
+                                    ? labels.first
+                                    : null;
+                              }
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    CupertinoScrollbar(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final l in labels)
+                              CupertinoButton(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 6,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                color: (initial == l)
+                                    ? CupertinoColors.activeBlue
+                                    : CupertinoColors.systemGrey6,
+                                onPressed: () => Navigator.pop(ctx, l),
+                                child: Text(
+                                  l,
+                                  style: TextStyle(
+                                    color: (initial == l)
+                                        ? CupertinoColors.white
+                                        : CupertinoColors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            CupertinoButton(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 6,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              color: (initial == null)
+                                  ? CupertinoColors.activeBlue
+                                  : CupertinoColors.systemGrey6,
+                              onPressed: () => Navigator.pop(ctx, null),
+                              child: Text(
+                                '미분류',
+                                style: TextStyle(
+                                  color: (initial == null)
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+          );
+        },
+      );
+    } else {
+      // Android: Material 바텀시트 + ChoiceChip
+      return showModalBottomSheet<String>(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (ctx) {
+          final bottomPad =
+              MediaQuery.of(ctx).viewInsets.bottom +
+              MediaQuery.of(ctx).viewPadding.bottom;
+          return SafeArea(
+            top: true,
+            left: true,
+            right: true,
+            bottom: false,
             child: Padding(
               padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 상단 제목 + 라벨 관리 버튼
                   Row(
                     children: [
                       const Text(
                         '라벨 선택',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const Spacer(),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        child: const Icon(CupertinoIcons.pencil),
+                      IconButton(
+                        tooltip: '라벨 관리',
                         onPressed: () async {
                           final updated = await _openLabelManager(ctx, labels);
                           if (updated != null) {
                             setState(() => labels = updated);
                             if (currentLabel != null &&
                                 !labels.contains(currentLabel)) {
-                              currentLabel = labels.isNotEmpty ? labels.first : null;
+                              currentLabel = labels.isNotEmpty
+                                  ? labels.first
+                                  : null;
                             }
                           }
                         },
+                        icon: const Icon(Icons.edit),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  CupertinoScrollbar(
-                    child: SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 8, runSpacing: 8,
-                        children: [
-                          for (final l in labels)
-                            CupertinoButton(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                              borderRadius: BorderRadius.circular(20),
-                              color: (initial == l)
-                                  ? CupertinoColors.activeBlue
-                                  : CupertinoColors.systemGrey6,
-                              onPressed: () => Navigator.pop(ctx, l),
-                              child: Text(
-                                l,
-                                style: TextStyle(
-                                  color: (initial == l)
-                                      ? CupertinoColors.white
-                                      : CupertinoColors.black,
-                                  fontSize: 16, fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          CupertinoButton(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                            borderRadius: BorderRadius.circular(20),
-                            color: (initial == null)
-                                ? CupertinoColors.activeBlue
-                                : CupertinoColors.systemGrey6,
-                            onPressed: () => Navigator.pop(ctx, null),
-                            child: Text(
-                              '미분류',
-                              style: TextStyle(
-                                color: (initial == null)
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                fontSize: 16, fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final l in labels)
+                        ChoiceChip(
+                          label: Text(l),
+                          selected: initial == l,
+                          onSelected: (_) => Navigator.pop(ctx, l),
+                        ),
+                      ChoiceChip(
+                        label: const Text('미분류'),
+                        selected: initial == null,
+                        onSelected: (_) => Navigator.pop(ctx, null),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
             ),
-          )
-        );
-      },
-    );
-  } else {
-    // Android: Material 바텀시트 + ChoiceChip
-    return showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        final bottomPad = MediaQuery.of(ctx).viewInsets.bottom +
-            MediaQuery.of(ctx).viewPadding.bottom;
-        return SafeArea(
-          top: true, left: true, right: true, bottom: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 상단 제목 + 라벨 관리 버튼
-                Row(
-                  children: [
-                    const Text(
-                      '라벨 선택',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      tooltip: '라벨 관리',
-                      onPressed: () async {
-                        final updated = await _openLabelManager(ctx, labels);
-                        if (updated != null) {
-                          setState(() => labels = updated);
-                          if (currentLabel != null &&
-                              !labels.contains(currentLabel)) {
-                            currentLabel = labels.isNotEmpty ? labels.first : null;
-                          }
-                        }
-                      },
-                      icon: const Icon(Icons.edit),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8, runSpacing: 8,
-                  children: [
-                    for (final l in labels)
-                      ChoiceChip(
-                        label: Text(l),
-                        selected: initial == l,
-                        onSelected: (_) => Navigator.pop(ctx, l),
-                      ),
-                    ChoiceChip(
-                      label: const Text('미분류'),
-                      selected: initial == null,
-                      onSelected: (_) => Navigator.pop(ctx, null),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
-}
-
 
   Future<List<String>?> _openLabelManager(
     BuildContext ctx,
@@ -488,6 +425,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final swState = ref.watch(stopwatchProvider);
 
     return Column(
       children: [
@@ -495,7 +433,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: _TimerCard(
-            timeText: fmt(_elapsed),
+            timeText: fmt(swState.elapsed),
             labelText: currentLabel ?? '미분류',
             onTapLabel: () async {
               final picked = await _openLabelPicker(initial: currentLabel);
@@ -513,23 +451,25 @@ Future<String?> _openLabelPicker({String? initial}) async {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  icon: Icon(_sw.isRunning ? Icons.pause : Icons.play_arrow),
-                  label: Text(_sw.isRunning ? '일시정지' : '시작'),
+                  icon: Icon(
+                    swState.isRunning ? Icons.pause : Icons.play_arrow,
+                  ),
+                  label: Text(swState.isRunning ? '일시정지' : '시작'),
                   onPressed: _busy
-                    ? null
-                    : () async {
-                        _busy = true;
-                        try {
-                          if (_sw.isRunning) {
-                            await _pause();
-                          } else {
-                            await _start();   // active 체크→ 이어/새로 로직 포함
+                      ? null
+                      : () async {
+                          _busy = true;
+                          try {
+                            if (swState.isRunning) {
+                              await _pause();
+                            } else {
+                              await _start(); // active 체크→ 이어/새로 로직 포함
+                            }
+                            setState(() {}); // 아이콘/라벨 갱신
+                          } finally {
+                            _busy = false;
                           }
-                          setState(() {});    // 아이콘/라벨 갱신
-                        } finally {
-                          _busy = false;
-                        }
-                      },
+                        },
                 ),
               ),
               const SizedBox(width: 8),
@@ -547,7 +487,7 @@ Future<String?> _openLabelPicker({String? initial}) async {
                 icon: const Icon(Icons.refresh),
               ),
             ],
-          )
+          ),
         ),
         // 종료된 세션 리스트
         Expanded(
@@ -572,8 +512,12 @@ Future<String?> _openLabelPicker({String? initial}) async {
 
                   // 표시용 값들
                   final lapNo = i + 1;
-                  final segment = Duration(seconds: s.elapsedMs.toSec()); // 세션 소요시간
-                  final started = DateTime.fromMillisecondsSinceEpoch(s.startedAt);
+                  final segment = Duration(
+                    seconds: s.elapsedMs.toSec(),
+                  ); // 세션 소요시간
+                  final started = DateTime.fromMillisecondsSinceEpoch(
+                    s.startedAt,
+                  );
                   final stopped = (s.stoppedAt != null)
                       ? DateTime.fromMillisecondsSinceEpoch(s.stoppedAt!)
                       : null;
@@ -582,12 +526,15 @@ Future<String?> _openLabelPicker({String? initial}) async {
                     dense: true,
                     leading: Text('Lap $lapNo'),
                     title: Text(fmt(segment)), // hh:mm:ss
-                    subtitle: Text([
-                      if ((s.label ?? '').isNotEmpty) '라벨: ${s.label}',
-                      if (stopped != null) '기간: ${ymdHm(started)} ~ ${ymdHm(stopped)}',
-                      '누적: ${fmt(segment)}',
-                      if ((s.memo ?? '').isNotEmpty) '메모: ${s.memo}',
-                    ].join(' • ')),
+                    subtitle: Text(
+                      [
+                        if ((s.label ?? '').isNotEmpty) '라벨: ${s.label}',
+                        if (stopped != null)
+                          '기간: ${ymdHm(started)} ~ ${ymdHm(stopped)}',
+                        '누적: ${fmt(segment)}',
+                        if ((s.memo ?? '').isNotEmpty) '메모: ${s.memo}',
+                      ].join(' • '),
+                    ),
                   );
                 },
               );
@@ -622,7 +569,12 @@ class _TimerCard extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.6),
+          color: Color.fromRGBO(
+            theme.colorScheme.outlineVariant.red,
+            theme.colorScheme.outlineVariant.green,
+            theme.colorScheme.outlineVariant.blue,
+            0.6,
+          ),
         ),
         boxShadow: kElevationToShadow[1],
       ),
@@ -632,11 +584,7 @@ class _TimerCard extends StatelessWidget {
           // 라벨 (상단 중앙)
           Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 12),
-            child: LabelPill(
-              text: labelText,
-              onTap: onTapLabel,
-              isIOS: isIOS,
-            ),
+            child: LabelPill(text: labelText, onTap: onTapLabel, isIOS: isIOS),
           ),
           // 큰 시간
           Expanded(
@@ -646,7 +594,9 @@ class _TimerCard extends StatelessWidget {
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontSize: 56,
                   fontWeight: FontWeight.w600,
-                  fontFeatures: const [FontFeature.tabularFigures()], // ← 숫자 폭 고정
+                  fontFeatures: const [
+                    FontFeature.tabularFigures(),
+                  ], // ← 숫자 폭 고정
                 ),
               ),
             ),
@@ -655,19 +605,4 @@ class _TimerCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Lap {
-  final int index;
-  final Duration timeFromStart;
-  final Duration segment;
-  final String label;
-  final String? note;
-  _Lap({
-    required this.index,
-    required this.timeFromStart,
-    required this.segment,
-    required this.label,
-    this.note,
-  });
 }

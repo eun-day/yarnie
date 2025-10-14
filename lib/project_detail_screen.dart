@@ -1,10 +1,13 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/stopwatch_panel.dart';
+import 'package:yarnie/counter_panel.dart';
+import 'package:yarnie/widget/project_info_section.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final int projectId;
@@ -115,10 +118,16 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
             child: IndexedStack(
               index: _cupertinoIndex,
               children: [
-                  StopwatchPanel(key: const ValueKey('stopwatch'), projectId: widget.projectId,),
-                  const _CounterView(key: ValueKey('counter')),
+                StopwatchPanel(
+                  key: const ValueKey('stopwatch'),
+                  projectId: widget.projectId,
+                ),
+                CounterPanel(
+                  key: const ValueKey('counter'),
+                  projectId: widget.projectId,
+                ),
               ],
-          ),
+            ),
           ),
         ],
       );
@@ -139,50 +148,12 @@ class _ProjectDetailTabsState extends State<ProjectDetailTabs> {
             child: TabBarView(
               children: [
                 StopwatchPanel(projectId: widget.projectId),
-                const _CounterView(),
+                CounterPanel(projectId: widget.projectId),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CounterView extends StatefulWidget {
-  const _CounterView({super.key});
-
-  @override
-  State<_CounterView> createState() => _CounterViewState();
-}
-
-class _CounterViewState extends State<_CounterView> {
-  int count = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: 실제 카운터(단수/패턴 등) UI로 교체
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('카운트: $count', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () => setState(() => count++),
-              icon: const Icon(Icons.add),
-              label: const Text('증가'),
-            ),
-            OutlinedButton.icon(
-              onPressed: () => setState(() => count = 0),
-              icon: const Icon(Icons.refresh),
-              label: const Text('리셋'),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

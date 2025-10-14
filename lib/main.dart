@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:yarnie/counter_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
-import 'package:yarnie/stopwatch_screen.dart';
-import 'package:yarnie/new_project_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final projects = await appDb.watchAll().first;
   for (final project in projects) {
-    print('📌Project: id=${project.id}, name=${project.name}, category=${project.category}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}');
+    print(
+        '📌Project: id=${project.id}, name=${project.name}, category=${project.category}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}');
   }
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,66 +27,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const RootScaffold(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const NewProjectScreen()),
-                  );
-                },
-                child: const Text('New Project'),
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const StopwatchScreen()),
-                    );
-                  },
-                  child: const Text('Go to Stopwatch'),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CounterScreen(title: 'Counter')),
-                    );
-                  },
-                  child: const Text('Go to Counter'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

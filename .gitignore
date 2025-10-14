@@ -3,7 +3,8 @@
 *.log
 *.pyc
 *.swp
-.DS_Store
+*.tmp
+*.swo
 .atom/
 .build/
 .buildlog/
@@ -21,7 +22,10 @@ migrate_working_dir/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -32,6 +36,9 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+
+# Coverage
+coverage/
 
 # Symbolication related
 app.*.symbols
@@ -46,3 +53,7 @@ app.*.map.json
 
 # Sensitive configuration files (e.g. credentials, keys)
 **/gradle.properties
+
+# macOS / Windows OS files
+.DS_Store
+Thumbs.db

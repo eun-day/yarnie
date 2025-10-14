@@ -1209,16 +1209,449 @@ class WorkSessionsCompanion extends UpdateCompanion<WorkSession> {
   }
 }
 
+class $ProjectCountersTable extends ProjectCounters
+    with TableInfo<$ProjectCountersTable, ProjectCounter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProjectCountersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mainCounterMeta = const VerificationMeta(
+    'mainCounter',
+  );
+  @override
+  late final GeneratedColumn<int> mainCounter = GeneratedColumn<int>(
+    'main_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _mainCountByMeta = const VerificationMeta(
+    'mainCountBy',
+  );
+  @override
+  late final GeneratedColumn<int> mainCountBy = GeneratedColumn<int>(
+    'main_count_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _subCounterMeta = const VerificationMeta(
+    'subCounter',
+  );
+  @override
+  late final GeneratedColumn<int> subCounter = GeneratedColumn<int>(
+    'sub_counter',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _subCountByMeta = const VerificationMeta(
+    'subCountBy',
+  );
+  @override
+  late final GeneratedColumn<int> subCountBy = GeneratedColumn<int>(
+    'sub_count_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _hasSubCounterMeta = const VerificationMeta(
+    'hasSubCounter',
+  );
+  @override
+  late final GeneratedColumn<bool> hasSubCounter = GeneratedColumn<bool>(
+    'has_sub_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_sub_counter" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    projectId,
+    mainCounter,
+    mainCountBy,
+    subCounter,
+    subCountBy,
+    hasSubCounter,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'project_counters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProjectCounter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    }
+    if (data.containsKey('main_counter')) {
+      context.handle(
+        _mainCounterMeta,
+        mainCounter.isAcceptableOrUnknown(
+          data['main_counter']!,
+          _mainCounterMeta,
+        ),
+      );
+    }
+    if (data.containsKey('main_count_by')) {
+      context.handle(
+        _mainCountByMeta,
+        mainCountBy.isAcceptableOrUnknown(
+          data['main_count_by']!,
+          _mainCountByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sub_counter')) {
+      context.handle(
+        _subCounterMeta,
+        subCounter.isAcceptableOrUnknown(data['sub_counter']!, _subCounterMeta),
+      );
+    }
+    if (data.containsKey('sub_count_by')) {
+      context.handle(
+        _subCountByMeta,
+        subCountBy.isAcceptableOrUnknown(
+          data['sub_count_by']!,
+          _subCountByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('has_sub_counter')) {
+      context.handle(
+        _hasSubCounterMeta,
+        hasSubCounter.isAcceptableOrUnknown(
+          data['has_sub_counter']!,
+          _hasSubCounterMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {projectId};
+  @override
+  ProjectCounter map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProjectCounter(
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      )!,
+      mainCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}main_counter'],
+      )!,
+      mainCountBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}main_count_by'],
+      )!,
+      subCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sub_counter'],
+      ),
+      subCountBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sub_count_by'],
+      )!,
+      hasSubCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_sub_counter'],
+      )!,
+    );
+  }
+
+  @override
+  $ProjectCountersTable createAlias(String alias) {
+    return $ProjectCountersTable(attachedDatabase, alias);
+  }
+}
+
+class ProjectCounter extends DataClass implements Insertable<ProjectCounter> {
+  final int projectId;
+  final int mainCounter;
+  final int mainCountBy;
+  final int? subCounter;
+  final int subCountBy;
+  final bool hasSubCounter;
+  const ProjectCounter({
+    required this.projectId,
+    required this.mainCounter,
+    required this.mainCountBy,
+    this.subCounter,
+    required this.subCountBy,
+    required this.hasSubCounter,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['project_id'] = Variable<int>(projectId);
+    map['main_counter'] = Variable<int>(mainCounter);
+    map['main_count_by'] = Variable<int>(mainCountBy);
+    if (!nullToAbsent || subCounter != null) {
+      map['sub_counter'] = Variable<int>(subCounter);
+    }
+    map['sub_count_by'] = Variable<int>(subCountBy);
+    map['has_sub_counter'] = Variable<bool>(hasSubCounter);
+    return map;
+  }
+
+  ProjectCountersCompanion toCompanion(bool nullToAbsent) {
+    return ProjectCountersCompanion(
+      projectId: Value(projectId),
+      mainCounter: Value(mainCounter),
+      mainCountBy: Value(mainCountBy),
+      subCounter: subCounter == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subCounter),
+      subCountBy: Value(subCountBy),
+      hasSubCounter: Value(hasSubCounter),
+    );
+  }
+
+  factory ProjectCounter.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProjectCounter(
+      projectId: serializer.fromJson<int>(json['projectId']),
+      mainCounter: serializer.fromJson<int>(json['mainCounter']),
+      mainCountBy: serializer.fromJson<int>(json['mainCountBy']),
+      subCounter: serializer.fromJson<int?>(json['subCounter']),
+      subCountBy: serializer.fromJson<int>(json['subCountBy']),
+      hasSubCounter: serializer.fromJson<bool>(json['hasSubCounter']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'projectId': serializer.toJson<int>(projectId),
+      'mainCounter': serializer.toJson<int>(mainCounter),
+      'mainCountBy': serializer.toJson<int>(mainCountBy),
+      'subCounter': serializer.toJson<int?>(subCounter),
+      'subCountBy': serializer.toJson<int>(subCountBy),
+      'hasSubCounter': serializer.toJson<bool>(hasSubCounter),
+    };
+  }
+
+  ProjectCounter copyWith({
+    int? projectId,
+    int? mainCounter,
+    int? mainCountBy,
+    Value<int?> subCounter = const Value.absent(),
+    int? subCountBy,
+    bool? hasSubCounter,
+  }) => ProjectCounter(
+    projectId: projectId ?? this.projectId,
+    mainCounter: mainCounter ?? this.mainCounter,
+    mainCountBy: mainCountBy ?? this.mainCountBy,
+    subCounter: subCounter.present ? subCounter.value : this.subCounter,
+    subCountBy: subCountBy ?? this.subCountBy,
+    hasSubCounter: hasSubCounter ?? this.hasSubCounter,
+  );
+  ProjectCounter copyWithCompanion(ProjectCountersCompanion data) {
+    return ProjectCounter(
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      mainCounter: data.mainCounter.present
+          ? data.mainCounter.value
+          : this.mainCounter,
+      mainCountBy: data.mainCountBy.present
+          ? data.mainCountBy.value
+          : this.mainCountBy,
+      subCounter: data.subCounter.present
+          ? data.subCounter.value
+          : this.subCounter,
+      subCountBy: data.subCountBy.present
+          ? data.subCountBy.value
+          : this.subCountBy,
+      hasSubCounter: data.hasSubCounter.present
+          ? data.hasSubCounter.value
+          : this.hasSubCounter,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectCounter(')
+          ..write('projectId: $projectId, ')
+          ..write('mainCounter: $mainCounter, ')
+          ..write('mainCountBy: $mainCountBy, ')
+          ..write('subCounter: $subCounter, ')
+          ..write('subCountBy: $subCountBy, ')
+          ..write('hasSubCounter: $hasSubCounter')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    projectId,
+    mainCounter,
+    mainCountBy,
+    subCounter,
+    subCountBy,
+    hasSubCounter,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProjectCounter &&
+          other.projectId == this.projectId &&
+          other.mainCounter == this.mainCounter &&
+          other.mainCountBy == this.mainCountBy &&
+          other.subCounter == this.subCounter &&
+          other.subCountBy == this.subCountBy &&
+          other.hasSubCounter == this.hasSubCounter);
+}
+
+class ProjectCountersCompanion extends UpdateCompanion<ProjectCounter> {
+  final Value<int> projectId;
+  final Value<int> mainCounter;
+  final Value<int> mainCountBy;
+  final Value<int?> subCounter;
+  final Value<int> subCountBy;
+  final Value<bool> hasSubCounter;
+  const ProjectCountersCompanion({
+    this.projectId = const Value.absent(),
+    this.mainCounter = const Value.absent(),
+    this.mainCountBy = const Value.absent(),
+    this.subCounter = const Value.absent(),
+    this.subCountBy = const Value.absent(),
+    this.hasSubCounter = const Value.absent(),
+  });
+  ProjectCountersCompanion.insert({
+    this.projectId = const Value.absent(),
+    this.mainCounter = const Value.absent(),
+    this.mainCountBy = const Value.absent(),
+    this.subCounter = const Value.absent(),
+    this.subCountBy = const Value.absent(),
+    this.hasSubCounter = const Value.absent(),
+  });
+  static Insertable<ProjectCounter> custom({
+    Expression<int>? projectId,
+    Expression<int>? mainCounter,
+    Expression<int>? mainCountBy,
+    Expression<int>? subCounter,
+    Expression<int>? subCountBy,
+    Expression<bool>? hasSubCounter,
+  }) {
+    return RawValuesInsertable({
+      if (projectId != null) 'project_id': projectId,
+      if (mainCounter != null) 'main_counter': mainCounter,
+      if (mainCountBy != null) 'main_count_by': mainCountBy,
+      if (subCounter != null) 'sub_counter': subCounter,
+      if (subCountBy != null) 'sub_count_by': subCountBy,
+      if (hasSubCounter != null) 'has_sub_counter': hasSubCounter,
+    });
+  }
+
+  ProjectCountersCompanion copyWith({
+    Value<int>? projectId,
+    Value<int>? mainCounter,
+    Value<int>? mainCountBy,
+    Value<int?>? subCounter,
+    Value<int>? subCountBy,
+    Value<bool>? hasSubCounter,
+  }) {
+    return ProjectCountersCompanion(
+      projectId: projectId ?? this.projectId,
+      mainCounter: mainCounter ?? this.mainCounter,
+      mainCountBy: mainCountBy ?? this.mainCountBy,
+      subCounter: subCounter ?? this.subCounter,
+      subCountBy: subCountBy ?? this.subCountBy,
+      hasSubCounter: hasSubCounter ?? this.hasSubCounter,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
+    if (mainCounter.present) {
+      map['main_counter'] = Variable<int>(mainCounter.value);
+    }
+    if (mainCountBy.present) {
+      map['main_count_by'] = Variable<int>(mainCountBy.value);
+    }
+    if (subCounter.present) {
+      map['sub_counter'] = Variable<int>(subCounter.value);
+    }
+    if (subCountBy.present) {
+      map['sub_count_by'] = Variable<int>(subCountBy.value);
+    }
+    if (hasSubCounter.present) {
+      map['has_sub_counter'] = Variable<bool>(hasSubCounter.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectCountersCompanion(')
+          ..write('projectId: $projectId, ')
+          ..write('mainCounter: $mainCounter, ')
+          ..write('mainCountBy: $mainCountBy, ')
+          ..write('subCounter: $subCounter, ')
+          ..write('subCountBy: $subCountBy, ')
+          ..write('hasSubCounter: $hasSubCounter')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(e);
   $AppDbManager get managers => $AppDbManager(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $WorkSessionsTable workSessions = $WorkSessionsTable(this);
+  late final $ProjectCountersTable projectCounters = $ProjectCountersTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [projects, workSessions];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    projects,
+    workSessions,
+    projectCounters,
+  ];
 }
 
 typedef $$ProjectsTableCreateCompanionBuilder =
@@ -1796,6 +2229,229 @@ typedef $$WorkSessionsTableProcessedTableManager =
       WorkSession,
       PrefetchHooks Function()
     >;
+typedef $$ProjectCountersTableCreateCompanionBuilder =
+    ProjectCountersCompanion Function({
+      Value<int> projectId,
+      Value<int> mainCounter,
+      Value<int> mainCountBy,
+      Value<int?> subCounter,
+      Value<int> subCountBy,
+      Value<bool> hasSubCounter,
+    });
+typedef $$ProjectCountersTableUpdateCompanionBuilder =
+    ProjectCountersCompanion Function({
+      Value<int> projectId,
+      Value<int> mainCounter,
+      Value<int> mainCountBy,
+      Value<int?> subCounter,
+      Value<int> subCountBy,
+      Value<bool> hasSubCounter,
+    });
+
+class $$ProjectCountersTableFilterComposer
+    extends Composer<_$AppDb, $ProjectCountersTable> {
+  $$ProjectCountersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mainCounter => $composableBuilder(
+    column: $table.mainCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mainCountBy => $composableBuilder(
+    column: $table.mainCountBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get subCounter => $composableBuilder(
+    column: $table.subCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get subCountBy => $composableBuilder(
+    column: $table.subCountBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasSubCounter => $composableBuilder(
+    column: $table.hasSubCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProjectCountersTableOrderingComposer
+    extends Composer<_$AppDb, $ProjectCountersTable> {
+  $$ProjectCountersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mainCounter => $composableBuilder(
+    column: $table.mainCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mainCountBy => $composableBuilder(
+    column: $table.mainCountBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get subCounter => $composableBuilder(
+    column: $table.subCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get subCountBy => $composableBuilder(
+    column: $table.subCountBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasSubCounter => $composableBuilder(
+    column: $table.hasSubCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProjectCountersTableAnnotationComposer
+    extends Composer<_$AppDb, $ProjectCountersTable> {
+  $$ProjectCountersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<int> get mainCounter => $composableBuilder(
+    column: $table.mainCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get mainCountBy => $composableBuilder(
+    column: $table.mainCountBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get subCounter => $composableBuilder(
+    column: $table.subCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get subCountBy => $composableBuilder(
+    column: $table.subCountBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasSubCounter => $composableBuilder(
+    column: $table.hasSubCounter,
+    builder: (column) => column,
+  );
+}
+
+class $$ProjectCountersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $ProjectCountersTable,
+          ProjectCounter,
+          $$ProjectCountersTableFilterComposer,
+          $$ProjectCountersTableOrderingComposer,
+          $$ProjectCountersTableAnnotationComposer,
+          $$ProjectCountersTableCreateCompanionBuilder,
+          $$ProjectCountersTableUpdateCompanionBuilder,
+          (
+            ProjectCounter,
+            BaseReferences<_$AppDb, $ProjectCountersTable, ProjectCounter>,
+          ),
+          ProjectCounter,
+          PrefetchHooks Function()
+        > {
+  $$ProjectCountersTableTableManager(_$AppDb db, $ProjectCountersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProjectCountersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProjectCountersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProjectCountersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> projectId = const Value.absent(),
+                Value<int> mainCounter = const Value.absent(),
+                Value<int> mainCountBy = const Value.absent(),
+                Value<int?> subCounter = const Value.absent(),
+                Value<int> subCountBy = const Value.absent(),
+                Value<bool> hasSubCounter = const Value.absent(),
+              }) => ProjectCountersCompanion(
+                projectId: projectId,
+                mainCounter: mainCounter,
+                mainCountBy: mainCountBy,
+                subCounter: subCounter,
+                subCountBy: subCountBy,
+                hasSubCounter: hasSubCounter,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> projectId = const Value.absent(),
+                Value<int> mainCounter = const Value.absent(),
+                Value<int> mainCountBy = const Value.absent(),
+                Value<int?> subCounter = const Value.absent(),
+                Value<int> subCountBy = const Value.absent(),
+                Value<bool> hasSubCounter = const Value.absent(),
+              }) => ProjectCountersCompanion.insert(
+                projectId: projectId,
+                mainCounter: mainCounter,
+                mainCountBy: mainCountBy,
+                subCounter: subCounter,
+                subCountBy: subCountBy,
+                hasSubCounter: hasSubCounter,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProjectCountersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $ProjectCountersTable,
+      ProjectCounter,
+      $$ProjectCountersTableFilterComposer,
+      $$ProjectCountersTableOrderingComposer,
+      $$ProjectCountersTableAnnotationComposer,
+      $$ProjectCountersTableCreateCompanionBuilder,
+      $$ProjectCountersTableUpdateCompanionBuilder,
+      (
+        ProjectCounter,
+        BaseReferences<_$AppDb, $ProjectCountersTable, ProjectCounter>,
+      ),
+      ProjectCounter,
+      PrefetchHooks Function()
+    >;
 
 class $AppDbManager {
   final _$AppDb _db;
@@ -1804,4 +2460,6 @@ class $AppDbManager {
       $$ProjectsTableTableManager(_db, _db.projects);
   $$WorkSessionsTableTableManager get workSessions =>
       $$WorkSessionsTableTableManager(_db, _db.workSessions);
+  $$ProjectCountersTableTableManager get projectCounters =>
+      $$ProjectCountersTableTableManager(_db, _db.projectCounters);
 }
