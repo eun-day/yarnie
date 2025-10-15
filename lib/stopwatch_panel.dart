@@ -9,7 +9,8 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
 import 'package:yarnie/providers/stopwatch_provider.dart';
-import 'package:yarnie/widget/labelpill.dart';
+import 'package:yarnie/widgets/session_log_tile.dart';
+import 'package:yarnie/widgets/timer_card.dart';
 
 /// 스톱워치 패널(Scaffold 없음) — 화면 어디든 끼워 넣기용
 class StopwatchPanel extends ConsumerStatefulWidget {
@@ -432,7 +433,7 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
         // ── 타이머 카드(라벨 + 시간) ───────────────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: _TimerCard(
+          child: TimerCard(
             timeText: fmt(swState.elapsed),
             labelText: currentLabel ?? '미분류',
             onTapLabel: () async {
@@ -502,39 +503,25 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
                 return const Center(child: Text('완료된 세션이 없습니다'));
               }
 
-              // 최신순 정렬 가정: 표시용 Lap 번호를 1부터 증가로 매김
+              // 최신순 정렬된 리스트에서 역순 번호 매기기
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, i) => const Divider(height: 1),
                 itemBuilder: (_, i) {
                   final s = items[i];
 
-                  // 표시용 값들
-                  final lapNo = i + 1;
+                  // 표시용 값들 - 정순 번호 (오래된 기록이 1번)
+                  final logNo = items.length - i;
                   final segment = Duration(
                     seconds: s.elapsedMs.toSec(),
                   ); // 세션 소요시간
-                  final started = DateTime.fromMillisecondsSinceEpoch(
-                    s.startedAt,
-                  );
-                  final stopped = (s.stoppedAt != null)
-                      ? DateTime.fromMillisecondsSinceEpoch(s.stoppedAt!)
-                      : null;
 
-                  return ListTile(
-                    dense: true,
-                    leading: Text('Lap $lapNo'),
-                    title: Text(fmt(segment)), // hh:mm:ss
-                    subtitle: Text(
-                      [
-                        if ((s.label ?? '').isNotEmpty) '라벨: ${s.label}',
-                        if (stopped != null)
-                          '기간: ${ymdHm(started)} ~ ${ymdHm(stopped)}',
-                        '누적: ${fmt(segment)}',
-                        if ((s.memo ?? '').isNotEmpty) '메모: ${s.memo}',
-                      ].join(' • '),
-                    ),
+                  return SessionLogTile(
+                    logNo: logNo,
+                    duration: segment,
+                    label: s.label,
+                    memo: s.memo,
                   );
                 },
               );
@@ -542,67 +529,6 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
           ),
         ),
       ],
-    );
-  }
-}
-
-/// 카드 위젯: 상단 중앙 라벨 + 중앙 큰 시간
-class _TimerCard extends StatelessWidget {
-  const _TimerCard({
-    required this.timeText,
-    required this.labelText,
-    required this.onTapLabel,
-  });
-
-  final String timeText;
-  final String labelText;
-  final VoidCallback onTapLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isIOS = Platform.isIOS;
-
-    return Container(
-      height: 180,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Color.fromRGBO(
-            theme.colorScheme.outlineVariant.red,
-            theme.colorScheme.outlineVariant.green,
-            theme.colorScheme.outlineVariant.blue,
-            0.6,
-          ),
-        ),
-        boxShadow: kElevationToShadow[1],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // 라벨 (상단 중앙)
-          Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 12),
-            child: LabelPill(text: labelText, onTap: onTapLabel, isIOS: isIOS),
-          ),
-          // 큰 시간
-          Expanded(
-            child: Center(
-              child: Text(
-                timeText,
-                style: theme.textTheme.displaySmall?.copyWith(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: const [
-                    FontFeature.tabularFigures(),
-                  ], // ← 숫자 폭 고정
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
