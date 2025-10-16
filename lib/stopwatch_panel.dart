@@ -492,40 +492,43 @@ class _StopwatchPanelState extends ConsumerState<StopwatchPanel>
         ),
         // 종료된 세션 리스트
         Expanded(
-          child: StreamBuilder<List<WorkSession>>(
-            stream: _stream,
-            builder: (context, snap) {
-              if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final items = snap.data ?? const [];
-              if (items.isEmpty) {
-                return const Center(child: Text('완료된 세션이 없습니다'));
-              }
+          child: SafeArea(
+            top: false,
+            child: StreamBuilder<List<WorkSession>>(
+              stream: _stream,
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final items = snap.data ?? const [];
+                if (items.isEmpty) {
+                  return const Center(child: Text('완료된 세션이 없습니다'));
+                }
 
-              // 최신순 정렬된 리스트에서 역순 번호 매기기
-              return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                itemCount: items.length,
-                separatorBuilder: (_, i) => const Divider(height: 1),
-                itemBuilder: (_, i) {
-                  final s = items[i];
+                // 최신순 정렬된 리스트에서 역순 번호 매기기
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  itemCount: items.length,
+                  separatorBuilder: (_, i) => const Divider(height: 1),
+                  itemBuilder: (_, i) {
+                    final s = items[i];
 
-                  // 표시용 값들 - 정순 번호 (오래된 기록이 1번)
-                  final logNo = items.length - i;
-                  final segment = Duration(
-                    seconds: s.elapsedMs.toSec(),
-                  ); // 세션 소요시간
+                    // 표시용 값들 - 정순 번호 (오래된 기록이 1번)
+                    final logNo = items.length - i;
+                    final segment = Duration(
+                      seconds: s.elapsedMs.toSec(),
+                    ); // 세션 소요시간
 
-                  return SessionLogTile(
-                    logNo: logNo,
-                    duration: segment,
-                    label: s.label,
-                    memo: s.memo,
-                  );
-                },
-              );
-            },
+                    return SessionLogTile(
+                      logNo: logNo,
+                      duration: segment,
+                      label: s.label,
+                      memo: s.memo,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
