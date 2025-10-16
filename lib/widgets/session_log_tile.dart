@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import 'package:yarnie/common/time_helper.dart';
+import 'package:yarnie/common/label_picker_helper.dart';
+import 'package:yarnie/db/di.dart';
 
 /// 세션 로그 타일 위젯
 class SessionLogTile extends StatefulWidget {
+  final int sessionId; // DB의 세션 ID 추가
   final int logNo;
   final Duration duration;
   final String? label;
   final String? memo;
+  final VoidCallback? onViewDetails;
+  final VoidCallback? onEditLabel;
+  final VoidCallback? onEditMemo;
 
   const SessionLogTile({
     super.key,
+    required this.sessionId,
     required this.logNo,
     required this.duration,
     this.label,
     this.memo,
+    this.onViewDetails,
+    this.onEditLabel,
+    this.onEditMemo,
   });
 
   @override
@@ -23,12 +35,295 @@ class SessionLogTile extends StatefulWidget {
 class _SessionLogTileState extends State<SessionLogTile> {
   bool _isExpanded = false;
 
+  // 기본 라벨 목록 (stopwatch_panel과 동일하게)
+  static const List<String> _defaultLabels = ['소매', '몸통', '목둘레'];
+
+  Future<void> _showMemoEditor(BuildContext context) async {
+    final TextEditingController controller = TextEditingController(
+      text: widget.memo ?? '', // 기존 메모가 있으면 불러오기
+    );
+
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 제목
+                  Text(
+                    'log ${widget.logNo} 메모 편집',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 메모 입력 필드
+                  TextField(
+                    controller: controller,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      hintText: '메모를 입력하세요...',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    autofocus: true,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 버튼들
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context, null),
+                          child: const Text('취소'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final memo = controller.text.trim();
+                            Navigator.pop(context, memo.isEmpty ? '' : memo);
+                          },
+                          child: const Text('저장'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // 결과 처리
+    if (result != null) {
+      final newMemo = result.isEmpty ? null : result;
+
+      // 기존 메모와 다른 경우만 DB 업데이트
+      if (newMemo != widget.memo) {
+        await _updateSessionMemo(newMemo);
+      }
+    }
+    // result가 null인 경우는 취소이므로 아무것도 하지 않음
+  }
+
+  Future<void> _updateSessionMemo(String? newMemo) async {
+    try {
+      // 메모만 업데이트 (라벨은 건드리지 않음)
+      await appDb.updateSessionMemo(
+        sessionId: widget.sessionId,
+        memo: newMemo,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
+      );
+
+      // 성공 피드백
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(newMemo == null ? '메모가 제거되었습니다' : '메모가 저장되었습니다'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // 에러 처리
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('메모 업데이트 실패: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showLabelSelector(BuildContext context) async {
+    List<String> currentLabels = [..._defaultLabels];
+
+    final selectedLabel = await LabelPickerHelper.openLabelPicker(
+      context: context,
+      labels: currentLabels,
+      initial: widget.label,
+      onLabelsUpdated: (updatedLabels) {
+        // 라벨 목록이 업데이트되면 로컬 상태 갱신
+        currentLabels = updatedLabels;
+      },
+    );
+
+    // 라벨 선택기에서 실제로 선택이 이루어진 경우만 DB 업데이트
+    if (selectedLabel != null) {
+      // 빈 문자열은 "미분류"를 의미하므로 null로 변환
+      final newLabel = selectedLabel.isEmpty ? null : selectedLabel;
+
+      // 기존 라벨과 다른 경우만 DB 업데이트
+      if (newLabel != widget.label) {
+        await _updateSessionLabel(newLabel);
+      }
+    }
+    // selectedLabel이 null인 경우는 취소이므로 아무것도 하지 않음
+  }
+
+  Future<void> _updateSessionLabel(String? newLabel) async {
+    try {
+      // 라벨만 업데이트 (메모는 건드리지 않음)
+      await appDb.updateSessionLabel(
+        sessionId: widget.sessionId,
+        label: newLabel,
+        nowMs: DateTime.now().millisecondsSinceEpoch,
+      );
+
+      // 성공 피드백 (선택사항)
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              newLabel == null ? '라벨이 제거되었습니다' : '라벨이 "$newLabel"로 변경되었습니다',
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // 에러 처리
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('라벨 업데이트 실패: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showIOSActionSheet(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              if (widget.onViewDetails != null) {
+                widget.onViewDetails!();
+              } else {
+                debugPrint('View Details tapped');
+              }
+            },
+            child: Text(
+              'View log ${widget.logNo} Details',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              if (widget.onEditLabel != null) {
+                widget.onEditLabel!();
+              } else {
+                _showLabelSelector(context);
+              }
+            },
+            child: const Text('Edit Label', style: TextStyle(fontSize: 16)),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              if (widget.onEditMemo != null) {
+                widget.onEditMemo!();
+              } else {
+                _showMemoEditor(context);
+              }
+            },
+            child: const Text('Edit Memo', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel', style: TextStyle(fontSize: 16)),
+        ),
+      ),
+    );
+  }
+
+  void _showAndroidContextMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.visibility),
+              title: Text('View log ${widget.logNo} Details'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onViewDetails != null) {
+                  widget.onViewDetails!();
+                } else {
+                  debugPrint('View Details tapped');
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.label_outline),
+              title: const Text('Edit Label'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onEditLabel != null) {
+                  widget.onEditLabel!();
+                } else {
+                  _showLabelSelector(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_note),
+              title: const Text('Edit Memo'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onEditMemo != null) {
+                  widget.onEditMemo!();
+                } else {
+                  _showMemoEditor(context);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasMemo = widget.memo?.isNotEmpty == true;
 
-    return Padding(
+    final content = Container(
+      width: double.infinity, // 전체 너비 사용
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,33 +342,39 @@ class _SessionLogTileState extends State<SessionLogTile> {
                   ),
                 ),
               ),
-              Text(
-                fmt(widget.duration),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Row(
+                  children: [
+                    Text(
+                      fmt(widget.duration),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (widget.label?.isNotEmpty == true) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          widget.label!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              if (widget.label?.isNotEmpty == true) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    widget.label!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
           // 두 번째 줄: 메모 (있을 때만 표시)
@@ -86,6 +387,19 @@ class _SessionLogTileState extends State<SessionLogTile> {
           ],
         ],
       ),
+    );
+
+    // 플랫폼별 GestureDetector 사용
+    return GestureDetector(
+      onLongPress: () {
+        if (Platform.isIOS) {
+          _showIOSActionSheet(context);
+        } else {
+          _showAndroidContextMenu(context);
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: content,
     );
   }
 
@@ -203,9 +517,12 @@ class _SessionLogTileState extends State<SessionLogTile> {
       width: 250,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.deepPurple.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: Colors.deepPurple.withValues(alpha: 0.2),
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(6),
-        color: Colors.deepPurple.withOpacity(0.05),
+        color: Colors.deepPurple.withValues(alpha: 0.05),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +533,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
             child: Icon(
               Icons.push_pin,
               size: 12,
-              color: Colors.deepPurple.withOpacity(0.6),
+              color: Colors.deepPurple.withValues(alpha: 0.6),
             ),
           ),
           // 메모 내용
@@ -225,6 +542,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
               onTap: needsTruncate
                   ? () => setState(() => _isExpanded = !_isExpanded)
                   : null,
+              behavior: HitTestBehavior.translucent,
               child: _isExpanded
                   ? Text.rich(
                       TextSpan(
