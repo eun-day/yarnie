@@ -242,19 +242,25 @@ class AppDb extends _$AppDb {
     });
   }
 
-  // 5) 라벨/메모 업데이트(편집 팝업에서)
-  Future<void> updateSessionLabelMemo({
+  // 라벨만 업데이트
+  Future<void> updateSessionLabel({
     required int sessionId,
     String? label,
+    required int nowMs,
+  }) async {
+    await (update(workSessions)..where((t) => t.id.equals(sessionId))).write(
+      WorkSessionsCompanion(label: Value(label), updatedAt: Value(nowMs)),
+    );
+  }
+
+  // 메모만 업데이트
+  Future<void> updateSessionMemo({
+    required int sessionId,
     String? memo,
     required int nowMs,
   }) async {
     await (update(workSessions)..where((t) => t.id.equals(sessionId))).write(
-      WorkSessionsCompanion(
-        label: Value(label),
-        memo: Value(memo),
-        updatedAt: Value(nowMs),
-      ),
+      WorkSessionsCompanion(memo: Value(memo), updatedAt: Value(nowMs)),
     );
   }
 
