@@ -76,7 +76,6 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
         setState(() {
           _project = project;
           _projectNameController.text = project.name;
-          _selectedCategory = project.category;
           _selectedNeedleType = project.needleType;
           _selectedNeedleSize = project.needleSize;
           _lotNumberController.text = project.lotNumber ?? '';
@@ -95,7 +94,6 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
         ProjectsCompanion(
           id: Value(_project!.id),
           name: Value(_projectNameController.text),
-          category: Value(_selectedCategory),
           needleType: Value(_selectedNeedleType),
           needleSize: Value(_selectedNeedleSize),
           lotNumber: Value(
@@ -184,7 +182,6 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
         children: [
           _buildInfoCard([
             _kv('프로젝트 이름', _project!.name),
-            _kv('카테고리', _project!.category ?? '-'),
             _kv('바늘 종류', _project!.needleType ?? '-'),
             _kv('바늘 사이즈', _project!.needleSize ?? '-'),
             _kv('Lot Number', _project!.lotNumber ?? '-'),

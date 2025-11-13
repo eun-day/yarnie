@@ -34,7 +34,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
       '7.0mm',
       '8.0mm',
       '9.0mm',
-      '10.0mm'
+      '10.0mm',
     ],
     '코바늘': [
       '2/0호 (2.0mm)',
@@ -45,7 +45,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
       '7/0호 (4.0mm)',
       '8/0호 (5.0mm)',
       '9/0호 (5.5mm)',
-      '10/0호 (6.0mm)'
+      '10/0호 (6.0mm)',
     ],
   };
 
@@ -257,7 +257,6 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
                   } else {
                     final id = await appDb.createProject(
                       name: _projectNameController.text,
-                      category: _selectedCategory,
                       needleType: _selectedNeedleType,
                       needleSize: _selectedNeedleSize,
                       lotNumber: _lotNumberController.text,

@@ -23,9 +23,10 @@ class _ProjectsRootState extends State<ProjectsRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(              // ⬅️ 상단(iOS 노치/Android status bar) 여백 확보
+    return SafeArea(
+      // ⬅️ 상단(iOS 노치/Android status bar) 여백 확보
       top: true,
-      bottom: false,              // 하단은 NavigationBar가 이미 있으니 false 권장
+      bottom: false, // 하단은 NavigationBar가 이미 있으니 false 권장
       child: StreamBuilder<List<Project>>(
         stream: _stream, // AppDb의 watchAll() 그대로 사용
         builder: (context, snap) {
@@ -74,11 +75,11 @@ class _ProjectsRootState extends State<ProjectsRoot> {
   }
 
   String _metaText(Project p) {
-    final cat = p.category?.isNotEmpty == true ? p.category! : '카테고리 없음';
+    // category 필드는 태그 시스템으로 대체됨
     final dt = (p.createdAt).toLocal();
     final d =
         '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
-    return '$cat · $d';
+    return d;
   }
 }
 
@@ -99,7 +100,8 @@ class _EmptyView extends StatelessWidget {
               width: 180,
               height: 180,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(Icons.folder_open, size: 96),
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.folder_open, size: 96),
             ),
             const SizedBox(height: 16),
             Text(
