@@ -9,10 +9,9 @@ Yarnie 앱의 기존 Session, MainCounter, SubCounter, label 개념을 새로운
 - **Part**: 프로젝트 내의 특정 구간 또는 단계 (예: 몸통, 소매, 목 부분)
 - **MainCounter**: 각 Part의 중심 카운터 (Row 모드 또는 Free 모드)
 - **BuddyCounter**: MainCounter를 보조하는 카운터 (Stitch 또는 Section 타입)
-- **Session**: 사용자의 뜨개 작업 시간을 기록하는 단위
+- **Session**: 사용자의 뜨개 작업 시간을 기록하는 단위 (Part당 최대 1개)
 - **SessionSegment**: Session 내의 실제 시간 구간 (일시정지, 재시작, 모드 변경 등으로 분할)
 - **Tag**: 프로젝트를 분류하기 위한 사용자 정의 태그 (이름과 색상 포함)
-- **ProjectTag**: 프로젝트와 태그의 다대다 관계를 나타내는 연결 테이블
 - **Database_Schema**: Drift ORM을 사용한 SQLite 데이터베이스 테이블 구조
 - **Migration**: 기존 데이터베이스 구조에서 새로운 구조로의 변경 (개발 단계이므로 제외)
 
@@ -24,24 +23,25 @@ Yarnie 앱의 기존 Session, MainCounter, SubCounter, label 개념을 새로운
 
 #### Acceptance Criteria
 
-1. WHEN Part 테이블을 생성할 때, THE Database_Schema SHALL 프로젝트 ID, 이름, 순서, 생성일시, 수정일시 필드를 포함한다
-2. WHEN Projects 테이블을 확장할 때, THE Database_Schema SHALL current_part_id 필드를 추가하여 활성 Part를 저장한다
+1. WHEN Part 테이블을 생성할 때, THE Database_Schema SHALL 프로젝트 ID, 이름, 순서, BuddyCounter 순서, 생성일시, 수정일시 필드를 포함한다
+2. WHEN Projects 테이블을 확장할 때, THE Database_Schema SHALL current_part_id, image_path, tag_ids 필드를 추가한다
 3. WHEN Part와 Project 관계를 정의할 때, THE Database_Schema SHALL 1:N 관계를 외래키로 설정한다
 4. WHEN Part 순서를 관리할 때, THE Database_Schema SHALL 정수형 order_index 필드를 제공한다
-5. WHEN Part를 삭제할 때, THE Database_Schema SHALL 관련된 Counter와 Session 데이터의 cascade 삭제를 지원한다
+5. WHEN BuddyCounter 순서를 저장할 때, THE Database_Schema SHALL buddy_counter_order JSON 필드를 제공한다
+6. WHEN Part를 삭제할 때, THE Database_Schema SHALL 관련된 Counter와 Session 데이터의 cascade 삭제를 지원한다
 
 ### Requirement 2
 
-**User Story:** 개발자로서 MainCounter와 BuddyCounter를 구분하여 관리하고 싶으므로, 통합된 Counter 테이블 구조가 필요합니다.
+**User Story:** 개발자로서 MainCounter, StitchCounter, SectionCounter를 명확히 구분하여 관리하고 싶으므로, 카운터 유형별 독립 테이블 구조가 필요합니다.
 
 #### Acceptance Criteria
 
-1. WHEN Counter 테이블을 생성할 때, THE Database_Schema SHALL Part ID, Main/Buddy 구분, Buddy 타입, 현재 값, count-by 설정 필드를 포함한다
-2. WHEN MainCounter와 BuddyCounter를 구분할 때, THE Database_Schema SHALL is_main 불린 필드를 제공한다
-3. WHEN BuddyCounter 타입을 구분할 때, THE Database_Schema SHALL buddy_type enum 필드(stitch/section)를 제공한다
-4. WHEN count_by 설정을 저장할 때, THE Database_Schema SHALL Main Counter와 Stitch Counter에서 사용할 count_by 필드를 제공한다
-5. WHEN Section Counter를 저장할 때, THE Database_Schema SHALL count_by를 사용하지 않고 메인과 연동되는 구조를 제공한다 (세부 유형별 필드는 3단계에서 정의)
-6. WHEN BuddyCounter 링크 관계를 설정할 때, THE Database_Schema SHALL linked_to_main_counter 불린 필드를 제공한다 (MainCounter일 때는 null)
+1. WHEN MainCounters 테이블을 생성할 때, THE Database_Schema SHALL Part ID, 현재 값 필드를 포함한다
+2. WHEN StitchCounters 테이블을 생성할 때, THE Database_Schema SHALL Part ID, 이름, 현재 값, count-by 필드를 포함한다
+3. WHEN SectionCounters 테이블을 생성할 때, THE Database_Schema SHALL Part ID, 이름, spec JSON, 링크 상태, frozen main at 필드를 포함한다
+4. WHEN Parts 테이블에 BuddyCounter 순서를 저장할 때, THE Database_Schema SHALL buddy_counter_order JSON 필드를 제공한다
+5. WHEN buddy_counter_order를 저장할 때, THE Database_Schema SHALL [{"type":"stitch","id":1},{"type":"section","id":2}] 형식의 JSON 배열을 사용한다
+6. WHEN BuddyCounter를 삭제할 때, THE Database_Schema SHALL 애플리케이션 레벨에서 Parts의 buddy_counter_order도 업데이트한다
 
 
 ### Requirement 3
@@ -63,7 +63,7 @@ Yarnie 앱의 기존 Session, MainCounter, SubCounter, label 개념을 새로운
 #### Acceptance Criteria
 
 1. WHEN 기존 WorkSessions 테이블을 대체할 때, THE Database_Schema SHALL 새로운 Sessions와 SessionSegments 테이블로 기능을 분리한다
-2. WHEN 기존 ProjectCounters 테이블을 대체할 때, THE Database_Schema SHALL 새로운 Counters 테이블로 mainCounter와 subCounter 기능을 통합한다
+2. WHEN 기존 ProjectCounters 테이블을 대체할 때, THE Database_Schema SHALL MainCounters, StitchCounters, SectionCounters, SectionRuns 테이블로 카운터 유형별로 분리한다
 3. WHEN 기존 label 필드를 Part 시스템으로 전환할 때, THE Database_Schema SHALL WorkSessions의 label을 Part 관계로 대체한다
 4. WHEN 코드 생성을 실행할 때, THE Database_Schema SHALL build_runner를 통해 새로운 구조의 .g.dart 파일을 생성한다
 
@@ -96,14 +96,13 @@ Yarnie 앱의 기존 Session, MainCounter, SubCounter, label 개념을 새로운
 
 #### Acceptance Criteria
 
-1. WHEN Tags 테이블을 생성할 때, THE Database_Schema SHALL 태그 이름, 색상 코드, 생성일시 필드를 포함한다
+1. WHEN Tags 테이블을 생성할 때, THE Database_Schema SHALL 태그 이름, 색상 코드, 생성일시, 수정일시 필드를 포함한다
 2. WHEN 태그 이름의 고유성을 보장할 때, THE Database_Schema SHALL name 필드에 UNIQUE 제약조건을 설정한다
 3. WHEN 태그 색상을 저장할 때, THE Database_Schema SHALL 정수형 color 필드를 제공한다 (Flutter Color 값 저장)
-4. WHEN ProjectTags 테이블을 생성할 때, THE Database_Schema SHALL project_id와 tag_id를 복합 기본키로 설정한다
-5. WHEN 프로젝트와 태그 관계를 정의할 때, THE Database_Schema SHALL 다대다(N:M) 관계를 ProjectTags 테이블로 구현한다
-6. WHEN 태그를 삭제할 때, THE Database_Schema SHALL 관련된 ProjectTags 레코드도 cascade 삭제한다
-7. WHEN 프로젝트를 삭제할 때, THE Database_Schema SHALL 관련된 ProjectTags 레코드도 cascade 삭제한다
-8. WHEN 태그 검색을 위한 인덱스를 생성할 때, THE Database_Schema SHALL name 필드에 인덱스를 생성한다
+4. WHEN Projects 테이블에 태그 관계를 저장할 때, THE Database_Schema SHALL tag_ids JSON 필드를 제공한다
+5. WHEN tag_ids를 저장할 때, THE Database_Schema SHALL [1,2,3] 형식의 JSON 배열을 사용한다
+6. WHEN 태그를 삭제할 때, THE Database_Schema SHALL 애플리케이션 레벨에서 모든 프로젝트의 tag_ids에서 해당 태그 ID를 제거한다
+7. WHEN 태그 검색을 위한 인덱스를 생성할 때, THE Database_Schema SHALL name 필드에 인덱스를 생성한다
 
 ### Requirement 8
 
@@ -111,7 +110,7 @@ Yarnie 앱의 기존 Session, MainCounter, SubCounter, label 개념을 새로운
 
 #### Acceptance Criteria
 
-1. WHEN Projects 테이블을 수정할 때, THE Database_Schema SHALL image_path 필드를 추가한다
+1. WHEN Projects 테이블을 수정할 때, THE Database_Schema SHALL image_path와 tag_ids 필드를 추가한다
 2. WHEN 이미지 경로를 저장할 때, THE Database_Schema SHALL 상대 경로 문자열을 nullable로 저장한다 (예: 'project_images/1.jpg')
 3. WHEN category 필드를 제거할 때, THE Database_Schema SHALL 기존 category 필드를 삭제하고 태그 시스템으로 대체한다
 4. WHEN 프로젝트를 삭제할 때, THE Database_Schema SHALL 이미지 파일 삭제는 애플리케이션 레벨에서 처리한다

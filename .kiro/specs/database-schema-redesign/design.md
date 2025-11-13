@@ -49,6 +49,7 @@ class Projects extends Table {
   IntColumn get currentPartId => integer().nullable()
       .references(Parts, #id, onDelete: KeyAction.setNull)();
   TextColumn get imagePath => text().nullable()(); // 프로젝트 이미지 경로
+  TextColumn get tagIds => text().nullable()(); // 태그 ID 배열 (JSON: '[1,2,3]')
   
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -59,6 +60,7 @@ class Projects extends Table {
 **변경 사항:**
 - `currentPartId`: 사용자가 마지막으로 작업한 Part를 추적 (nullable, Part 삭제 시 null로 설정)
 - `imagePath`: 프로젝트 이미지 파일 경로 (예: 'project_images/1.jpg')
+- `tagIds`: 프로젝트에 연결된 태그 ID 배열 (JSON: '[1,2,3]')
 - `category` 삭제: 태그 시스템으로 대체하여 더 유연한 분류 지원
 
 ### 2. Parts 테이블 (신규)
@@ -71,7 +73,11 @@ class Parts extends Table {
   IntColumn get projectId => integer()
       .references(Projects, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
-  IntColumn get orderIndex => integer()(); // 정렬 순서
+  IntColumn get orderIndex => integer()(); // Part 정렬 순서
+  
+  // BuddyCounter 순서 관리
+  TextColumn get buddyCounterOrder => text().nullable()();
+  // JSON: '[{"type":"stitch","id":1},{"type":"section","id":2},...]'
   
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -84,39 +90,20 @@ class Parts extends Table {
 
 **특징:**
 - Part 삭제 시 관련 Counter, Session, Note 모두 cascade 삭제
-- `orderIndex`로 사용자 정의 순서 지원
+- `orderIndex`로 Part 간 사용자 정의 순서 지원
+- `buddyCounterOrder`로 BuddyCounter 드래그 앤 드롭 순서 관리
 
-### 3. Counters 테이블 (신규)
+### 3. MainCounters 테이블 (신규)
 
-MainCounter와 BuddyCounter를 통합한 테이블.
+각 Part의 중심 카운터를 관리합니다.
 
 ```dart
-// Enum 정의
-enum BuddyType {
-  stitch,  // Stitch Counter
-  section, // Section Counter
-}
-
-class Counters extends Table {
+class MainCounters extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get partId => integer()
       .references(Parts, #id, onDelete: KeyAction.cascade)();
   
-  // Main/Buddy 구분
-  BoolColumn get isMain => boolean()();
-  
-  // Buddy Counter 전용 필드
-  TextColumn get buddyType => textEnum<BuddyType>().nullable()();
-  TextColumn get name => text().nullable()(); // Buddy Counter 이름
-  IntColumn get orderIndex => integer().nullable()(); // Buddy Counter 정렬 순서
-  
-  // Counter 값
   IntColumn get currentValue => integer().withDefault(const Constant(0))();
-  IntColumn get countBy => integer().withDefault(const Constant(1))();
-  
-  // Section Counter 전용 필드
-  BoolColumn get linkedToMainCounter => boolean().nullable()(); // Main과 연동 여부
-  IntColumn get targetValue => integer().nullable()(); // Section의 목표값
   
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -126,21 +113,132 @@ class Counters extends Table {
 
 **제약 조건:**
 - Part당 MainCounter는 1개만 존재 (애플리케이션 레벨에서 보장)
-- `isMain = true`일 때: `buddyType`, `name`, `orderIndex`, `linkedToMainCounter`는 null
-- `isMain = false`일 때: `buddyType`, `name`, `orderIndex`는 필수
 
 **인덱스:**
-- `(partId, isMain)`: MainCounter 빠른 조회
-- `(partId, orderIndex)`: BuddyCounter 정렬 조회
+- `(partId)`: Part별 MainCounter 조회
 
-**필드 설명:**
-- `isMain`: true면 MainCounter, false면 BuddyCounter
-- `buddyType`: Stitch 또는 Section
-- `countBy`: 증감 단위 (MainCounter와 Stitch Counter에서 사용)
-- `linkedToMainCounter`: Section Counter가 Main과 연동되는지 여부
-- `targetValue`: Section Counter의 목표값 (예: 10단 반복)
+**특징:**
+- Row 모드에서는 항상 +1씩 증가
+- Free 모드 지원은 추후 개발 예정
 
-### 4. Sessions 테이블 (신규)
+### 4. StitchCounters 테이블 (신규)
+
+독립적으로 조작 가능한 BuddyCounter입니다.
+
+```dart
+class StitchCounters extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get partId => integer()
+      .references(Parts, #id, onDelete: KeyAction.cascade)();
+  
+  TextColumn get name => text()(); // 사용자 정의 이름
+  IntColumn get currentValue => integer().withDefault(const Constant(0))();
+  IntColumn get countBy => integer().withDefault(const Constant(1))();
+  
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+}
+```
+
+**인덱스:**
+- `(partId)`: Part별 StitchCounter 조회
+
+**특징:**
+- MainCounter와 완전히 독립적으로 동작
+- 사용자가 +/- 버튼으로 직접 조작
+- `countBy` 설정으로 증감 단위 조절 가능
+
+### 5. SectionCounters 테이블 (신규)
+
+MainCounter와 연동되는 BuddyCounter입니다.
+
+```dart
+// 링크 상태 enum (Free 모드 추가 시 확장 가능)
+enum LinkState {
+  linked,   // MainCounter와 연동 중
+  unlinked, // 연동 해제됨
+  // 추후 Free 모드 추가 시: autoUnlinked (자동 언링크) 등 확장 가능
+}
+
+class SectionCounters extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get partId => integer()
+      .references(Parts, #id, onDelete: KeyAction.cascade)();
+  
+  TextColumn get name => text()(); // 사용자 정의 이름
+  TextColumn get specJson => text()(); // Section 유형별 설정 (JSON, schemaVer 포함)
+  
+  // 링크 관리 (enum으로 향후 확장성 확보)
+  TextColumn get linkState => textEnum<LinkState>()
+      .withDefault(const Constant('linked'))();
+  IntColumn get frozenMainAt => integer().nullable()(); // 언링크 시 고정값
+  
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+}
+```
+
+**인덱스:**
+- `(partId)`: Part별 SectionCounter 조회
+- `(partId, linkState)`: 링크 상태별 조회
+
+**특징:**
+- `specJson`: Range, Repeat, Interval, Shaping, Length 등 유형별 설정 저장 (schemaVer 포함)
+  ```json
+  {
+    "schemaVer": 1,
+    "type": "range",
+    "startRow": 10,
+    "rowsTotal": 20,
+    "label": "코 줄임 구간"
+  }
+  ```
+- `linkState`: linked일 때만 MainCounter 값으로 자동 계산 (enum으로 Free 모드 등 향후 확장 대비)
+- `frozenMainAt`: unlinked 시 고정 표시용 MainCounter 값
+- 사용자가 직접 조작 불가, MainCounter 연동으로만 값 변경
+
+### 6. SectionRuns 테이블 (신규)
+
+SectionCounter의 구간을 전개한 캐시 테이블입니다.
+
+```dart
+enum RunState {
+  scheduled, // 예정
+  active,    // 진행 중
+  completed, // 완료
+  skipped,   // 건너뜀
+}
+
+class SectionRuns extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get sectionCounterId => integer()
+      .references(SectionCounters, #id, onDelete: KeyAction.cascade)();
+  
+  IntColumn get ord => integer()(); // 순서
+  IntColumn get startRow => integer()(); // 시작 행
+  IntColumn get rowsTotal => integer()(); // 총 행수
+  TextColumn get label => text().nullable()(); // 라벨 (예: "1회차", "색상 변경")
+  
+  TextColumn get state => textEnum<RunState>()
+      .withDefault(const Constant('scheduled'))();
+  
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now().toUtc())();
+}
+```
+
+**인덱스:**
+- `(sectionCounterId, ord)`: Section별 순서대로 조회
+- `(sectionCounterId, state)`: 상태별 조회
+
+**특징:**
+- SectionCounter 생성 시 자동으로 구간 전개
+- MainCounter 값으로 현재 활성 run 계산
+- 진행률 계산 최적화를 위한 캐시 테이블
+
+### 7. Sessions 테이블 (신규)
 
 Part별 작업 세션을 관리합니다.
 
@@ -148,7 +246,6 @@ Part별 작업 세션을 관리합니다.
 enum SessionStatus {
   running,  // 진행 중
   paused,   // 일시정지
-  stopped,  // 종료
 }
 
 class Sessions extends Table {
@@ -157,7 +254,6 @@ class Sessions extends Table {
       .references(Parts, #id, onDelete: KeyAction.cascade)();
   
   DateTimeColumn get startedAt => dateTime()();
-  DateTimeColumn get stoppedAt => dateTime().nullable()();
   
   IntColumn get totalDurationSeconds => integer().withDefault(const Constant(0))();
   
@@ -171,15 +267,17 @@ class Sessions extends Table {
 ```
 
 **인덱스:**
-- `(partId, status)`: 활성 세션 조회 최적화
+- `(partId)`: Part별 세션 조회 최적화
 - `(startedAt)`: 시간순 정렬 최적화
 
 **특징:**
-- Part당 활성 세션(running/paused)은 1개만 존재 (애플리케이션 레벨에서 보장)
+- Part당 Session은 최대 1개 (첫 작업 시작 시 생성)
+- Session이 없으면 = 아직 작업 시작 안 함
 - `totalDurationSeconds`: 각 SessionSegment 종료 시마다 누적
-- 종료된 세션만 통계에 포함
+- stopped 상태 제거: Part당 1개 세션 모델에서는 불필요
+- 통계는 SessionSegment의 duration으로 계산
 
-### 5. SessionSegments 테이블 (신규)
+### 8. SessionSegments 테이블 (신규)
 
 Session 내의 실제 작업 시간 구간을 기록합니다.
 
@@ -225,7 +323,7 @@ class SessionSegments extends Table {
 - 자정을 넘어가면 자동으로 분할 (날짜별 통계를 위해)
 - `startCount`/`endCount`: 해당 Segment 동안의 Counter 변화 추적
 
-### 6. PartNotes 테이블 (신규)
+### 9. PartNotes 테이블 (신규)
 
 Part별 메모를 관리합니다.
 
@@ -251,7 +349,7 @@ class PartNotes extends Table {
 - `isPinned`: 상단 고정 메모 지원
 - Part 삭제 시 메모도 함께 삭제
 
-### 7. Tags 테이블 (신규)
+### 10. Tags 테이블 (신규)
 
 사용자 정의 태그를 관리합니다.
 
@@ -263,6 +361,7 @@ class Tags extends Table {
   
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
 }
 ```
 
@@ -276,35 +375,7 @@ class Tags extends Table {
 - `color`: Flutter의 Color.value를 정수로 저장 (예: Colors.pink.value = 0xFFE91E63)
 - 태그 삭제 시 ProjectTags의 관련 레코드도 cascade 삭제
 
-### 8. ProjectTags 테이블 (신규)
-
-프로젝트와 태그의 다대다 관계를 나타냅니다.
-
-```dart
-class ProjectTags extends Table {
-  IntColumn get projectId => integer()
-      .references(Projects, #id, onDelete: KeyAction.cascade)();
-  IntColumn get tagId => integer()
-      .references(Tags, #id, onDelete: KeyAction.cascade)();
-  
-  @override
-  Set<Column> get primaryKey => {projectId, tagId};
-}
-```
-
-**제약 조건:**
-- 복합 기본키 `(projectId, tagId)`: 같은 프로젝트에 같은 태그 중복 방지
-
-**인덱스:**
-- 복합 기본키가 자동으로 인덱스 생성
-- `(tagId)`: 태그별 프로젝트 조회 최적화를 위한 추가 인덱스
-
-**특징:**
-- 프로젝트 삭제 시 관련 태그 연결 자동 삭제
-- 태그 삭제 시 관련 프로젝트 연결 자동 삭제
-- 별도 ID 없이 두 외래키 조합이 기본키
-
-### 9. 삭제할 테이블
+### 11. 삭제할 테이블
 
 - `WorkSessions`: Sessions + SessionSegments로 대체
 - `ProjectCounters`: Counters로 대체
@@ -316,36 +387,83 @@ class ProjectTags extends Table {
 Drift가 자동 생성하는 클래스 외에 추가로 필요한 모델:
 
 ```dart
-// Counter 데이터를 UI에서 사용하기 쉽게 래핑
-class CounterData {
+// BuddyCounter를 통합하여 UI에서 사용하기 쉽게 래핑
+sealed class BuddyCounterData {
+  int get id;
+  int get partId;
+  String get name;
+}
+
+class StitchCounterData extends BuddyCounterData {
+  @override
   final int id;
+  @override
   final int partId;
-  final bool isMain;
-  final BuddyType? buddyType;
-  final String? name;
+  @override
+  final String name;
   final int currentValue;
   final int countBy;
-  final bool? linkedToMainCounter;
-  final int? targetValue;
+  
+  StitchCounterData({
+    required this.id,
+    required this.partId,
+    required this.name,
+    required this.currentValue,
+    required this.countBy,
+  });
+}
+
+class SectionCounterData extends BuddyCounterData {
+  @override
+  final int id;
+  @override
+  final int partId;
+  @override
+  final String name;
+  final Map<String, dynamic> spec;
+  final LinkState linkState;
+  final int? frozenMainAt;
+  
+  SectionCounterData({
+    required this.id,
+    required this.partId,
+    required this.name,
+    required this.spec,
+    required this.linkState,
+    this.frozenMainAt,
+  });
   
   // UI 헬퍼
-  bool get isStitchCounter => buddyType == BuddyType.stitch;
-  bool get isSectionCounter => buddyType == BuddyType.section;
-  double? get progress => 
-      (targetValue != null && targetValue! > 0) 
-          ? currentValue / targetValue! 
-          : null;
+  bool get isLinked => linkState == LinkState.linked;
+  
+  // MainCounter 값으로 진행도 계산
+  int calculateProgress(int mainCounterValue) {
+    final baseValue = isLinked ? mainCounterValue : (frozenMainAt ?? 0);
+    final startRow = spec['startRow'] as int? ?? 0;
+    final rowsTotal = spec['rowsTotal'] as int? ?? 0;
+    
+    if (rowsTotal == 0) return 0;
+    return (baseValue - startRow).clamp(0, rowsTotal);
+  }
+  
+  double? calculateProgressPercent(int mainCounterValue) {
+    final progress = calculateProgress(mainCounterValue);
+    final rowsTotal = spec['rowsTotal'] as int? ?? 0;
+    
+    if (rowsTotal == 0) return null;
+    return progress / rowsTotal;
+  }
 }
 
 // Session 상태를 UI에서 표시하기 위한 모델
 class SessionViewModel {
-  final Session session;
+  final Session? session; // null이면 아직 시작 안 함
   final List<SessionSegment> segments;
   final Duration currentDuration;
   
-  bool get isRunning => session.status == SessionStatus.running;
-  bool get isPaused => session.status == SessionStatus.paused;
-  bool get isStopped => session.status == SessionStatus.stopped;
+  bool get notStarted => session == null;
+  bool get isRunning => session?.status == SessionStatus.running;
+  bool get isPaused => session?.status == SessionStatus.paused;
 }
 ```
 
@@ -369,16 +487,15 @@ Future<int> createPart({
         projectId: projectId,
         name: name,
         orderIndex: orderIndex ?? 0,
+        buddyCounterOrder: const Value(null), // 초기에는 빈 순서
       ),
     );
     
     // MainCounter 자동 생성
-    await into(counters).insert(
-      CountersCompanion.insert(
+    await into(mainCounters).insert(
+      MainCountersCompanion.insert(
         partId: partId,
-        isMain: true,
         currentValue: const Value(0),
-        countBy: const Value(1),
       ),
     );
     
@@ -386,52 +503,218 @@ Future<int> createPart({
   });
 }
 
-// Part의 모든 Counter 조회
-Future<List<Counter>> getPartCounters(int partId) {
-  return (select(counters)
+// MainCounter 조회
+Future<MainCounter> getMainCounter(int partId) {
+  return (select(mainCounters)
     ..where((t) => t.partId.equals(partId))
-    ..orderBy([
-      (t) => OrderingTerm.desc(t.isMain), // MainCounter 먼저
-      (t) => OrderingTerm.asc(t.orderIndex), // 그 다음 순서대로
-    ])).get();
+  ).getSingle();
 }
 
-// MainCounter만 조회
-Future<Counter> getMainCounter(int partId) {
-  return (select(counters)
-    ..where((t) => t.partId.equals(partId) & t.isMain.equals(true))
+// Part의 모든 BuddyCounter 조회 (순서대로)
+Future<List<dynamic>> getPartBuddyCounters(int partId) async {
+  // 1. Part의 순서 정보 가져오기
+  final part = await (select(parts)
+    ..where((t) => t.id.equals(partId))
   ).getSingle();
+  
+  if (part.buddyCounterOrder == null) {
+    return [];
+  }
+  
+  final orderList = jsonDecode(part.buddyCounterOrder!) as List;
+  
+  // 2. 각 테이블에서 카운터 조회
+  final stitchCounters = await (select(stitchCounters)
+    ..where((t) => t.partId.equals(partId))
+  ).get();
+  
+  final sectionCounters = await (select(sectionCounters)
+    ..where((t) => t.partId.equals(partId))
+  ).get();
+  
+  // 3. 순서대로 정렬
+  final result = <dynamic>[];
+  for (final item in orderList) {
+    final type = item['type'] as String;
+    final id = item['id'] as int;
+    
+    if (type == 'stitch') {
+      final counter = stitchCounters.firstWhere((c) => c.id == id);
+      result.add(counter);
+    } else if (type == 'section') {
+      final counter = sectionCounters.firstWhere((c) => c.id == id);
+      result.add(counter);
+    }
+  }
+  
+  return result;
 }
 ```
 
-#### 2. Session 관련
+#### 2. Counter 관련
 
 ```dart
-// 활성 세션 조회
-Future<Session?> getActiveSession(int partId) {
+// StitchCounter 생성 (UI에서 업데이트된 순서 리스트 받기)
+Future<int> createStitchCounter({
+  required int partId,
+  required String name,
+  required List<Map<String, dynamic>> newOrder,
+  int countBy = 1,
+}) async {
+  return transaction(() async {
+    // StitchCounter 생성
+    final counterId = await into(stitchCounters).insert(
+      StitchCountersCompanion.insert(
+        partId: partId,
+        name: name,
+        countBy: Value(countBy),
+      ),
+    );
+    
+    // 새 순서 리스트 업데이트 (UI에서 이미 새 카운터 추가됨)
+    await (update(parts)..where((t) => t.id.equals(partId))).write(
+      PartsCompanion(
+        buddyCounterOrder: Value(jsonEncode(newOrder)),
+      ),
+    );
+    
+    return counterId;
+  });
+}
+
+// SectionCounter 생성 (UI에서 업데이트된 순서 리스트 받기)
+Future<int> createSectionCounter({
+  required int partId,
+  required String name,
+  required Map<String, dynamic> spec,
+  required List<Map<String, dynamic>> newOrder,
+}) async {
+  return transaction(() async {
+    // SectionCounter 생성
+    final counterId = await into(sectionCounters).insert(
+      SectionCountersCompanion.insert(
+        partId: partId,
+        name: name,
+        specJson: jsonEncode(spec),
+        linkState: const Value(LinkState.linked),
+      ),
+    );
+    
+    // SectionRuns 전개
+    await _expandSectionRuns(counterId, spec);
+    
+    // 새 순서 리스트 업데이트 (UI에서 이미 새 카운터 추가됨)
+    await (update(parts)..where((t) => t.id.equals(partId))).write(
+      PartsCompanion(
+        buddyCounterOrder: Value(jsonEncode(newOrder)),
+      ),
+    );
+    
+    return counterId;
+  });
+}
+
+// BuddyCounter 순서 변경
+Future<void> reorderBuddyCounters({
+  required int partId,
+  required List<Map<String, dynamic>> newOrder,
+}) {
+  return (update(parts)..where((t) => t.id.equals(partId))).write(
+    PartsCompanion(
+      buddyCounterOrder: Value(jsonEncode(newOrder)),
+    ),
+  );
+}
+
+// StitchCounter 삭제 (UI에서 업데이트된 순서 리스트 받기)
+Future<void> deleteStitchCounter({
+  required int counterId,
+  required int partId,
+  required List<Map<String, dynamic>> newOrder,
+}) async {
+  return transaction(() async {
+    // 1. StitchCounter 삭제
+    await (delete(stitchCounters)
+      ..where((t) => t.id.equals(counterId))
+    ).go();
+    
+    // 2. 새 순서 리스트 업데이트
+    await (update(parts)..where((t) => t.id.equals(partId))).write(
+      PartsCompanion(
+        buddyCounterOrder: Value(jsonEncode(newOrder)),
+      ),
+    );
+  });
+}
+
+// SectionCounter 삭제 (UI에서 업데이트된 순서 리스트 받기)
+Future<void> deleteSectionCounter({
+  required int counterId,
+  required int partId,
+  required List<Map<String, dynamic>> newOrder,
+}) async {
+  return transaction(() async {
+    // 1. SectionCounter 삭제 (SectionRuns도 cascade 삭제됨)
+    await (delete(sectionCounters)
+      ..where((t) => t.id.equals(counterId))
+    ).go();
+    
+    // 2. 새 순서 리스트 업데이트
+    await (update(parts)..where((t) => t.id.equals(partId))).write(
+      PartsCompanion(
+        buddyCounterOrder: Value(jsonEncode(newOrder)),
+      ),
+    );
+  });
+}
+
+// SectionCounter 링크/언링크 (UI에서 현재 MainCounter 값 받기)
+Future<void> unlinkSectionCounter({
+  required int counterId,
+  required int currentMainValue,
+}) {
+  return (update(sectionCounters)..where((t) => t.id.equals(counterId))).write(
+    SectionCountersCompanion(
+      linkState: const Value(LinkState.unlinked),
+      frozenMainAt: Value(currentMainValue),
+    ),
+  );
+}
+
+Future<void> relinkSectionCounter(int counterId) {
+  return (update(sectionCounters)..where((t) => t.id.equals(counterId))).write(
+    const SectionCountersCompanion(
+      linkState: Value(LinkState.linked),
+      frozenMainAt: Value(null),
+    ),
+  );
+}
+```
+
+#### 3. Session 관련
+
+```dart
+// 세션 조회 (없으면 null = 아직 시작 안 함)
+Future<Session?> getSession(int partId) {
   return (select(sessions)
-    ..where((t) => 
-      t.partId.equals(partId) &
-      t.status.isIn([
-        SessionStatus.running.index,
-        SessionStatus.paused.index,
-      ])
-    )
+    ..where((t) => t.partId.equals(partId))
     ..limit(1)
   ).getSingleOrNull();
 }
 
-// 세션 시작
-Future<int> startSession({required int partId}) async {
+// 세션 시작 (첫 작업 시작 시 Session 생성, UI에서 현재 MainCounter 값 받기)
+Future<int> startSession({
+  required int partId,
+  required int currentMainValue,
+}) async {
   return transaction(() async {
-    // 기존 활성 세션 확인
-    final active = await getActiveSession(partId);
-    if (active != null) {
-      throw StateError('이미 활성 세션이 있습니다');
+    // 기존 세션 확인
+    final existing = await getSession(partId);
+    if (existing != null) {
+      throw StateError('이미 세션이 있습니다');
     }
     
     final now = DateTime.now();
-    final mainCounter = await getMainCounter(partId);
     
     // Session 생성
     final sessionId = await into(sessions).insert(
@@ -448,7 +731,7 @@ Future<int> startSession({required int partId}) async {
         sessionId: sessionId,
         partId: partId,
         startedAt: now,
-        startCount: Value(mainCounter.currentValue),
+        startCount: Value(currentMainValue),
         reason: Value(SegmentReason.resume),
       ),
     );
@@ -457,37 +740,29 @@ Future<int> startSession({required int partId}) async {
   });
 }
 
-// 세션 일시정지
-Future<void> pauseSession({required int sessionId}) async {
+// 세션 일시정지 (UI에서 현재 MainCounter 값과 Segment ID 받기)
+Future<void> pauseSession({
+  required int sessionId,
+  required int currentSegmentId,
+  required int currentMainValue,
+  required DateTime segmentStartedAt,
+}) async {
   return transaction(() async {
     final session = await (select(sessions)
       ..where((t) => t.id.equals(sessionId))
     ).getSingle();
     
-    if (session.status != SessionStatus.running) {
-      throw StateError('진행 중인 세션이 아닙니다');
-    }
-    
     final now = DateTime.now();
-    final mainCounter = await getMainCounter(session.partId);
+    final duration = now.difference(segmentStartedAt).inSeconds;
     
     // 현재 Segment 종료
-    final currentSegment = await (select(sessionSegments)
-      ..where((t) => 
-        t.sessionId.equals(sessionId) &
-        t.endedAt.isNull()
-      )
-    ).getSingle();
-    
-    final duration = now.difference(currentSegment.startedAt).inSeconds;
-    
     await (update(sessionSegments)
-      ..where((t) => t.id.equals(currentSegment.id))
+      ..where((t) => t.id.equals(currentSegmentId))
     ).write(
       SessionSegmentsCompanion(
         endedAt: Value(now),
         durationSeconds: Value(duration),
-        endCount: Value(mainCounter.currentValue),
+        endCount: Value(currentMainValue),
         reason: Value(SegmentReason.pause),
       ),
     );
@@ -504,9 +779,41 @@ Future<void> pauseSession({required int sessionId}) async {
     );
   });
 }
+
+// 세션 재시작 (UI에서 현재 MainCounter 값 받기)
+Future<void> resumeSession({
+  required int sessionId,
+  required int partId,
+  required int currentMainValue,
+}) async {
+  return transaction(() async {
+    final now = DateTime.now();
+    
+    // Session 상태 업데이트
+    await (update(sessions)
+      ..where((t) => t.id.equals(sessionId))
+    ).write(
+      SessionsCompanion(
+        status: Value(SessionStatus.running),
+        updatedAt: Value(now),
+      ),
+    );
+    
+    // 새 Segment 시작
+    await into(sessionSegments).insert(
+      SessionSegmentsCompanion.insert(
+        sessionId: sessionId,
+        partId: partId,
+        startedAt: now,
+        startCount: Value(currentMainValue),
+        reason: Value(SegmentReason.resume),
+      ),
+    );
+  });
+}
 ```
 
-#### 3. 통계 쿼리
+#### 4. 통계 쿼리
 
 ```dart
 // 날짜별 작업 시간 집계 (히트맵용)
@@ -539,19 +846,16 @@ Future<Map<DateTime, int>> getDailyWorkSeconds({
   };
 }
 
-// 프로젝트별 총 작업 시간
+// 프로젝트별 총 작업 시간 (Sessions 기반)
 Future<int> getProjectTotalSeconds(int projectId) async {
   final result = await customSelect(
     '''
     SELECT COALESCE(SUM(s.total_duration_seconds), 0) as total
     FROM sessions s
     JOIN parts p ON s.part_id = p.id
-    WHERE p.project_id = ?1 AND s.status = ?2
+    WHERE p.project_id = ?1
     ''',
-    variables: [
-      Variable.withInt(projectId),
-      Variable.withInt(SessionStatus.stopped.index),
-    ],
+    variables: [Variable.withInt(projectId)],
     readsFrom: {sessions, parts},
   ).getSingle();
   
@@ -559,7 +863,7 @@ Future<int> getProjectTotalSeconds(int projectId) async {
 }
 ```
 
-#### 4. 태그 관련 쿼리
+#### 5. 태그 관련 쿼리
 
 ```dart
 // 태그 생성
@@ -600,66 +904,70 @@ Future<void> updateTag({
     TagsCompanion(
       name: Value(name),
       color: Value(color),
+      updatedAt: Value(DateTime.now()),
     ),
   );
 }
 
-// 태그 삭제 (ProjectTags도 cascade 삭제됨)
-Future<void> deleteTag(int tagId) {
-  return (delete(tags)..where((t) => t.id.equals(tagId))).go();
+// 태그 삭제 (모든 프로젝트에서 해당 태그 제거)
+Future<void> deleteTag(int tagId) async {
+  return transaction(() async {
+    // 1. 태그 삭제
+    await (delete(tags)..where((t) => t.id.equals(tagId))).go();
+    
+    // 2. 모든 프로젝트에서 해당 태그 ID 제거
+    final projects = await (select(projects)
+      ..where((t) => t.tagIds.isNotNull())
+    ).get();
+    
+    for (final project in projects) {
+      final tagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+      if (tagIds.contains(tagId)) {
+        tagIds.remove(tagId);
+        await (update(projects)..where((t) => t.id.equals(project.id))).write(
+          ProjectsCompanion(
+            tagIds: Value(jsonEncode(tagIds)),
+          ),
+        );
+      }
+    }
+  });
 }
 
-// 프로젝트에 태그 연결
-Future<void> addTagToProject({
-  required int projectId,
-  required int tagId,
-}) {
-  return into(projectTags).insert(
-    ProjectTagsCompanion.insert(
-      projectId: projectId,
-      tagId: tagId,
-    ),
-    mode: InsertMode.insertOrIgnore, // 이미 있으면 무시
-  );
-}
-
-// 프로젝트에서 태그 제거
-Future<void> removeTagFromProject({
-  required int projectId,
-  required int tagId,
-}) {
-  return (delete(projectTags)
-    ..where((t) => 
-      t.projectId.equals(projectId) & 
-      t.tagId.equals(tagId)
-    )
-  ).go();
-}
-
-// 프로젝트의 모든 태그 조회
+// 프로젝트의 태그 조회
 Future<List<Tag>> getProjectTags(int projectId) async {
-  final query = select(tags).join([
-    innerJoin(
-      projectTags,
-      projectTags.tagId.equalsExp(tags.id),
-    ),
-  ])..where(projectTags.projectId.equals(projectId));
+  final project = await (select(projects)
+    ..where((t) => t.id.equals(projectId))
+  ).getSingle();
   
-  final result = await query.get();
-  return result.map((row) => row.readTable(tags)).toList();
+  if (project.tagIds == null) return [];
+  
+  final tagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+  if (tagIds.isEmpty) return [];
+  
+  return (select(tags)
+    ..where((t) => t.id.isIn(tagIds))
+  ).get();
+}
+
+// 프로젝트의 태그 업데이트
+Future<void> updateProjectTags({
+  required int projectId,
+  required List<int> tagIds,
+}) {
+  return (update(projects)..where((t) => t.id.equals(projectId))).write(
+    ProjectsCompanion(
+      tagIds: Value(tagIds.isEmpty ? null : jsonEncode(tagIds)),
+    ),
+  );
 }
 
 // 태그별 프로젝트 조회 (단일 태그)
-Future<List<Project>> getProjectsByTag(int tagId) async {
-  final query = select(projects).join([
-    innerJoin(
-      projectTags,
-      projectTags.projectId.equalsExp(projects.id),
-    ),
-  ])..where(projectTags.tagId.equals(tagId));
-  
-  final result = await query.get();
-  return result.map((row) => row.readTable(projects)).toList();
+Future<List<Project>> getProjectsByTag(int tagId) {
+  return (select(projects)
+    ..where((t) => t.tagIds.like('%$tagId%'))
+    ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
+  ).get();
 }
 
 // 다중 태그 필터 (AND 조건)
@@ -670,63 +978,16 @@ Future<List<Project>> getProjectsByTags(List<int> tagIds) async {
     ).get();
   }
   
-  final result = await customSelect(
-    '''
-    SELECT p.* FROM projects p
-    WHERE p.id IN (
-      SELECT project_id FROM project_tags
-      WHERE tag_id IN (${tagIds.map((_) => '?').join(',')})
-      GROUP BY project_id
-      HAVING COUNT(DISTINCT tag_id) = ?
-    )
-    ORDER BY p.created_at DESC
-    ''',
-    variables: [
-      ...tagIds.map((id) => Variable.withInt(id)),
-      Variable.withInt(tagIds.length),
-    ],
-    readsFrom: {projects, projectTags},
+  // 모든 프로젝트 조회 후 필터링 (개인 앱 규모에서는 충분히 빠름)
+  final allProjects = await (select(projects)
+    ..where((t) => t.tagIds.isNotNull())
   ).get();
   
-  return result.map((row) {
-    return Project(
-      id: row.data['id'] as int,
-      name: row.data['name'] as String,
-      needleType: row.data['needle_type'] as String?,
-      needleSize: row.data['needle_size'] as String?,
-      lotNumber: row.data['lot_number'] as String?,
-      memo: row.data['memo'] as String?,
-      currentPartId: row.data['current_part_id'] as int?,
-      imagePath: row.data['image_path'] as String?,
-      createdAt: DateTime.parse(row.data['created_at'] as String),
-      updatedAt: row.data['updated_at'] != null 
-          ? DateTime.parse(row.data['updated_at'] as String) 
-          : null,
-    );
-  }).toList();
-}
-
-// 프로젝트의 태그 일괄 업데이트
-Future<void> updateProjectTags({
-  required int projectId,
-  required List<int> tagIds,
-}) async {
-  return transaction(() async {
-    // 기존 태그 연결 모두 삭제
-    await (delete(projectTags)
-      ..where((t) => t.projectId.equals(projectId))
-    ).go();
-    
-    // 새 태그 연결
-    for (final tagId in tagIds) {
-      await into(projectTags).insert(
-        ProjectTagsCompanion.insert(
-          projectId: projectId,
-          tagId: tagId,
-        ),
-      );
-    }
-  });
+  return allProjects.where((project) {
+    final projectTagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+    return tagIds.every((tagId) => projectTagIds.contains(tagId));
+  }).toList()
+    ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 }
 ```
 
@@ -753,16 +1014,19 @@ MigrationStrategy get migration => MigrationStrategy(
       
       // 새 테이블 생성
       await m.createTable(parts);
-      await m.createTable(counters);
+      await m.createTable(mainCounters);
+      await m.createTable(stitchCounters);
+      await m.createTable(sectionCounters);
+      await m.createTable(sectionRuns);
       await m.createTable(sessions);
       await m.createTable(sessionSegments);
       await m.createTable(partNotes);
       await m.createTable(tags);
-      await m.createTable(projectTags);
       
       // Projects 테이블 수정
       await m.addColumn(projects, projects.currentPartId);
       await m.addColumn(projects, projects.imagePath);
+      await m.addColumn(projects, projects.tagIds);
       await m.dropColumn(projects, 'category');
     }
   },
@@ -960,13 +1224,16 @@ test('전체 작업 플로우', () async {
 ```dart
 // Drift에서 인덱스는 @TableIndex 어노테이션으로 정의
 @TableIndex(name: 'parts_project_order', columns: {#projectId, #orderIndex})
-@TableIndex(name: 'counters_part_main', columns: {#partId, #isMain})
-@TableIndex(name: 'counters_part_order', columns: {#partId, #orderIndex})
-@TableIndex(name: 'sessions_part_status', columns: {#partId, #status})
+@TableIndex(name: 'main_counters_part', columns: {#partId})
+@TableIndex(name: 'stitch_counters_part', columns: {#partId})
+@TableIndex(name: 'section_counters_part', columns: {#partId})
+@TableIndex(name: 'section_counters_part_link', columns: {#partId, #linkState})
+@TableIndex(name: 'section_runs_counter_ord', columns: {#sectionCounterId, #ord})
+@TableIndex(name: 'section_runs_counter_state', columns: {#sectionCounterId, #state})
+@TableIndex(name: 'sessions_part', columns: {#partId})
 @TableIndex(name: 'session_segments_session', columns: {#sessionId})
 @TableIndex(name: 'session_segments_started', columns: {#startedAt})
 @TableIndex(name: 'tags_name', columns: {#name})
-@TableIndex(name: 'project_tags_tag', columns: {#tagId})
 ```
 
 ### 쿼리 최적화
