@@ -21,11 +21,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ① 시드로 기본 팔레트 생성
+    final baseScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF637069), // 브랜드 카키톤
+      brightness: Brightness.light,
+    );
+
+    // ② 필요한 색상만 덮어쓰기
+    final yarnieScheme = baseScheme.copyWith(
+      primary: const Color(0xFF637069), // 브랜드 카키톤
+      secondary: const Color(0xFFC0D2A4), // 연한 올리브
+      error: const Color(0xFFD4183D), // 흰색 배경
+      surface: const Color(0xFFFFFFFF), // 카드/서피스 흰색
+      surfaceContainerHighest: const Color(0xFFECECF0), // muted 배경
+      onSurfaceVariant: const Color(0xFF717182), // 회색 텍스트
+      outline: const Color(0x1A000000), // 투명한 검정 보더
+    );
+
     return MaterialApp(
       title: 'Yarnie',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        colorScheme: yarnieScheme,
+        filledButtonTheme: FilledButtonThemeData(
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Color(0xFF637069)),
+            foregroundColor: WidgetStatePropertyAll(Colors.white),
+          ),
+        ),
       ),
       home: const RootScaffold(),
     );
