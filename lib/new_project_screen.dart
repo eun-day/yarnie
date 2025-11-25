@@ -32,12 +32,14 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<ProjectFormEffect>>(projectFormEffectsProvider, (_, asyncEffect) {
       asyncEffect.whenData((effect) {
-        if (effect is CloseProjectForm) {
+        if (effect is GoToProjectDetail) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (_) => ProjectDetailScreen(projectId: effect.projectId),
             ),
           );
+        } else if (effect is CloseEditForm) {
+          Navigator.of(context).pop();
         } else if (effect is ShowProjectFormSuccessMessage) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(effect.message)),
@@ -436,8 +438,9 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
             labelText: '메모',
             border: OutlineInputBorder(),
           ),
-          maxLines: 3,
-          textInputAction: TextInputAction.done,
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
         ),
       ],
     );

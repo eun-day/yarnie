@@ -25,9 +25,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     ref.listen(projectsEffectsProvider, (_, asyncEffect) {
       asyncEffect.whenData((effect) {
         if (effect is ProjectCreated) {
-          _emit(CloseProjectForm(effect.projectId));
+          _emit(GoToProjectDetail(effect.projectId));
         } else if (effect is ProjectUpdated) {
-          _emit(CloseProjectForm(effect.projectId));
+          _emit(const CloseEditForm());
         }
       });
     });

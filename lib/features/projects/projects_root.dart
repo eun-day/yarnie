@@ -631,8 +631,7 @@ class _SmallCardView extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.75,
-      ),
+                  childAspectRatio: 4 / 3,      ),
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
@@ -668,75 +667,86 @@ class _SmallProjectCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
             // 이미지 영역
-            AspectRatio(
-              aspectRatio: 1,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: project.imagePath != null
-                        ? Image.network(
-                            project.imagePath!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
-                                _placeholderImage(context),
-                          )
-                        : _placeholderImage(context),
+            Container(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: project.imagePath != null
+                  ? Image.network(
+                      project.imagePath!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) =>
+                          _placeholderImage(context),
+                    )
+                  : _placeholderImage(context),
+            ),
+             // 하단 그라데이션 오버레이
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 80,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.7),
+                    ],
                   ),
-                  // 좌측 상단 태그
-                  if (projectTags.isNotEmpty)
-                    Positioned(
-                      left: 8,
-                      top: 8,
-                      child: Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: projectTags.take(2).map((tag) {
-                          return ColoredTagChip(tag: tag);
-                        }).toList(),
-                      ),
-                    ),
-                  // 우측 상단 더보기 버튼
-                  Positioned(
-                    right: 2,
-                    top: 2,
-                    child: Material(
-                      color: Colors.white,
-                      shape: const CircleBorder(),
-                      child: IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        iconSize: 18,
-                        onPressed: onMoreTap,
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-            // 하단 정보 영역
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    project.name,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+            // 하단 텍스트
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  project.name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+
+            // 좌측 상단 태그
+            if (projectTags.isNotEmpty)
+              Positioned(
+                left: 8,
+                top: 8,
+                child: Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: projectTags.take(2).map((tag) {
+                    return ColoredTagChip(tag: tag);
+                  }).toList(),
+                ),
+              ),
+            // 우측 상단 더보기 버튼
+            Positioned(
+              right: 2,
+              top: 2,
+              child: Material(
+                color: Colors.white,
+                shape: const CircleBorder(),
+                child: IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  iconSize: 18,
+                  onPressed: onMoreTap,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(),
+                ),
               ),
             ),
           ],
@@ -885,28 +895,7 @@ class _ProjectListTile extends StatelessWidget {
                         spacing: 4,
                         runSpacing: 4,
                         children: projectTags.take(2).map((tag) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              tag.name,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          );
+                          return ColoredTagChip(tag: tag);
                         }).toList(),
                       ),
                     ],
