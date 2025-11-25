@@ -27,3 +27,20 @@ class ShowSuccessMessage extends ProjectsEffect {
   final String message;
   const ShowSuccessMessage(this.message);
 }
+
+/// 프로젝트 생성 완료 (화면 닫기)
+class ProjectCreated extends ProjectsEffect {
+  final int projectId;
+  const ProjectCreated(this.projectId);
+}
+
+/// 프로젝트 수정 완료 (화면 닫기)
+class ProjectUpdated extends ProjectsEffect {
+  final int projectId;
+  const ProjectUpdated(this.projectId);
+}
+
+/// 프로젝트 삭제 완료 (화면 닫기)
+class ProjectDeleted extends ProjectsEffect {
+  const ProjectDeleted();
+}

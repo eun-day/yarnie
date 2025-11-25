@@ -72,3 +72,53 @@ class OpenAssignTagsDialog extends ProjectsEvent {
   final int projectId;
   const OpenAssignTagsDialog(this.projectId);
 }
+
+/// 프로젝트 생성
+class CreateProject extends ProjectsEvent {
+  final String name;
+  final String? needleType;
+  final String? needleSize;
+  final String? lotNumber;
+  final String? memo;
+  final String? imagePath;
+  final List<int> tagIds;
+
+  const CreateProject({
+    required this.name,
+    this.needleType,
+    this.needleSize,
+    this.lotNumber,
+    this.memo,
+    this.imagePath,
+    this.tagIds = const [],
+  });
+}
+
+/// 프로젝트 수정
+class UpdateProject extends ProjectsEvent {
+  final int projectId;
+  final String name;
+  final String? needleType;
+  final String? needleSize;
+  final String? lotNumber;
+  final String? memo;
+  final String? imagePath;
+  final List<int> tagIds;
+
+  const UpdateProject({
+    required this.projectId,
+    required this.name,
+    this.needleType,
+    this.needleSize,
+    this.lotNumber,
+    this.memo,
+    this.imagePath,
+    this.tagIds = const [],
+  });
+}
+
+/// 프로젝트 삭제
+class DeleteProject extends ProjectsEvent {
+  final int projectId;
+  const DeleteProject(this.projectId);
+}

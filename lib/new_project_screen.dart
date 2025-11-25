@@ -1,283 +1,507 @@
-import 'package:flutter/material.dart';
-import 'package:yarnie/db/di.dart';
-import 'package:yarnie/project_detail_screen.dart';
+import 'dart:io';
 
-class NewProjectScreen extends StatefulWidget {
-  const NewProjectScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/modules/projects/projects_api.dart';
+import 'package:yarnie/project_detail_screen.dart';
+import 'package:yarnie/widgets/colored_tag_chip.dart';
+import 'package:yarnie/widgets/tag_selection_sheet.dart'; // New import
+
+class NewProjectScreen extends ConsumerStatefulWidget {
+  final int? projectId; // 수정 모드일 경우 null이 아님
+
+  const NewProjectScreen({this.projectId, super.key});
 
   @override
-  State<NewProjectScreen> createState() => _NewProjectScreenState();
+  ConsumerState<NewProjectScreen> createState() => _NewProjectScreenState();
 }
 
-class _NewProjectScreenState extends State<NewProjectScreen> {
-  final TextEditingController _projectNameController = TextEditingController();
-  final TextEditingController _lotNumberController = TextEditingController();
-  final TextEditingController _notesController = TextEditingController();
-  String? _selectedCategory;
-  final List<String> _categories = ['뜨개', '자수', '퀼트', '기타'];
-
-  String? _selectedNeedleType;
-  String? _selectedNeedleSize;
-
-  final Map<String, List<String>> _needleSizes = {
-    '대바늘': [
-      '2.0mm',
-      '2.5mm',
-      '3.0mm',
-      '3.5mm',
-      '4.0mm',
-      '4.5mm',
-      '5.0mm',
-      '5.5mm',
-      '6.0mm',
-      '6.5mm',
-      '7.0mm',
-      '8.0mm',
-      '9.0mm',
-      '10.0mm',
-    ],
-    '코바늘': [
-      '2/0호 (2.0mm)',
-      '3/0호 (2.2mm)',
-      '4/0호 (2.5mm)',
-      '5/0호 (3.0mm)',
-      '6/0호 (3.5mm)',
-      '7/0호 (4.0mm)',
-      '8/0호 (5.0mm)',
-      '9/0호 (5.5mm)',
-      '10/0호 (6.0mm)',
-    ],
-  };
-
-  final FocusNode _projectNameFocusNode = FocusNode();
-  final FocusNode _categoryFocusNode = FocusNode();
-  final FocusNode _needleTypeFocusNode = FocusNode();
-  final FocusNode _needleSizeFocusNode = FocusNode();
-  final FocusNode _lotNumberFocusNode = FocusNode();
-  final FocusNode _notesFocusNode = FocusNode();
-
-  Future<void> _ensureVisible(FocusNode node) async {
-    // 키보드 인셋 적용 타이밍 대기
-    await Future.delayed(const Duration(milliseconds: 220));
-    // FocusNode가 붙어있는 BuildContext 획득 (없으면 현재 포커스에서 보조 획득)
-    final ctx = node.context ?? FocusManager.instance.primaryFocus?.context;
-    if (!mounted || ctx == null) return;
-
-    await Scrollable.ensureVisible(
-      // ignore: use_build_context_synchronously
-      ctx,
-      alignment: 0.2, // 너무 위로 붙지 않게
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-    );
-  }
-
-  String? _projectNameErrorText;
-
+class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   @override
   void initState() {
     super.initState();
-    _projectNameFocusNode.addListener(() {
-      if (_projectNameFocusNode.hasFocus) _ensureVisible(_projectNameFocusNode);
-    });
-    _categoryFocusNode.addListener(() {
-      if (_categoryFocusNode.hasFocus) _ensureVisible(_categoryFocusNode);
-    });
-    _needleTypeFocusNode.addListener(() {
-      if (_needleTypeFocusNode.hasFocus) _ensureVisible(_needleTypeFocusNode);
-    });
-    _needleSizeFocusNode.addListener(() {
-      if (_needleSizeFocusNode.hasFocus) _ensureVisible(_needleSizeFocusNode);
-    });
-    _lotNumberFocusNode.addListener(() {
-      if (_lotNumberFocusNode.hasFocus) _ensureVisible(_lotNumberFocusNode);
-    });
-    _notesFocusNode.addListener(() {
-      if (_notesFocusNode.hasFocus) _ensureVisible(_notesFocusNode);
-    });
-  }
-
-  @override
-  void dispose() {
-    _projectNameController.dispose();
-    _lotNumberController.dispose();
-    _notesController.dispose();
-    _projectNameFocusNode.dispose();
-    _categoryFocusNode.dispose();
-    _needleTypeFocusNode.dispose();
-    _needleSizeFocusNode.dispose();
-    _lotNumberFocusNode.dispose();
-    _notesFocusNode.dispose();
-    super.dispose();
+    // 초기 데이터 로드는 initState에서 한 번만 수행
+    Future.microtask(() => ref
+        .read(projectFormNotifierProvider.notifier)
+        .onEvent(LoadProjectData(widget.projectId)));
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<ProjectFormEffect>>(projectFormEffectsProvider, (_, asyncEffect) {
+      asyncEffect.whenData((effect) {
+        if (effect is CloseProjectForm) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ProjectDetailScreen(projectId: effect.projectId),
+            ),
+          );
+        } else if (effect is ShowProjectFormSuccessMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(effect.message)),
+          );
+        } else if (effect is ShowProjectFormErrorMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(effect.message), backgroundColor: Theme.of(context).colorScheme.error),
+          );
+        }
+      });
+    });
+
+    final state = ref.watch(projectFormNotifierProvider);
+
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: const Text('새 프로젝트 생성')),
+      appBar: AppBar(
+        title: Text(state.isEditMode ? '프로젝트 수정' : '새 프로젝트'),
+        actions: [
+          TextButton(
+            onPressed: state.isSaving
+                ? null
+                : () => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(const SaveProject()),
+            child: state.isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  )
+                : const Text('저장'),
+          ),
+        ],
+      ),
       body: GestureDetector(
-        behavior: HitTestBehavior.translucent, // 빈 공간 탭도 감지
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            MediaQuery.viewInsetsOf(context).bottom + 16,
-          ),
+          padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: _projectNameController,
-                focusNode: _projectNameFocusNode,
-                decoration: InputDecoration(
-                  labelText: '프로젝트 이름',
-                  border: const OutlineInputBorder(),
-                  errorText: _projectNameErrorText,
-                ),
-                onChanged: (value) {
-                  if (_projectNameErrorText != null) {
-                    setState(() {
-                      _projectNameErrorText = null;
-                    });
+              _ProjectNameSection(
+                initialValue: state.name,
+                onChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(ProjectNameChanged(value)),
+              ),
+              const SizedBox(height: 24),
+              _ProjectImageSection(
+                imagePath: state.imagePath,
+                onImagePressed: () => _showImageSourceSheet(context),
+              ),
+              const SizedBox(height: 24),
+              _NeedleInfoSection(
+                needleType: state.needleType,
+                needleSize: state.needleSize,
+                availableNeedleSizes: state.availableNeedleSizes,
+                onNeedleTypeChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(NeedleTypeChanged(value)),
+                onNeedleSizeChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(NeedleSizeChanged(value)),
+              ),
+              const SizedBox(height: 24),
+              _YarnInfoSection(
+                lotNumber: state.lotNumber,
+                memo: state.memo,
+                onLotNumberChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(LotNumberChanged(value)),
+                onMemoChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(MemoChanged(value)),
+              ),
+              const SizedBox(height: 24),
+              _TagInfoSection(
+                allTags: state.allAvailableTags,
+                selectedTagIds: state.selectedTagIds,
+                onAddTagPressed: () async {
+                  final result = await showModalBottomSheet<Set<int>>(
+                    context: context,
+                    isScrollControlled: true, // 전체 화면 높이 사용 가능
+                    builder: (_) => TagSelectionSheet(
+                      initialSelectedIds: state.selectedTagIds,
+                    ),
+                  );
+                  if (result != null) {
+                    ref
+                        .read(projectFormNotifierProvider.notifier)
+                        .onEvent(UpdateSelectedTags(result));
                   }
                 },
-                onEditingComplete: () =>
-                    FocusScope.of(context).requestFocus(_categoryFocusNode),
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                focusNode: _categoryFocusNode,
-                hint: const Text('카테고리 선택'),
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue;
-                  });
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    FocusScope.of(context).requestFocus(_needleTypeFocusNode);
-                  });
-                },
-                items: _categories.map<DropdownMenuItem<String>>((
-                  String value,
-                ) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedNeedleType,
-                focusNode: _needleTypeFocusNode,
-                hint: const Text('바늘 종류 선택'),
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedNeedleType = newValue;
-                    _selectedNeedleSize = null;
-                  });
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    FocusScope.of(context).requestFocus(_needleSizeFocusNode);
-                  });
-                },
-                items: _needleSizes.keys.map<DropdownMenuItem<String>>((
-                  String value,
-                ) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedNeedleSize,
-                focusNode: _needleSizeFocusNode,
-                hint: const Text('바늘 사이즈 선택'),
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                onChanged: _selectedNeedleType == null
-                    ? null
-                    : (String? newValue) {
-                        setState(() {
-                          _selectedNeedleSize = newValue;
-                        });
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          FocusScope.of(
-                            context,
-                          ).requestFocus(_lotNumberFocusNode);
-                        });
-                      },
-                items: _selectedNeedleType == null
-                    ? []
-                    : _needleSizes[_selectedNeedleType]!
-                          .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          })
-                          .toList(),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _lotNumberController,
-                focusNode: _lotNumberFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Lot Number',
-                  border: OutlineInputBorder(),
-                ),
-                onEditingComplete: () =>
-                    FocusScope.of(context).requestFocus(_notesFocusNode),
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _notesController,
-                focusNode: _notesFocusNode,
-                maxLines: 5,
-                textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(
-                  labelText: '메모',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_projectNameController.text.trim().isEmpty) {
-                    setState(() {
-                      _projectNameErrorText = '이름을 작성해주세요';
-                    });
-                    FocusScope.of(context).requestFocus(_projectNameFocusNode);
-                  } else {
-                    final id = await appDb.createProject(
-                      name: _projectNameController.text,
-                      needleType: _selectedNeedleType,
-                      needleSize: _selectedNeedleSize,
-                      lotNumber: _lotNumberController.text,
-                      memo: _notesController.text,
-                    );
-
-                    if (!context.mounted) return;
-
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => ProjectDetailScreen(projectId: id),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('프로젝트 생성'),
+                onRemoveTag: (tagId) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(ToggleTagSelected(tagId)),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showImageSourceSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('카메라로 촬영'),
+              onTap: () {
+                _pickImage(ImageSource.camera);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_album),
+              title: const Text('앨범에서 선택'),
+              onTap: () {
+                _pickImage(ImageSource.gallery);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('이미지 삭제'),
+              onTap: () {
+                ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(const ImagePathChanged(null));
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      ref
+          .read(projectFormNotifierProvider.notifier)
+          .onEvent(ImagePathChanged(pickedFile.path));
+    }
+  }
+}
+
+// === Sections ===
+
+class _ProjectImageSection extends StatelessWidget {
+  final String? imagePath;
+  final VoidCallback onImagePressed;
+
+  const _ProjectImageSection({this.imagePath, required this.onImagePressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: onImagePressed,
+        child: Container(
+          width: double.infinity, // Take full width available within parent
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade400),
+                image: imagePath != null
+                    ? DecorationImage(
+                        image: FileImage(File(imagePath!)),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: imagePath == null
+                  ? Icon(Icons.camera_alt, size: 48, color: Colors.grey.shade600)
+                  : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProjectNameSection extends StatefulWidget {
+  final String initialValue;
+  final ValueChanged<String> onChanged;
+
+  const _ProjectNameSection({
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  @override
+  State<_ProjectNameSection> createState() => _ProjectNameSectionState();
+}
+
+class _ProjectNameSectionState extends State<_ProjectNameSection> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void didUpdateWidget(_ProjectNameSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != _controller.text) {
+      _controller.text = widget.initialValue;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: <TextSpan>[
+              const TextSpan(text: '프로젝트명'),
+              TextSpan(
+                text: ' *', // Red asterisk
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.red,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _controller,
+          onChanged: widget.onChanged,
+          decoration: const InputDecoration(
+            hintText: '프로젝트 이름을 입력하세요',
+            border: OutlineInputBorder(),
+          ),
+          textInputAction: TextInputAction.next,
+        ),
+      ],
+    );
+  }
+}
+
+class _NeedleInfoSection extends StatelessWidget {
+  final NeedleType? needleType;
+  final String? needleSize;
+  final List<String> availableNeedleSizes;
+  final ValueChanged<String?> onNeedleTypeChanged;
+  final ValueChanged<String?> onNeedleSizeChanged;
+
+  const _NeedleInfoSection({
+    required this.needleType,
+    required this.needleSize,
+    required this.availableNeedleSizes,
+    required this.onNeedleTypeChanged,
+    required this.onNeedleSizeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('사용 바늘 정보', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 16),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: needleType?.toString().split('.').last,
+                onChanged: onNeedleTypeChanged,
+                decoration: const InputDecoration(
+                  labelText: '바늘 종류',
+                  border: OutlineInputBorder(),
+                ),
+                items: NeedleType.values
+                    .map((type) => DropdownMenuItem(
+                          value: type.toString().split('.').last,
+                          child: Text(type == NeedleType.knitting ? '대바늘' : '코바늘'),
+                        ))
+                    .toList(),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: needleSize,
+                onChanged: onNeedleSizeChanged,
+                decoration: const InputDecoration(
+                  labelText: '사이즈',
+                  border: OutlineInputBorder(),
+                ),
+                items: availableNeedleSizes
+                    .map((size) => DropdownMenuItem(
+                          value: size,
+                          child: Text(size),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _YarnInfoSection extends StatefulWidget {
+  final String? lotNumber;
+  final String? memo;
+  final ValueChanged<String> onLotNumberChanged;
+  final ValueChanged<String> onMemoChanged;
+
+  const _YarnInfoSection({
+    this.lotNumber,
+    this.memo,
+    required this.onLotNumberChanged,
+    required this.onMemoChanged,
+  });
+
+  @override
+  State<_YarnInfoSection> createState() => _YarnInfoSectionState();
+}
+
+class _YarnInfoSectionState extends State<_YarnInfoSection> {
+  late final TextEditingController _lotNumberController;
+  late final TextEditingController _memoController;
+
+  @override
+  void initState() {
+    super.initState();
+    _lotNumberController = TextEditingController(text: widget.lotNumber ?? '');
+    _memoController = TextEditingController(text: widget.memo ?? '');
+  }
+
+  @override
+  void didUpdateWidget(_YarnInfoSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.lotNumber != _lotNumberController.text) {
+      _lotNumberController.text = widget.lotNumber ?? '';
+    }
+    if (widget.memo != _memoController.text) {
+      _memoController.text = widget.memo ?? '';
+    }
+  }
+
+  @override
+  void dispose() {
+    _lotNumberController.dispose();
+    _memoController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('사용 실 정보', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _lotNumberController,
+          onChanged: widget.onLotNumberChanged,
+          decoration: const InputDecoration(
+            labelText: 'Lot 번호',
+            border: OutlineInputBorder(),
+          ),
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _memoController,
+          onChanged: widget.onMemoChanged,
+          decoration: const InputDecoration(
+            labelText: '메모',
+            border: OutlineInputBorder(),
+          ),
+          maxLines: 3,
+          textInputAction: TextInputAction.done,
+        ),
+      ],
+    );
+  }
+}
+class _TagInfoSection extends StatelessWidget {
+  final List<Tag> allTags;
+  final Set<int> selectedTagIds;
+  final VoidCallback onAddTagPressed;
+  final ValueChanged<int> onRemoveTag;
+
+  const _TagInfoSection({
+    required this.allTags,
+    required this.selectedTagIds,
+    required this.onAddTagPressed,
+    required this.onRemoveTag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedTags = allTags.where((tag) => selectedTagIds.contains(tag.id)).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('태그', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade400),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (selectedTags.isEmpty)
+                const Text('선택된 태그가 없습니다.')
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: selectedTags
+                      .map((tag) => ColoredTagChip(
+                            tag: tag,
+                            showDeleteButton: true,
+                            onDeleted: () => onRemoveTag(tag.id),
+                          ))
+                      .toList(),
+                ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.center,
+                child: TextButton.icon(
+                  onPressed: onAddTagPressed,
+                  icon: const Icon(Icons.add),
+                  label: const Text('태그 추가 또는 수정'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

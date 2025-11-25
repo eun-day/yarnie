@@ -7,6 +7,8 @@ import '../../db/app_db.dart';
 import '../../new_project_screen.dart';
 import '../../project_detail_screen.dart';
 import '../../widgets/tag_chip.dart';
+import '../../widgets/tag_selection_sheet.dart'; // New import
+import '../../widgets/colored_tag_chip.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -202,12 +204,29 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
-      case ShowAssignTagsDialog():
-        // TODO: 태그 지정 다이얼로그 구현
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('태그 지정 기능은 곧 추가됩니다')));
+      case ShowAssignTagsDialog(:final projectId, :final currentTagIds):
+        _showTagAssignmentSheet(context, projectId, currentTagIds);
         break;
+      case ProjectCreated():
+        break;
+      case ProjectUpdated():
+        break;
+      case ProjectDeleted():
+        break;
+    }
+  }
+
+  Future<void> _showTagAssignmentSheet(BuildContext context, int projectId, List<int> currentTagIds) async {
+    final result = await showModalBottomSheet<Set<int>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => TagSelectionSheet(
+        initialSelectedIds: currentTagIds.toSet(),
+      ),
+    );
+
+    if (result != null) {
+      ref.read(projectsProvider.notifier).onEvent(AssignTagsToProject(projectId, result.toList()));
     }
   }
 }
@@ -532,24 +551,7 @@ class _LargeProjectCard extends StatelessWidget {
                     spacing: 6,
                     runSpacing: 6,
                     children: projectTags.take(2).map((tag) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          tag.name,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      );
+                      return ColoredTagChip(tag: tag);
                     }).toList(),
                   ),
                 ),
@@ -697,24 +699,7 @@ class _SmallProjectCard extends StatelessWidget {
                         spacing: 4,
                         runSpacing: 4,
                         children: projectTags.take(2).map((tag) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              tag.name,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          );
+                          return ColoredTagChip(tag: tag);
                         }).toList(),
                       ),
                     ),

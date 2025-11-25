@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../db/app_db.dart';
 import '../../../db/di.dart';
@@ -86,6 +87,15 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
 
       case AssignTagsToProject(:final projectId, :final tagIds):
         await _assignTags(projectId, tagIds);
+
+      case CreateProject():
+        await _createProject(event);
+
+      case UpdateProject():
+        await _updateProject(event);
+
+      case DeleteProject(:final projectId):
+        await _deleteProject(projectId);
     }
   }
 
@@ -201,6 +211,101 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       return state.allProjects.firstWhere((p) => p.id == id);
     } catch (e) {
       return null;
+    }
+  }
+
+  /// 프로젝트 생성
+  Future<void> _createProject(CreateProject event) async {
+    try {
+      final projectId = await appDb.createProject(
+        name: event.name,
+        needleType: event.needleType,
+        needleSize: event.needleSize,
+        lotNumber: event.lotNumber,
+        memo: event.memo,
+      );
+
+      // 이미지 설정
+      if (event.imagePath != null) {
+        await appDb.updateProjectImage(
+          projectId: projectId,
+          imagePath: event.imagePath,
+        );
+      }
+
+      // 태그 지정
+      if (event.tagIds.isNotEmpty) {
+        await appDb.updateProjectTags(
+          projectId: projectId,
+          tagIds: event.tagIds,
+        );
+      }
+
+      _emit(ProjectCreated(projectId));
+      _emit(const ShowSuccessMessage('프로젝트가 생성되었습니다'));
+    } catch (e) {
+      _emit(ShowErrorMessage('프로젝트 생성 실패: $e'));
+    }
+  }
+
+  /// 프로젝트 수정
+  Future<void> _updateProject(UpdateProject event) async {
+    try {
+      final project = _projectById(event.projectId);
+      if (project == null) {
+        _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+        return;
+      }
+
+      // ProjectsCompanion으로 업데이트
+      await appDb.updateProject(
+        ProjectsCompanion(
+          id: Value(event.projectId),
+          name: Value(event.name),
+          needleType: Value(event.needleType),
+          needleSize: Value(event.needleSize),
+          lotNumber: Value(event.lotNumber),
+          memo: Value(event.memo),
+        ),
+      );
+
+      // 이미지 업데이트
+      await appDb.updateProjectImage(
+        projectId: event.projectId,
+        imagePath: event.imagePath,
+      );
+
+      // 태그 업데이트
+      await appDb.updateProjectTags(
+        projectId: event.projectId,
+        tagIds: event.tagIds,
+      );
+
+      _emit(ProjectUpdated(event.projectId));
+      _emit(const ShowSuccessMessage('프로젝트가 수정되었습니다'));
+    } catch (e) {
+      _emit(ShowErrorMessage('프로젝트 수정 실패: $e'));
+    }
+  }
+
+  /// 프로젝트 삭제
+  Future<void> _deleteProject(int projectId) async {
+    try {
+      final project = _projectById(projectId);
+      if (project == null) {
+        _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+        return;
+      }
+
+      // Drift의 delete 메서드 사용
+      await (appDb.delete(
+        appDb.projects,
+      )..where((tbl) => tbl.id.equals(projectId))).go();
+
+      _emit(const ProjectDeleted());
+      _emit(const ShowSuccessMessage('프로젝트가 삭제되었습니다'));
+    } catch (e) {
+      _emit(ShowErrorMessage('프로젝트 삭제 실패: $e'));
     }
   }
 
