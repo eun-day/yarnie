@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/model/tag_color_preset.dart';
 
 class ColoredTagChip extends StatelessWidget {
   const ColoredTagChip({
@@ -15,41 +16,41 @@ class ColoredTagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tagColor = Color(tag.color);
-    final textColor = ThemeData.estimateBrightnessForColor(tagColor) == Brightness.dark
-        ? Colors.white
-        : Colors.black;
+    final tagColorValue = tag.color;
+    final tagColor = Color(tagColorValue);
+    
+    // Use preset text color if available, otherwise calculate based on brightness
+    final presetTextColor = TagColorPreset.getTextColor(tagColorValue);
+    final textColor = presetTextColor ?? (ThemeData.estimateBrightnessForColor(tagColor) == Brightness.dark
+            ? Colors.white
+            : Colors.black87);
 
     return Container(
-      padding: showDeleteButton
-          ? const EdgeInsets.only(left: 12.0, top: 5.0, bottom: 5.0, right: 5.0)
-          : const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.5, vertical: 2.5),
       decoration: BoxDecoration(
         color: tagColor,
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(8.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             tag.name,
-            style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              height: 1.33,
+            ),
           ),
           if (showDeleteButton) ...[
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onDeleted,
-              child: Container(
-                padding: const EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(0.1),
-                ),
-                child: Icon(
-                  Icons.close,
-                  size: 14,
-                  color: textColor,
-                ),
+              child: Icon(
+                Icons.close,
+                size: 12,
+                color: textColor,
               ),
             )
           ]
@@ -58,3 +59,4 @@ class ColoredTagChip extends StatelessWidget {
     );
   }
 }
+

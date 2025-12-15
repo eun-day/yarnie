@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/model/tag_color_preset.dart';
 import 'package:yarnie/modules/tags/tags_api.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
 
@@ -20,13 +21,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
   String _searchQuery = '';
   late final TextEditingController _newTagNameController;
 
-  final List<Color> _colorPalette = [
-    Colors.red, Colors.pink, Colors.purple, Colors.deepPurple,
-    Colors.indigo, Colors.blue, Colors.lightBlue, Colors.cyan,
-    Colors.teal, Colors.green, Colors.lightGreen, Colors.lime,
-    Colors.yellow, Colors.amber, Colors.orange, Colors.deepOrange,
-    Colors.brown, Colors.grey, Colors.blueGrey, Colors.black,
-  ];
+  final List<Color> _colorPalette = TagColorPreset.all.map((e) => e.backgroundColor).toList();
   late Color _newTagColor; // Make it late, initialize in initState
 
   @override
@@ -115,10 +110,10 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                   itemBuilder: (context, index) {
                     final tag = filteredTags[index];
                     final isSelected = _selectedIds.contains(tag.id);
-                    final tagColor = Color(tag.color);
-                    final textColor = ThemeData.estimateBrightnessForColor(tagColor) == Brightness.dark
-                        ? Colors.white
-                        : Colors.black;
+                    // No direct textColor usage here, but kept for context if needed or cleanup
+                    // Since ColoredTagChip handles it, we don't strictly need to calc textColor here 
+                    // unless we use it for the Checkbox or InkWell text (which we don't).
+                    // We only pass tag to ColoredTagChip.
 
                     return InkWell(
                       onTap: () {

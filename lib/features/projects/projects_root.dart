@@ -7,7 +7,7 @@ import '../../db/app_db.dart';
 import '../../new_project_screen.dart';
 import '../../project_detail_screen.dart';
 import '../../widgets/tag_chip.dart';
-import '../../widgets/tag_selection_sheet.dart'; // New import
+import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 
 /// SharedPreferences 키
@@ -417,11 +417,14 @@ class _LargeCardView extends StatelessWidget {
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
-        return _LargeProjectCard(
-          project: project,
-          tags: tags,
-          onTap: () => onProjectTap(project.id),
-          onMoreTap: () => onMoreTap(project.id),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: _LargeProjectCard(
+            project: project,
+            tags: tags,
+            onTap: () => onProjectTap(project.id),
+            onMoreTap: () => onMoreTap(project.id),
+          ),
         );
       },
     );
@@ -446,8 +449,11 @@ class _LargeProjectCard extends StatelessWidget {
     final projectTags = _getProjectTags();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: InkWell(
         onTap: onTap,
         child: AspectRatio(
@@ -460,116 +466,126 @@ class _LargeProjectCard extends StatelessWidget {
                   ? Image.network(
                       project.imagePath!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Image.network(
-                        'https://images.unsplash.com/photo-1601924357840-3c6b0b4e0c4e?w=800',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Container(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          child: _placeholderImage(context),
-                        ),
-                      ),
+                      errorBuilder: (_, __, ___) => Container(color: const Color(0xFFD9D9D9)),
                     )
-                  : Image.network(
-                      'https://images.unsplash.com/photo-1601924357840-3c6b0b4e0c4e?w=800',
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHighest,
-                        child: _placeholderImage(context),
-                      ),
-                    ),
-              // 하단 그라데이션 오버레이 (검은색 60% → 투명)
+                  : Container(color: const Color(0xFFD9D9D9)),
+              // 하단 정보 섹션
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: 120,
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
                       colors: [
-                        Colors.black.withOpacity(0.0),
-                        Colors.black.withOpacity(0.6),
+                        const Color.fromRGBO(0, 0, 0, 0.6),
+                        const Color.fromRGBO(0, 0, 0, 0.0),
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          project.name,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                            letterSpacing: -0.3125,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              size: 14,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatDate(project.createdAt),
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.8),
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              // 하단 텍스트
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        project.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatDate(project.createdAt),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.white.withOpacity(0.9),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+
               // 좌측 상단 태그
               if (projectTags.isNotEmpty)
                 Positioned(
                   left: 12,
                   top: 12,
                   child: Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: projectTags.take(2).map((tag) {
-                      return ColoredTagChip(tag: tag);
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: projectTags.take(3).map((tag) {
+                      return ColoredTagChip(
+                        key: ValueKey(tag.id),
+                        tag: tag,
+                      );
                     }).toList(),
                   ),
                 ),
-              // 우측 상단 더보기 버튼 (둥근 사각형)
+
+              // 우측 상단 더보기 버튼
               Positioned(
-                right: 8,
-                top: 8,
+                right: 12,
+                top: 12,
                 child: Container(
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(6.4),
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.more_vert),
                     iconSize: 20,
                     onPressed: onMoreTap,
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
+                  ),
+                ),
+              ),
+              // 우측 중앙 다음 버튼
+              Positioned(
+                right: 12,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent, // 배경 없음
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                      color: Colors.white,
+                      onPressed: onTap,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
                   ),
                 ),
               ),
@@ -580,20 +596,12 @@ class _LargeProjectCard extends StatelessWidget {
     );
   }
 
-  Widget _placeholderImage(BuildContext context) {
-    return Center(
-      child: Icon(
-        Icons.image,
-        size: 64,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
-
   List<Tag> _getProjectTags() {
-    if (project.tagIds == null) return [];
+    if (project.tagIds == null || project.tagIds!.isEmpty) return [];
     try {
-      final tagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+      final dynamic decoded = jsonDecode(project.tagIds!);
+      if (decoded is! List) return [];
+      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
@@ -631,7 +639,8 @@ class _SmallCardView extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-                  childAspectRatio: 4 / 3,      ),
+        childAspectRatio: 4 / 3,
+      ),
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
@@ -664,7 +673,11 @@ class _SmallProjectCard extends StatelessWidget {
     final projectTags = _getProjectTags();
 
     return Card(
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Stack(
@@ -672,54 +685,16 @@ class _SmallProjectCard extends StatelessWidget {
           children: [
             // 이미지 영역
             Container(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: const Color(0xFFD9D9D9), // Placeholder color from Figma
               child: project.imagePath != null
                   ? Image.network(
                       project.imagePath!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) =>
-                          _placeholderImage(context),
+                      errorBuilder: (_, _, _) => _placeholderImage(context),
                     )
                   : _placeholderImage(context),
             ),
-             // 하단 그라데이션 오버레이
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 80,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.0),
-                      Colors.black.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // 하단 텍스트
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  project.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-
+            
             // 좌측 상단 태그
             if (projectTags.isNotEmpty)
               Positioned(
@@ -729,23 +704,67 @@ class _SmallProjectCard extends StatelessWidget {
                   spacing: 4,
                   runSpacing: 4,
                   children: projectTags.take(2).map((tag) {
-                    return ColoredTagChip(tag: tag);
+                    return ColoredTagChip(
+                      key: ValueKey(tag.id),
+                      tag: tag,
+                    );
                   }).toList(),
                 ),
               ),
+
             // 우측 상단 더보기 버튼
             Positioned(
-              right: 2,
-              top: 2,
-              child: Material(
-                color: Colors.white,
-                shape: const CircleBorder(),
+              right: 8,
+              top: 8,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(6.4),
+                ),
                 child: IconButton(
                   icon: const Icon(Icons.more_vert),
-                  iconSize: 18,
+                  iconSize: 20,
                   onPressed: onMoreTap,
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  color: Colors.black, // Ensure icon is visible
+                ),
+              ),
+            ),
+
+            // 하단 정보 바 (Project Name + Arrow)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 32, // Fixed height based on design (~139-107=32px)
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                color: Colors.black.withOpacity(0.4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        project.name,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                          height: 1.33, // leading 16px / 12px
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -766,9 +785,11 @@ class _SmallProjectCard extends StatelessWidget {
   }
 
   List<Tag> _getProjectTags() {
-    if (project.tagIds == null) return [];
+    if (project.tagIds == null || project.tagIds!.isEmpty) return [];
     try {
-      final tagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+      final dynamic decoded = jsonDecode(project.tagIds!);
+      if (decoded is! List) return [];
+      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
@@ -828,34 +849,44 @@ class _ProjectListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final projectTags = _getProjectTags();
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.1),
+          width: 0.65,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center, // Align center vertically
             children: [
               // 썸네일
               Container(
-                width: 64,
-                height: 64,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0xFFD9D9D9),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: project.imagePath != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(4),
                         child: Image.network(
                           project.imagePath!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => _placeholderIcon(context),
+                          errorBuilder: (_, _, _) => Container(color: const Color(0xFFD9D9D9)),
                         ),
                       )
-                    : _placeholderIcon(context),
+                    : Container(color: const Color(0xFFD9D9D9)), // Placeholder empty
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               // 정보
               Expanded(
                 child: Column(
@@ -863,8 +894,13 @@ class _ProjectListTile extends StatelessWidget {
                   children: [
                     Text(
                       project.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF0A0A0A), // neutral-950
+                        height: 1.5, // leading 24px / 16px
+                        letterSpacing: -0.31,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -872,41 +908,69 @@ class _ProjectListTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 14,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatDate(project.createdAt),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                        // Date
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 12,
+                              color: Color(0xFF717182),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatDate(project.createdAt),
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF717182),
+                                height: 1.42, // leading 20px / 14px
+                                letterSpacing: -0.15,
                               ),
+                            ),
+                          ],
                         ),
+                        // Gap between Date and Tags
+                        if (projectTags.isNotEmpty) ...[
+                          const SizedBox(width: 9),
+                          // Tags
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: projectTags.map((tag) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 4.0),
+                                    child: ColoredTagChip(
+                                      key: ValueKey(tag.id),
+                                      tag: tag,
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
-                    if (projectTags.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: projectTags.take(2).map((tag) {
-                          return ColoredTagChip(tag: tag);
-                        }).toList(),
-                      ),
-                    ],
                   ],
                 ),
               ),
               // 더보기 버튼
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: onMoreTap,
-                padding: const EdgeInsets.all(8),
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  iconSize: 20,
+                  onPressed: onMoreTap,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.9), // As per design but might be invisible on white bg
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.4)),
+                  ),
+                ),
               ),
             ],
           ),
@@ -923,9 +987,11 @@ class _ProjectListTile extends StatelessWidget {
   }
 
   List<Tag> _getProjectTags() {
-    if (project.tagIds == null) return [];
+    if (project.tagIds == null || project.tagIds!.isEmpty) return [];
     try {
-      final tagIds = (jsonDecode(project.tagIds!) as List).cast<int>();
+      final dynamic decoded = jsonDecode(project.tagIds!);
+      if (decoded is! List) return [];
+      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
