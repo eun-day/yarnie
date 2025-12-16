@@ -57,3 +57,5 @@ app.*.map.json
 # macOS / Windows OS files
 .DS_Store
 Thumbs.db
+
+.doc/

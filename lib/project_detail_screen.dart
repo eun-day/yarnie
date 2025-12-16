@@ -1,20 +1,21 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:yarnie/common/time_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/stopwatch_panel.dart';
 import 'package:yarnie/counter_panel.dart';
 import 'package:yarnie/widget/project_info_section.dart';
 
-class ProjectDetailScreen extends StatelessWidget {
+class ProjectDetailScreen extends ConsumerWidget {
   final int projectId;
   const ProjectDetailScreen({super.key, required this.projectId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Drift 스트림으로 단건 구독 (없으면 아래 주석 참고)
     final stream = appDb.watchProject(projectId);
 
@@ -40,14 +41,20 @@ class ProjectDetailScreen extends StatelessWidget {
                 icon: Platform.isIOS
                     ? const Icon(CupertinoIcons.ellipsis_circle)
                     : null, // 안드로이드는 기본 아이콘 사용
-                onSelected: (value) {
+                onSelected: (value) async {
                   if (value == 'project_info') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            ProjectInfoScreen(projectId: project.id),
+                    final allTags = await appDb.getAllTags();
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => ProjectInfoSheet(
+                        project: project,
+                        allTags: allTags,
                       ),
                     );
+                  } else if (value == 'delete_project') {
+                    _showDeleteConfirmationDialog(context, ref, project);
                   }
                 },
                 itemBuilder: (context) => [
@@ -61,6 +68,16 @@ class ProjectDetailScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const PopupMenuItem(
+                    value: 'delete_project',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('프로젝트 삭제', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -70,6 +87,51 @@ class ProjectDetailScreen extends StatelessWidget {
               Expanded(child: ProjectDetailTabs(projectId: project.id)),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref, Project project) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('프로젝트 삭제'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: <TextSpan>[
+                      const TextSpan(text: '정말로 \''),
+                      TextSpan(text: project.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(text: '\' 프로젝트를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('삭제'),
+              onPressed: () {
+                ref.read(projectsProvider.notifier).onEvent(DeleteProject(project.id));
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop(); // Close detail screen
+              },
+            ),
+          ],
         );
       },
     );

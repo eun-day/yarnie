@@ -22,7 +22,7 @@ abstract class DatabaseTestBase {
 /// 데이터베이스 테스트 그룹 설정 헬퍼
 void databaseTestGroup(
   String description,
-  Function(AppDb db, int projectId) body,
+  void Function(AppDb Function() getDb, int Function() getProjectId) body,
 ) {
   group(description, () {
     late AppDb db;
@@ -37,6 +37,6 @@ void databaseTestGroup(
       await db.close();
     });
 
-    body(db, projectId);
+    body(() => db, () => projectId);
   });
 }

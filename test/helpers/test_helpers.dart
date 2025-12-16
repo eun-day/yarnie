@@ -8,7 +8,15 @@ import 'package:yarnie/providers/counter_provider.dart';
 
 /// 테스트용 데이터베이스 연결 생성
 DatabaseConnection createTestConnection() {
-  return DatabaseConnection(NativeDatabase.memory());
+  return DatabaseConnection(
+    NativeDatabase.memory(
+      logStatements: false,
+      setup: (db) {
+        // 외래키 제약조건 활성화
+        db.execute('PRAGMA foreign_keys = ON');
+      },
+    ),
+  );
 }
 
 /// 테스트용 AppDb 인스턴스 생성
@@ -25,7 +33,6 @@ ProviderContainer createTestContainer() {
 Future<int> createTestProject(AppDb db, {String name = 'Test Project'}) async {
   return await db.createProject(
     name: name,
-    category: 'Test Category',
     needleType: 'Test Needle',
     needleSize: '4.0mm',
     lotNumber: 'TEST001',
