@@ -1859,6 +1859,34 @@ class AppDb extends _$AppDb {
     )..where((t) => t.id.equals(noteId))).getSingleOrNull();
   }
 
+  /// PartNote 핀 고정 상태 토글
+  ///
+  /// [noteId]: PartNote ID
+  Future<void> togglePartNotePin(int noteId) async {
+    final note = await getPartNote(noteId);
+    if (note == null) return;
+
+    await (update(partNotes)..where((t) => t.id.equals(noteId))).write(
+      PartNotesCompanion(
+        isPinned: Value(!note.isPinned),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
+  }
+
+  /// Part의 메모 개수 조회 (Stream)
+  ///
+  /// [partId]: Part ID
+  ///
+  /// 반환값: PartNote 개수 Stream
+  Stream<int> watchPartNotesCount(int partId) {
+    final query = selectOnly(partNotes)
+      ..addColumns([partNotes.id.count()])
+      ..where(partNotes.partId.equals(partId));
+
+    return query.map((row) => row.read(partNotes.id.count()) ?? 0).watchSingle();
+  }
+
   // ────────────────────────────────────────────────────────────────────────────
   // Tag 관련 메서드들
   // ────────────────────────────────────────────────────────────────────────────

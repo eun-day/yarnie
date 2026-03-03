@@ -22,6 +22,7 @@ import 'package:yarnie/widgets/counter_card/shaping_counter_card.dart';
 import 'package:yarnie/widgets/counter_card/stitch_counter_card.dart';
 import 'package:yarnie/widgets/counter_edit_bottom_sheet.dart';
 import 'package:yarnie/widgets/main_counter_settings_button.dart';
+import 'package:yarnie/widgets/part_memo_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
 // import 'package:yarnie/stopwatch_panel.dart'; // 기존 패널 미사용
 // import 'package:yarnie/counter_panel.dart';   // 기존 패널 미사용
@@ -368,8 +369,24 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             children: [
               // Memo Button
               GestureDetector(
-                onTap: () {
-                  // TODO: Open Part Memo
+                onTap: () async {
+                  if (_selectedPartId == null) return;
+                  
+                  // 파트 이름 가져오기
+                  final part = await appDb.getPart(_selectedPartId!);
+                  final partName = part?.name ?? '파트';
+
+                  if (context.mounted) {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => PartMemoSheet(
+                        partId: _selectedPartId!,
+                        partName: partName,
+                      ),
+                    );
+                  }
                 },
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -382,27 +399,36 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       ),
                       child: const Icon(Icons.description_outlined, size: 24, color: Color(0xFF717182)),
                     ),
-                    Positioned(
-                      right: -2,
-                      top: -4,
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF637069),
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: const Text(
-                          '2', // TODO: Real memo count
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    if (_selectedPartId != null)
+                      StreamBuilder<int>(
+                        stream: appDb.watchPartNotesCount(_selectedPartId!),
+                        builder: (context, snapshot) {
+                          final count = snapshot.data ?? 0;
+                          if (count == 0) return const SizedBox.shrink();
+                          
+                          return Positioned(
+                            right: -2,
+                            top: -4,
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF637069),
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                '$count',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    )
                   ],
                 ),
               ),
