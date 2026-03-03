@@ -29,12 +29,12 @@ void main() {
         );
 
         // Part 1 세션
-        final sessionId1 = await db.startNewSession(
+        final sessionId1 = await db.createSession(
           partId: partId1,
           currentMainValue: 0,
         );
         var segment = await db.getCurrentSegment(sessionId1);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId1,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
@@ -42,12 +42,12 @@ void main() {
         );
 
         // Part 2 세션
-        final sessionId2 = await db.startNewSession(
+        final sessionId2 = await db.createSession(
           partId: partId2,
           currentMainValue: 0,
         );
         segment = await db.getCurrentSegment(sessionId2);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId2,
           currentSegmentId: segment!.id,
           currentMainValue: 3,
@@ -91,12 +91,12 @@ void main() {
 
         // 각 Part에 세션 생성
         for (final partId in [partId1, partId2, partId3]) {
-          final sessionId = await db.startNewSession(
+          final sessionId = await db.createSession(
             partId: partId,
             currentMainValue: 0,
           );
           final segment = await db.getCurrentSegment(sessionId);
-          await db.pauseNewSession(
+          await db.pausePartSession(
             sessionId: sessionId,
             currentSegmentId: segment!.id,
             currentMainValue: 1,
@@ -125,7 +125,7 @@ void main() {
         final today = DateTime(now.year, now.month, now.day).toUtc();
 
         // 오늘 세션 생성
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -169,7 +169,7 @@ void main() {
         final yesterday = today.subtract(Duration(days: 1));
 
         // 어제 세션
-        final sessionId1 = await db.startNewSession(
+        final sessionId1 = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -192,7 +192,7 @@ void main() {
             );
 
         // 오늘 세션
-        final sessionId2 = await db.startNewSession(
+        final sessionId2 = await db.createSession(
           partId: partId,
           currentMainValue: 5,
         );
@@ -257,7 +257,7 @@ void main() {
         final today = DateTime(now.year, now.month, now.day).toUtc();
 
         // 세션 생성
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -298,12 +298,12 @@ void main() {
         final today = DateTime(now.year, now.month, now.day).toUtc();
 
         // 세션 생성
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
         final segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
@@ -335,12 +335,12 @@ void main() {
         final tomorrow = today.add(Duration(days: 1));
 
         // 오늘 세션 생성
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
         final segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 5,

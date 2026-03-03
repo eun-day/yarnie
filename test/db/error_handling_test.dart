@@ -73,7 +73,7 @@ void main() {
     group('Session 관련 에러 처리', () {
       test('존재하지 않는 Part에 세션 시작 시 RecordNotFoundException 발생', () async {
         expect(
-          () => db.startNewSession(partId: 99999, currentMainValue: 0),
+          () => db.createSession(partId: 99999, currentMainValue: 0),
           throwsA(isA<RecordNotFoundException>()),
         );
       });
@@ -85,18 +85,18 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        await db.startNewSession(partId: partId, currentMainValue: 0);
+        await db.createSession(partId: partId, currentMainValue: 0);
 
         // When & Then
         expect(
-          () => db.startNewSession(partId: partId, currentMainValue: 0),
+          () => db.createSession(partId: partId, currentMainValue: 0),
           throwsA(isA<DataIntegrityException>()),
         );
       });
 
       test('존재하지 않는 세션 일시정지 시 RecordNotFoundException 발생', () async {
         expect(
-          () => db.pauseNewSession(
+          () => db.pausePartSession(
             sessionId: 99999,
             currentSegmentId: 1,
             currentMainValue: 0,
@@ -113,14 +113,14 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
         final segment = await db.getCurrentSegment(sessionId);
 
         // 세션 일시정지
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 0,
@@ -129,7 +129,7 @@ void main() {
 
         // When & Then: 이미 일시정지된 세션을 다시 일시정지
         expect(
-          () => db.pauseNewSession(
+          () => db.pausePartSession(
             sessionId: sessionId,
             currentSegmentId: segment.id,
             currentMainValue: 0,
@@ -146,14 +146,14 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
 
         // When & Then: 실행 중인 세션을 재시작
         expect(
-          () => db.resumeNewSession(
+          () => db.resumePartSession(
             sessionId: sessionId,
             partId: partId,
             currentMainValue: 0,

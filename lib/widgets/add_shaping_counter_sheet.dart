@@ -1,0 +1,352 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/db/di.dart';
+import 'package:yarnie/widgets/number_input_group.dart';
+
+class AddShapingCounterSheet extends ConsumerStatefulWidget {
+  final int partId;
+  final int initialStartRow;
+  final SectionCounter? existingCounter;
+
+  const AddShapingCounterSheet({
+    super.key,
+    required this.partId,
+    required this.initialStartRow,
+    this.existingCounter,
+  });
+
+  @override
+  ConsumerState<AddShapingCounterSheet> createState() => _AddShapingCounterSheetState();
+}
+
+class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet> {
+  late TextEditingController _labelController;
+  late TextEditingController _startRowController;
+  late TextEditingController _intervalController;
+  late TextEditingController _totalCountController;
+  late TextEditingController _amountController;
+
+  bool get _isEditing => widget.existingCounter != null;
+
+  bool get _isValid {
+    final startRow = int.tryParse(_startRowController.text);
+    final interval = int.tryParse(_intervalController.text);
+    final totalCount = int.tryParse(_totalCountController.text);
+    final amount = int.tryParse(_amountController.text);
+    
+    return _labelController.text.isNotEmpty && 
+           startRow != null && startRow > 0 && 
+           interval != null && interval > 0 &&
+           totalCount != null && totalCount > 0 &&
+           amount != null && amount != 0; // 0은 의미 없음
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    String label = '증감 카운터';
+    String startRow = widget.initialStartRow.toString();
+    String interval = '';
+    String totalCount = '';
+    String amount = '';
+
+    if (_isEditing) {
+      label = widget.existingCounter!.name;
+      try {
+        final spec = jsonDecode(widget.existingCounter!.specJson);
+        startRow = spec['startRow']?.toString() ?? startRow;
+        interval = spec['intervalRows']?.toString() ?? '';
+        totalCount = spec['totalCount']?.toString() ?? '';
+        amount = spec['amount']?.toString() ?? '';
+      } catch (_) {}
+    }
+
+    _labelController = TextEditingController(text: label);
+    _startRowController = TextEditingController(text: startRow);
+    _intervalController = TextEditingController(text: interval);
+    _totalCountController = TextEditingController(text: totalCount);
+    _amountController = TextEditingController(text: amount);
+
+    _labelController.addListener(_updateState);
+    _startRowController.addListener(_updateState);
+    _intervalController.addListener(_updateState);
+    _totalCountController.addListener(_updateState);
+    _amountController.addListener(_updateState);
+  }
+
+  void _updateState() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _labelController.removeListener(_updateState);
+    _startRowController.removeListener(_updateState);
+    _intervalController.removeListener(_updateState);
+    _totalCountController.removeListener(_updateState);
+    _amountController.removeListener(_updateState);
+    
+    _labelController.dispose();
+    _startRowController.dispose();
+    _intervalController.dispose();
+    _totalCountController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    if (!_isValid) return;
+
+    final name = _labelController.text.trim();
+    final startRow = int.parse(_startRowController.text);
+    final interval = int.parse(_intervalController.text);
+    final totalCount = int.parse(_totalCountController.text);
+    final amount = int.parse(_amountController.text);
+
+    // Spec JSON Construction
+    final spec = {
+      'type': 'shaping',
+      'startRow': startRow,
+      'intervalRows': interval,
+      'totalCount': totalCount,
+      'amount': amount,
+      'targetInfo': '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}코 × $totalCount회',
+    };
+
+    try {
+      if (_isEditing) {
+        await appDb.updateSectionCounter(
+          counterId: widget.existingCounter!.id,
+          name: name,
+          specJson: jsonEncode(spec),
+        );
+      } else {
+        await appDb.createSectionCounter(
+          partId: widget.partId,
+          name: name,
+          specJson: jsonEncode(spec),
+        );
+      }
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Drag Handle
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16, bottom: 24),
+                    width: 100,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECECF0),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                ),
+
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _isEditing ? '증감 카운터 수정' : '증감 카운터 추가',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0A0A0A),
+                          letterSpacing: -0.31,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        '코를 늘리거나 줄이는 작업을 추적하는 카운터입니다.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF717182),
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Form Content
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      _buildLabelField(),
+                      const SizedBox(height: 16),
+                      
+                      NumberInputGroup(
+                        label: '시작 행',
+                        controller: _startRowController,
+                        hintText: '19',
+                        min: 1,
+                        onChanged: _updateState,
+                      ),
+                      const SizedBox(height: 16),
+
+                      NumberInputGroup(
+                        label: '간격 (행)',
+                        controller: _intervalController,
+                        hintText: '예: 2',
+                        min: 1,
+                        onChanged: _updateState,
+                      ),
+                      const SizedBox(height: 16),
+
+                      NumberInputGroup(
+                        label: '총 횟수',
+                        controller: _totalCountController,
+                        hintText: '예: 10',
+                        min: 1,
+                        onChanged: _updateState,
+                      ),
+                      const SizedBox(height: 16),
+
+                      NumberInputGroup(
+                        label: '코 수 변화 (회당)',
+                        controller: _amountController,
+                        hintText: '예: 2 또는 -2',
+                        helperText: '양수는 코 늘림, 음수는 코 줄임입니다.',
+                        min: -999,
+                        skipZero: true,
+                        onChanged: _updateState,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Footer Buttons
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: _isValid ? _handleSave : null,
+                        child: Container(
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _isValid ? const Color(0xFF637069) : const Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _isEditing ? '저장' : '추가',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: const Color(0x1A000000), width: 0.64),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF0A0A0A),
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabelField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '라벨',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F3F5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: TextField(
+            controller: _labelController,
+            style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 8),
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
+          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+        ),
+      ],
+    );
+  }
+}

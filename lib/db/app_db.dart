@@ -144,7 +144,8 @@ class MainCounters extends Table {
   IntColumn get partId =>
       integer().references(Parts, #id, onDelete: KeyAction.cascade)();
 
-  IntColumn get currentValue => integer().withDefault(const Constant(0))();
+  IntColumn get currentValue => integer().withDefault(const Constant(1))();
+  IntColumn get targetValue => integer().nullable()(); // Added targetValue column
 
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -795,14 +796,12 @@ class AppDb extends _$AppDb {
         await into(mainCounters).insert(
           MainCountersCompanion.insert(
             partId: partId,
-            currentValue: const Value(0),
+            currentValue: const Value(1),
           ),
         );
 
         return partId;
       });
-    } on DatabaseException {
-      rethrow; // 이미 DatabaseException이면 그대로 throw
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
@@ -926,16 +925,37 @@ class AppDb extends _$AppDb {
     }
   }
 
-  /// StitchCounter 생성 (순서 리스트 업데이트 포함)
+  /// MainCounter 목표 단수 업데이트
+  Future<void> updateMainCounterTarget({
+    required int partId,
+    required int? newTargetValue,
+  }) async {
+    try {
+      await _validatePartExists(partId);
+
+      await (update(mainCounters)..where((t) => t.partId.equals(partId))).write(
+        MainCountersCompanion(
+          targetValue: Value(newTargetValue),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+    } on DatabaseException {
+      rethrow;
+    } catch (e) {
+      throw _handleDatabaseException(e, 'MainCounter 목표 단수 업데이트');
+    }
+  }
+
+  /// StitchCounter 생성 (순서 리스트 자동 업데이트 지원)
   Future<int> createStitchCounter({
     required int partId,
     required String name,
-    required String newOrderJson,
+    String? newOrderJson,
     int countBy = 1,
   }) async {
     try {
       // Part 존재 여부 검증
-      await _validatePartExists(partId);
+      final part = await _validatePartExistsReturnPart(partId);
 
       return await transaction(() async {
         // StitchCounter 생성
@@ -948,9 +968,22 @@ class AppDb extends _$AppDb {
         );
 
         // 순서 리스트 업데이트
+        String finalOrderJson;
+        if (newOrderJson != null) {
+          finalOrderJson = newOrderJson;
+        } else {
+          // 자동 추가 로직
+          final List orderList =
+              part.buddyCounterOrder != null
+                  ? jsonDecode(part.buddyCounterOrder!)
+                  : [];
+          orderList.add({'type': 'stitch', 'id': counterId});
+          finalOrderJson = jsonEncode(orderList);
+        }
+
         await (update(parts)..where((t) => t.id.equals(partId))).write(
           PartsCompanion(
-            buddyCounterOrder: Value(newOrderJson),
+            buddyCounterOrder: Value(finalOrderJson),
             updatedAt: Value(DateTime.now().toUtc()),
           ),
         );
@@ -1017,16 +1050,16 @@ class AppDb extends _$AppDb {
     });
   }
 
-  /// SectionCounter 생성 (SectionRuns 전개 포함, 순서 리스트 업데이트 포함)
+  /// SectionCounter 생성 (SectionRuns 전개 포함, 순서 리스트 자동 업데이트 지원)
   Future<int> createSectionCounter({
     required int partId,
     required String name,
     required String specJson,
-    required String newOrderJson,
+    String? newOrderJson,
   }) async {
     try {
       // Part 존재 여부 검증
-      await _validatePartExists(partId);
+      final part = await _validatePartExistsReturnPart(partId);
 
       return await transaction(() async {
         // SectionCounter 생성
@@ -1043,9 +1076,22 @@ class AppDb extends _$AppDb {
         await _expandSectionRuns(counterId, specJson);
 
         // 순서 리스트 업데이트
+        String finalOrderJson;
+        if (newOrderJson != null) {
+          finalOrderJson = newOrderJson;
+        } else {
+          // 자동 추가 로직
+          final List orderList =
+              part.buddyCounterOrder != null
+                  ? jsonDecode(part.buddyCounterOrder!)
+                  : [];
+          orderList.add({'type': 'section', 'id': counterId});
+          finalOrderJson = jsonEncode(orderList);
+        }
+
         await (update(parts)..where((t) => t.id.equals(partId))).write(
           PartsCompanion(
-            buddyCounterOrder: Value(newOrderJson),
+            buddyCounterOrder: Value(finalOrderJson),
             updatedAt: Value(DateTime.now().toUtc()),
           ),
         );
@@ -1058,6 +1104,16 @@ class AppDb extends _$AppDb {
       throw _handleDatabaseException(e, 'SectionCounter 생성');
     }
   }
+
+  // 헬퍼: Part 존재 확인 및 Part 객체 반환
+  Future<Part> _validatePartExistsReturnPart(int partId) async {
+    final part = await getPart(partId);
+    if (part == null) {
+      throw RecordNotFoundException('Part(ID: $partId)를 찾을 수 없습니다');
+    }
+    return part;
+  }
+
 
   /// SectionCounter 조회
   Future<SectionCounter?> getSectionCounter(int counterId) {
@@ -1190,8 +1246,66 @@ class AppDb extends _$AppDb {
           ),
         );
       }
+    } else if (type == 'interval') {
+      // Interval 타입: 일정 간격으로 반복
+      final startRow = spec['startRow'] as int? ?? 0;
+      final intervalRows = spec['intervalRows'] as int? ?? 0;
+      final totalCount = spec['totalCount'] as int? ?? 0;
+      final palette = spec['palette'] as List<dynamic>?;
+
+      for (var i = 0; i < totalCount; i++) {
+        String? label;
+        if (palette != null && palette.isNotEmpty) {
+          final colorHex = palette[i % palette.length].toString();
+          label = colorHex;
+        }
+
+        await into(sectionRuns).insert(
+          SectionRunsCompanion.insert(
+            sectionCounterId: sectionCounterId,
+            ord: i,
+            startRow: startRow + (i * intervalRows),
+            rowsTotal: intervalRows,
+            label: Value(label),
+          ),
+        );
+      }
+    } else if (type == 'shaping') {
+      // Shaping 타입: 코 수 증감
+      final startRow = spec['startRow'] as int? ?? 0;
+      final intervalRows = spec['intervalRows'] as int? ?? 0;
+      final totalCount = spec['totalCount'] as int? ?? 0;
+      final amount = spec['amount'] as int? ?? 0;
+
+      final label = amount > 0 ? '+$amount코' : '$amount코'; // +1코, -1코
+
+      for (var i = 0; i < totalCount; i++) {
+        await into(sectionRuns).insert(
+          SectionRunsCompanion.insert(
+            sectionCounterId: sectionCounterId,
+            ord: i,
+            startRow: startRow + (i * intervalRows),
+            rowsTotal: intervalRows,
+            label: Value(label),
+          ),
+        );
+      }
+    } else if (type == 'length') {
+      // Length 타입: 단일 목표 구간
+      final startRow = spec['startRow'] as int? ?? 0;
+      final rowsTotal = spec['rowsTotal'] as int? ?? 0;
+      final label = spec['targetInfo'] as String?;
+
+      await into(sectionRuns).insert(
+        SectionRunsCompanion.insert(
+          sectionCounterId: sectionCounterId,
+          ord: 0,
+          startRow: startRow,
+          rowsTotal: rowsTotal,
+          label: Value(label),
+        ),
+      );
     }
-    // 추후 interval, shaping, length 등 다른 타입 추가 가능
   }
 
   /// SectionCounter의 모든 runs 조회 (순서대로)
@@ -1255,7 +1369,7 @@ class AppDb extends _$AppDb {
   }
 
   /// 세션 시작 (첫 작업 시작 시 Session 생성 + 첫 Segment 생성)
-  Future<int> startNewSession({
+  Future<int> createSession({
     required int partId,
     required int currentMainValue,
   }) async {
@@ -1305,7 +1419,7 @@ class AppDb extends _$AppDb {
   }
 
   /// 세션 일시정지 (현재 Segment 종료, totalDuration 누적)
-  Future<void> pauseNewSession({
+  Future<void> pausePartSession({
     required int sessionId,
     required int currentSegmentId,
     required int currentMainValue,
@@ -1365,7 +1479,7 @@ class AppDb extends _$AppDb {
   }
 
   /// 세션 재시작 (새 Segment 시작)
-  Future<int> resumeNewSession({
+  Future<int> resumePartSession({
     required int sessionId,
     required int partId,
     required int currentMainValue,
@@ -1964,5 +2078,31 @@ class AppDb extends _$AppDb {
         updatedAt: Value(DateTime.now().toUtc()),
       ),
     );
+  }
+
+  /// 프로젝트의 현재 선택된 파트 ID 업데이트
+  Future<void> updateProjectCurrentPart({
+    required int projectId,
+    required int partId,
+  }) {
+    return (update(projects)..where((t) => t.id.equals(projectId))).write(
+      ProjectsCompanion(
+        currentPartId: Value(partId),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
+  }
+
+  /// 파트 이름 중복 확인
+  Future<bool> isPartNameExists({
+    required int projectId,
+    required String name,
+  }) async {
+    final count = await (selectOnly(parts)
+      ..addColumns([parts.id.count()])
+      ..where(parts.projectId.equals(projectId) & parts.name.equals(name)))
+      .map((row) => row.read(parts.id.count()))
+      .getSingle();
+    return (count ?? 0) > 0;
   }
 }

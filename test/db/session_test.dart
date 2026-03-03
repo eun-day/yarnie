@@ -25,7 +25,7 @@ void main() {
         );
 
         // When
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -55,7 +55,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -64,7 +64,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
 
         // When
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
@@ -96,14 +96,14 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
         final firstSegment = await db.getCurrentSegment(sessionId);
 
         await Future.delayed(Duration(milliseconds: 50));
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: firstSegment!.id,
           currentMainValue: 5,
@@ -111,7 +111,7 @@ void main() {
         );
 
         // When
-        final newSegmentId = await db.resumeNewSession(
+        final newSegmentId = await db.resumePartSession(
           sessionId: sessionId,
           partId: partId,
           currentMainValue: 5,
@@ -145,7 +145,7 @@ void main() {
         );
 
         // 1. 시작
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -153,7 +153,7 @@ void main() {
 
         // 2. 일시정지
         var segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 10,
@@ -167,7 +167,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 50));
 
         // 3. 재시작
-        await db.resumeNewSession(
+        await db.resumePartSession(
           sessionId: sessionId,
           partId: partId,
           currentMainValue: 10,
@@ -176,7 +176,7 @@ void main() {
 
         // 4. 다시 일시정지
         segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 20,
@@ -204,7 +204,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -236,12 +236,12 @@ void main() {
         );
 
         // 첫 번째 세션
-        final sessionId1 = await db.startNewSession(
+        final sessionId1 = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
         var segment = await db.getCurrentSegment(sessionId1);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId1,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
@@ -252,12 +252,12 @@ void main() {
         await (db.delete(
           db.sessions,
         )..where((t) => t.id.equals(sessionId1))).go();
-        final sessionId2 = await db.startNewSession(
+        final sessionId2 = await db.createSession(
           partId: partId,
           currentMainValue: 5,
         );
         segment = await db.getCurrentSegment(sessionId2);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId2,
           currentSegmentId: segment!.id,
           currentMainValue: 10,
@@ -280,7 +280,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -299,7 +299,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -321,11 +321,11 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        await db.startNewSession(partId: partId, currentMainValue: 0);
+        await db.createSession(partId: partId, currentMainValue: 0);
 
         // When & Then
         expect(
-          () => db.startNewSession(partId: partId, currentMainValue: 0),
+          () => db.createSession(partId: partId, currentMainValue: 0),
           throwsA(isA<DataIntegrityException>()),
         );
       });
@@ -354,7 +354,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -362,7 +362,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
 
         var segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
@@ -373,7 +373,7 @@ void main() {
         final firstDuration = session!.totalDurationSeconds;
 
         // 재시작 후 다시 일시정지
-        await db.resumeNewSession(
+        await db.resumePartSession(
           sessionId: sessionId,
           partId: partId,
           currentMainValue: 5,
@@ -381,7 +381,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
 
         segment = await db.getCurrentSegment(sessionId);
-        await db.pauseNewSession(
+        await db.pausePartSession(
           sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 10,
@@ -400,7 +400,7 @@ void main() {
           projectId: projectId,
           name: 'Test Part',
         );
-        final sessionId = await db.startNewSession(
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
@@ -409,7 +409,7 @@ void main() {
         for (var i = 0; i < 3; i++) {
           await Future.delayed(Duration(milliseconds: 50));
           var segment = await db.getCurrentSegment(sessionId);
-          await db.pauseNewSession(
+          await db.pausePartSession(
             sessionId: sessionId,
             currentSegmentId: segment!.id,
             currentMainValue: (i + 1) * 5,
@@ -417,7 +417,7 @@ void main() {
           );
 
           if (i < 2) {
-            await db.resumeNewSession(
+            await db.resumePartSession(
               sessionId: sessionId,
               partId: partId,
               currentMainValue: (i + 1) * 5,

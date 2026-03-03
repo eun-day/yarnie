@@ -241,6 +241,10 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         );
       }
 
+      // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
+      final partId = await appDb.createPart(projectId: projectId, name: 'Part 1');
+      await appDb.updateProjectCurrentPart(projectId: projectId, partId: partId);
+
       _emit(ProjectCreated(projectId));
       _emit(const ShowSuccessMessage('프로젝트가 생성되었습니다'));
     } catch (e) {
