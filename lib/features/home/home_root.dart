@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:yarnie/counter_screen.dart';
 import 'package:yarnie/new_project_screen.dart';
 
 class HomeRoot extends StatelessWidget {
@@ -26,28 +25,6 @@ class HomeRoot extends StatelessWidget {
                   );
                 },
                 child: const Text('New Project'),
-              ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              // 혹시 작은 화면 대응
-              controller: controller,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[                  
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CounterScreen(title: 'Counter'),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Counter'),
-                  ),
-                ],
               ),
             ),
           ),

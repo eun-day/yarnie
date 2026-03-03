@@ -62,7 +62,7 @@ void main() {
       expect(updatedMainCounter!.currentValue, 10);
 
       // 6. 세션 시작
-      final sessionId = await db.startNewSession(
+      final sessionId = await db.createSession(
         partId: partId,
         currentMainValue: 10,
       );
@@ -77,7 +77,7 @@ void main() {
       await db.updateMainCounter(partId: partId, newValue: 25);
 
       // 8. 세션 일시정지
-      await db.pauseNewSession(
+      await db.pausePartSession(
         sessionId: sessionId,
         currentSegmentId: segment.id,
         currentMainValue: 25,
@@ -124,27 +124,27 @@ void main() {
       );
 
       // 4. Part 1에서 세션 시작 → 일시정지 → 재시작 → 일시정지
-      final session1Id = await db.startNewSession(
+      final session1Id = await db.createSession(
         partId: part1Id,
         currentMainValue: 0,
       );
       var segment = await db.getCurrentSegment(session1Id);
 
-      await db.pauseNewSession(
+      await db.pausePartSession(
         sessionId: session1Id,
         currentSegmentId: segment!.id,
         currentMainValue: 10,
         segmentStartedAt: segment.startedAt,
       );
 
-      await db.resumeNewSession(
+      await db.resumePartSession(
         sessionId: session1Id,
         partId: part1Id,
         currentMainValue: 10,
       );
       segment = await db.getCurrentSegment(session1Id);
 
-      await db.pauseNewSession(
+      await db.pausePartSession(
         sessionId: session1Id,
         currentSegmentId: segment!.id,
         currentMainValue: 20,
@@ -156,13 +156,13 @@ void main() {
       expect(part1Segments.length, 2);
 
       // 5. Part 2에서 세션 시작
-      final session2Id = await db.startNewSession(
+      final session2Id = await db.createSession(
         partId: part2Id,
         currentMainValue: 0,
       );
       segment = await db.getCurrentSegment(session2Id);
 
-      await db.pauseNewSession(
+      await db.pausePartSession(
         sessionId: session2Id,
         currentSegmentId: segment!.id,
         currentMainValue: 5,
@@ -281,7 +281,7 @@ void main() {
       );
 
       // Session
-      final sessionId = await db.startNewSession(
+      final sessionId = await db.createSession(
         partId: partId,
         currentMainValue: 0,
       );

@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
+
+class LengthCounterCard extends StatelessWidget {
+  final String label;
+  final double remainingLength;
+  final String unit; // e.g. cm
+  final int startRow;
+  final int endRow;
+  final double currentProgress; // 0.0 ~ 1.0
+  final bool isLinked;
+  final VoidCallback onLinkTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final Color? backgroundColor;
+  final bool isCompleted;
+
+  const LengthCounterCard({
+    super.key,
+    required this.label,
+    required this.remainingLength,
+    this.unit = 'cm',
+    required this.startRow,
+    required this.endRow,
+    required this.currentProgress,
+    required this.isLinked,
+    required this.onLinkTap,
+    this.onEdit,
+    this.onDelete,
+    this.backgroundColor,
+    this.isCompleted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseCounterCard(
+      label: label,
+      progress: currentProgress,
+      backgroundColor: backgroundColor,
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon
+              SvgPicture.asset(
+                'assets/icons/counter_length.svg',
+                width: 14,
+                colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                isCompleted ? '달성 완료 ✓' : '남은 길이',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF717182),
+                  letterSpacing: -0.15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                remainingLength.toStringAsFixed(1),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF0A0A0A),
+                  letterSpacing: 0.07,
+                  height: 1.33,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                unit,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF717182),
+                  letterSpacing: -0.15,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      bottomToolbar: CounterCardToolbar(
+        infoText: '$startRow~${endRow}행',
+        showLinkButton: true,
+        isLinked: isLinked,
+        onLinkTap: onLinkTap,
+        onEdit: onEdit,
+        onDelete: onDelete,
+      ),
+    );
+  }
+}

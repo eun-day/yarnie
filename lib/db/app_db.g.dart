@@ -1164,7 +1164,18 @@ class $MainCountersTable extends MainCounters
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(0),
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _targetValueMeta = const VerificationMeta(
+    'targetValue',
+  );
+  @override
+  late final GeneratedColumn<int> targetValue = GeneratedColumn<int>(
+    'target_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -1194,6 +1205,7 @@ class $MainCountersTable extends MainCounters
     id,
     partId,
     currentValue,
+    targetValue,
     createdAt,
     updatedAt,
   ];
@@ -1226,6 +1238,15 @@ class $MainCountersTable extends MainCounters
         currentValue.isAcceptableOrUnknown(
           data['current_value']!,
           _currentValueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('target_value')) {
+      context.handle(
+        _targetValueMeta,
+        targetValue.isAcceptableOrUnknown(
+          data['target_value']!,
+          _targetValueMeta,
         ),
       );
     }
@@ -1262,6 +1283,10 @@ class $MainCountersTable extends MainCounters
         DriftSqlType.int,
         data['${effectivePrefix}current_value'],
       )!,
+      targetValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_value'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1283,12 +1308,14 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
   final int id;
   final int partId;
   final int currentValue;
+  final int? targetValue;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const MainCounter({
     required this.id,
     required this.partId,
     required this.currentValue,
+    this.targetValue,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1298,6 +1325,9 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     map['id'] = Variable<int>(id);
     map['part_id'] = Variable<int>(partId);
     map['current_value'] = Variable<int>(currentValue);
+    if (!nullToAbsent || targetValue != null) {
+      map['target_value'] = Variable<int>(targetValue);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1310,6 +1340,9 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       id: Value(id),
       partId: Value(partId),
       currentValue: Value(currentValue),
+      targetValue: targetValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetValue),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1326,6 +1359,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       id: serializer.fromJson<int>(json['id']),
       partId: serializer.fromJson<int>(json['partId']),
       currentValue: serializer.fromJson<int>(json['currentValue']),
+      targetValue: serializer.fromJson<int?>(json['targetValue']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1337,6 +1371,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       'id': serializer.toJson<int>(id),
       'partId': serializer.toJson<int>(partId),
       'currentValue': serializer.toJson<int>(currentValue),
+      'targetValue': serializer.toJson<int?>(targetValue),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -1346,12 +1381,14 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     int? id,
     int? partId,
     int? currentValue,
+    Value<int?> targetValue = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => MainCounter(
     id: id ?? this.id,
     partId: partId ?? this.partId,
     currentValue: currentValue ?? this.currentValue,
+    targetValue: targetValue.present ? targetValue.value : this.targetValue,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -1362,6 +1399,9 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       currentValue: data.currentValue.present
           ? data.currentValue.value
           : this.currentValue,
+      targetValue: data.targetValue.present
+          ? data.targetValue.value
+          : this.targetValue,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1373,6 +1413,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
           ..write('id: $id, ')
           ..write('partId: $partId, ')
           ..write('currentValue: $currentValue, ')
+          ..write('targetValue: $targetValue, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1381,7 +1422,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
 
   @override
   int get hashCode =>
-      Object.hash(id, partId, currentValue, createdAt, updatedAt);
+      Object.hash(id, partId, currentValue, targetValue, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1389,6 +1430,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
           other.id == this.id &&
           other.partId == this.partId &&
           other.currentValue == this.currentValue &&
+          other.targetValue == this.targetValue &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1397,12 +1439,14 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
   final Value<int> id;
   final Value<int> partId;
   final Value<int> currentValue;
+  final Value<int?> targetValue;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   const MainCountersCompanion({
     this.id = const Value.absent(),
     this.partId = const Value.absent(),
     this.currentValue = const Value.absent(),
+    this.targetValue = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -1410,6 +1454,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     this.id = const Value.absent(),
     required int partId,
     this.currentValue = const Value.absent(),
+    this.targetValue = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : partId = Value(partId);
@@ -1417,6 +1462,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     Expression<int>? id,
     Expression<int>? partId,
     Expression<int>? currentValue,
+    Expression<int>? targetValue,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -1424,6 +1470,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
       if (id != null) 'id': id,
       if (partId != null) 'part_id': partId,
       if (currentValue != null) 'current_value': currentValue,
+      if (targetValue != null) 'target_value': targetValue,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -1433,6 +1480,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     Value<int>? id,
     Value<int>? partId,
     Value<int>? currentValue,
+    Value<int?>? targetValue,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
   }) {
@@ -1440,6 +1488,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
       id: id ?? this.id,
       partId: partId ?? this.partId,
       currentValue: currentValue ?? this.currentValue,
+      targetValue: targetValue ?? this.targetValue,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -1457,6 +1506,9 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     if (currentValue.present) {
       map['current_value'] = Variable<int>(currentValue.value);
     }
+    if (targetValue.present) {
+      map['target_value'] = Variable<int>(targetValue.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1472,6 +1524,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
           ..write('id: $id, ')
           ..write('partId: $partId, ')
           ..write('currentValue: $currentValue, ')
+          ..write('targetValue: $targetValue, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -7361,6 +7414,7 @@ typedef $$MainCountersTableCreateCompanionBuilder =
       Value<int> id,
       required int partId,
       Value<int> currentValue,
+      Value<int?> targetValue,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -7369,6 +7423,7 @@ typedef $$MainCountersTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> partId,
       Value<int> currentValue,
+      Value<int?> targetValue,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -7412,6 +7467,11 @@ class $$MainCountersTableFilterComposer
 
   ColumnFilters<int> get currentValue => $composableBuilder(
     column: $table.currentValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7468,6 +7528,11 @@ class $$MainCountersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7516,6 +7581,11 @@ class $$MainCountersTableAnnotationComposer
 
   GeneratedColumn<int> get currentValue => $composableBuilder(
     column: $table.currentValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
     builder: (column) => column,
   );
 
@@ -7580,12 +7650,14 @@ class $$MainCountersTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> partId = const Value.absent(),
                 Value<int> currentValue = const Value.absent(),
+                Value<int?> targetValue = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => MainCountersCompanion(
                 id: id,
                 partId: partId,
                 currentValue: currentValue,
+                targetValue: targetValue,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -7594,12 +7666,14 @@ class $$MainCountersTableTableManager
                 Value<int> id = const Value.absent(),
                 required int partId,
                 Value<int> currentValue = const Value.absent(),
+                Value<int?> targetValue = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => MainCountersCompanion.insert(
                 id: id,
                 partId: partId,
                 currentValue: currentValue,
+                targetValue: targetValue,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
