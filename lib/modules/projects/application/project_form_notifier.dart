@@ -50,8 +50,15 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         state = state.copyWith(lotNumber: lotNumber);
       case MemoChanged(:final memo):
         state = state.copyWith(memo: memo);
+      case GaugeStitchesChanged(:final gaugeStitches):
+        state = state.copyWith(gaugeStitches: gaugeStitches);
+      case GaugeRowsChanged(:final gaugeRows):
+        state = state.copyWith(gaugeRows: gaugeRows);
       case ImagePathChanged(:final imagePath):
-        state = state.copyWith(imagePath: imagePath);
+        state = state.copyWith(
+          imagePath: imagePath,
+          clearImagePath: imagePath == null,
+        );
       case ToggleTagSelected(:final tagId):
         _toggleTagSelected(tagId);
       case SaveProject():
@@ -84,13 +91,18 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         );
       } else {
         // EDIT MODE
-        final project = await (appDb.select(appDb.projects)..where((p) => p.id.equals(projectId))).getSingleOrNull();
+        final project = await (appDb.select(
+          appDb.projects,
+        )..where((p) => p.id.equals(projectId))).getSingleOrNull();
         if (project == null) {
           throw '프로젝트를 찾을 수 없습니다.';
         }
 
         final needleTypeEnum = project.needleType != null
-            ? NeedleType.values.firstWhere((e) => e.toString().split('.').last == project.needleType, orElse: () => NeedleType.knitting)
+            ? NeedleType.values.firstWhere(
+                (e) => e.toString().split('.').last == project.needleType,
+                orElse: () => NeedleType.knitting,
+              )
             : null;
 
         state = state.copyWith(
@@ -103,8 +115,10 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           availableNeedleSizes: getNeedleSizesForType(needleTypeEnum),
           lotNumber: project.lotNumber,
           memo: project.memo,
+          gaugeStitches: project.gaugeStitches,
+          gaugeRows: project.gaugeRows,
           selectedTagIds: _parseTagIds(project.tagIds).toSet(),
-          allAvailableTags: allTags, // Also set the tags here
+          allAvailableTags: allTags,
           isLoading: false,
         );
       }
@@ -124,7 +138,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     }
 
     final newAvailableSizes = getNeedleSizesForType(newNeedleType);
-    final newNeedleSize = newAvailableSizes.contains(state.needleSize) ? state.needleSize : null; // 기존 사이즈 유지 또는 초기화
+    final newNeedleSize = newAvailableSizes.contains(state.needleSize)
+        ? state.needleSize
+        : null; // 기존 사이즈 유지 또는 초기화
 
     state = state.copyWith(
       needleType: newNeedleType,
@@ -163,11 +179,12 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             needleSize: state.needleSize,
             lotNumber: state.lotNumber,
             memo: state.memo,
+            gaugeStitches: state.gaugeStitches,
+            gaugeRows: state.gaugeRows,
             imagePath: state.imagePath,
             tagIds: state.selectedTagIds.toList(),
           ),
         );
-
       } else {
         // 새 프로젝트 생성
         await projectsNotifier.onEvent(
@@ -177,11 +194,12 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             needleSize: state.needleSize,
             lotNumber: state.lotNumber,
             memo: state.memo,
+            gaugeStitches: state.gaugeStitches,
+            gaugeRows: state.gaugeRows,
             imagePath: state.imagePath,
             tagIds: state.selectedTagIds.toList(),
           ),
         );
-
       }
     } catch (e) {
       state = state.copyWith(isSaving: false, error: '프로젝트 저장 실패: $e');
@@ -208,10 +226,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
 
 final projectFormNotifierProvider =
     NotifierProvider.autoDispose<ProjectFormNotifier, ProjectFormState>(
-  ProjectFormNotifier.new,
-);
+      ProjectFormNotifier.new,
+    );
 
-final projectFormEffectsProvider = StreamProvider.autoDispose<ProjectFormEffect>((ref) {
-  final notifier = ref.watch(projectFormNotifierProvider.notifier);
-  return notifier.effects;
-});
+final projectFormEffectsProvider =
+    StreamProvider.autoDispose<ProjectFormEffect>((ref) {
+      final notifier = ref.watch(projectFormNotifierProvider.notifier);
+      return notifier.effects;
+    });

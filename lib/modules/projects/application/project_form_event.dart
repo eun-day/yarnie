@@ -38,6 +38,18 @@ class MemoChanged extends ProjectFormEvent {
   const MemoChanged(this.memo);
 }
 
+/// 게이지 코 수 변경
+class GaugeStitchesChanged extends ProjectFormEvent {
+  final String? gaugeStitches;
+  const GaugeStitchesChanged(this.gaugeStitches);
+}
+
+/// 게이지 단 수 변경
+class GaugeRowsChanged extends ProjectFormEvent {
+  final String? gaugeRows;
+  const GaugeRowsChanged(this.gaugeRows);
+}
+
 /// 이미지 경로 변경
 class ImagePathChanged extends ProjectFormEvent {
   final String? imagePath;

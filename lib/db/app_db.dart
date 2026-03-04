@@ -107,12 +107,17 @@ class Projects extends Table {
   TextColumn get needleSize => text().nullable()();
   TextColumn get lotNumber => text().nullable()();
   TextColumn get memo => text().nullable()();
+  TextColumn get gaugeStitches => text().nullable()(); // 게이지 코 수
+  TextColumn get gaugeRows => text().nullable()(); // 게이지 단 수
 
   // 새로 추가
   IntColumn get currentPartId =>
       integer().nullable()(); // FK는 애플리케이션 레벨에서 관리 (순환 참조 방지)
   TextColumn get imagePath => text().nullable()(); // 프로젝트 이미지 경로
   TextColumn get tagIds => text().nullable()(); // 태그 ID 배열 (JSON: '[1,2,3]')
+
+  DateTimeColumn get deletedAt =>
+      dateTime().nullable()(); // 휴지통 상태 (null이 아니면 소프트 삭제됨)
 
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -145,7 +150,8 @@ class MainCounters extends Table {
       integer().references(Parts, #id, onDelete: KeyAction.cascade)();
 
   IntColumn get currentValue => integer().withDefault(const Constant(1))();
-  IntColumn get targetValue => integer().nullable()(); // Added targetValue column
+  IntColumn get targetValue =>
+      integer().nullable()(); // Added targetValue column
 
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -358,8 +364,11 @@ class AppDb extends _$AppDb {
   int get schemaVersion => 1;
 
   @override
-  MigrationStrategy get migration =>
-      MigrationStrategy(onCreate: (m) async => m.createAll());
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+  );
 
   // ────────────────────────────────────────────────────────────────────────────
   // 에러 처리 헬퍼 메서드들
@@ -476,6 +485,8 @@ class AppDb extends _$AppDb {
     String? needleSize,
     String? lotNumber,
     String? memo,
+    String? gaugeStitches,
+    String? gaugeRows,
   }) {
     return into(projects).insert(
       ProjectsCompanion.insert(
@@ -484,21 +495,50 @@ class AppDb extends _$AppDb {
         needleSize: Value(needleSize),
         lotNumber: Value(lotNumber),
         memo: Value(memo),
+        gaugeStitches: Value(gaugeStitches),
+        gaugeRows: Value(gaugeRows),
       ),
     );
   }
 
-  Future<bool> updateProject(ProjectsCompanion entity) {
+  Future<bool> updateProject(ProjectsCompanion entity) async {
     final now = DateTime.now().toUtc();
-    return update(projects).replace(entity.copyWith(updatedAt: Value(now)));
+    final updatedRows =
+        await (update(projects)..where((t) => t.id.equals(entity.id.value)))
+            .write(entity.copyWith(updatedAt: Value(now)));
+    return updatedRows > 0;
   }
 
-  Stream<List<Project>> watchAll() => (select(
-    projects,
-  )..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+  Stream<List<Project>> watchAll() =>
+      (select(projects)
+            ..where((t) => t.deletedAt.isNull()) // 휴지통에 있는 항목은 제외
+            ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+          .watch();
 
-  Stream<Project> watchProject(int id) =>
-      (select(projects)..where((t) => t.id.equals(id))).watchSingle();
+  Stream<Project?> watchProject(int id) => (select(
+    projects,
+  )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).watchSingleOrNull();
+
+  /// 프로젝트 휴지통 이동 (소프트 딜리트)
+  Future<void> softDeleteProject(int projectId) async {
+    final now = DateTime.now().toUtc();
+    await (update(projects)..where((t) => t.id.equals(projectId))).write(
+      ProjectsCompanion(deletedAt: Value(now)),
+    );
+  }
+
+  /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
+  Future<void> cleanupDeletedProjects() async {
+    final thresholdDate = DateTime.now().toUtc().subtract(
+      const Duration(days: 30),
+    );
+    await (delete(projects)..where(
+          (t) =>
+              t.deletedAt.isNotNull() &
+              t.deletedAt.isSmallerThanValue(thresholdDate),
+        ))
+        .go();
+  }
 
   // 공통: 활성 세션 조회 (RUNNING/PAUSED)
   Future<WorkSession?> getActiveSession(int projectId) {
@@ -831,9 +871,13 @@ class AppDb extends _$AppDb {
   }
 
   /// Part 업데이트
-  Future<bool> updatePart(PartsCompanion entity) {
+  Future<bool> updatePart(PartsCompanion entity) async {
     final now = DateTime.now().toUtc();
-    return update(parts).replace(entity.copyWith(updatedAt: Value(now)));
+    final updatedRows =
+        await (update(parts)..where((t) => t.id.equals(entity.id.value))).write(
+          entity.copyWith(updatedAt: Value(now)),
+        );
+    return updatedRows > 0;
   }
 
   /// Part 삭제 (관련 Counter, Session, Note 모두 cascade 삭제됨)
@@ -973,10 +1017,9 @@ class AppDb extends _$AppDb {
           finalOrderJson = newOrderJson;
         } else {
           // 자동 추가 로직
-          final List orderList =
-              part.buddyCounterOrder != null
-                  ? jsonDecode(part.buddyCounterOrder!)
-                  : [];
+          final List orderList = part.buddyCounterOrder != null
+              ? jsonDecode(part.buddyCounterOrder!)
+              : [];
           orderList.add({'type': 'stitch', 'id': counterId});
           finalOrderJson = jsonEncode(orderList);
         }
@@ -1081,10 +1124,9 @@ class AppDb extends _$AppDb {
           finalOrderJson = newOrderJson;
         } else {
           // 자동 추가 로직
-          final List orderList =
-              part.buddyCounterOrder != null
-                  ? jsonDecode(part.buddyCounterOrder!)
-                  : [];
+          final List orderList = part.buddyCounterOrder != null
+              ? jsonDecode(part.buddyCounterOrder!)
+              : [];
           orderList.add({'type': 'section', 'id': counterId});
           finalOrderJson = jsonEncode(orderList);
         }
@@ -1113,7 +1155,6 @@ class AppDb extends _$AppDb {
     }
     return part;
   }
-
 
   /// SectionCounter 조회
   Future<SectionCounter?> getSectionCounter(int counterId) {
@@ -1884,7 +1925,9 @@ class AppDb extends _$AppDb {
       ..addColumns([partNotes.id.count()])
       ..where(partNotes.partId.equals(partId));
 
-    return query.map((row) => row.read(partNotes.id.count()) ?? 0).watchSingle();
+    return query
+        .map((row) => row.read(partNotes.id.count()) ?? 0)
+        .watchSingle();
   }
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -2126,11 +2169,14 @@ class AppDb extends _$AppDb {
     required int projectId,
     required String name,
   }) async {
-    final count = await (selectOnly(parts)
-      ..addColumns([parts.id.count()])
-      ..where(parts.projectId.equals(projectId) & parts.name.equals(name)))
-      .map((row) => row.read(parts.id.count()))
-      .getSingle();
+    final count =
+        await (selectOnly(parts)
+              ..addColumns([parts.id.count()])
+              ..where(
+                parts.projectId.equals(projectId) & parts.name.equals(name),
+              ))
+            .map((row) => row.read(parts.id.count()))
+            .getSingle();
     return (count ?? 0) > 0;
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/project_detail_screen.dart';
@@ -23,14 +24,19 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   void initState() {
     super.initState();
     // 초기 데이터 로드는 initState에서 한 번만 수행
-    Future.microtask(() => ref
-        .read(projectFormNotifierProvider.notifier)
-        .onEvent(LoadProjectData(widget.projectId)));
+    Future.microtask(
+      () => ref
+          .read(projectFormNotifierProvider.notifier)
+          .onEvent(LoadProjectData(widget.projectId)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<ProjectFormEffect>>(projectFormEffectsProvider, (_, asyncEffect) {
+    ref.listen<AsyncValue<ProjectFormEffect>>(projectFormEffectsProvider, (
+      _,
+      asyncEffect,
+    ) {
       asyncEffect.whenData((effect) {
         if (effect is GoToProjectDetail) {
           Navigator.of(context).pushReplacement(
@@ -41,12 +47,15 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
         } else if (effect is CloseEditForm) {
           Navigator.of(context).pop();
         } else if (effect is ShowProjectFormSuccessMessage) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(effect.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(effect.message)));
         } else if (effect is ShowProjectFormErrorMessage) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(effect.message), backgroundColor: Theme.of(context).colorScheme.error),
+            SnackBar(
+              content: Text(effect.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
           );
         }
       });
@@ -55,24 +64,46 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
     final state = ref.watch(projectFormNotifierProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(state.isEditMode ? '프로젝트 수정' : '새 프로젝트'),
-        actions: [
-          TextButton(
-            onPressed: state.isSaving
-                ? null
-                : () => ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(const SaveProject()),
-            child: state.isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(),
-                  )
-                : const Text('저장'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0A0A0A)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              state.isEditMode ? '프로젝트 수정' : '새 프로젝트',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0A0A0A),
+                letterSpacing: 0.07,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              state.isEditMode ? '프로젝트 정보를 수정해주세요' : '새로운 프로젝트 정보를 입력해주세요',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF717182),
+                letterSpacing: -0.15,
+              ),
+            ),
+          ],
+        ),
+        toolbarHeight: 88,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(
+            color: const Color(0x1A000000), // rgba(0,0,0,0.1)
+            height: 0.7,
           ),
-        ],
+        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -91,6 +122,9 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               _ProjectImageSection(
                 imagePath: state.imagePath,
                 onImagePressed: () => _showImageSourceSheet(context),
+                onImageRemoved: () => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(const ImagePathChanged(null)),
               ),
               const SizedBox(height: 24),
               _NeedleInfoSection(
@@ -107,13 +141,9 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               const SizedBox(height: 24),
               _YarnInfoSection(
                 lotNumber: state.lotNumber,
-                memo: state.memo,
                 onLotNumberChanged: (value) => ref
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(LotNumberChanged(value)),
-                onMemoChanged: (value) => ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(MemoChanged(value)),
               ),
               const SizedBox(height: 24),
               _TagInfoSection(
@@ -122,7 +152,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 onAddTagPressed: () async {
                   final result = await showModalBottomSheet<Set<int>>(
                     context: context,
-                    isScrollControlled: true, // 전체 화면 높이 사용 가능
+                    isScrollControlled: true,
                     builder: (_) => TagSelectionSheet(
                       initialSelectedIds: state.selectedTagIds,
                     ),
@@ -137,6 +167,98 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(ToggleTagSelected(tagId)),
               ),
+              const SizedBox(height: 24),
+              _MemoSection(
+                memo: state.memo,
+                onMemoChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(MemoChanged(value)),
+              ),
+              const SizedBox(height: 24),
+              _GaugeSection(
+                initialStitches: state.gaugeStitches,
+                initialRows: state.gaugeRows,
+                onStitchesChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(GaugeStitchesChanged(value)),
+                onRowsChanged: (value) => ref
+                    .read(projectFormNotifierProvider.notifier)
+                    .onEvent(GaugeRowsChanged(value)),
+              ),
+              const SizedBox(height: 48), // Padding at bottom for scroll
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0x1A000000), width: 0.7)),
+        ),
+        child: SafeArea(
+          // Ensure it avoids safe area at bottom
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  height: 36,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: const Color(0x1A000000),
+                      width: 0.7,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF0A0A0A),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: state.isSaving
+                    ? null
+                    : () => ref
+                          .read(projectFormNotifierProvider.notifier)
+                          .onEvent(const SaveProject()),
+                child: Container(
+                  height: 36,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF637069),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: state.isSaving
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          state.isEditMode ? '수정 완료' : '추가 완료',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
             ],
           ),
         ),
@@ -147,34 +269,103 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   void _showImageSourceSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => SafeArea(
-        child: Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('카메라로 촬영'),
-              onTap: () {
-                _pickImage(ImageSource.camera);
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_album),
-              title: const Text('앨범에서 선택'),
-              onTap: () {
-                _pickImage(ImageSource.gallery);
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('이미지 삭제'),
-              onTap: () {
-                ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(const ImagePathChanged(null));
-                Navigator.of(context).pop();
-              },
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 24,
+            right: 24,
+            bottom: 24,
+            top: 12,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E5EA),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                '이미지 추가',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0A0A0A),
+                  letterSpacing: 0.05,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '사진을 촬영하거나 갤러리에서 선택하세요.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF717182),
+                  letterSpacing: -0.15,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildImageSourceButton(
+                iconPath: 'assets/icons/camera_icon.svg',
+                label: '카메라로 촬영',
+                onTap: () {
+                  _pickImage(ImageSource.camera);
+                  Navigator.of(context).pop();
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildImageSourceButton(
+                iconPath: 'assets/icons/upload_icon.svg',
+                label: '갤러리에서 선택',
+                onTap: () {
+                  _pickImage(ImageSource.gallery);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageSourceButton({
+    required String iconPath,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0x1A000000), width: 1.4),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(iconPath),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF0A0A0A),
+                letterSpacing: -0.15,
+              ),
             ),
           ],
         ),
@@ -198,35 +389,151 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
 class _ProjectImageSection extends StatelessWidget {
   final String? imagePath;
   final VoidCallback onImagePressed;
+  final VoidCallback onImageRemoved;
 
-  const _ProjectImageSection({this.imagePath, required this.onImagePressed});
+  const _ProjectImageSection({
+    this.imagePath,
+    required this.onImagePressed,
+    required this.onImageRemoved,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: onImagePressed,
-        child: Container(
-          width: double.infinity, // Take full width available within parent
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade400),
-                image: imagePath != null
-                    ? DecorationImage(
-                        image: FileImage(File(imagePath!)),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '프로젝트 이미지',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0x1A000000), width: 0.7),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(
+                children: [
+                  if (imagePath != null) ...[
+                    // Preview Image
+                    Positioned.fill(
+                      child: Image.file(File(imagePath!), fit: BoxFit.cover),
+                    ),
+                    // Button Area Gradient
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.6),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildImageButton(
+                                icon: Icons.close,
+                                label: '초기화',
+                                onTap: onImageRemoved, // 이미지 제거 콜백
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildImageButton(
+                                icon: Icons.upload_outlined,
+                                label: '변경',
+                                onTap: onImagePressed,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    // Placeholder
+                    GestureDetector(
+                      onTap: onImagePressed,
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset('assets/icons/image_icon.svg'),
+                            const SizedBox(height: 8),
+                            const Text(
+                              '이미지 추가',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF717182),
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              child: imagePath == null
-                  ? Icon(Icons.camera_alt, size: 48, color: Colors.grey.shade600)
-                  : null,
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.7),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 16),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                letterSpacing: -0.15,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -275,28 +582,52 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: TextSpan(
-            style: Theme.of(context).textTheme.titleMedium,
+          text: const TextSpan(
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF0A0A0A),
+              letterSpacing: -0.15,
+            ),
             children: <TextSpan>[
-              const TextSpan(text: '프로젝트명'),
+              TextSpan(text: '프로젝트명 '),
               TextSpan(
-                text: ' *', // Red asterisk
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.red,
-                    ),
+                text: '*', // Red asterisk
+                style: TextStyle(color: Color(0xFFD4183D)),
               ),
             ],
           ),
         ),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: _controller,
-          onChanged: widget.onChanged,
-          decoration: const InputDecoration(
-            hintText: '프로젝트 이름을 입력하세요',
-            border: OutlineInputBorder(),
+        Container(
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F3F5),
+            borderRadius: BorderRadius.circular(8),
           ),
-          textInputAction: TextInputAction.next,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.centerLeft,
+          child: TextField(
+            controller: _controller,
+            onChanged: widget.onChanged,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF0A0A0A),
+              letterSpacing: -0.31,
+            ),
+            decoration: const InputDecoration(
+              hintText: '프로젝트 이름을 입력하세요',
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF717182),
+                letterSpacing: -0.31,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            textInputAction: TextInputAction.next,
+          ),
         ),
       ],
     );
@@ -323,63 +654,158 @@ class _NeedleInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('사용 바늘 정보', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 16),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                value: needleType?.toString().split('.').last,
-                onChanged: onNeedleTypeChanged,
-                decoration: const InputDecoration(
-                  labelText: '바늘 종류',
-                  border: OutlineInputBorder(),
-                ),
-                items: NeedleType.values
-                    .map((type) => DropdownMenuItem(
-                          value: type.toString().split('.').last,
-                          child: Text(type == NeedleType.knitting ? '대바늘' : '코바늘'),
-                        ))
-                    .toList(),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                value: needleSize,
-                onChanged: onNeedleSizeChanged,
-                decoration: const InputDecoration(
-                  labelText: '사이즈',
-                  border: OutlineInputBorder(),
-                ),
-                items: availableNeedleSizes
-                    .map((size) => DropdownMenuItem(
-                          value: size,
-                          child: Text(size),
-                        ))
-                    .toList(),
-              ),
-            ),
-          ],
+        const Text(
+          '바늘 종류',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildDropdown<String>(
+          context: context,
+          value: needleType?.toString().split('.').last,
+          itemMap: {
+            for (var type in NeedleType.values)
+              type.toString().split('.').last: type == NeedleType.knitting
+                  ? '대바늘'
+                  : '코바늘',
+          },
+          onChanged: onNeedleTypeChanged,
+          hintText: '바늘 종류를 선택하세요',
+        ),
+        const SizedBox(height: 24),
+
+        const Text(
+          '바늘 사이즈',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildDropdown<String>(
+          context: context,
+          value: needleSize,
+          itemMap: {for (var size in availableNeedleSizes) size: size},
+          onChanged: onNeedleSizeChanged,
+          hintText: '먼저 바늘 종류를 선택하세요',
         ),
       ],
+    );
+  }
+
+  Widget _buildDropdown<T>({
+    required BuildContext context,
+    required T? value,
+    required Map<T, String> itemMap,
+    required ValueChanged<T?> onChanged,
+    required String hintText,
+  }) {
+    final displayText = value != null ? itemMap[value] : null;
+
+    return Builder(
+      builder: (dropdownContext) {
+        return GestureDetector(
+          onTap: itemMap.isEmpty
+              ? null
+              : () async {
+                  final renderBox =
+                      dropdownContext.findRenderObject() as RenderBox;
+                  final offset = renderBox.localToGlobal(Offset.zero);
+                  final size = renderBox.size;
+                  final screenWidth = MediaQuery.of(dropdownContext).size.width;
+
+                  final result = await showMenu<T>(
+                    context: dropdownContext,
+                    position: RelativeRect.fromLTRB(
+                      offset.dx,
+                      offset.dy + size.height + 4,
+                      screenWidth - offset.dx - size.width,
+                      0,
+                    ),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(
+                        color: Color(0x1A000000),
+                        width: 0.7,
+                      ),
+                    ),
+                    color: Colors.white,
+                    constraints: BoxConstraints(
+                      minWidth: size.width,
+                      maxWidth: size.width,
+                      maxHeight: 288,
+                    ),
+                    items: itemMap.entries.map((entry) {
+                      return PopupMenuItem<T>(
+                        value: entry.key,
+                        height: 32,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          entry.value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF0A0A0A),
+                            letterSpacing: -0.15,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                  if (result != null) {
+                    onChanged(result);
+                  }
+                },
+          child: Container(
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F3F5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    displayText ?? hintText,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: displayText != null
+                          ? const Color(0xFF0A0A0A)
+                          : const Color(0xFF717182),
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: itemMap.isEmpty
+                      ? const Color(0xFF717182)
+                      : const Color(0xFF0A0A0A),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
 class _YarnInfoSection extends StatefulWidget {
   final String? lotNumber;
-  final String? memo;
   final ValueChanged<String> onLotNumberChanged;
-  final ValueChanged<String> onMemoChanged;
 
-  const _YarnInfoSection({
-    this.lotNumber,
-    this.memo,
-    required this.onLotNumberChanged,
-    required this.onMemoChanged,
-  });
+  const _YarnInfoSection({this.lotNumber, required this.onLotNumberChanged});
 
   @override
   State<_YarnInfoSection> createState() => _YarnInfoSectionState();
@@ -387,13 +813,11 @@ class _YarnInfoSection extends StatefulWidget {
 
 class _YarnInfoSectionState extends State<_YarnInfoSection> {
   late final TextEditingController _lotNumberController;
-  late final TextEditingController _memoController;
 
   @override
   void initState() {
     super.initState();
     _lotNumberController = TextEditingController(text: widget.lotNumber ?? '');
-    _memoController = TextEditingController(text: widget.memo ?? '');
   }
 
   @override
@@ -402,6 +826,91 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
     if (widget.lotNumber != _lotNumberController.text) {
       _lotNumberController.text = widget.lotNumber ?? '';
     }
+  }
+
+  @override
+  void dispose() {
+    _lotNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Lot Number',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F3F5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.centerLeft,
+          child: TextField(
+            controller: _lotNumberController,
+            onChanged: widget.onLotNumberChanged,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF0A0A0A),
+              letterSpacing: -0.31,
+            ),
+            decoration: const InputDecoration(
+              hintText: '예: A12345',
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF717182),
+                letterSpacing: -0.31,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            textInputAction: TextInputAction.next,
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '실의 로트 번호를 입력하세요',
+          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+        ),
+      ],
+    );
+  }
+}
+
+class _MemoSection extends StatefulWidget {
+  final String? memo;
+  final ValueChanged<String> onMemoChanged;
+
+  const _MemoSection({this.memo, required this.onMemoChanged});
+
+  @override
+  State<_MemoSection> createState() => _MemoSectionState();
+}
+
+class _MemoSectionState extends State<_MemoSection> {
+  late final TextEditingController _memoController;
+
+  @override
+  void initState() {
+    super.initState();
+    _memoController = TextEditingController(text: widget.memo ?? '');
+  }
+
+  @override
+  void didUpdateWidget(_MemoSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
     if (widget.memo != _memoController.text) {
       _memoController.text = widget.memo ?? '';
     }
@@ -409,7 +918,6 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
 
   @override
   void dispose() {
-    _lotNumberController.dispose();
     _memoController.dispose();
     super.dispose();
   }
@@ -419,33 +927,53 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('사용 실 정보', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _lotNumberController,
-          onChanged: widget.onLotNumberChanged,
-          decoration: const InputDecoration(
-            labelText: 'Lot 번호',
-            border: OutlineInputBorder(),
+        const Text(
+          '메모',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
           ),
-          textInputAction: TextInputAction.next,
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _memoController,
-          onChanged: widget.onMemoChanged,
-          decoration: const InputDecoration(
-            labelText: '메모',
-            border: OutlineInputBorder(),
+        const SizedBox(height: 8),
+        Container(
+          constraints: const BoxConstraints(minHeight: 65),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F3F5),
+            borderRadius: BorderRadius.circular(8),
           ),
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          textInputAction: TextInputAction.newline,
+          padding: const EdgeInsets.all(12),
+          child: TextField(
+            controller: _memoController,
+            onChanged: widget.onMemoChanged,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xFF0A0A0A),
+              height: 1.5,
+              letterSpacing: -0.31,
+            ),
+            decoration: const InputDecoration(
+              hintText: '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등',
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF717182),
+                height: 1.5,
+                letterSpacing: -0.31,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+          ),
         ),
       ],
     );
   }
 }
+
 class _TagInfoSection extends StatelessWidget {
   final List<Tag> allTags;
   final Set<int> selectedTagIds;
@@ -461,48 +989,239 @@ class _TagInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTags = allTags.where((tag) => selectedTagIds.contains(tag.id)).toList();
+    final selectedTags = allTags
+        .where((tag) => selectedTagIds.contains(tag.id))
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('태그', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade400),
-            borderRadius: BorderRadius.circular(8),
+        const Text(
+          '태그',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (selectedTags.isEmpty)
-                const Text('선택된 태그가 없습니다.')
-              else
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: selectedTags
-                      .map((tag) => ColoredTagChip(
-                            tag: tag,
-                            showDeleteButton: true,
-                            onDeleted: () => onRemoveTag(tag.id),
-                          ))
-                      .toList(),
+        ),
+        const SizedBox(height: 12),
+        if (selectedTags.isNotEmpty) ...[
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: selectedTags
+                .map(
+                  (tag) => ColoredTagChip(
+                    tag: tag,
+                    showDeleteButton: true,
+                    onDeleted: () => onRemoveTag(tag.id),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 12),
+        ],
+        GestureDetector(
+          onTap: onAddTagPressed,
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0x1A000000), width: 0.7),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add, color: Color(0xFF717182), size: 16),
+                SizedBox(width: 4),
+                Text(
+                  '태그 추가',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF717182),
+                    letterSpacing: -0.15,
+                  ),
                 ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.center,
-                child: TextButton.icon(
-                  onPressed: onAddTagPressed,
-                  icon: const Icon(Icons.add),
-                  label: const Text('태그 추가 또는 수정'),
-                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GaugeSection extends StatefulWidget {
+  final String? initialStitches;
+  final String? initialRows;
+  final ValueChanged<String> onStitchesChanged;
+  final ValueChanged<String> onRowsChanged;
+
+  const _GaugeSection({
+    this.initialStitches,
+    this.initialRows,
+    required this.onStitchesChanged,
+    required this.onRowsChanged,
+  });
+
+  @override
+  State<_GaugeSection> createState() => _GaugeSectionState();
+}
+
+class _GaugeSectionState extends State<_GaugeSection> {
+  late final TextEditingController _stitchController;
+  late final TextEditingController _rowController;
+
+  @override
+  void initState() {
+    super.initState();
+    _stitchController = TextEditingController(
+      text: widget.initialStitches ?? '',
+    );
+    _rowController = TextEditingController(text: widget.initialRows ?? '');
+  }
+
+  @override
+  void didUpdateWidget(_GaugeSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialStitches != _stitchController.text) {
+      _stitchController.text = widget.initialStitches ?? '';
+    }
+    if (widget.initialRows != _rowController.text) {
+      _rowController.text = widget.initialRows ?? '';
+    }
+  }
+
+  @override
+  void dispose() {
+    _stitchController.dispose();
+    _rowController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '게이지',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0A0A0A),
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '10cm x 10cm에 몇 코, 몇 단인가요?',
+          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F3F5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.centerLeft,
+                      child: TextField(
+                        controller: _stitchController,
+                        onChanged: widget.onStitchesChanged,
+                        style: const TextStyle(
+                          color: Color(0xFF0A0A0A),
+                          fontSize: 16,
+                          letterSpacing: -0.31,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '코 수',
+                          hintStyle: TextStyle(
+                            color: Color(0xFF717182),
+                            fontSize: 16,
+                            letterSpacing: -0.31,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    '코',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF717182),
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F3F5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.centerLeft,
+                      child: TextField(
+                        controller: _rowController,
+                        onChanged: widget.onRowsChanged,
+                        style: const TextStyle(
+                          color: Color(0xFF0A0A0A),
+                          fontSize: 16,
+                          letterSpacing: -0.31,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '단 수',
+                          hintStyle: TextStyle(
+                            color: Color(0xFF717182),
+                            fontSize: 16,
+                            letterSpacing: -0.31,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    '단',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF717182),
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );

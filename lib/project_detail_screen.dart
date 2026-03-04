@@ -23,17 +23,22 @@ import 'package:yarnie/widgets/counter_card/stitch_counter_card.dart';
 import 'package:yarnie/widgets/counter_edit_bottom_sheet.dart';
 import 'package:yarnie/widgets/main_counter_settings_button.dart';
 import 'package:yarnie/widgets/part_memo_sheet.dart';
+import 'package:yarnie/widgets/part_manage_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
-// import 'package:yarnie/stopwatch_panel.dart'; // 기존 패널 미사용
+import 'package:yarnie/widgets/project_delete_dialog.dart';
+import 'package:yarnie/project_info_screen.dart';
 // import 'package:yarnie/counter_panel.dart';   // 기존 패널 미사용
 // import 'package:yarnie/widget/project_info_section.dart';
+import 'package:yarnie/modules/projects/application/projects_notifier.dart';
+import 'package:yarnie/modules/projects/application/projects_event.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {
   final int projectId;
   const ProjectDetailScreen({super.key, required this.projectId});
 
   @override
-  ConsumerState<ProjectDetailScreen> createState() => _ProjectDetailScreenState();
+  ConsumerState<ProjectDetailScreen> createState() =>
+      _ProjectDetailScreenState();
 }
 
 class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
@@ -52,23 +57,24 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     _mainCounterSub?.cancel();
     _prevMainValue = null; // Reset for new part
 
-    _mainCounterSub = (appDb.select(appDb.mainCounters)
-          ..where((t) => t.partId.equals(partId)))
-        .watchSingleOrNull()
-        .listen((mainCounter) {
-      if (mainCounter == null) return;
-      final current = mainCounter.currentValue;
+    _mainCounterSub =
+        (appDb.select(appDb.mainCounters)
+              ..where((t) => t.partId.equals(partId)))
+            .watchSingleOrNull()
+            .listen((mainCounter) {
+              if (mainCounter == null) return;
+              final current = mainCounter.currentValue;
 
-      if (_prevMainValue != null && current != _prevMainValue) {
-        _checkCompletions(partId, _prevMainValue!, current);
-      }
-      _prevMainValue = current;
-    });
+              if (_prevMainValue != null && current != _prevMainValue) {
+                _checkCompletions(partId, _prevMainValue!, current);
+              }
+              _prevMainValue = current;
+            });
   }
 
   Future<void> _checkCompletions(int partId, int oldVal, int newVal) async {
     final counters = await appDb.getPartSectionCounters(partId);
-    
+
     for (final counter in counters) {
       // Only check linked counters
       if (counter.linkState != LinkState.linked) continue;
@@ -111,6 +117,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           }
           return c;
         }
+
         wasCompleted = count(oldVal) >= runs.length;
         isCompleted = count(newVal) >= runs.length;
       } else if (type == 'shaping') {
@@ -128,20 +135,24 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           }
           return c;
         }
+
         wasCompleted = count(oldVal) >= runs.length;
         isCompleted = count(newVal) >= runs.length;
       } else if (type == 'length') {
         final runL = runs.first;
         final targetLength = spec['targetLength'] as double? ?? 0.0;
         final rowHeight = spec['rowHeight'] as double? ?? 0.1;
-        
+
         bool check(int val) {
           final rowsDone = (val - runL.startRow + 1).clamp(0, runL.rowsTotal);
           final rowsLeft = runL.rowsTotal - rowsDone;
           final remainingLen = (rowsLeft * rowHeight).clamp(0.0, targetLength);
-          final progressL = runL.rowsTotal > 0 ? rowsDone / runL.rowsTotal : 0.0;
+          final progressL = runL.rowsTotal > 0
+              ? rowsDone / runL.rowsTotal
+              : 0.0;
           return progressL >= 1.0 || remainingLen <= 0;
         }
+
         wasCompleted = check(oldVal);
         isCompleted = check(newVal);
       }
@@ -172,26 +183,36 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: StreamBuilder<Project>(
+        child: StreamBuilder<Project?>(
           stream: projectAsync,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
-            if (!snapshot.hasData) {
+            if (!snapshot.hasData || snapshot.data == null) {
+              // 해당 프로젝트가 삭제되었거나 아직 로딩 중일 때
+              // 로딩 중이 아니라 삭제되어 null이 넘어온 경우 화면을 닫음
+              if (snapshot.connectionState == ConnectionState.active) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (context.mounted && Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  }
+                });
+                return const SizedBox.shrink(); // 에러(블랙스크린) 방지
+              }
               return const Center(child: CircularProgressIndicator());
             }
 
             final project = snapshot.data!;
-            
+
             return Column(
               children: [
                 // 1. Custom Header
                 _buildHeader(context, project),
-                
+
                 // 2. Part Tabs
                 _buildPartTabs(context, project),
-                
+
                 // 3. Integrated Content View
                 Expanded(
                   child: _selectedPartId == null
@@ -208,7 +229,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         onPressed: () {
           showDialog(
             context: context,
-            barrierColor: Colors.transparent, // or Colors.black54 if dimming desired
+            barrierColor:
+                Colors.transparent, // or Colors.black54 if dimming desired
             builder: (context) {
               return Stack(
                 children: [
@@ -219,7 +241,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       onStitchSelected: () async {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
-                        
+
                         try {
                           await appDb.createStitchCounter(
                             partId: _selectedPartId!,
@@ -227,17 +249,21 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           );
                         } catch (e) {
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('생성 실패: $e')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('생성 실패: $e')),
+                            );
                           }
                         }
                       },
                       onRangeSelected: () async {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
-                        
-                        final mainCounter = await appDb.getMainCounter(_selectedPartId!);
+
+                        final mainCounter = await appDb.getMainCounter(
+                          _selectedPartId!,
+                        );
                         if (context.mounted) {
-                           showModalBottomSheet(
+                          showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
@@ -252,7 +278,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
 
-                        final mainCounter = await appDb.getMainCounter(_selectedPartId!);
+                        final mainCounter = await appDb.getMainCounter(
+                          _selectedPartId!,
+                        );
                         if (context.mounted) {
                           showModalBottomSheet(
                             context: context,
@@ -269,7 +297,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
 
-                        final mainCounter = await appDb.getMainCounter(_selectedPartId!);
+                        final mainCounter = await appDb.getMainCounter(
+                          _selectedPartId!,
+                        );
                         if (context.mounted) {
                           showModalBottomSheet(
                             context: context,
@@ -286,7 +316,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
 
-                        final mainCounter = await appDb.getMainCounter(_selectedPartId!);
+                        final mainCounter = await appDb.getMainCounter(
+                          _selectedPartId!,
+                        );
                         if (context.mounted) {
                           showModalBottomSheet(
                             context: context,
@@ -303,7 +335,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Navigator.pop(context);
                         if (_selectedPartId == null) return;
 
-                        final mainCounter = await appDb.getMainCounter(_selectedPartId!);
+                        final mainCounter = await appDb.getMainCounter(
+                          _selectedPartId!,
+                        );
                         if (context.mounted) {
                           showModalBottomSheet(
                             context: context,
@@ -335,7 +369,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0x0D000000), width: 0.5)),
+        border: Border(
+          bottom: BorderSide(color: Color(0x0D000000), width: 0.5),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -350,7 +386,11 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.arrow_back, size: 24, color: Color(0xFF0A0A0A)),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    size: 24,
+                    color: Color(0xFF0A0A0A),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -371,7 +411,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               GestureDetector(
                 onTap: () async {
                   if (_selectedPartId == null) return;
-                  
+
                   // 파트 이름 가져오기
                   final part = await appDb.getPart(_selectedPartId!);
                   final partName = part?.name ?? '파트';
@@ -397,7 +437,11 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.description_outlined, size: 24, color: Color(0xFF717182)),
+                      child: const Icon(
+                        Icons.description_outlined,
+                        size: 24,
+                        color: Color(0xFF717182),
+                      ),
                     ),
                     if (_selectedPartId != null)
                       StreamBuilder<int>(
@@ -405,7 +449,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         builder: (context, snapshot) {
                           final count = snapshot.data ?? 0;
                           if (count == 0) return const SizedBox.shrink();
-                          
+
                           return Positioned(
                             right: -2,
                             top: -4,
@@ -434,15 +478,138 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               ),
               const SizedBox(width: 8),
               // More Button
-              GestureDetector(
-                onTap: () {
-                    // TODO: Project Info / Delete Popup
-                },
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.more_vert, color: Color(0xFF0A0A0A)),
+              Theme(
+                data: Theme.of(context).copyWith(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                ),
+                child: PopupMenuButton<String>(
+                  offset: const Offset(0, 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: const BorderSide(
+                      color: Color(0x19000000),
+                      width: 0.7,
+                    ),
+                  ),
+                  color: Colors.white,
+                  elevation: 2,
+                  padding: EdgeInsets.zero,
+                  child: Container(
+                    width: 42,
+                    height: 36,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.more_vert,
+                      color: Color(0xFF0A0A0A),
+                    ),
+                  ),
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'info',
+                          height: 32,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            '프로젝트 정보',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF0A0A0A),
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'part_manage',
+                          height: 32,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'Part 관리',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF0A0A0A),
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          height: 32,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            '프로젝트 삭제',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFFD4183D),
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                      ],
+                  onSelected: (String value) async {
+                    if (value == 'info') {
+                      final allTags = await appDb.select(appDb.tags).get();
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => ProjectInfoSheet(
+                            project: project,
+                            allTags: allTags,
+                          ),
+                        );
+                      }
+                    } else if (value == 'part_manage') {
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => PartManageSheet(
+                            projectId: project.id,
+                            onPartChanged: (selectedPartId) {
+                              if (selectedPartId != null) {
+                                setState(() {
+                                  _selectedPartId = selectedPartId;
+                                  _listenToMainCounter(selectedPartId);
+                                });
+                                appDb.updateProjectCurrentPart(
+                                  projectId: project.id,
+                                  partId: selectedPartId,
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      }
+                    } else if (value == 'delete') {
+                      if (context.mounted) {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) => ProjectDeleteDialog(
+                            projectName: project.name,
+                            onDelete: () {
+                              Navigator.of(dialogContext).pop(true);
+                            },
+                          ),
+                        );
+
+                        if (confirmed == true && context.mounted) {
+                          // 프로젝트 삭제 Event 발생
+                          ref
+                              .read(projectsProvider.notifier)
+                              .onEvent(DeleteProject(project.id));
+
+                          // 목록 화면으로 돌아가기
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                        }
+                      }
+                    }
+                  },
                 ),
               ),
             ],
@@ -457,7 +624,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       stream: appDb.watchProjectParts(project.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const SizedBox(height: 60, child: Center(child: Icon(Icons.error)));
+          return const SizedBox(
+            height: 60,
+            child: Center(child: Icon(Icons.error)),
+          );
         }
 
         final parts = snapshot.data ?? [];
@@ -468,8 +638,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         if (_selectedPartId == null && parts.isNotEmpty) {
           // DB의 currentPartId가 유효한지 확인
           final savedPartId = project.currentPartId;
-          final isValidSaved = savedPartId != null && parts.any((p) => p.id == savedPartId);
-          
+          final isValidSaved =
+              savedPartId != null && parts.any((p) => p.id == savedPartId);
+
           final initialPartId = isValidSaved ? savedPartId : parts.first.id;
 
           // 빌드 후 상태 업데이트
@@ -481,12 +652,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               });
               // 만약 저장된 파트와 다르면(예: 첫 로드 또는 유효하지 않은 ID), DB 업데이트
               if (savedPartId != initialPartId) {
-                appDb.updateProjectCurrentPart(projectId: project.id, partId: initialPartId);
+                appDb.updateProjectCurrentPart(
+                  projectId: project.id,
+                  partId: initialPartId,
+                );
               }
             }
           });
         } else if (parts.isEmpty && _selectedPartId != null) {
-           Future.microtask(() {
+          Future.microtask(() {
             if (mounted && _selectedPartId != null) {
               setState(() {
                 _selectedPartId = null;
@@ -500,13 +674,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           width: double.infinity,
           decoration: const BoxDecoration(
             color: Colors.white,
-            border: Border(bottom: BorderSide(color: Color(0x1A000000), width: 0.5)),
+            border: Border(
+              bottom: BorderSide(color: Color(0x1A000000), width: 0.5),
+            ),
           ),
           child: Row(
             children: [
               // New Part Button (Fixed)
               Padding(
-                padding: const EdgeInsets.only(left: 12, right: 8, top: 12, bottom: 12),
+                padding: const EdgeInsets.only(
+                  left: 12,
+                  right: 8,
+                  top: 12,
+                  bottom: 12,
+                ),
                 child: GestureDetector(
                   onTap: () => _showAddPartDialog(context, project.id),
                   child: Container(
@@ -523,7 +704,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Text(
                           '새 파트',
                           style: TextStyle(
-                            color: Colors.white, 
+                            color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             letterSpacing: -0.31,
@@ -534,17 +715,24 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   ),
                 ),
               ),
-              
+
               // Reorderable Part List
               Expanded(
                 child: parts.isEmpty
                     ? const Padding(
                         padding: EdgeInsets.only(left: 8),
-                        child: Text('파트를 추가해주세요', style: TextStyle(color: Colors.grey)),
+                        child: Text(
+                          '파트를 추가해주세요',
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       )
                     : ReorderableListView.builder(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(right: 12, top: 12, bottom: 12),
+                        padding: const EdgeInsets.only(
+                          right: 12,
+                          top: 12,
+                          bottom: 12,
+                        ),
                         // 헤더가 없으므로 첫 아이템 패딩 제거됨, Row 간격으로 조정
                         proxyDecorator: (child, index, animation) {
                           return Material(
@@ -558,10 +746,13 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           }
                           final item = parts.removeAt(oldIndex);
                           parts.insert(newIndex, item);
-                          
+
                           // DB 업데이트 (순서 변경)
                           final partIds = parts.map((e) => e.id).toList();
-                          await appDb.reorderParts(projectId: project.id, partIds: partIds);
+                          await appDb.reorderParts(
+                            projectId: project.id,
+                            partIds: partIds,
+                          );
                         },
                         itemCount: parts.length,
                         itemBuilder: (context, index) {
@@ -575,21 +766,30 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                                 _listenToMainCounter(part.id);
                               });
                               // 파트 변경 시 DB에 현재 파트 저장
-                              appDb.updateProjectCurrentPart(projectId: project.id, partId: part.id);
+                              appDb.updateProjectCurrentPart(
+                                projectId: project.id,
+                                partId: part.id,
+                              );
                             },
                             // 롱프레스로 드래그 시작
                             child: Container(
                               margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               decoration: BoxDecoration(
-                                color: isSelected ? const Color(0xFF6FB96F) : const Color(0xFFECEEF2),
+                                color: isSelected
+                                    ? const Color(0xFF6FB96F)
+                                    : const Color(0xFFECEEF2),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 part.name,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : const Color(0xFF030213),
+                                  color: isSelected
+                                      ? Colors.white
+                                      : const Color(0xFF030213),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                   letterSpacing: -0.31,
@@ -648,7 +848,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     final name = textController.text.trim();
                     if (name.isNotEmpty) {
                       // 중복 체크
-                      final exists = await appDb.isPartNameExists(projectId: projectId, name: name);
+                      final exists = await appDb.isPartNameExists(
+                        projectId: projectId,
+                        name: name,
+                      );
                       if (exists) {
                         setState(() {
                           errorText = '이미 존재하는 파트 이름입니다.';
@@ -657,7 +860,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       }
 
                       try {
-                        final newPartId = await appDb.createPart(projectId: projectId, name: name);
+                        final newPartId = await appDb.createPart(
+                          projectId: projectId,
+                          name: name,
+                        );
                         if (context.mounted) {
                           Navigator.pop(context);
                           // 새로 생성된 파트를 자동 선택 및 저장
@@ -665,14 +871,17 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             _selectedPartId = newPartId;
                             _listenToMainCounter(newPartId);
                           });
-                          appDb.updateProjectCurrentPart(projectId: projectId, partId: newPartId);
+                          appDb.updateProjectCurrentPart(
+                            projectId: projectId,
+                            partId: newPartId,
+                          );
                         }
                       } catch (e) {
-                         if (context.mounted) {
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(content: Text('파트 생성 실패: $e')),
-                           );
-                         }
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('파트 생성 실패: $e')),
+                          );
+                        }
                       }
                     }
                   },
@@ -702,7 +911,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
           // 3. Buddy Counters (Grid/List)
           _buildBuddyCounters(),
-          
+
           // 하단 여백 확보 (FAB 가림 방지)
           const SizedBox(height: 80),
         ],
@@ -761,23 +970,32 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
   }
 
   void _subscribe() {
-    _stitchSub = (appDb.select(appDb.stitchCounters)..where((t) => t.partId.equals(widget.partId))).watch().listen((data) {
-      setState(() {
-        _stitchCounters = data;
-      });
-    });
+    _stitchSub =
+        (appDb.select(
+          appDb.stitchCounters,
+        )..where((t) => t.partId.equals(widget.partId))).watch().listen((data) {
+          setState(() {
+            _stitchCounters = data;
+          });
+        });
 
-    _sectionSub = (appDb.select(appDb.sectionCounters)..where((t) => t.partId.equals(widget.partId))).watch().listen((data) {
-      setState(() {
-        _sectionCounters = data;
-      });
-    });
+    _sectionSub =
+        (appDb.select(
+          appDb.sectionCounters,
+        )..where((t) => t.partId.equals(widget.partId))).watch().listen((data) {
+          setState(() {
+            _sectionCounters = data;
+          });
+        });
 
-    _partSub = (appDb.select(appDb.parts)..where((t) => t.id.equals(widget.partId))).watchSingleOrNull().listen((part) {
-      setState(() {
-        _buddyCounterOrder = part?.buddyCounterOrder;
-      });
-    });
+    _partSub =
+        (appDb.select(appDb.parts)..where((t) => t.id.equals(widget.partId)))
+            .watchSingleOrNull()
+            .listen((part) {
+              setState(() {
+                _buddyCounterOrder = part?.buddyCounterOrder;
+              });
+            });
   }
 
   void _unsubscribe() {
@@ -804,12 +1022,16 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
         }
 
         allItems.sort((a, b) {
-          final keyA = a.isStitch ? "stitch_${a.stitch!.id}" : "section_${a.section!.id}";
-          final keyB = b.isStitch ? "stitch_${b.stitch!.id}" : "section_${b.section!.id}";
-          
+          final keyA = a.isStitch
+              ? "stitch_${a.stitch!.id}"
+              : "section_${a.section!.id}";
+          final keyB = b.isStitch
+              ? "stitch_${b.stitch!.id}"
+              : "section_${b.section!.id}";
+
           final orderA = orderMap[keyA] ?? 999;
           final orderB = orderMap[keyB] ?? 999;
-          
+
           return orderA.compareTo(orderB);
         });
       } catch (_) {
@@ -864,10 +1086,7 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
               }
             },
             onCountByChanged: (value) {
-              appDb.updateStitchCounter(
-                counterId: counter.id,
-                countBy: value,
-              );
+              appDb.updateStitchCounter(counterId: counter.id, countBy: value);
             },
             onEdit: () {
               showModalBottomSheet(
@@ -881,7 +1100,10 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'stitch' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'stitch' && item['id'] == counter.id,
+                );
                 await appDb.deleteStitchCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -916,25 +1138,32 @@ class SectionCounterCardWrapper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // StreamBuilder to watch runs
     return StreamBuilder<List<SectionRun>>(
-      stream: (appDb.select(appDb.sectionRuns)
-            ..where((t) => t.sectionCounterId.equals(counter.id))
-            ..orderBy([(t) => OrderingTerm.asc(t.ord)]))
-          .watch(),
+      stream:
+          (appDb.select(appDb.sectionRuns)
+                ..where((t) => t.sectionCounterId.equals(counter.id))
+                ..orderBy([(t) => OrderingTerm.asc(t.ord)]))
+              .watch(),
       builder: (context, runsSnapshot) {
         if (runsSnapshot.hasError) {
-          return SizedBox(height: 160, child: Center(child: Text('Error: ${runsSnapshot.error}')));
+          return SizedBox(
+            height: 160,
+            child: Center(child: Text('Error: ${runsSnapshot.error}')),
+          );
         }
         if (!runsSnapshot.hasData) {
-          return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator()));
+          return const SizedBox(
+            height: 160,
+            child: Center(child: CircularProgressIndicator()),
+          );
         }
 
         final runs = runsSnapshot.data!;
 
         // Nested StreamBuilder to watch MainCounter
         return StreamBuilder<MainCounter?>(
-          stream: (appDb.select(appDb.mainCounters)
-                ..where((t) => t.partId.equals(counter.partId)))
-              .watchSingleOrNull(),
+          stream: (appDb.select(
+            appDb.mainCounters,
+          )..where((t) => t.partId.equals(counter.partId))).watchSingleOrNull(),
           builder: (context, mainSnapshot) {
             final mainCounterVal = mainSnapshot.data?.currentValue ?? 1;
             return _buildCard(context, counter, runs, mainCounterVal);
@@ -944,14 +1173,19 @@ class SectionCounterCardWrapper extends ConsumerWidget {
     );
   }
 
-  Widget _buildCard(BuildContext context, SectionCounter counter, List<SectionRun> runs, int currentMainValue) {
+  Widget _buildCard(
+    BuildContext context,
+    SectionCounter counter,
+    List<SectionRun> runs,
+    int currentMainValue,
+  ) {
     Map<String, dynamic> spec = {};
     try {
       spec = jsonDecode(counter.specJson);
     } catch (_) {}
-    
+
     final type = spec['type']?.toString().toLowerCase();
-    
+
     // 1. Determine effective value for calculation based on LinkState
     final effectiveValue = counter.linkState == LinkState.linked
         ? currentMainValue
@@ -961,21 +1195,21 @@ class SectionCounterCardWrapper extends ConsumerWidget {
     Widget wrapOpacity(Widget child, int startRow) {
       // Use REAL currentMainValue for active check, not frozen value
       final isActive = currentMainValue >= startRow;
-      return Opacity(
-        opacity: isActive ? 1.0 : 0.5,
-        child: child,
-      );
+      return Opacity(opacity: isActive ? 1.0 : 0.5, child: child);
     }
 
     final unlinkedColor = const Color(0xFFF8F9FA);
     final completedColor = const Color(0xFFF0FDF4);
-    
+
     switch (type) {
       case 'range':
         if (runs.isEmpty) return const Text('No Data');
         final run = runs.first;
-        final isCompleted = effectiveValue >= (run.startRow + run.rowsTotal - 1);
-        final backgroundColor = isCompleted ? completedColor : (counter.linkState == LinkState.linked ? null : unlinkedColor);
+        final isCompleted =
+            effectiveValue >= (run.startRow + run.rowsTotal - 1);
+        final backgroundColor = isCompleted
+            ? completedColor
+            : (counter.linkState == LinkState.linked ? null : unlinkedColor);
 
         return wrapOpacity(
           RangeCounterCard(
@@ -989,13 +1223,16 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isCompleted: isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
-                appDb.unlinkSectionCounter(counterId: counter.id, currentMainValue: currentMainValue);
+                appDb.unlinkSectionCounter(
+                  counterId: counter.id,
+                  currentMainValue: currentMainValue,
+                );
               } else {
                 appDb.relinkSectionCounter(counter.id);
               }
             },
             onEdit: () {
-               showModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
@@ -1010,7 +1247,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'section' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'section' && item['id'] == counter.id,
+                );
                 await appDb.deleteSectionCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -1021,7 +1261,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
           ),
           run.startRow,
         );
-      
+
       case 'repeat':
         final rowsPerRepeat = spec['rowsPerRepeat'] as int? ?? 4;
         final startRow = spec['startRow'] as int? ?? 1;
@@ -1029,16 +1269,16 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         // Calculate repeat progress using effectiveValue
         int currentRunIndex = 0;
         int currentRowInPattern = 0;
-        
+
         bool found = false;
         for (int i = 0; i < runs.length; i++) {
           final r = runs[i];
           final end = r.startRow + r.rowsTotal;
           if (effectiveValue < r.startRow) {
             if (i == 0) {
-               currentRunIndex = 0;
-               currentRowInPattern = 0;
-               found = true;
+              currentRunIndex = 0;
+              currentRowInPattern = 0;
+              found = true;
             }
             break;
           } else if (effectiveValue < end) {
@@ -1048,14 +1288,16 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             break;
           }
         }
-        
+
         if (!found && runs.isNotEmpty) {
-           currentRunIndex = runs.length; 
-           currentRowInPattern = runs.last.rowsTotal;
+          currentRunIndex = runs.length;
+          currentRowInPattern = runs.last.rowsTotal;
         }
 
         final isCompleted = currentRunIndex >= runs.length;
-        final backgroundColor = isCompleted ? completedColor : (counter.linkState == LinkState.linked ? null : unlinkedColor);
+        final backgroundColor = isCompleted
+            ? completedColor
+            : (counter.linkState == LinkState.linked ? null : unlinkedColor);
 
         return wrapOpacity(
           RepeatCounterCard(
@@ -1070,7 +1312,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isCompleted: isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
-                appDb.unlinkSectionCounter(counterId: counter.id, currentMainValue: currentMainValue);
+                appDb.unlinkSectionCounter(
+                  counterId: counter.id,
+                  currentMainValue: currentMainValue,
+                );
               } else {
                 appDb.relinkSectionCounter(counter.id);
               }
@@ -1091,7 +1336,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'section' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'section' && item['id'] == counter.id,
+                );
                 await appDb.deleteSectionCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -1106,18 +1354,20 @@ class SectionCounterCardWrapper extends ConsumerWidget {
       case 'interval':
         final intervalRows = spec['intervalRows'] as int? ?? 1;
         final startRowInt = spec['startRow'] as int? ?? 1;
-        
+
         int completedCount = 0;
         for (final r in runs) {
-           if (effectiveValue >= r.startRow + r.rowsTotal) {
-             completedCount++;
-           } else if (effectiveValue >= r.startRow) {
-             break;
-           }
+          if (effectiveValue >= r.startRow + r.rowsTotal) {
+            completedCount++;
+          } else if (effectiveValue >= r.startRow) {
+            break;
+          }
         }
 
         final isCompleted = completedCount >= runs.length;
-        final backgroundColor = isCompleted ? completedColor : (counter.linkState == LinkState.linked ? null : unlinkedColor);
+        final backgroundColor = isCompleted
+            ? completedColor
+            : (counter.linkState == LinkState.linked ? null : unlinkedColor);
 
         return wrapOpacity(
           IntervalCounterCard(
@@ -1131,7 +1381,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isCompleted: isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
-                appDb.unlinkSectionCounter(counterId: counter.id, currentMainValue: currentMainValue);
+                appDb.unlinkSectionCounter(
+                  counterId: counter.id,
+                  currentMainValue: currentMainValue,
+                );
               } else {
                 appDb.relinkSectionCounter(counter.id);
               }
@@ -1152,7 +1405,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'section' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'section' && item['id'] == counter.id,
+                );
                 await appDb.deleteSectionCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -1170,26 +1426,28 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final startRowShaping = spec['startRow'] as int? ?? 1;
 
         int shapingCompleted = 0;
-        int nextActionRow = startRowShaping + intervalRowsShaping; 
-        
+        int nextActionRow = startRowShaping + intervalRowsShaping;
+
         for (int i = 0; i < runs.length; i++) {
-           final r = runs[i];
-           final actionRow = r.startRow + r.rowsTotal; 
-           
-           if (effectiveValue >= actionRow) {
-             shapingCompleted++;
-           } else {
-             nextActionRow = actionRow;
-             break;
-           }
+          final r = runs[i];
+          final actionRow = r.startRow + r.rowsTotal;
+
+          if (effectiveValue >= actionRow) {
+            shapingCompleted++;
+          } else {
+            nextActionRow = actionRow;
+            break;
+          }
         }
-        
+
         if (shapingCompleted >= runs.length) {
-           nextActionRow = 0; 
+          nextActionRow = 0;
         }
 
         final isCompleted = shapingCompleted >= runs.length;
-        final backgroundColor = isCompleted ? completedColor : (counter.linkState == LinkState.linked ? null : unlinkedColor);
+        final backgroundColor = isCompleted
+            ? completedColor
+            : (counter.linkState == LinkState.linked ? null : unlinkedColor);
 
         return wrapOpacity(
           ShapingCounterCard(
@@ -1205,7 +1463,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isCompleted: isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
-                appDb.unlinkSectionCounter(counterId: counter.id, currentMainValue: currentMainValue);
+                appDb.unlinkSectionCounter(
+                  counterId: counter.id,
+                  currentMainValue: currentMainValue,
+                );
               } else {
                 appDb.relinkSectionCounter(counter.id);
               }
@@ -1226,7 +1487,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'section' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'section' && item['id'] == counter.id,
+                );
                 await appDb.deleteSectionCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -1241,18 +1505,23 @@ class SectionCounterCardWrapper extends ConsumerWidget {
       case 'length':
         if (runs.isEmpty) return const Text('No Data');
         final runL = runs.first;
-        
+
         final targetLength = spec['targetLength'] as double? ?? 0.0;
         final rowHeight = spec['rowHeight'] as double? ?? 0.1;
-        
-        final rowsDone = (effectiveValue - runL.startRow + 1).clamp(0, runL.rowsTotal);
+
+        final rowsDone = (effectiveValue - runL.startRow + 1).clamp(
+          0,
+          runL.rowsTotal,
+        );
         final rowsLeft = runL.rowsTotal - rowsDone;
         final remainingLen = (rowsLeft * rowHeight).clamp(0.0, targetLength);
-        
+
         final progressL = runL.rowsTotal > 0 ? rowsDone / runL.rowsTotal : 0.0;
 
         final isCompleted = progressL >= 1.0 || remainingLen <= 0;
-        final backgroundColor = isCompleted ? completedColor : (counter.linkState == LinkState.linked ? null : unlinkedColor);
+        final backgroundColor = isCompleted
+            ? completedColor
+            : (counter.linkState == LinkState.linked ? null : unlinkedColor);
 
         return wrapOpacity(
           LengthCounterCard(
@@ -1266,7 +1535,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isCompleted: isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
-                appDb.unlinkSectionCounter(counterId: counter.id, currentMainValue: currentMainValue);
+                appDb.unlinkSectionCounter(
+                  counterId: counter.id,
+                  currentMainValue: currentMainValue,
+                );
               } else {
                 appDb.relinkSectionCounter(counter.id);
               }
@@ -1287,7 +1559,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
               final part = await appDb.getPart(counter.partId);
               if (part != null && part.buddyCounterOrder != null) {
                 final List order = jsonDecode(part.buddyCounterOrder!);
-                order.removeWhere((item) => item['type'] == 'section' && item['id'] == counter.id);
+                order.removeWhere(
+                  (item) =>
+                      item['type'] == 'section' && item['id'] == counter.id,
+                );
                 await appDb.deleteSectionCounter(
                   counterId: counter.id,
                   partId: counter.partId,
@@ -1300,11 +1575,13 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       default:
-        return const SizedBox(height: 160, child: Center(child: Text('Unknown Type')));
+        return const SizedBox(
+          height: 160,
+          child: Center(child: Text('Unknown Type')),
+        );
     }
   }
 }
-
 
 class SessionPanelWidget extends StatefulWidget {
   final int partId;
@@ -1314,7 +1591,8 @@ class SessionPanelWidget extends StatefulWidget {
   State<SessionPanelWidget> createState() => _SessionPanelWidgetState();
 }
 
-class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTickerProviderStateMixin {
+class _SessionPanelWidgetState extends State<SessionPanelWidget>
+    with SingleTickerProviderStateMixin {
   late Ticker _ticker;
   Duration _elapsed = Duration.zero;
   Session? _session;
@@ -1334,7 +1612,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
 
   void _updateTimer() {
     if (_session == null) return;
-    
+
     final baseDuration = Duration(seconds: _session!.totalDurationSeconds);
     if (_session!.status == SessionStatus2.running && _currentSegment != null) {
       final now = DateTime.now().toUtc();
@@ -1345,7 +1623,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
     } else {
       if (_elapsed != baseDuration) {
         setState(() {
-           _elapsed = baseDuration;
+          _elapsed = baseDuration;
         });
       }
     }
@@ -1364,18 +1642,21 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Session?>(
-      stream: (appDb.select(appDb.sessions)..where((t) => t.partId.equals(widget.partId))).watchSingleOrNull(),
+      stream: (appDb.select(
+        appDb.sessions,
+      )..where((t) => t.partId.equals(widget.partId))).watchSingleOrNull(),
       builder: (context, snapshot) {
         // snapshot.data가 null이면 세션 없음, 있으면 세션 있음
-        _session = snapshot.data; 
-        
+        _session = snapshot.data;
+
         final session = _session;
         final isRunning = session?.status == SessionStatus2.running;
 
         // Session 로드 시 Segment도 같이 조회 (Running 상태일 때만 의미 있음)
         if (session != null && isRunning) {
           return StreamBuilder<SessionSegment?>(
-            stream: (appDb.select(appDb.sessionSegments)
+            stream:
+                (appDb.select(appDb.sessionSegments)
                       ..where((t) => t.sessionId.equals(session.id))
                       ..where((t) => t.endedAt.isNull())
                       ..limit(1))
@@ -1387,14 +1668,14 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
             },
           );
         } else {
-           _currentSegment = null;
-           _ticker.stop();
-           if (session != null) {
-              _elapsed = Duration(seconds: session.totalDurationSeconds);
-           } else {
-              _elapsed = Duration.zero;
-           }
-           return _buildContent(session, false);
+          _currentSegment = null;
+          _ticker.stop();
+          if (session != null) {
+            _elapsed = Duration(seconds: session.totalDurationSeconds);
+          } else {
+            _elapsed = Duration.zero;
+          }
+          return _buildContent(session, false);
         }
       },
     );
@@ -1413,12 +1694,16 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
         children: [
           Row(
             children: [
-              const Icon(Icons.timer_outlined, size: 14, color: Color(0xFF717182)),
+              const Icon(
+                Icons.timer_outlined,
+                size: 14,
+                color: Color(0xFF717182),
+              ),
               const SizedBox(width: 8),
               const Text(
                 '세션',
                 style: TextStyle(
-                  fontSize: 12, 
+                  fontSize: 12,
                   color: Color(0xFF717182),
                   fontWeight: FontWeight.w400,
                 ),
@@ -1440,15 +1725,17 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: isRunning ? const Color(0xFFECEEF2) : const Color(0xFF637069),
+                color: isRunning
+                    ? const Color(0xFFECEEF2)
+                    : const Color(0xFF637069),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   Icon(
-                    isRunning ? Icons.pause : Icons.play_arrow, 
-                    size: 14, 
-                    color: isRunning ? const Color(0xFF030213) : Colors.white
+                    isRunning ? Icons.pause : Icons.play_arrow,
+                    size: 14,
+                    color: isRunning ? const Color(0xFF030213) : Colors.white,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -1471,14 +1758,17 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
 
   Future<void> _handleToggleSession() async {
     final partId = widget.partId;
-    
+
     // MainCounter 값을 알아야 함
     final mainCounter = await appDb.getMainCounter(partId);
     final currentMainValue = mainCounter?.currentValue ?? 0;
 
     if (_session == null) {
       // Start New Session
-      await appDb.createSession(partId: partId, currentMainValue: currentMainValue);
+      await appDb.createSession(
+        partId: partId,
+        currentMainValue: currentMainValue,
+      );
     } else {
       if (_session!.status == SessionStatus2.running) {
         // Pause
@@ -1493,15 +1783,14 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget> with SingleTick
       } else {
         // Resume
         await appDb.resumePartSession(
-          sessionId: _session!.id, 
-          partId: partId, 
-          currentMainValue: currentMainValue
+          sessionId: _session!.id,
+          partId: partId,
+          currentMainValue: currentMainValue,
         );
       }
     }
   }
 }
-
 
 class MainCounterWidget extends StatelessWidget {
   final int partId;
@@ -1510,15 +1799,19 @@ class MainCounterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<MainCounter?>(
-      stream: (appDb.select(appDb.mainCounters)..where((t) => t.partId.equals(partId))).watchSingleOrNull(),
+      stream: (appDb.select(
+        appDb.mainCounters,
+      )..where((t) => t.partId.equals(partId))).watchSingleOrNull(),
       builder: (context, snapshot) {
         final mainCounter = snapshot.data;
         final currentValue = mainCounter?.currentValue ?? 1;
         final targetValue = mainCounter?.targetValue;
         final hasTarget = targetValue != null;
-        
+
         final remaining = hasTarget ? targetValue - currentValue : 0;
-        final progress = hasTarget ? (currentValue / targetValue).clamp(0.0, 1.0) : 0.0;
+        final progress = hasTarget
+            ? (currentValue / targetValue).clamp(0.0, 1.0)
+            : 0.0;
 
         return Container(
           height: 160,
@@ -1535,19 +1828,30 @@ class MainCounterWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Material(
-                      color: const Color(0xFFC0D2A4), // Decrement Button Default
+                      color: const Color(
+                        0xFFC0D2A4,
+                      ), // Decrement Button Default
                       child: InkWell(
                         splashColor: const Color(0xFF7D8D6A), // Splashing color
-                        highlightColor: const Color(0xFFAABF93), // Active (Pressed) state color
+                        highlightColor: const Color(
+                          0xFFAABF93,
+                        ), // Active (Pressed) state color
                         onTap: () {
                           if (currentValue > 1) {
-                            appDb.updateMainCounter(partId: partId, newValue: currentValue - 1);
+                            appDb.updateMainCounter(
+                              partId: partId,
+                              newValue: currentValue - 1,
+                            );
                           }
                         },
                         child: const Center(
                           child: Padding(
                             padding: EdgeInsets.only(right: 20),
-                            child: Icon(Icons.remove, size: 40, color: Colors.white),
+                            child: Icon(
+                              Icons.remove,
+                              size: 40,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -1555,17 +1859,28 @@ class MainCounterWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: Material(
-                      color: const Color(0xFF6FB96F), // Increment Button Default
+                      color: const Color(
+                        0xFF6FB96F,
+                      ), // Increment Button Default
                       child: InkWell(
                         splashColor: const Color(0xFF4C8A4C), // Splashing color
-                        highlightColor: const Color(0xFF63A763), // Active (Pressed) state color
+                        highlightColor: const Color(
+                          0xFF63A763,
+                        ), // Active (Pressed) state color
                         onTap: () {
-                          appDb.updateMainCounter(partId: partId, newValue: currentValue + 1);
+                          appDb.updateMainCounter(
+                            partId: partId,
+                            newValue: currentValue + 1,
+                          );
                         },
                         child: const Center(
                           child: Padding(
                             padding: EdgeInsets.only(left: 20),
-                            child: Icon(Icons.add, size: 40, color: Colors.white),
+                            child: Icon(
+                              Icons.add,
+                              size: 40,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -1585,7 +1900,10 @@ class MainCounterWidget extends StatelessWidget {
                       builder: (context) => CounterEditBottomSheet(
                         initialValue: currentValue,
                         onSave: (newValue) {
-                          appDb.updateMainCounter(partId: partId, newValue: newValue);
+                          appDb.updateMainCounter(
+                            partId: partId,
+                            newValue: newValue,
+                          );
                         },
                       ),
                     );
@@ -1596,7 +1914,10 @@ class MainCounterWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFF3F4F6), width: 3.67),
+                      border: Border.all(
+                        color: const Color(0xFFF3F4F6),
+                        width: 3.67,
+                      ),
                       boxShadow: const [
                         BoxShadow(
                           color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -1627,7 +1948,7 @@ class MainCounterWidget extends StatelessWidget {
                         ),
                         if (hasTarget)
                           Text(
-                            '/ $targetValue', 
+                            '/ $targetValue',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF717182),
@@ -1640,7 +1961,7 @@ class MainCounterWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Remaining Label (Top Center)
               if (hasTarget && remaining > 0)
                 Positioned(
@@ -1664,7 +1985,7 @@ class MainCounterWidget extends StatelessWidget {
                               color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 9.2,
                               fontWeight: FontWeight.w400,
-                              height: 1.2, 
+                              height: 1.2,
                             ),
                           ),
                         ],
@@ -1684,13 +2005,19 @@ class MainCounterWidget extends StatelessWidget {
                       builder: (context) => TargetSettingDialog(
                         initialValue: targetValue ?? 100,
                         onSave: (newValue) {
-                          appDb.updateMainCounterTarget(partId: partId, newTargetValue: newValue);
+                          appDb.updateMainCounterTarget(
+                            partId: partId,
+                            newTargetValue: newValue,
+                          );
                         },
                       ),
                     );
                   },
                   onRemoveTarget: () {
-                    appDb.updateMainCounterTarget(partId: partId, newTargetValue: null);
+                    appDb.updateMainCounterTarget(
+                      partId: partId,
+                      newTargetValue: null,
+                    );
                   },
                 ),
               ),
@@ -1698,14 +2025,18 @@ class MainCounterWidget extends StatelessWidget {
               // Progress Bar (Bottom)
               if (hasTarget)
                 Positioned(
-                  bottom: 0, left: 0, right: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: Container(
                     height: 4,
                     color: const Color.fromRGBO(0, 0, 0, 0.1),
                     child: FractionallySizedBox(
                       alignment: Alignment.centerLeft,
-                      widthFactor: progress, 
-                      child: Container(color: Colors.white.withValues(alpha: 0.8)), 
+                      widthFactor: progress,
+                      child: Container(
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
                     ),
                   ),
                 ),

@@ -223,6 +223,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         needleSize: event.needleSize,
         lotNumber: event.lotNumber,
         memo: event.memo,
+        gaugeStitches: event.gaugeStitches,
+        gaugeRows: event.gaugeRows,
       );
 
       // 이미지 설정
@@ -242,8 +244,14 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       }
 
       // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
-      final partId = await appDb.createPart(projectId: projectId, name: 'Part 1');
-      await appDb.updateProjectCurrentPart(projectId: projectId, partId: partId);
+      final partId = await appDb.createPart(
+        projectId: projectId,
+        name: 'Part 1',
+      );
+      await appDb.updateProjectCurrentPart(
+        projectId: projectId,
+        partId: partId,
+      );
 
       _emit(ProjectCreated(projectId));
       _emit(const ShowSuccessMessage('프로젝트가 생성되었습니다'));
@@ -270,6 +278,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
           needleSize: Value(event.needleSize),
           lotNumber: Value(event.lotNumber),
           memo: Value(event.memo),
+          gaugeStitches: Value(event.gaugeStitches),
+          gaugeRows: Value(event.gaugeRows),
         ),
       );
 
@@ -301,10 +311,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         return;
       }
 
-      // Drift의 delete 메서드 사용
-      await (appDb.delete(
-        appDb.projects,
-      )..where((tbl) => tbl.id.equals(projectId))).go();
+      // Drift의 소프트 삭제(휴지통 30일 보관 기능) 처리
+      await appDb.softDeleteProject(projectId);
 
       _emit(const ProjectDeleted());
       _emit(const ShowSuccessMessage('프로젝트가 삭제되었습니다'));

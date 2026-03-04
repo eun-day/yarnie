@@ -8,9 +8,16 @@ void main() async {
 
   final projects = await appDb.watchAll().first;
   for (final project in projects) {
-    print(
+    debugPrint(
       '📌Project: id=${project.id}, name=${project.name}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}',
     );
+  }
+
+  // 삭제된지 30일이 지난 프로젝트 영구 삭제
+  try {
+    await appDb.cleanupDeletedProjects();
+  } catch (e) {
+    debugPrint('Failed to cleanup deleted projects: $e');
   }
 
   runApp(const ProviderScope(child: MyApp()));

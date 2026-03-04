@@ -80,6 +80,8 @@ class CreateProject extends ProjectsEvent {
   final String? needleSize;
   final String? lotNumber;
   final String? memo;
+  final String? gaugeStitches;
+  final String? gaugeRows;
   final String? imagePath;
   final List<int> tagIds;
 
@@ -89,6 +91,8 @@ class CreateProject extends ProjectsEvent {
     this.needleSize,
     this.lotNumber,
     this.memo,
+    this.gaugeStitches,
+    this.gaugeRows,
     this.imagePath,
     this.tagIds = const [],
   });
@@ -102,6 +106,8 @@ class UpdateProject extends ProjectsEvent {
   final String? needleSize;
   final String? lotNumber;
   final String? memo;
+  final String? gaugeStitches;
+  final String? gaugeRows;
   final String? imagePath;
   final List<int> tagIds;
 
@@ -112,6 +118,8 @@ class UpdateProject extends ProjectsEvent {
     this.needleSize,
     this.lotNumber,
     this.memo,
+    this.gaugeStitches,
+    this.gaugeRows,
     this.imagePath,
     this.tagIds = const [],
   });
