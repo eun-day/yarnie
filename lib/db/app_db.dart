@@ -107,6 +107,8 @@ class Projects extends Table {
   TextColumn get needleSize => text().nullable()();
   TextColumn get lotNumber => text().nullable()();
   TextColumn get memo => text().nullable()();
+  TextColumn get gaugeStitches => text().nullable()(); // 게이지 코 수
+  TextColumn get gaugeRows => text().nullable()(); // 게이지 단 수
 
   // 새로 추가
   IntColumn get currentPartId =>
@@ -145,7 +147,8 @@ class MainCounters extends Table {
       integer().references(Parts, #id, onDelete: KeyAction.cascade)();
 
   IntColumn get currentValue => integer().withDefault(const Constant(1))();
-  IntColumn get targetValue => integer().nullable()(); // Added targetValue column
+  IntColumn get targetValue =>
+      integer().nullable()(); // Added targetValue column
 
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -476,6 +479,8 @@ class AppDb extends _$AppDb {
     String? needleSize,
     String? lotNumber,
     String? memo,
+    String? gaugeStitches,
+    String? gaugeRows,
   }) {
     return into(projects).insert(
       ProjectsCompanion.insert(
@@ -484,6 +489,8 @@ class AppDb extends _$AppDb {
         needleSize: Value(needleSize),
         lotNumber: Value(lotNumber),
         memo: Value(memo),
+        gaugeStitches: Value(gaugeStitches),
+        gaugeRows: Value(gaugeRows),
       ),
     );
   }
@@ -973,10 +980,9 @@ class AppDb extends _$AppDb {
           finalOrderJson = newOrderJson;
         } else {
           // 자동 추가 로직
-          final List orderList =
-              part.buddyCounterOrder != null
-                  ? jsonDecode(part.buddyCounterOrder!)
-                  : [];
+          final List orderList = part.buddyCounterOrder != null
+              ? jsonDecode(part.buddyCounterOrder!)
+              : [];
           orderList.add({'type': 'stitch', 'id': counterId});
           finalOrderJson = jsonEncode(orderList);
         }
@@ -1081,10 +1087,9 @@ class AppDb extends _$AppDb {
           finalOrderJson = newOrderJson;
         } else {
           // 자동 추가 로직
-          final List orderList =
-              part.buddyCounterOrder != null
-                  ? jsonDecode(part.buddyCounterOrder!)
-                  : [];
+          final List orderList = part.buddyCounterOrder != null
+              ? jsonDecode(part.buddyCounterOrder!)
+              : [];
           orderList.add({'type': 'section', 'id': counterId});
           finalOrderJson = jsonEncode(orderList);
         }
@@ -1113,7 +1118,6 @@ class AppDb extends _$AppDb {
     }
     return part;
   }
-
 
   /// SectionCounter 조회
   Future<SectionCounter?> getSectionCounter(int counterId) {
@@ -1884,7 +1888,9 @@ class AppDb extends _$AppDb {
       ..addColumns([partNotes.id.count()])
       ..where(partNotes.partId.equals(partId));
 
-    return query.map((row) => row.read(partNotes.id.count()) ?? 0).watchSingle();
+    return query
+        .map((row) => row.read(partNotes.id.count()) ?? 0)
+        .watchSingle();
   }
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -2126,11 +2132,14 @@ class AppDb extends _$AppDb {
     required int projectId,
     required String name,
   }) async {
-    final count = await (selectOnly(parts)
-      ..addColumns([parts.id.count()])
-      ..where(parts.projectId.equals(projectId) & parts.name.equals(name)))
-      .map((row) => row.read(parts.id.count()))
-      .getSingle();
+    final count =
+        await (selectOnly(parts)
+              ..addColumns([parts.id.count()])
+              ..where(
+                parts.projectId.equals(projectId) & parts.name.equals(name),
+              ))
+            .map((row) => row.read(parts.id.count()))
+            .getSingle();
     return (count ?? 0) > 0;
   }
 }

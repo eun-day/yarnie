@@ -72,6 +72,28 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _gaugeStitchesMeta = const VerificationMeta(
+    'gaugeStitches',
+  );
+  @override
+  late final GeneratedColumn<String> gaugeStitches = GeneratedColumn<String>(
+    'gauge_stitches',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gaugeRowsMeta = const VerificationMeta(
+    'gaugeRows',
+  );
+  @override
+  late final GeneratedColumn<String> gaugeRows = GeneratedColumn<String>(
+    'gauge_rows',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _currentPartIdMeta = const VerificationMeta(
     'currentPartId',
   );
@@ -134,6 +156,8 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     needleSize,
     lotNumber,
     memo,
+    gaugeStitches,
+    gaugeRows,
     currentPartId,
     imagePath,
     tagIds,
@@ -185,6 +209,21 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       context.handle(
         _memoMeta,
         memo.isAcceptableOrUnknown(data['memo']!, _memoMeta),
+      );
+    }
+    if (data.containsKey('gauge_stitches')) {
+      context.handle(
+        _gaugeStitchesMeta,
+        gaugeStitches.isAcceptableOrUnknown(
+          data['gauge_stitches']!,
+          _gaugeStitchesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('gauge_rows')) {
+      context.handle(
+        _gaugeRowsMeta,
+        gaugeRows.isAcceptableOrUnknown(data['gauge_rows']!, _gaugeRowsMeta),
       );
     }
     if (data.containsKey('current_part_id')) {
@@ -253,6 +292,14 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         DriftSqlType.string,
         data['${effectivePrefix}memo'],
       ),
+      gaugeStitches: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gauge_stitches'],
+      ),
+      gaugeRows: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gauge_rows'],
+      ),
       currentPartId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}current_part_id'],
@@ -289,6 +336,8 @@ class Project extends DataClass implements Insertable<Project> {
   final String? needleSize;
   final String? lotNumber;
   final String? memo;
+  final String? gaugeStitches;
+  final String? gaugeRows;
   final int? currentPartId;
   final String? imagePath;
   final String? tagIds;
@@ -301,6 +350,8 @@ class Project extends DataClass implements Insertable<Project> {
     this.needleSize,
     this.lotNumber,
     this.memo,
+    this.gaugeStitches,
+    this.gaugeRows,
     this.currentPartId,
     this.imagePath,
     this.tagIds,
@@ -323,6 +374,12 @@ class Project extends DataClass implements Insertable<Project> {
     }
     if (!nullToAbsent || memo != null) {
       map['memo'] = Variable<String>(memo);
+    }
+    if (!nullToAbsent || gaugeStitches != null) {
+      map['gauge_stitches'] = Variable<String>(gaugeStitches);
+    }
+    if (!nullToAbsent || gaugeRows != null) {
+      map['gauge_rows'] = Variable<String>(gaugeRows);
     }
     if (!nullToAbsent || currentPartId != null) {
       map['current_part_id'] = Variable<int>(currentPartId);
@@ -354,6 +411,12 @@ class Project extends DataClass implements Insertable<Project> {
           ? const Value.absent()
           : Value(lotNumber),
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
+      gaugeStitches: gaugeStitches == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gaugeStitches),
+      gaugeRows: gaugeRows == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gaugeRows),
       currentPartId: currentPartId == null && nullToAbsent
           ? const Value.absent()
           : Value(currentPartId),
@@ -382,6 +445,8 @@ class Project extends DataClass implements Insertable<Project> {
       needleSize: serializer.fromJson<String?>(json['needleSize']),
       lotNumber: serializer.fromJson<String?>(json['lotNumber']),
       memo: serializer.fromJson<String?>(json['memo']),
+      gaugeStitches: serializer.fromJson<String?>(json['gaugeStitches']),
+      gaugeRows: serializer.fromJson<String?>(json['gaugeRows']),
       currentPartId: serializer.fromJson<int?>(json['currentPartId']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       tagIds: serializer.fromJson<String?>(json['tagIds']),
@@ -399,6 +464,8 @@ class Project extends DataClass implements Insertable<Project> {
       'needleSize': serializer.toJson<String?>(needleSize),
       'lotNumber': serializer.toJson<String?>(lotNumber),
       'memo': serializer.toJson<String?>(memo),
+      'gaugeStitches': serializer.toJson<String?>(gaugeStitches),
+      'gaugeRows': serializer.toJson<String?>(gaugeRows),
       'currentPartId': serializer.toJson<int?>(currentPartId),
       'imagePath': serializer.toJson<String?>(imagePath),
       'tagIds': serializer.toJson<String?>(tagIds),
@@ -414,6 +481,8 @@ class Project extends DataClass implements Insertable<Project> {
     Value<String?> needleSize = const Value.absent(),
     Value<String?> lotNumber = const Value.absent(),
     Value<String?> memo = const Value.absent(),
+    Value<String?> gaugeStitches = const Value.absent(),
+    Value<String?> gaugeRows = const Value.absent(),
     Value<int?> currentPartId = const Value.absent(),
     Value<String?> imagePath = const Value.absent(),
     Value<String?> tagIds = const Value.absent(),
@@ -426,6 +495,10 @@ class Project extends DataClass implements Insertable<Project> {
     needleSize: needleSize.present ? needleSize.value : this.needleSize,
     lotNumber: lotNumber.present ? lotNumber.value : this.lotNumber,
     memo: memo.present ? memo.value : this.memo,
+    gaugeStitches: gaugeStitches.present
+        ? gaugeStitches.value
+        : this.gaugeStitches,
+    gaugeRows: gaugeRows.present ? gaugeRows.value : this.gaugeRows,
     currentPartId: currentPartId.present
         ? currentPartId.value
         : this.currentPartId,
@@ -446,6 +519,10 @@ class Project extends DataClass implements Insertable<Project> {
           : this.needleSize,
       lotNumber: data.lotNumber.present ? data.lotNumber.value : this.lotNumber,
       memo: data.memo.present ? data.memo.value : this.memo,
+      gaugeStitches: data.gaugeStitches.present
+          ? data.gaugeStitches.value
+          : this.gaugeStitches,
+      gaugeRows: data.gaugeRows.present ? data.gaugeRows.value : this.gaugeRows,
       currentPartId: data.currentPartId.present
           ? data.currentPartId.value
           : this.currentPartId,
@@ -465,6 +542,8 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('needleSize: $needleSize, ')
           ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
+          ..write('gaugeStitches: $gaugeStitches, ')
+          ..write('gaugeRows: $gaugeRows, ')
           ..write('currentPartId: $currentPartId, ')
           ..write('imagePath: $imagePath, ')
           ..write('tagIds: $tagIds, ')
@@ -482,6 +561,8 @@ class Project extends DataClass implements Insertable<Project> {
     needleSize,
     lotNumber,
     memo,
+    gaugeStitches,
+    gaugeRows,
     currentPartId,
     imagePath,
     tagIds,
@@ -498,6 +579,8 @@ class Project extends DataClass implements Insertable<Project> {
           other.needleSize == this.needleSize &&
           other.lotNumber == this.lotNumber &&
           other.memo == this.memo &&
+          other.gaugeStitches == this.gaugeStitches &&
+          other.gaugeRows == this.gaugeRows &&
           other.currentPartId == this.currentPartId &&
           other.imagePath == this.imagePath &&
           other.tagIds == this.tagIds &&
@@ -512,6 +595,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<String?> needleSize;
   final Value<String?> lotNumber;
   final Value<String?> memo;
+  final Value<String?> gaugeStitches;
+  final Value<String?> gaugeRows;
   final Value<int?> currentPartId;
   final Value<String?> imagePath;
   final Value<String?> tagIds;
@@ -524,6 +609,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.needleSize = const Value.absent(),
     this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
+    this.gaugeStitches = const Value.absent(),
+    this.gaugeRows = const Value.absent(),
     this.currentPartId = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.tagIds = const Value.absent(),
@@ -537,6 +624,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.needleSize = const Value.absent(),
     this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
+    this.gaugeStitches = const Value.absent(),
+    this.gaugeRows = const Value.absent(),
     this.currentPartId = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.tagIds = const Value.absent(),
@@ -550,6 +639,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<String>? needleSize,
     Expression<String>? lotNumber,
     Expression<String>? memo,
+    Expression<String>? gaugeStitches,
+    Expression<String>? gaugeRows,
     Expression<int>? currentPartId,
     Expression<String>? imagePath,
     Expression<String>? tagIds,
@@ -563,6 +654,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (needleSize != null) 'needle_size': needleSize,
       if (lotNumber != null) 'lot_number': lotNumber,
       if (memo != null) 'memo': memo,
+      if (gaugeStitches != null) 'gauge_stitches': gaugeStitches,
+      if (gaugeRows != null) 'gauge_rows': gaugeRows,
       if (currentPartId != null) 'current_part_id': currentPartId,
       if (imagePath != null) 'image_path': imagePath,
       if (tagIds != null) 'tag_ids': tagIds,
@@ -578,6 +671,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<String?>? needleSize,
     Value<String?>? lotNumber,
     Value<String?>? memo,
+    Value<String?>? gaugeStitches,
+    Value<String?>? gaugeRows,
     Value<int?>? currentPartId,
     Value<String?>? imagePath,
     Value<String?>? tagIds,
@@ -591,6 +686,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       needleSize: needleSize ?? this.needleSize,
       lotNumber: lotNumber ?? this.lotNumber,
       memo: memo ?? this.memo,
+      gaugeStitches: gaugeStitches ?? this.gaugeStitches,
+      gaugeRows: gaugeRows ?? this.gaugeRows,
       currentPartId: currentPartId ?? this.currentPartId,
       imagePath: imagePath ?? this.imagePath,
       tagIds: tagIds ?? this.tagIds,
@@ -620,6 +717,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
     }
+    if (gaugeStitches.present) {
+      map['gauge_stitches'] = Variable<String>(gaugeStitches.value);
+    }
+    if (gaugeRows.present) {
+      map['gauge_rows'] = Variable<String>(gaugeRows.value);
+    }
     if (currentPartId.present) {
       map['current_part_id'] = Variable<int>(currentPartId.value);
     }
@@ -647,6 +750,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('needleSize: $needleSize, ')
           ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
+          ..write('gaugeStitches: $gaugeStitches, ')
+          ..write('gaugeRows: $gaugeRows, ')
           ..write('currentPartId: $currentPartId, ')
           ..write('imagePath: $imagePath, ')
           ..write('tagIds: $tagIds, ')
@@ -6097,6 +6202,8 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       Value<String?> needleSize,
       Value<String?> lotNumber,
       Value<String?> memo,
+      Value<String?> gaugeStitches,
+      Value<String?> gaugeRows,
       Value<int?> currentPartId,
       Value<String?> imagePath,
       Value<String?> tagIds,
@@ -6111,6 +6218,8 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<String?> needleSize,
       Value<String?> lotNumber,
       Value<String?> memo,
+      Value<String?> gaugeStitches,
+      Value<String?> gaugeRows,
       Value<int?> currentPartId,
       Value<String?> imagePath,
       Value<String?> tagIds,
@@ -6177,6 +6286,16 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
 
   ColumnFilters<String> get memo => $composableBuilder(
     column: $table.memo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gaugeStitches => $composableBuilder(
+    column: $table.gaugeStitches,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gaugeRows => $composableBuilder(
+    column: $table.gaugeRows,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6270,6 +6389,16 @@ class $$ProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get gaugeStitches => $composableBuilder(
+    column: $table.gaugeStitches,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gaugeRows => $composableBuilder(
+    column: $table.gaugeRows,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get currentPartId => $composableBuilder(
     column: $table.currentPartId,
     builder: (column) => ColumnOrderings(column),
@@ -6326,6 +6455,14 @@ class $$ProjectsTableAnnotationComposer
 
   GeneratedColumn<String> get memo =>
       $composableBuilder(column: $table.memo, builder: (column) => column);
+
+  GeneratedColumn<String> get gaugeStitches => $composableBuilder(
+    column: $table.gaugeStitches,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get gaugeRows =>
+      $composableBuilder(column: $table.gaugeRows, builder: (column) => column);
 
   GeneratedColumn<int> get currentPartId => $composableBuilder(
     column: $table.currentPartId,
@@ -6404,6 +6541,8 @@ class $$ProjectsTableTableManager
                 Value<String?> needleSize = const Value.absent(),
                 Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
+                Value<String?> gaugeStitches = const Value.absent(),
+                Value<String?> gaugeRows = const Value.absent(),
                 Value<int?> currentPartId = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> tagIds = const Value.absent(),
@@ -6416,6 +6555,8 @@ class $$ProjectsTableTableManager
                 needleSize: needleSize,
                 lotNumber: lotNumber,
                 memo: memo,
+                gaugeStitches: gaugeStitches,
+                gaugeRows: gaugeRows,
                 currentPartId: currentPartId,
                 imagePath: imagePath,
                 tagIds: tagIds,
@@ -6430,6 +6571,8 @@ class $$ProjectsTableTableManager
                 Value<String?> needleSize = const Value.absent(),
                 Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
+                Value<String?> gaugeStitches = const Value.absent(),
+                Value<String?> gaugeRows = const Value.absent(),
                 Value<int?> currentPartId = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> tagIds = const Value.absent(),
@@ -6442,6 +6585,8 @@ class $$ProjectsTableTableManager
                 needleSize: needleSize,
                 lotNumber: lotNumber,
                 memo: memo,
+                gaugeStitches: gaugeStitches,
+                gaugeRows: gaugeRows,
                 currentPartId: currentPartId,
                 imagePath: imagePath,
                 tagIds: tagIds,
