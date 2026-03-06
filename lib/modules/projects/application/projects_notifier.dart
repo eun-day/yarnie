@@ -311,10 +311,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         return;
       }
 
-      // Drift의 delete 메서드 사용
-      await (appDb.delete(
-        appDb.projects,
-      )..where((tbl) => tbl.id.equals(projectId))).go();
+      // Drift의 소프트 삭제(휴지통 30일 보관 기능) 처리
+      await appDb.softDeleteProject(projectId);
 
       _emit(const ProjectDeleted());
       _emit(const ShowSuccessMessage('프로젝트가 삭제되었습니다'));

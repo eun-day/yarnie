@@ -116,6 +116,9 @@ class Projects extends Table {
   TextColumn get imagePath => text().nullable()(); // 프로젝트 이미지 경로
   TextColumn get tagIds => text().nullable()(); // 태그 ID 배열 (JSON: '[1,2,3]')
 
+  DateTimeColumn get deletedAt =>
+      dateTime().nullable()(); // 휴지통 상태 (null이 아니면 소프트 삭제됨)
+
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
   DateTimeColumn get updatedAt => dateTime().nullable()();
@@ -361,8 +364,11 @@ class AppDb extends _$AppDb {
   int get schemaVersion => 1;
 
   @override
-  MigrationStrategy get migration =>
-      MigrationStrategy(onCreate: (m) async => m.createAll());
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+  );
 
   // ────────────────────────────────────────────────────────────────────────────
   // 에러 처리 헬퍼 메서드들
@@ -503,12 +509,36 @@ class AppDb extends _$AppDb {
     return updatedRows > 0;
   }
 
-  Stream<List<Project>> watchAll() => (select(
-    projects,
-  )..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+  Stream<List<Project>> watchAll() =>
+      (select(projects)
+            ..where((t) => t.deletedAt.isNull()) // 휴지통에 있는 항목은 제외
+            ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+          .watch();
 
-  Stream<Project> watchProject(int id) =>
-      (select(projects)..where((t) => t.id.equals(id))).watchSingle();
+  Stream<Project?> watchProject(int id) => (select(
+    projects,
+  )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).watchSingleOrNull();
+
+  /// 프로젝트 휴지통 이동 (소프트 딜리트)
+  Future<void> softDeleteProject(int projectId) async {
+    final now = DateTime.now().toUtc();
+    await (update(projects)..where((t) => t.id.equals(projectId))).write(
+      ProjectsCompanion(deletedAt: Value(now)),
+    );
+  }
+
+  /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
+  Future<void> cleanupDeletedProjects() async {
+    final thresholdDate = DateTime.now().toUtc().subtract(
+      const Duration(days: 30),
+    );
+    await (delete(projects)..where(
+          (t) =>
+              t.deletedAt.isNotNull() &
+              t.deletedAt.isSmallerThanValue(thresholdDate),
+        ))
+        .go();
+  }
 
   // 공통: 활성 세션 조회 (RUNNING/PAUSED)
   Future<WorkSession?> getActiveSession(int projectId) {

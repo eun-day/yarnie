@@ -25,10 +25,12 @@ import 'package:yarnie/widgets/main_counter_settings_button.dart';
 import 'package:yarnie/widgets/part_memo_sheet.dart';
 import 'package:yarnie/widgets/part_manage_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
+import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
-// import 'package:yarnie/stopwatch_panel.dart'; // 기존 패널 미사용
 // import 'package:yarnie/counter_panel.dart';   // 기존 패널 미사용
 // import 'package:yarnie/widget/project_info_section.dart';
+import 'package:yarnie/modules/projects/application/projects_notifier.dart';
+import 'package:yarnie/modules/projects/application/projects_event.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {
   final int projectId;
@@ -181,13 +183,23 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: StreamBuilder<Project>(
+        child: StreamBuilder<Project?>(
           stream: projectAsync,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
-            if (!snapshot.hasData) {
+            if (!snapshot.hasData || snapshot.data == null) {
+              // 해당 프로젝트가 삭제되었거나 아직 로딩 중일 때
+              // 로딩 중이 아니라 삭제되어 null이 넘어온 경우 화면을 닫음
+              if (snapshot.connectionState == ConnectionState.active) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (context.mounted && Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  }
+                });
+                return const SizedBox.shrink(); // 에러(블랙스크린) 방지
+              }
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -573,7 +585,29 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         );
                       }
                     } else if (value == 'delete') {
-                      // TODO: Delete Popup
+                      if (context.mounted) {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) => ProjectDeleteDialog(
+                            projectName: project.name,
+                            onDelete: () {
+                              Navigator.of(dialogContext).pop(true);
+                            },
+                          ),
+                        );
+
+                        if (confirmed == true && context.mounted) {
+                          // 프로젝트 삭제 Event 발생
+                          ref
+                              .read(projectsProvider.notifier)
+                              .onEvent(DeleteProject(project.id));
+
+                          // 목록 화면으로 돌아가기
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                        }
+                      }
                     }
                   },
                 ),

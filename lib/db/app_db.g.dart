@@ -125,6 +125,17 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -161,6 +172,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     currentPartId,
     imagePath,
     tagIds,
+    deletedAt,
     createdAt,
     updatedAt,
   ];
@@ -247,6 +259,12 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         tagIds.isAcceptableOrUnknown(data['tag_ids']!, _tagIdsMeta),
       );
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -312,6 +330,10 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         DriftSqlType.string,
         data['${effectivePrefix}tag_ids'],
       ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -341,6 +363,7 @@ class Project extends DataClass implements Insertable<Project> {
   final int? currentPartId;
   final String? imagePath;
   final String? tagIds;
+  final DateTime? deletedAt;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const Project({
@@ -355,6 +378,7 @@ class Project extends DataClass implements Insertable<Project> {
     this.currentPartId,
     this.imagePath,
     this.tagIds,
+    this.deletedAt,
     required this.createdAt,
     this.updatedAt,
   });
@@ -389,6 +413,9 @@ class Project extends DataClass implements Insertable<Project> {
     }
     if (!nullToAbsent || tagIds != null) {
       map['tag_ids'] = Variable<String>(tagIds);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
@@ -426,6 +453,9 @@ class Project extends DataClass implements Insertable<Project> {
       tagIds: tagIds == null && nullToAbsent
           ? const Value.absent()
           : Value(tagIds),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -450,6 +480,7 @@ class Project extends DataClass implements Insertable<Project> {
       currentPartId: serializer.fromJson<int?>(json['currentPartId']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       tagIds: serializer.fromJson<String?>(json['tagIds']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -469,6 +500,7 @@ class Project extends DataClass implements Insertable<Project> {
       'currentPartId': serializer.toJson<int?>(currentPartId),
       'imagePath': serializer.toJson<String?>(imagePath),
       'tagIds': serializer.toJson<String?>(tagIds),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -486,6 +518,7 @@ class Project extends DataClass implements Insertable<Project> {
     Value<int?> currentPartId = const Value.absent(),
     Value<String?> imagePath = const Value.absent(),
     Value<String?> tagIds = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => Project(
@@ -504,6 +537,7 @@ class Project extends DataClass implements Insertable<Project> {
         : this.currentPartId,
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
     tagIds: tagIds.present ? tagIds.value : this.tagIds,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -528,6 +562,7 @@ class Project extends DataClass implements Insertable<Project> {
           : this.currentPartId,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
       tagIds: data.tagIds.present ? data.tagIds.value : this.tagIds,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -547,6 +582,7 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('currentPartId: $currentPartId, ')
           ..write('imagePath: $imagePath, ')
           ..write('tagIds: $tagIds, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -566,6 +602,7 @@ class Project extends DataClass implements Insertable<Project> {
     currentPartId,
     imagePath,
     tagIds,
+    deletedAt,
     createdAt,
     updatedAt,
   );
@@ -584,6 +621,7 @@ class Project extends DataClass implements Insertable<Project> {
           other.currentPartId == this.currentPartId &&
           other.imagePath == this.imagePath &&
           other.tagIds == this.tagIds &&
+          other.deletedAt == this.deletedAt &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -600,6 +638,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<int?> currentPartId;
   final Value<String?> imagePath;
   final Value<String?> tagIds;
+  final Value<DateTime?> deletedAt;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   const ProjectsCompanion({
@@ -614,6 +653,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.currentPartId = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.tagIds = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -629,6 +669,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.currentPartId = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.tagIds = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : name = Value(name);
@@ -644,6 +685,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<int>? currentPartId,
     Expression<String>? imagePath,
     Expression<String>? tagIds,
+    Expression<DateTime>? deletedAt,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -659,6 +701,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (currentPartId != null) 'current_part_id': currentPartId,
       if (imagePath != null) 'image_path': imagePath,
       if (tagIds != null) 'tag_ids': tagIds,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -676,6 +719,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<int?>? currentPartId,
     Value<String?>? imagePath,
     Value<String?>? tagIds,
+    Value<DateTime?>? deletedAt,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
   }) {
@@ -691,6 +735,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       currentPartId: currentPartId ?? this.currentPartId,
       imagePath: imagePath ?? this.imagePath,
       tagIds: tagIds ?? this.tagIds,
+      deletedAt: deletedAt ?? this.deletedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -732,6 +777,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     if (tagIds.present) {
       map['tag_ids'] = Variable<String>(tagIds.value);
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -755,6 +803,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('currentPartId: $currentPartId, ')
           ..write('imagePath: $imagePath, ')
           ..write('tagIds: $tagIds, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -6207,6 +6256,7 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       Value<int?> currentPartId,
       Value<String?> imagePath,
       Value<String?> tagIds,
+      Value<DateTime?> deletedAt,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -6223,6 +6273,7 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<int?> currentPartId,
       Value<String?> imagePath,
       Value<String?> tagIds,
+      Value<DateTime?> deletedAt,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -6311,6 +6362,11 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
 
   ColumnFilters<String> get tagIds => $composableBuilder(
     column: $table.tagIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6414,6 +6470,11 @@ class $$ProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6474,6 +6535,9 @@ class $$ProjectsTableAnnotationComposer
 
   GeneratedColumn<String> get tagIds =>
       $composableBuilder(column: $table.tagIds, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -6546,6 +6610,7 @@ class $$ProjectsTableTableManager
                 Value<int?> currentPartId = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> tagIds = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => ProjectsCompanion(
@@ -6560,6 +6625,7 @@ class $$ProjectsTableTableManager
                 currentPartId: currentPartId,
                 imagePath: imagePath,
                 tagIds: tagIds,
+                deletedAt: deletedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -6576,6 +6642,7 @@ class $$ProjectsTableTableManager
                 Value<int?> currentPartId = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<String?> tagIds = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => ProjectsCompanion.insert(
@@ -6590,6 +6657,7 @@ class $$ProjectsTableTableManager
                 currentPartId: currentPartId,
                 imagePath: imagePath,
                 tagIds: tagIds,
+                deletedAt: deletedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
