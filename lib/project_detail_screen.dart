@@ -23,6 +23,7 @@ import 'package:yarnie/widgets/counter_card/stitch_counter_card.dart';
 import 'package:yarnie/widgets/counter_edit_bottom_sheet.dart';
 import 'package:yarnie/widgets/main_counter_settings_button.dart';
 import 'package:yarnie/widgets/part_memo_sheet.dart';
+import 'package:yarnie/widgets/part_manage_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
 // import 'package:yarnie/stopwatch_panel.dart'; // 기존 패널 미사용
@@ -549,7 +550,28 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         );
                       }
                     } else if (value == 'part_manage') {
-                      // TODO: Part Manage
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => PartManageSheet(
+                            projectId: project.id,
+                            onPartChanged: (selectedPartId) {
+                              if (selectedPartId != null) {
+                                setState(() {
+                                  _selectedPartId = selectedPartId;
+                                  _listenToMainCounter(selectedPartId);
+                                });
+                                appDb.updateProjectCurrentPart(
+                                  projectId: project.id,
+                                  partId: selectedPartId,
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      }
                     } else if (value == 'delete') {
                       // TODO: Delete Popup
                     }
