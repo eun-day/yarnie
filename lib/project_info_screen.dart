@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
-import 'package:yarnie/db/di.dart';
+import 'package:yarnie/modules/projects/application/project_form_event.dart';
+import 'package:yarnie/modules/projects/application/project_form_notifier.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
 import 'package:yarnie/new_project_screen.dart';
 
-class ProjectInfoSheet extends StatefulWidget {
+class ProjectInfoSheet extends ConsumerStatefulWidget {
   final Project project;
   final List<Tag> allTags;
 
@@ -17,38 +19,35 @@ class ProjectInfoSheet extends StatefulWidget {
   });
 
   @override
-  State<ProjectInfoSheet> createState() => _ProjectInfoSheetState();
+  ConsumerState<ProjectInfoSheet> createState() => _ProjectInfoSheetState();
 }
 
-class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
-  late Project _project;
-  late List<Tag> _allTags;
-
+class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
   @override
   void initState() {
     super.initState();
-    _project = widget.project;
-    _allTags = widget.allTags;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(projectFormNotifierProvider.notifier)
+          .onEvent(LoadProjectData(widget.project.id));
+    });
   }
 
-  Future<void> _refreshProject() async {
-    try {
-      final updated = await (appDb.select(
-        appDb.projects,
-      )..where((t) => t.id.equals(_project.id))).getSingleOrNull();
-      final tags = await appDb.getAllTags();
-      if (updated != null && mounted) {
-        setState(() {
-          _project = updated;
-          _allTags = tags;
-        });
-      }
-    } catch (_) {}
+  void _refreshProject() {
+    ref
+        .read(projectFormNotifierProvider.notifier)
+        .onEvent(LoadProjectData(widget.project.id));
   }
 
   @override
   Widget build(BuildContext context) {
-    final projectTags = _getProjectTags(_project, _allTags);
+    final state = ref.watch(projectFormNotifierProvider);
+    final displayProject = state.initialProject ?? widget.project;
+    final displayTags = state.allAvailableTags.isNotEmpty
+        ? state.allAvailableTags
+        : widget.allTags;
+
+    final projectTags = _getProjectTags(displayProject, displayTags);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
@@ -114,8 +113,9 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    NewProjectScreen(projectId: _project.id),
+                                builder: (_) => NewProjectScreen(
+                                  projectId: displayProject.id,
+                                ),
                               ),
                             )
                             .then((_) => _refreshProject());
@@ -163,9 +163,9 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                           child: SizedBox(
                             width: 240,
                             height: 135,
-                            child: _project.imagePath != null
+                            child: displayProject.imagePath != null
                                 ? Image.file(
-                                    File(_project.imagePath!),
+                                    File(displayProject.imagePath!),
                                     fit: BoxFit.cover,
                                   )
                                 : Container(
@@ -186,7 +186,7 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                       // Project Name
                       _buildDetailItem(
                         '프로젝트 이름',
-                        _project.name,
+                        displayProject.name,
                         valueColor: const Color(0xFF0A0A0A),
                       ),
                       const SizedBox(height: 24),
@@ -197,8 +197,8 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                           Expanded(
                             child: _buildDetailItem(
                               '바늘 종류',
-                              _project.needleType?.isNotEmpty == true
-                                  ? _project.needleType!
+                              displayProject.needleType?.isNotEmpty == true
+                                  ? displayProject.needleType!
                                   : '-',
                               valueColor: const Color(0xFF0A0A0A),
                             ),
@@ -206,8 +206,8 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                           Expanded(
                             child: _buildDetailItem(
                               '바늘 사이즈',
-                              _project.needleSize?.isNotEmpty == true
-                                  ? _project.needleSize!
+                              displayProject.needleSize?.isNotEmpty == true
+                                  ? displayProject.needleSize!
                                   : '-',
                               valueColor: const Color(0xFF0A0A0A),
                             ),
@@ -219,8 +219,8 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                       // Lot Number
                       _buildDetailItem(
                         '실 로트 번호',
-                        _project.lotNumber?.isNotEmpty == true
-                            ? _project.lotNumber!
+                        displayProject.lotNumber?.isNotEmpty == true
+                            ? displayProject.lotNumber!
                             : '-',
                         valueColor: const Color(0xFF0A0A0A),
                       ),
@@ -251,15 +251,17 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                       Builder(
                         builder: (context) {
                           final hasGauge =
-                              (_project.gaugeStitches?.isNotEmpty == true) ||
-                              (_project.gaugeRows?.isNotEmpty == true);
+                              (displayProject.gaugeStitches?.isNotEmpty ==
+                                  true) ||
+                              (displayProject.gaugeRows?.isNotEmpty == true);
                           if (hasGauge) {
                             final parts = <String>[];
-                            if (_project.gaugeStitches?.isNotEmpty == true) {
-                              parts.add('${_project.gaugeStitches}코');
+                            if (displayProject.gaugeStitches?.isNotEmpty ==
+                                true) {
+                              parts.add('${displayProject.gaugeStitches}코');
                             }
-                            if (_project.gaugeRows?.isNotEmpty == true) {
-                              parts.add('${_project.gaugeRows}단');
+                            if (displayProject.gaugeRows?.isNotEmpty == true) {
+                              parts.add('${displayProject.gaugeRows}단');
                             }
                             return _buildDetailItem(
                               '게이지',
@@ -280,10 +282,10 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                       // Memo
                       _buildDetailItem(
                         '메모',
-                        _project.memo?.isNotEmpty == true
-                            ? _project.memo!
+                        displayProject.memo?.isNotEmpty == true
+                            ? displayProject.memo!
                             : '메모 없음',
-                        valueColor: _project.memo?.isNotEmpty == true
+                        valueColor: displayProject.memo?.isNotEmpty == true
                             ? const Color(0xFF0A0A0A)
                             : const Color(0xFF717182),
                       ),
@@ -305,14 +307,14 @@ class _ProjectInfoSheetState extends State<ProjectInfoSheet> {
                             Expanded(
                               child: _buildDateItem(
                                 '생성일',
-                                _formatDate(_project.createdAt),
+                                _formatDate(displayProject.createdAt),
                               ),
                             ),
                             Expanded(
                               child: _buildDateItem(
                                 '최근 수정',
-                                _project.updatedAt != null
-                                    ? _formatDate(_project.updatedAt!)
+                                displayProject.updatedAt != null
+                                    ? _formatDate(displayProject.updatedAt!)
                                     : '-',
                               ),
                             ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:drift/drift.dart' hide Column;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yarnie/modules/projects/application/part_manage_notifier.dart';
+import 'package:yarnie/modules/projects/application/part_manage_event.dart';
+import 'package:yarnie/modules/projects/application/part_manage_effect.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 
@@ -8,7 +11,7 @@ import 'package:yarnie/db/di.dart';
 /// - Part 리스트를 보여주고 드래그로 순서 변경
 /// - 파트 이름을 길게 눌러 수정
 /// - 새 파트 추가 버튼
-class PartManageSheet extends StatefulWidget {
+class PartManageSheet extends ConsumerStatefulWidget {
   final int projectId;
 
   /// 파트 변경/삭제/추가 시 외부에서 반응할 수 있도록 콜백 제공 (선택)
@@ -21,15 +24,39 @@ class PartManageSheet extends StatefulWidget {
   });
 
   @override
-  State<PartManageSheet> createState() => _PartManageSheetState();
+  ConsumerState<PartManageSheet> createState() => _PartManageSheetState();
 }
 
-class _PartManageSheetState extends State<PartManageSheet> {
+class _PartManageSheetState extends ConsumerState<PartManageSheet> {
   bool _isAdding = false;
   int? _renamingPartId;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(partManageProvider.notifier)
+          .onEvent(LoadParts(widget.projectId));
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    ref.listen(partManageEffectsProvider, (_, asyncEffect) {
+      asyncEffect.whenData((effect) {
+        if (effect is ShowErrorEffect) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(effect.message)));
+        } else if (effect is PartCreatedEffect) {
+          widget.onPartChanged?.call(effect.partId);
+        }
+      });
+    });
+
+    final state = ref.watch(partManageProvider);
+
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
@@ -121,14 +148,13 @@ class _PartManageSheetState extends State<PartManageSheet> {
 
             // Part List
             Flexible(
-              child: StreamBuilder<List<Part>>(
-                stream: appDb.watchProjectParts(widget.projectId),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+              child: Builder(
+                builder: (context) {
+                  if (state.isLoading && state.parts.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final parts = snapshot.data!;
+                  final parts = state.parts;
 
                   // items 배열을 구성합니다.
                   // adding 상태면 제일 첫 번째 아이템으로 input section을 넣습니다.
@@ -139,47 +165,13 @@ class _PartManageSheetState extends State<PartManageSheet> {
                       _PartInputSection(
                         key: const ValueKey('add_new_part'),
                         projectId: widget.projectId,
-                        onSave: (newName) async {
-                          try {
-                            final newPartId = await appDb.createPart(
-                              projectId: widget.projectId,
-                              name: newName,
-                            );
-
-                            // 생성된 파트를 최상단으로 올리기 위해 순서 업데이트
-                            // 현재 활성화된 파트 목록을 가져옵니다.
-                            final currentParts = await appDb.getProjectParts(
-                              widget.projectId,
-                            );
-
-                            // 첫 번째가 아닌 경우에만 reorder
-                            if (currentParts.isNotEmpty &&
-                                currentParts.first.id != newPartId) {
-                              final partIds = currentParts
-                                  .map((e) => e.id)
-                                  .toList();
-                              partIds.remove(newPartId);
-                              partIds.insert(0, newPartId);
-
-                              await appDb.reorderParts(
-                                projectId: widget.projectId,
-                                partIds: partIds,
-                              );
-                            }
-
-                            if (context.mounted) {
-                              setState(() {
-                                _isAdding = false;
-                              });
-                              widget.onPartChanged?.call(newPartId);
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('파트 생성 실패: $e')),
-                              );
-                            }
-                          }
+                        onSave: (newName) {
+                          ref
+                              .read(partManageProvider.notifier)
+                              .onEvent(CreatePart(widget.projectId, newName));
+                          setState(() {
+                            _isAdding = false;
+                          });
                         },
                         onCancel: () {
                           setState(() {
@@ -210,27 +202,14 @@ class _PartManageSheetState extends State<PartManageSheet> {
                           key: ValueKey('rename_${part.id}'),
                           projectId: widget.projectId,
                           initialText: part.name,
-                          onSave: (newName) async {
-                            try {
-                              await appDb.updatePart(
-                                PartsCompanion(
-                                  id: Value(part.id),
-                                  name: Value(newName),
-                                ),
-                              );
-                              if (context.mounted) {
-                                setState(() {
-                                  _renamingPartId = null;
-                                });
-                                widget.onPartChanged?.call(part.id);
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('이름 수정 실패: $e')),
-                                );
-                              }
-                            }
+                          onSave: (newName) {
+                            ref
+                                .read(partManageProvider.notifier)
+                                .onEvent(UpdatePart(part.id, newName));
+                            setState(() {
+                              _renamingPartId = null;
+                            });
+                            widget.onPartChanged?.call(part.id);
                           },
                           onCancel: () {
                             setState(() {
@@ -272,7 +251,7 @@ class _PartManageSheetState extends State<PartManageSheet> {
                           child: child,
                         );
                       },
-                      onReorder: (oldIndex, newIndex) async {
+                      onReorder: (oldIndex, newIndex) {
                         if (oldIndex < newIndex) {
                           newIndex -= 1;
                         }
@@ -281,10 +260,9 @@ class _PartManageSheetState extends State<PartManageSheet> {
                         reordered.insert(newIndex, item);
 
                         final partIds = reordered.map((e) => e.id).toList();
-                        await appDb.reorderParts(
-                          projectId: widget.projectId,
-                          partIds: partIds,
-                        );
+                        ref
+                            .read(partManageProvider.notifier)
+                            .onEvent(ReorderParts(widget.projectId, partIds));
                         HapticFeedback.lightImpact();
                       },
                       itemCount: listItems.length,
@@ -384,7 +362,7 @@ class _PartItemTile extends StatelessWidget {
 }
 
 /// Part 롱프레스 액션 시트 (이름 수정, 삭제)
-class _PartActionSheet extends StatelessWidget {
+class _PartActionSheet extends ConsumerWidget {
   final Part part;
   final int projectId;
   final VoidCallback? onRenameRequest;
@@ -398,7 +376,7 @@ class _PartActionSheet extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -464,103 +442,99 @@ class _PartActionSheet extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Part 삭제',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0A0A0A),
-                    letterSpacing: -0.44,
-                    height: 1.55,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '\'${part.name}\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF717182),
-                    letterSpacing: -0.15,
-                    height: 1.43,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                // Buttons
-                GestureDetector(
-                  onTap: () async {
-                    try {
-                      await appDb.deletePart(part.id);
-                      if (context.mounted) {
+        return Consumer(
+          builder: (context, ref, child) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Part 삭제',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0A0A0A),
+                        letterSpacing: -0.44,
+                        height: 1.55,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '\'${part.name}\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF717182),
+                        letterSpacing: -0.15,
+                        height: 1.43,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    // Buttons
+                    GestureDetector(
+                      onTap: () {
+                        ref
+                            .read(partManageProvider.notifier)
+                            .onEvent(DeletePart(part.id));
                         Navigator.pop(context);
                         onDeleted?.call();
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('삭제 실패: $e')));
-                      }
-                    }
-                  },
-                  child: Container(
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4183D),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '삭제',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        letterSpacing: -0.15,
+                      },
+                      child: Container(
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD4183D),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          '삭제',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            letterSpacing: -0.15,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: const Color(0x1A000000),
+                            width: 0.694,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF0A0A0A),
+                            letterSpacing: -0.15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0x1A000000),
-                        width: 0.694,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '취소',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
-                        letterSpacing: -0.15,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

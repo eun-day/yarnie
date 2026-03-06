@@ -495,9 +495,12 @@ class AppDb extends _$AppDb {
     );
   }
 
-  Future<bool> updateProject(ProjectsCompanion entity) {
+  Future<bool> updateProject(ProjectsCompanion entity) async {
     final now = DateTime.now().toUtc();
-    return update(projects).replace(entity.copyWith(updatedAt: Value(now)));
+    final updatedRows =
+        await (update(projects)..where((t) => t.id.equals(entity.id.value)))
+            .write(entity.copyWith(updatedAt: Value(now)));
+    return updatedRows > 0;
   }
 
   Stream<List<Project>> watchAll() => (select(
@@ -838,9 +841,13 @@ class AppDb extends _$AppDb {
   }
 
   /// Part 업데이트
-  Future<bool> updatePart(PartsCompanion entity) {
+  Future<bool> updatePart(PartsCompanion entity) async {
     final now = DateTime.now().toUtc();
-    return update(parts).replace(entity.copyWith(updatedAt: Value(now)));
+    final updatedRows =
+        await (update(parts)..where((t) => t.id.equals(entity.id.value))).write(
+          entity.copyWith(updatedAt: Value(now)),
+        );
+    return updatedRows > 0;
   }
 
   /// Part 삭제 (관련 Counter, Session, Note 모두 cascade 삭제됨)
