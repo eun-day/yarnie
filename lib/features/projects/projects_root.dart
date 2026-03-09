@@ -155,21 +155,21 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
-          onMoreTap: (id) => _showProjectMenu(id),
+          onLongPress: (id) => _showProjectMenu(id),
         );
       case ProjectViewMode.smallCard:
         return _SmallCardView(
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
-          onMoreTap: (id) => _showProjectMenu(id),
+          onLongPress: (id) => _showProjectMenu(id),
         );
       case ProjectViewMode.list:
         return _ListView(
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
-          onMoreTap: (id) => _showProjectMenu(id),
+          onLongPress: (id) => _showProjectMenu(id),
         );
     }
   }
@@ -216,17 +216,22 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
     }
   }
 
-  Future<void> _showTagAssignmentSheet(BuildContext context, int projectId, List<int> currentTagIds) async {
+  Future<void> _showTagAssignmentSheet(
+    BuildContext context,
+    int projectId,
+    List<int> currentTagIds,
+  ) async {
     final result = await showModalBottomSheet<Set<int>>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => TagSelectionSheet(
-        initialSelectedIds: currentTagIds.toSet(),
-      ),
+      builder: (_) =>
+          TagSelectionSheet(initialSelectedIds: currentTagIds.toSet()),
     );
 
     if (result != null) {
-      ref.read(projectsProvider.notifier).onEvent(AssignTagsToProject(projectId, result.toList()));
+      ref
+          .read(projectsProvider.notifier)
+          .onEvent(AssignTagsToProject(projectId, result.toList()));
     }
   }
 }
@@ -401,13 +406,13 @@ class _LargeCardView extends StatelessWidget {
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
-  final ValueChanged<int> onMoreTap;
+  final ValueChanged<int> onLongPress;
 
   const _LargeCardView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -423,7 +428,7 @@ class _LargeCardView extends StatelessWidget {
             project: project,
             tags: tags,
             onTap: () => onProjectTap(project.id),
-            onMoreTap: () => onMoreTap(project.id),
+            onLongPress: () => onLongPress(project.id),
           ),
         );
       },
@@ -435,13 +440,13 @@ class _LargeProjectCard extends StatelessWidget {
   final Project project;
   final List<Tag> tags;
   final VoidCallback onTap;
-  final VoidCallback onMoreTap;
+  final VoidCallback onLongPress;
 
   const _LargeProjectCard({
     required this.project,
     required this.tags,
     required this.onTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -451,11 +456,10 @@ class _LargeProjectCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: AspectRatio(
           aspectRatio: 16 / 9,
           child: Stack(
@@ -466,7 +470,8 @@ class _LargeProjectCard extends StatelessWidget {
                   ? Image.network(
                       project.imagePath!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(color: const Color(0xFFD9D9D9)),
+                      errorBuilder: (_, __, ___) =>
+                          Container(color: const Color(0xFFD9D9D9)),
                     )
                   : Container(color: const Color(0xFFD9D9D9)),
               // 하단 정보 섹션
@@ -538,34 +543,11 @@ class _LargeProjectCard extends StatelessWidget {
                     spacing: 4,
                     runSpacing: 4,
                     children: projectTags.take(3).map((tag) {
-                      return ColoredTagChip(
-                        key: ValueKey(tag.id),
-                        tag: tag,
-                      );
+                      return ColoredTagChip(key: ValueKey(tag.id), tag: tag);
                     }).toList(),
                   ),
                 ),
 
-              // 우측 상단 더보기 버튼
-              Positioned(
-                right: 12,
-                top: 12,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(6.4),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.more_vert),
-                    iconSize: 20,
-                    onPressed: onMoreTap,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ),
-              ),
               // 우측 중앙 다음 버튼
               Positioned(
                 right: 12,
@@ -577,7 +559,7 @@ class _LargeProjectCard extends StatelessWidget {
                     height: 24,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.transparent, // 배경 없음
+                      color: Colors.transparent,
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -601,7 +583,9 @@ class _LargeProjectCard extends StatelessWidget {
     try {
       final dynamic decoded = jsonDecode(project.tagIds!);
       if (decoded is! List) return [];
-      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
+      final tagIds = decoded
+          .map((e) => int.tryParse(e.toString()) ?? -1)
+          .toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
@@ -622,13 +606,13 @@ class _SmallCardView extends StatelessWidget {
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
-  final ValueChanged<int> onMoreTap;
+  final ValueChanged<int> onLongPress;
 
   const _SmallCardView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -648,7 +632,7 @@ class _SmallCardView extends StatelessWidget {
           project: project,
           tags: tags,
           onTap: () => onProjectTap(project.id),
-          onMoreTap: () => onMoreTap(project.id),
+          onLongPress: () => onLongPress(project.id),
         );
       },
     );
@@ -659,13 +643,13 @@ class _SmallProjectCard extends StatelessWidget {
   final Project project;
   final List<Tag> tags;
   final VoidCallback onTap;
-  final VoidCallback onMoreTap;
+  final VoidCallback onLongPress;
 
   const _SmallProjectCard({
     required this.project,
     required this.tags,
     required this.onTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -675,17 +659,16 @@ class _SmallProjectCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Stack(
           fit: StackFit.expand,
           children: [
             // 이미지 영역
             Container(
-              color: const Color(0xFFD9D9D9), // Placeholder color from Figma
+              color: const Color(0xFFD9D9D9),
               child: project.imagePath != null
                   ? Image.network(
                       project.imagePath!,
@@ -694,7 +677,7 @@ class _SmallProjectCard extends StatelessWidget {
                     )
                   : _placeholderImage(context),
             ),
-            
+
             // 좌측 상단 태그
             if (projectTags.isNotEmpty)
               Positioned(
@@ -704,42 +687,17 @@ class _SmallProjectCard extends StatelessWidget {
                   spacing: 4,
                   runSpacing: 4,
                   children: projectTags.take(2).map((tag) {
-                    return ColoredTagChip(
-                      key: ValueKey(tag.id),
-                      tag: tag,
-                    );
+                    return ColoredTagChip(key: ValueKey(tag.id), tag: tag);
                   }).toList(),
                 ),
               ),
-
-            // 우측 상단 더보기 버튼
-            Positioned(
-              right: 8,
-              top: 8,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(6.4),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  iconSize: 20,
-                  onPressed: onMoreTap,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  color: Colors.black, // Ensure icon is visible
-                ),
-              ),
-            ),
 
             // 하단 정보 바 (Project Name + Arrow)
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              height: 32, // Fixed height based on design (~139-107=32px)
+              height: 32,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 color: Colors.black.withOpacity(0.4),
@@ -753,7 +711,7 @@ class _SmallProjectCard extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
-                          height: 1.33, // leading 16px / 12px
+                          height: 1.33,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -789,7 +747,9 @@ class _SmallProjectCard extends StatelessWidget {
     try {
       final dynamic decoded = jsonDecode(project.tagIds!);
       if (decoded is! List) return [];
-      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
+      final tagIds = decoded
+          .map((e) => int.tryParse(e.toString()) ?? -1)
+          .toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
@@ -805,13 +765,13 @@ class _ListView extends StatelessWidget {
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
-  final ValueChanged<int> onMoreTap;
+  final ValueChanged<int> onLongPress;
 
   const _ListView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -825,7 +785,7 @@ class _ListView extends StatelessWidget {
           project: project,
           tags: tags,
           onTap: () => onProjectTap(project.id),
-          onMoreTap: () => onMoreTap(project.id),
+          onLongPress: () => onLongPress(project.id),
         );
       },
     );
@@ -836,13 +796,13 @@ class _ProjectListTile extends StatelessWidget {
   final Project project;
   final List<Tag> tags;
   final VoidCallback onTap;
-  final VoidCallback onMoreTap;
+  final VoidCallback onLongPress;
 
   const _ProjectListTile({
     required this.project,
     required this.tags,
     required this.onTap,
-    required this.onMoreTap,
+    required this.onLongPress,
   });
 
   @override
@@ -854,18 +814,16 @@ class _ProjectListTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.1),
-          width: 0.65,
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.1), width: 0.65),
       ),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(14),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center, // Align center vertically
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // 썸네일
               Container(
@@ -881,10 +839,11 @@ class _ProjectListTile extends StatelessWidget {
                         child: Image.network(
                           project.imagePath!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(color: const Color(0xFFD9D9D9)),
+                          errorBuilder: (_, _, _) =>
+                              Container(color: const Color(0xFFD9D9D9)),
                         ),
                       )
-                    : Container(color: const Color(0xFFD9D9D9)), // Placeholder empty
+                    : Container(color: const Color(0xFFD9D9D9)),
               ),
               const SizedBox(width: 16),
               // 정보
@@ -898,8 +857,8 @@ class _ProjectListTile extends StatelessWidget {
                         fontFamily: 'Inter',
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF0A0A0A), // neutral-950
-                        height: 1.5, // leading 24px / 16px
+                        color: Color(0xFF0A0A0A),
+                        height: 1.5,
                         letterSpacing: -0.31,
                       ),
                       maxLines: 1,
@@ -924,7 +883,7 @@ class _ProjectListTile extends StatelessWidget {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: Color(0xFF717182),
-                                height: 1.42, // leading 20px / 14px
+                                height: 1.42,
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -956,22 +915,6 @@ class _ProjectListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              // 더보기 버튼
-              SizedBox(
-                width: 40,
-                height: 40,
-                child: IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  iconSize: 20,
-                  onPressed: onMoreTap,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.9), // As per design but might be invisible on white bg
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.4)),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -991,7 +934,9 @@ class _ProjectListTile extends StatelessWidget {
     try {
       final dynamic decoded = jsonDecode(project.tagIds!);
       if (decoded is! List) return [];
-      final tagIds = decoded.map((e) => int.tryParse(e.toString()) ?? -1).toSet();
+      final tagIds = decoded
+          .map((e) => int.tryParse(e.toString()) ?? -1)
+          .toSet();
       return tags.where((tag) => tagIds.contains(tag.id)).toList();
     } catch (_) {
       return [];
