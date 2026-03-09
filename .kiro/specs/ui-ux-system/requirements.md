@@ -54,11 +54,10 @@
 
 #### Acceptance Criteria
 
-1. WHEN 프로젝트 목록이 표시될 때, THE UI_System SHALL 각 프로젝트 카드에 이름, 카테고리, 생성일, 마지막 작업일을 표시한다
-2. WHEN 프로젝트에 활성 세션이 있을 때, THE UI_System SHALL 해당 프로젝트 카드에 "작업 중" 배지를 표시한다
-3. WHEN 프로젝트 카드를 탭할 때, THE UI_System SHALL 해당 프로젝트의 상세 화면으로 이동한다
-4. WHEN 프로젝트 목록이 비어있을 때, THE UI_System SHALL 빈 상태 일러스트와 "프로젝트 만들기" 버튼을 표시한다
-5. WHEN 프로젝트를 길게 누를 때, THE UI_System SHALL 편집/삭제 컨텍스트 메뉴를 표시한다
+1. WHEN 프로젝트 목록이 표시될 때, THE UI_System SHALL 각 프로젝트 카드에 이름, 태그, 프로젝트 생성일을 표시한다
+2. WHEN 프로젝트 카드를 탭할 때, THE UI_System SHALL 해당 프로젝트의 상세 화면으로 이동한다
+3. WHEN 프로젝트 목록이 비어있을 때, THE UI_System SHALL 빈 상태 일러스트와 "프로젝트 만들기" 버튼을 표시한다
+4. WHEN 프로젝트를 길게 누를 때, THE UI_System SHALL 프로젝트 복사, 태그 지정 메뉴를 표시한다
 
 ### Requirement 4
 
@@ -67,13 +66,10 @@
 #### Acceptance Criteria
 
 1. WHEN 프로젝트 상세 화면이 표시될 때, THE UI_System SHALL 상단에 해당 프로젝트의 모든 Part를 탭 형태로 표시한다
-2. WHEN Part 탭을 표시할 때, THE UI_System SHALL 각 Part의 이름과 현재 MainCounter 값을 포함한다
-3. WHEN Part 탭을 선택할 때, THE UI_System SHALL 해당 Part의 Counter와 Session 데이터를 하단에 표시한다
-4. WHEN 활성 세션이 있는 Part일 때, THE UI_System SHALL 해당 탭에 타이머 아이콘이나 진행 표시를 추가한다
-5. WHEN Part가 1개뿐일 때, THE UI_System SHALL 탭 네비게이션을 숨기고 Part 이름만 표시한다
-6. WHEN "+" 버튼을 탭할 때, THE UI_System SHALL 새 Part 생성 다이얼로그를 표시한다
-7. WHEN 프로젝트 상세 화면 상단에 메뉴 버튼(⋮)을 표시할 때, THE UI_System SHALL 앱바 우상단에 배치한다
-8. WHEN 메뉴 버튼을 탭할 때, THE UI_System SHALL 프로젝트 정보 보기/편집 옵션을 포함한 드롭다운 메뉴를 표시한다
+2. WHEN Part 탭을 선택할 때, THE UI_System SHALL 해당 Part의 Counter와 Session 데이터를 하단에 표시한다
+3. WHEN "+ 새파트" 버튼을 탭할 때, THE UI_System SHALL 새 Part 생성 다이얼로그를 표시한다
+4. WHEN 프로젝트 상세 화면 상단에 메뉴 버튼(⋮)을 표시할 때, THE UI_System SHALL 앱바 우상단에 배치한다
+5. WHEN 메뉴 버튼을 탭할 때, THE UI_System SHALL 프로젝트 정보 보기/편집 옵션을 포함한 드롭다운 메뉴를 표시한다
 
 ### Requirement 5
 
@@ -85,9 +81,9 @@
 2. WHEN MainCounter를 표시할 때, THE UI_System SHALL 2x1 크기(전체 너비)로 배치하고 현재 값, +/- 버튼을 포함한다
 3. WHEN BuddyCounter들이 있을 때, THE UI_System SHALL MainCounter 아래에 1x1 크기로 2열 구조로 배치한다
 4. WHEN Stitch Counter를 표시할 때, THE UI_System SHALL 이름, 현재 값, +/- 버튼을 포함한다
-5. WHEN Section Counter를 표시할 때, THE UI_System SHALL 이름, 진행률, 링크 상태 배지를 포함한다
-6. WHEN Section Counter가 unlinked 상태일 때, THE UI_System SHALL "연결 해제됨" 배지를 표시한다
-7. WHEN "버디 카운터 추가" 버튼을 탭할 때, THE UI_System SHALL Stitch/Section 선택 다이얼로그를 표시한다
+5. WHEN Section Counter를 표시할 때, THE UI_System SHALL 이름, 진행률, 링크 상태 버튼, 설정 버튼을 포함한다
+6. WHEN Section Counter가 unlinked 상태일 때, THE UI_System SHALL 링크 상태 버튼을 "링크 해제됨" 아이콘을 표시한다
+7. WHEN "버디 카운터 추가" 버튼을 탭할 때, THE UI_System SHALL Stitch와 Section 모든 유형 선택 메뉴를 표시한다
 8. WHEN BuddyCounter가 홀수 개일 때, THE UI_System SHALL 마지막 카운터를 왼쪽에 배치하고 오른쪽은 빈 공간으로 둔다
 9. WHEN BuddyCounter가 많아질 때, THE UI_System SHALL 2열 그리드를 유지하면서 세로로 스크롤 가능하도록 배치한다
 10. WHEN BuddyCounter를 길게 누를 때, THE UI_System SHALL 드래그 모드로 전환하고 카운터에 시각적 피드백(그림자, 확대 등)을 제공한다
@@ -103,8 +99,8 @@
 
 1. WHEN Session 패널이 표시될 때, THE UI_System SHALL Part 탭 바로 아래에 띠배너 형태로 배치하고 현재 세션의 상태(running/paused/stopped)를 명확히 표시한다
 2. WHEN 세션이 running 상태일 때, THE UI_System SHALL 실시간 타이머와 일시정지 버튼을 표시한다
-3. WHEN 세션이 paused 상태일 때, THE UI_System SHALL 누적 시간과 재시작/종료 버튼을 표시한다
-4. WHEN 세션이 없을 때, THE UI_System SHALL "작업 시작" 버튼을 표시한다
+3. WHEN 세션이 paused 상태일 때, THE UI_System SHALL 누적 시간과 이어하기 버튼을 표시한다
+4. WHEN 세션이 없을 때, THE UI_System SHALL "시작" 버튼을 표시한다
 5. WHEN 백그라운드에서 세션이 진행 중일 때, THE UI_System SHALL 알림 표시와 함께 현재 시간을 업데이트한다
 6. WHEN 세션 종료 버튼을 탭할 때, THE UI_System SHALL 세션 완료 다이얼로그를 표시한다
 
@@ -118,8 +114,6 @@
 2. WHEN 상위 유형을 선택할 때, THE UI_System SHALL 해당 유형의 하위 옵션들을 목록으로 표시한다
 3. WHEN 하위 옵션을 선택할 때, THE UI_System SHALL 해당 옵션에 맞는 설정 폼을 표시한다
 4. WHEN Length Type을 선택할 때, THE UI_System SHALL 프로젝트 게이지 정보가 있으면 자동으로 채우고, 없으면 입력 필드를 표시한다
-5. WHEN 설정을 완료할 때, THE UI_System SHALL 미리보기와 함께 확인 버튼을 표시한다
-6. WHEN 뒤로가기를 할 때, THE UI_System SHALL 입력된 데이터 손실 경고를 표시한다
 
 ### Requirement 8
 
@@ -183,13 +177,11 @@
 
 #### Acceptance Criteria
 
-1. WHEN 프로젝트 생성 화면이 표시될 때, THE UI_System SHALL 빈 입력 폼과 "프로젝트 만들기" 제목을 표시한다
-2. WHEN 프로젝트 편집 화면이 표시될 때, THE UI_System SHALL 기존 데이터가 채워진 폼과 "프로젝트 정보" 제목을 표시한다
-3. WHEN 입력 폼을 표시할 때, THE UI_System SHALL 프로젝트 이름(필수), 카테고리, 바늘 종류/크기, 로트 번호, 메모 필드를 포함한다
-4. WHEN 프로젝트 이름이 비어있을 때, THE UI_System SHALL 저장 버튼을 비활성화하고 유효성 메시지를 표시한다
-5. WHEN 저장 버튼을 탭할 때, THE UI_System SHALL 데이터 저장 후 성공 메시지를 표시하고 이전 화면으로 돌아간다
-6. WHEN 편집 모드에서 삭제 옵션을 제공할 때, THE UI_System SHALL 위험 색상과 확인 다이얼로그를 포함한다
-7. WHEN 게이지 정보 입력 섹션을 표시할 때, THE UI_System SHALL 선택적 입력으로 구성하고 단위 선택을 포함한다
+1. WHEN 프로젝트 생성 화면이 표시될 때, THE UI_System SHALL 빈 입력 폼과 "새 프로젝트" 제목을 표시한다
+2. WHEN 프로젝트 편집 화면이 표시될 때, THE UI_System SHALL 기존 데이터가 채워진 폼과 "프로젝트 수정" 제목을 표시한다
+3. WHEN 입력 폼을 표시할 때, THE UI_System SHALL 프로젝트 이름(필수), 프로젝트 이미지, 바늘 종류/크기, 로트 번호, 태그 목록, 메모 필드, 게이지 필드를 포함한다
+4. WHEN 프로젝트 이름을 비운 채로 저장 버튼을 누를 때, THE UI_System SHALL "프로젝트 이름을 입력해주세요"라는 유효성 메시지를 표시한다
+5. WHEN 저장 버튼을 탭할 때, THE UI_System SHALL 데이터 저장 후 성공 메시지를 표시하고 프로젝트 상세 화면으로 이동한다
 
 ### Requirement 13
 
