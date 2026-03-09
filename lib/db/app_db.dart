@@ -515,6 +515,14 @@ class AppDb extends _$AppDb {
             ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
           .watch();
 
+  /// 프로젝트나 카운터 변경을 감지하는 스트림
+  Stream<void> watchProjectActivities() {
+    return customSelect(
+      'SELECT 1',
+      readsFrom: {projects, mainCounters, stitchCounters, parts},
+    ).watch();
+  }
+
   Stream<Project?> watchProject(int id) => (select(
     projects,
   )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).watchSingleOrNull();
@@ -2178,5 +2186,31 @@ class AppDb extends _$AppDb {
             .map((row) => row.read(parts.id.count()))
             .getSingle();
     return (count ?? 0) > 0;
+  }
+
+  /// 프로젝트의 마지막 활동 시간 (카운터 변경 포함)
+  ///
+  /// MainCounters, StitchCounters, Projects 테이블의 updatedAt 중
+  /// 가장 최근 시간을 반환합니다.
+  Future<DateTime?> getProjectLastActivity(int projectId) async {
+    final row = await customSelect(
+      '''
+      SELECT MAX(t) AS last_activity FROM (
+        SELECT MAX(updated_at) AS t FROM main_counters
+          WHERE part_id IN (SELECT id FROM parts WHERE project_id = ?1)
+        UNION ALL
+        SELECT MAX(updated_at) AS t FROM stitch_counters
+          WHERE part_id IN (SELECT id FROM parts WHERE project_id = ?1)
+        UNION ALL
+        SELECT COALESCE(updated_at, created_at) AS t FROM projects WHERE id = ?1
+      )
+      ''',
+      variables: [Variable.withInt(projectId)],
+      readsFrom: {mainCounters, stitchCounters, parts, projects},
+    ).getSingleOrNull();
+
+    final epoch = row?.data['last_activity'] as int?;
+    if (epoch == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(epoch * 1000, isUtc: true);
   }
 }
