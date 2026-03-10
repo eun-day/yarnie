@@ -6,6 +6,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/project_detail_screen.dart';
+import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/theme/text_styles.dart';
 
 const _kGuideCardDismissedKey = 'home_guide_card_dismissed';
@@ -155,7 +156,12 @@ class _HomeRootState extends State<HomeRoot> {
                 _UserGuideCard(
                   onClose: _dismissGuideCard,
                   onGuide: () {
-                    // TODO: 사용 가이드 화면으로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const UserGuideScreen(),
+                      ),
+                    );
                   },
                 ),
               if (_showGuideCard) const SizedBox(height: 16),

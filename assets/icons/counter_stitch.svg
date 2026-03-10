@@ -1,3 +1,6 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 11.9955 13.3284" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path id="StitchIcon" d="M0.666414 4.66496H11.329M0.666414 8.66344H11.329M4.6649 0.666473L3.33207 12.6619M8.66338 0.666473L7.33055 12.6619" stroke="#717182" stroke-width="1.33283" stroke-linecap="round" stroke-linejoin="round"/>
+<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.333 7.5H16.666" stroke="#9810FA" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.333 12.5H16.666" stroke="#9810FA" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.333 2.5L6.666 17.5" stroke="#9810FA" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13.332 2.5L11.666 17.5" stroke="#9810FA" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
