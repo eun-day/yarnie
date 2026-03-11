@@ -1,25 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/features/my/widgets/setting_section.dart';
+import 'package:yarnie/features/my/widgets/setting_item.dart';
 
-class MyRoot extends StatelessWidget {
+class MyRoot extends StatefulWidget {
   final ScrollController? controller;
   const MyRoot({super.key, this.controller});
 
   @override
+  State<MyRoot> createState() => _MyRootState();
+}
+
+class _MyRootState extends State<MyRoot> {
+  // Temporary state for the UI mockup
+  bool _isDarkMode = false;
+
+  @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-      controller: controller,
+      controller: widget.controller,
       key: const PageStorageKey('my_scroll'),
-      slivers: const [
-        SliverAppBar(
+      slivers: [
+        const SliverAppBar(
           pinned: true,
           title: Text('마이'),
         ),
-        SliverList(
-          delegate: SliverChildListDelegate.fixed([
-            ListTile(title: Text('프로필')),
-            ListTile(title: Text('설정')),
-            ListTile(title: Text('도움말')),
-          ]),
+        SliverPadding(
+          padding: const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 40),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              SettingSection(
+                title: '설정',
+                children: [
+                  SettingItem(
+                    iconPath: 'assets/icons/notification.svg',
+                    title: '알림 설정',
+                    subtitle: '작업 리마인더, 배지 알림',
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('추후 제공될 기능입니다.')),
+                      );
+                    },
+                  ),
+                  SettingItem(
+                    iconPath: _isDarkMode
+                        ? 'assets/icons/dark_mode_on.svg'
+                        : 'assets/icons/dark_mode.svg',
+                    title: '다크 모드',
+                    subtitle: _isDarkMode ? '켜짐' : '꺼짐',
+                    isSwitch: true,
+                    initialSwitchValue: _isDarkMode,
+                    onSwitchChanged: (value) {
+                      setState(() {
+                        _isDarkMode = value;
+                      });
+                    },
+                  ),
+                  SettingItem(
+                    iconPath: 'assets/icons/preferences.svg',
+                    title: '환경 설정',
+                    subtitle: '언어, 단위, 백업',
+                    onTap: () {
+                      // TODO: Navigate to Preferences
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              SettingSection(
+                title: '고객 지원',
+                children: [
+                  SettingItem(
+                    iconPath: 'assets/icons/trash.svg',
+                    title: '휴지통',
+                    subtitle: '삭제된 프로젝트 관리',
+                    onTap: () {
+                      // TODO: Navigate to Trash
+                    },
+                  ),
+                  SettingItem(
+                    iconPath: 'assets/icons/user_guide.svg',
+                    title: '사용 가이드',
+                    subtitle: 'Yarnie 사용법 배우기',
+                    onTap: () {
+                      // TODO: Navigate to User Guide
+                    },
+                  ),
+                  SettingItem(
+                    iconPath: 'assets/icons/app_info.svg',
+                    title: '앱 정보',
+                    subtitle: '버전 1.0.0',
+                    onTap: () {
+                      // TODO: Navigate to App Info
+                    },
+                  ),
+                ],
+              ),
+            ]),
+          ),
         ),
       ],
     );
