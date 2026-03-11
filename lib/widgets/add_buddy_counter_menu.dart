@@ -74,7 +74,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                       width: 20,
                       height: 20,
                       alignment: Alignment.center,
-                      child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14),
+                      child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14, colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn)),
                     ),
                     const SizedBox(width: 8),
                     const Expanded(
@@ -147,7 +147,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                 width: 20,
                 height: 20,
                 alignment: Alignment.center,
-                child: SvgPicture.asset(iconPath, width: 14),
+                child: SvgPicture.asset(iconPath, width: 14, colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn)),
              ),
             const SizedBox(width: 8),
             Text(

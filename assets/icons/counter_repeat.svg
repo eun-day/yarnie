@@ -1,3 +1,6 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 13.3283 14.6611" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path id="RepeatIcon" d="M9.99621 0.666414L12.6619 3.33207M12.6619 3.33207L9.99621 5.99773M12.6619 3.33207H3.33207C2.62509 3.33207 1.94707 3.61291 1.44717 4.11282C0.947259 4.61273 0.666414 5.29075 0.666414 5.99773V6.66414M3.33207 13.9947L0.666414 11.329M0.666414 11.329L3.33207 8.66338M0.666414 11.329H9.99621C10.7032 11.329 11.3812 11.0482 11.8811 10.5483C12.381 10.0484 12.6619 9.37036 12.6619 8.66338V7.99697" stroke="#717182" stroke-width="1.33283" stroke-linecap="round" stroke-linejoin="round"/>
+<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.166 1.667L17.499 5L14.166 8.333" stroke="#155DFC" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.5 9.166V8.333C2.5 7.449 2.851 6.601 3.476 5.976C4.101 5.351 4.949 5 5.833 5H17.499" stroke="#155DFC" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.833 18.332L2.5 14.999L5.833 11.666" stroke="#155DFC" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17.499 10.833V11.666C17.499 12.55 17.148 13.398 16.523 14.023C15.897 14.648 15.05 14.999 14.166 14.999H2.5" stroke="#155DFC" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
