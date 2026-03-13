@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyTrashView extends StatelessWidget {
@@ -25,7 +26,7 @@ class EmptyTrashView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          '휴지통이 비어있습니다',
+          AppLocalizations.of(context)!.emptyTrash,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.normal,
@@ -36,7 +37,7 @@ class EmptyTrashView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          '삭제된 프로젝트가 없습니다',
+          AppLocalizations.of(context)!.noDeletedProjects,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.normal,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../db/app_db.dart';
 import 'colored_tag_chip.dart'; // Tag를 표시하기 위한 기존 위젯이라고 가정
 
@@ -89,7 +90,7 @@ class ProjectListTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _formatDate(project.createdAt),
+                              _formatDate(context, project.createdAt),
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
@@ -148,8 +149,9 @@ class ProjectListTile extends StatelessWidget {
     }
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     final local = date.toLocal();
-    return '${local.year}년 ${local.month}월 ${local.day}일';
+    return AppLocalizations.of(context)!
+        .dateDisplay(local.year, local.month, local.day);
   }
 }

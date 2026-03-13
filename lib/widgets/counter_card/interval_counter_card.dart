@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 
 class IntervalCounterCard extends StatelessWidget {
@@ -41,7 +42,7 @@ class IntervalCounterCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            '${intervalRows}행마다',
+            '$intervalRows${AppLocalizations.of(context)!.stitch}',
             style: TextStyle(
               fontSize: 14,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -62,7 +63,7 @@ class IntervalCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '${startRow}행부터',
+        infoText: AppLocalizations.of(context)!.fromRow(startRow),
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

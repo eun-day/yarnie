@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -53,7 +54,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
   void initState() {
     super.initState();
     
-    String label = '간격 카운터';
+    String label = AppLocalizations.of(context)!.intervalCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String interval = '';
     String totalCount = '';
@@ -159,7 +160,10 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        final message = _isEditing
+            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
+            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -199,12 +203,12 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
 
                 // Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '간격 카운터 수정' : '간격 카운터 추가',
+                        _isEditing ? AppLocalizations.of(context)!.editIntervalCounter : AppLocalizations.of(context)!.addIntervalCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -214,7 +218,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '일정한 간격으로 작업을 반복할 때 사용하는 카운터입니다.',
+                        AppLocalizations.of(context)!.intervalCounterDescSimple,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -236,7 +240,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                       const SizedBox(height: 16),
                       
                       NumberInputGroup(
-                        label: '시작 행',
+                        label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
                         hintText: '19',
                         onChanged: _updateState,
@@ -244,18 +248,18 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                       const SizedBox(height: 16),
 
                       NumberInputGroup(
-                        label: '간격 (행)',
+                        label: AppLocalizations.of(context)!.intervalRows,
                         controller: _intervalController,
-                        hintText: '예: 2',
+                        hintText: AppLocalizations.of(context)!.intervalHint,
                         onChanged: _updateState,
                       ),
                       const SizedBox(height: 16),
 
                       NumberInputGroup(
-                        label: '총 횟수',
+                        label: AppLocalizations.of(context)!.totalTimes,
                         controller: _totalCountController,
-                        hintText: '예: 10',
-                        helperText: '간격과 총 횟수를 입력하세요.',
+                        hintText: AppLocalizations.of(context)!.timesHint,
+                        helperText: AppLocalizations.of(context)!.intervalTimesHelper,
                         onChanged: _updateState,
                       ),
                       
@@ -268,7 +272,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                         child: Row(
                           children: [
                             Text(
-                              '배색 옵션',
+                              AppLocalizations.of(context)!.colorOption,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -290,7 +294,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            '배색 추적이 필요한 경우 사용할 색상을 순서대로 선택하세요',
+                            AppLocalizations.of(context)!.colorOptionDesc,
                             style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
@@ -318,7 +322,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -340,7 +344,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -367,7 +371,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -395,7 +399,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
+          AppLocalizations.of(context)!.labelHint,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],

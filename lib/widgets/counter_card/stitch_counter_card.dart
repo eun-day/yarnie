@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 import 'package:yarnie/widgets/counter_card/counter_settings_button.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
@@ -77,7 +78,7 @@ class StitchCounterCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '코',
+                    AppLocalizations.of(context)!.stitch,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -155,7 +156,7 @@ class StitchCounterCard extends StatelessWidget {
                         color: countBy == n ? const Color(0xFFF3F3F5) : null,
                       ),
                       child: Text(
-                        '+$n씩',
+                        AppLocalizations.of(context)!.increaseBy(n),
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -173,7 +174,7 @@ class StitchCounterCard extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '직접 입력...',
+                      AppLocalizations.of(context)!.manualInput,
                       style: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -297,7 +298,7 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
           children: [
             // Header
             Text(
-              '증가값 설정',
+              AppLocalizations.of(context)!.setIncreaseValue,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -308,7 +309,7 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              '한 번에 증가시킬 코 수를 입력하세요.',
+              AppLocalizations.of(context)!.setIncreaseValueDesc,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -321,9 +322,9 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
 
             // Use NumberInputGroup
             NumberInputGroup(
-              label: '증가값',
+              label: AppLocalizations.of(context)!.increaseValue,
               controller: _controller,
-              hintText: '예: 6',
+              hintText: AppLocalizations.of(context)!.increaseValueHint,
               min: 1,
               onChanged: _validate,
             ),
@@ -346,7 +347,7 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  '확인',
+                  AppLocalizations.of(context)!.confirm,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -368,7 +369,7 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  '취소',
+                  AppLocalizations.of(context)!.cancel,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

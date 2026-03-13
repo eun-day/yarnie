@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 
 class RangeCounterCard extends StatelessWidget {
@@ -59,7 +60,7 @@ class RangeCounterCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            '/ ${totalRows}행${isCompleted ? ' ✓' : ''}',
+            '/ $totalRows${AppLocalizations.of(context)!.stitch}${isCompleted ? ' ✓' : ''}',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -70,7 +71,7 @@ class RangeCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '$startRow~${endRow}행',
+        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

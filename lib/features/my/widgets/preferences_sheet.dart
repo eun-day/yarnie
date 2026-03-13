@@ -150,24 +150,25 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildLanguageSection() {
     final language = ref.watch(localeProvider);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     String languageText;
     switch (language) {
       case AppLanguage.ko:
-        languageText = '한국어';
+        languageText = l10n.korean;
         break;
       case AppLanguage.en:
         languageText = 'English';
         break;
       case AppLanguage.auto:
-        languageText = AppStrings.tr(context, AppStrings.languageCurrentKorean);
+        languageText = l10n.languageCurrentKorean;
         break;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.language)),
+        _buildSectionHeader(l10n.language),
         InkWell(
           onTap: () {
             _showLanguageSelectionBottomSheet();
@@ -175,14 +176,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             height: 48,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF3F3F5),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                Text('🌐', style: TextStyle(fontSize: 14)),
+                const Text('🌐', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
                   languageText,
@@ -198,7 +199,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             ),
           ),
         ),
-        _buildHelperText(AppStrings.tr(context, AppStrings.languageSub)),
+        _buildHelperText(l10n.languageSub),
       ],
     );
   }

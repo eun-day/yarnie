@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 
 class RepeatCounterCard extends StatelessWidget {
@@ -77,7 +78,7 @@ class RepeatCounterCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            '$currentRowInPattern/${rowsPerRepeat}행 (${rowsPerRepeat}행 패턴)',
+            AppLocalizations.of(context)!.patternRows(currentRowInPattern, rowsPerRepeat),
             style: TextStyle(
               fontSize: 12,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -87,7 +88,7 @@ class RepeatCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '${startRow}행부터',
+        infoText: AppLocalizations.of(context)!.fromRow(startRow),
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

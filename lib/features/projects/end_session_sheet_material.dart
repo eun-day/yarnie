@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
 import 'package:yarnie/widget/labelpill.dart';
@@ -58,7 +59,7 @@ class _EndSessionSheetMaterialState extends State<EndSessionSheetMaterial> {
             Align(
               alignment: Alignment.center,
               child: LabelPill(
-                text: _label ?? '미분류',
+                text: _label ?? AppLocalizations.of(context)!.unclassified,
                 isIOS: false,
                 onTap: () async {
                   final picked = await widget.onPickLabel(_label);
@@ -72,22 +73,22 @@ class _EndSessionSheetMaterialState extends State<EndSessionSheetMaterial> {
               controller: _memoCtl,
               focusNode: _focus,
               maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: '메모를 입력하세요',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.enterMemo,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
-            Text('작업 시간 ${fmt(widget.segment)}을 저장하시겠습니까?',
+            Text(AppLocalizations.of(context)!.saveSessionConfirm(fmt(widget.segment)),
                 style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 16),
             Row(
               children: [
-                OutlinedButton(onPressed: () => _close(false), child: Text('취소')),
+                OutlinedButton(onPressed: () => _close(false), child: Text(AppLocalizations.of(context)!.cancel)),
                 const Spacer(),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.save),
-                  label: Text('저장'),
+                  icon: const Icon(Icons.save),
+                  label: Text(AppLocalizations.of(context)!.save),
                   onPressed: () => _close(true),
                 ),
               ],

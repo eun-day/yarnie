@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/tag_color_preset.dart';
@@ -76,14 +77,14 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Scaffold( // Scaffold를 사용하여 AppBar 등을 포함
           appBar: AppBar(
-            title: Text('태그 선택'),
+            title: Text(AppLocalizations.of(context)!.tagSelection),
             automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(_selectedIds); // 선택된 ID 반환
                 },
-                child: Text('완료'),
+                child: Text(AppLocalizations.of(context)!.complete),
               ),
             ],
           ),
@@ -97,9 +98,9 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                       _searchQuery = query;
                     });
                   },
-                  decoration: const InputDecoration(
-                    hintText: '태그 검색...',
-                    prefixIcon: Icon(Icons.search),
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)!.searchTags,
+                    prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -157,16 +158,16 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('새 태그 추가', style: Theme.of(context).textTheme.titleMedium),
+                    Text(AppLocalizations.of(context)!.addNewTag, style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
                             controller: _newTagNameController,
-                            decoration: const InputDecoration(
-                              labelText: '태그 이름',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)!.tagName,
+                              border: const OutlineInputBorder(),
                             ),
                           ),
                         ),
@@ -207,7 +208,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                               ));
                             }
                           },
-                          child: Text('추가'),
+                          child: Text(AppLocalizations.of(context)!.add),
                         ),
                       ],
                     ),
@@ -239,7 +240,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
       context: context,
       builder: (BuildContext dialogContext) { // Use dialogContext to avoid conflicts
         return AlertDialog(
-          title: Text('태그 수정'), // Always '태그 수정'
+          title: Text(AppLocalizations.of(context)!.editTag), // Always '태그 수정'
           content: SingleChildScrollView(
             child: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -248,9 +249,9 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                   children: <Widget>[
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: '태그 이름',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.tagName,
+                        border: const OutlineInputBorder(),
                       ),
                       autofocus: true,
                     ),
@@ -286,7 +287,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('삭제', style: TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
               onPressed: () {
                 ref.read(tagsProvider.notifier).onEvent(DeleteTag(tag.id));
                 Navigator.of(dialogContext).pop();
@@ -294,13 +295,13 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
             ),
             const Spacer(),
             TextButton(
-              child: Text('취소'),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: Text('저장'), // Always '저장'
+              child: Text(AppLocalizations.of(context)!.save), // Always '저장'
               onPressed: () {
                 final notifier = ref.read(tagsProvider.notifier);
                 notifier.onEvent(UpdateTag(

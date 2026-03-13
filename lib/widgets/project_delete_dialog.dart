@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProjectDeleteDialog extends StatelessWidget {
   final String projectName;
@@ -44,7 +45,7 @@ class ProjectDeleteDialog extends StatelessWidget {
           children: [
             // Header: Title
             Text(
-              '프로젝트 삭제',
+              AppLocalizations.of(context)!.trash,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -75,7 +76,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       TextSpan(
-                        text: '을 삭제하시겠습니까?',
+                        text: AppLocalizations.of(context)!.deleteConfirm,
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -86,7 +87,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.',
+                  AppLocalizations.of(context)!.deleteDesc,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -117,7 +118,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '삭제',
+                      AppLocalizations.of(context)!.delete,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -142,7 +143,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '취소',
+                      AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

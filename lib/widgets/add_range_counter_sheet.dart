@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -40,7 +41,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
   void initState() {
     super.initState();
     
-    String label = '범위 카운터';
+    String label = AppLocalizations.of(context)!.rangeCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String totalRows = '';
 
@@ -92,7 +93,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       'startRow': startRow,
       'endRow': endRow,
       'rowsTotal': totalRows, // Renamed from totalRows to match DB
-      'targetInfo': '$startRow~$endRow행', 
+      'targetInfo': '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
     };
 
     try {
@@ -112,7 +113,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        final message = _isEditing
+            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
+            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -157,7 +161,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '범위 카운터 수정' : '범위 카운터 추가',
+                        _isEditing ? AppLocalizations.of(context)!.editRangeCounter : AppLocalizations.of(context)!.addRangeCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -167,7 +171,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '특정 행 범위를 추적하는 카운터입니다.', // Simplified text
+                        AppLocalizations.of(context)!.rangeCounterDescSimple,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -191,7 +195,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                       
                       // Start Row Field
                       NumberInputGroup(
-                        label: '시작 행',
+                        label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
                         hintText: '19',
                         onChanged: _updateState,
@@ -200,10 +204,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
 
                       // Total Rows Field
                       NumberInputGroup(
-                        label: '총 행 수',
+                        label: AppLocalizations.of(context)!.totalRows,
                         controller: _totalRowsController,
-                        hintText: '예: 50',
-                        helperText: '시작 행부터 몇 행 동안 추적할지 입력하세요.',
+                        hintText: AppLocalizations.of(context)!.rowsHint,
+                        helperText: AppLocalizations.of(context)!.rowsHelper,
                         onChanged: _updateState,
                       ),
                     ],
@@ -227,7 +231,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -249,7 +253,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -276,7 +280,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -304,7 +308,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
+          AppLocalizations.of(context)!.labelHint,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],

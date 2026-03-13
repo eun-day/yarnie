@@ -1,7 +1,23 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum AppLanguage { auto, en, ko }
+enum AppLanguage {
+  auto,
+  en,
+  ko;
+
+  Locale? get locale {
+    switch (this) {
+      case AppLanguage.en:
+        return const Locale('en');
+      case AppLanguage.ko:
+        return const Locale('ko');
+      case AppLanguage.auto:
+        return null;
+    }
+  }
+}
 
 const _languagePrefsKey = 'app_language_preference';
 

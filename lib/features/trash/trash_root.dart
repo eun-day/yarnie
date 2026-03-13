@@ -125,7 +125,7 @@ class TrashRoot extends ConsumerWidget {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(child: Text('에러 발생: \$error')),
+                error: (error, _) => Center(child: Text(AppLocalizations.of(context)!.errorOccurred(error.toString()))),
               ),
             ),
           ],
@@ -166,7 +166,7 @@ class TrashRoot extends ConsumerWidget {
                 ),
                 // 복원하기
                 _ActionButton(
-                  label: '복원하기',
+                  label: AppLocalizations.of(context)!.restore,
                   icon: Icons.restore,
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   textColor: Theme.of(context).colorScheme.onSurface,
@@ -180,7 +180,7 @@ class TrashRoot extends ConsumerWidget {
                 const SizedBox(height: 8),
                 // 완전 삭제하기
                 _ActionButton(
-                  label: '지금 완전 삭제하기',
+                  label: AppLocalizations.of(context)!.deleteForeverNow,
                   icon: Icons.delete_forever,
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   textColor: const Color(0xFFD4183D),
@@ -215,7 +215,7 @@ class TrashRoot extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '프로젝트 복원',
+                  AppLocalizations.of(context)!.restoreProject,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -227,7 +227,7 @@ class TrashRoot extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '이 프로젝트를 복원하시겠습니까?',
+                  AppLocalizations.of(context)!.restoreConfirm,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -249,7 +249,7 @@ class TrashRoot extends ConsumerWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '복원',
+                      AppLocalizations.of(context)!.restore,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -274,7 +274,7 @@ class TrashRoot extends ConsumerWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '취소',
+                      AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -296,13 +296,13 @@ class TrashRoot extends ConsumerWidget {
         await appDb.restoreProject(project.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('프로젝트가 복원되었습니다.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.projectRestored)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('복원 실패: \$e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))),
           );
         }
       }
@@ -324,7 +324,7 @@ class TrashRoot extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '완전 삭제',
+                  AppLocalizations.of(context)!.deleteForever,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -336,7 +336,7 @@ class TrashRoot extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+                  AppLocalizations.of(context)!.deleteForeverConfirm,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -358,7 +358,7 @@ class TrashRoot extends ConsumerWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '삭제',
+                      AppLocalizations.of(context)!.delete,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -383,7 +383,7 @@ class TrashRoot extends ConsumerWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '취소',
+                      AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -405,13 +405,13 @@ class TrashRoot extends ConsumerWidget {
         await appDb.permanentlyDeleteProject(project.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('프로젝트가 완전히 삭제되었습니다.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('삭제 실패: \$e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString()))),
           );
         }
       }

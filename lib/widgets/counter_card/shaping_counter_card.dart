@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 
 class ShapingCounterCard extends StatelessWidget {
@@ -37,10 +38,11 @@ class ShapingCounterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final progressRatio = totalCount > 0 ? currentCount / totalCount : 0.0;
     
+    final l10n = AppLocalizations.of(context)!;
     // Determine icon and text based on amount
     final isIncrease = amount > 0;
-    final typeText = isIncrease ? '코 늘림' : '코 줄임';
-    final amountText = isIncrease ? '+$amount코' : '$amount코';
+    final typeText = isIncrease ? l10n.stitchIncrease : l10n.stitchDecrease;
+    final amountText = isIncrease ? '+$amount${l10n.stitch}' : '$amount${l10n.stitch}';
     final color = isIncrease ? const Color(0xFF6FB96F) : const Color(0xFFF08C1F); // Green for +, Orange for -
 
     return BaseCounterCard(
@@ -74,7 +76,7 @@ class ShapingCounterCard extends StatelessWidget {
           
           // Next Action Row
           Text(
-            isCompleted ? '완료 ✓' : '다음:${nextActionRow}행',
+            isCompleted ? '${l10n.complete} ✓' : l10n.nextRow(nextActionRow),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w400,
@@ -86,7 +88,7 @@ class ShapingCounterCard extends StatelessWidget {
           
           // Sub Info
           Text(
-            '${intervalRows}행마다 · $currentCount/${totalCount}회',
+            '${intervalRows}${l10n.stitch} · $currentCount/${totalCount}회',
             style: TextStyle(
               fontSize: 12,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -96,7 +98,7 @@ class ShapingCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '${startRow}행부터',
+        infoText: l10n.fromRow(startRow),
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

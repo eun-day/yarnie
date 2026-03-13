@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -47,7 +48,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
   void initState() {
     super.initState();
     
-    String label = '증감 카운터';
+    String label = AppLocalizations.of(context)!.shapingCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String interval = '';
     String totalCount = '';
@@ -113,7 +114,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
       'intervalRows': interval,
       'totalCount': totalCount,
       'amount': amount,
-      'targetInfo': '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}코 × $totalCount회',
+      'targetInfo': '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}${AppLocalizations.of(context)!.stitch} × $totalCount회',
     };
 
     try {
@@ -133,7 +134,10 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        final message = _isEditing
+            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
+            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -173,12 +177,12 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
 
                 // Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '증감 카운터 수정' : '증감 카운터 추가',
+                        _isEditing ? AppLocalizations.of(context)!.editShapingCounter : AppLocalizations.of(context)!.addShapingCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -188,7 +192,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '코를 늘리거나 줄이는 작업을 추적하는 카운터입니다.',
+                        AppLocalizations.of(context)!.shapingCounterDescSimple,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -210,7 +214,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                       const SizedBox(height: 16),
                       
                       NumberInputGroup(
-                        label: '시작 행',
+                        label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
                         hintText: '19',
                         min: 1,
@@ -219,28 +223,28 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                       const SizedBox(height: 16),
 
                       NumberInputGroup(
-                        label: '간격 (행)',
+                        label: AppLocalizations.of(context)!.intervalRows,
                         controller: _intervalController,
-                        hintText: '예: 2',
+                        hintText: AppLocalizations.of(context)!.intervalHint,
                         min: 1,
                         onChanged: _updateState,
                       ),
                       const SizedBox(height: 16),
 
                       NumberInputGroup(
-                        label: '총 횟수',
+                        label: AppLocalizations.of(context)!.totalTimes,
                         controller: _totalCountController,
-                        hintText: '예: 10',
+                        hintText: AppLocalizations.of(context)!.timesHint,
                         min: 1,
                         onChanged: _updateState,
                       ),
                       const SizedBox(height: 16),
 
                       NumberInputGroup(
-                        label: '코 수 변화 (회당)',
+                        label: AppLocalizations.of(context)!.stitchChange,
                         controller: _amountController,
-                        hintText: '예: 2 또는 -2',
-                        helperText: '양수는 코 늘림, 음수는 코 줄임입니다.',
+                        hintText: AppLocalizations.of(context)!.stitchChangeHint,
+                        helperText: AppLocalizations.of(context)!.stitchChangeHelper,
                         min: -999,
                         skipZero: true,
                         onChanged: _updateState,
@@ -266,7 +270,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -288,7 +292,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -315,7 +319,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -343,7 +347,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
+          AppLocalizations.of(context)!.labelHint,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
