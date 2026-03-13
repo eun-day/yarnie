@@ -549,7 +549,7 @@ class _CounterSystemSection extends StatelessWidget {
         const SizedBox(height: 12),
 
         // ── 메인 카운터 ──
-        _subSectionTitle('메인 카운터 (MainCounter)'),
+        _subSectionTitle(context, '메인 카운터 (MainCounter)'),
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
@@ -625,7 +625,7 @@ class _CounterSystemSection extends StatelessWidget {
         const SizedBox(height: 24),
 
         // ── 보조 카운터 ──
-        _subSectionTitle('보조 카운터 (BuddyCounter)'),
+        _subSectionTitle(context, '보조 카운터 (BuddyCounter)'),
         const SizedBox(height: 4),
         Text(
           '메인 카운터와 함께 사용하는 보조 카운터예요. 코 카운터와 섹션 카운터가 있어요.',
@@ -1056,7 +1056,7 @@ class _CtaCard extends StatelessWidget {
 // Shared Widgets
 // ─────────────────────────────────────────────────────────────────────────────
 
-Widget _sectionTitle(context, String text) {
+Widget _sectionTitle(BuildContext context, String text) {
   return Text(
     text,
     style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),

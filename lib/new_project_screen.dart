@@ -241,7 +241,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: state.isSaving
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -444,7 +444,7 @@ class _ProjectImageSection extends StatelessWidget {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withOpacity(0.6),
+                              Colors.black.withValues(alpha: 0.6),
                               Colors.transparent,
                             ],
                           ),
@@ -453,6 +453,7 @@ class _ProjectImageSection extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _buildImageButton(
+                                context,
                                 icon: Icons.close,
                                 label: '초기화',
                                 onTap: onImageRemoved, // 이미지 제거 콜백
@@ -461,6 +462,7 @@ class _ProjectImageSection extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: _buildImageButton(
+                                context,
                                 icon: Icons.upload_outlined,
                                 label: '변경',
                                 onTap: onImagePressed,
@@ -505,7 +507,8 @@ class _ProjectImageSection extends StatelessWidget {
     );
   }
 
-  Widget _buildImageButton({
+  Widget _buildImageButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
@@ -515,9 +518,9 @@ class _ProjectImageSection extends StatelessWidget {
       child: Container(
         height: 40,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.surface.withOpacity(0.2), width: 0.7),
+          border: Border.all(color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2), width: 0.7),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -615,7 +618,7 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
               color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '프로젝트 이름을 입력하세요',
               hintStyle: TextStyle(
                 fontSize: 16,
@@ -865,7 +868,7 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
               color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '예: A12345',
               hintStyle: TextStyle(
                 fontSize: 16,
@@ -953,7 +956,7 @@ class _MemoSectionState extends State<_MemoSection> {
               height: 1.5,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등',
               hintStyle: TextStyle(
                 fontSize: 16,
@@ -1144,7 +1147,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                           fontSize: 16,
                           letterSpacing: -0.31,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '코 수',
                           hintStyle: TextStyle(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1193,7 +1196,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                           fontSize: 16,
                           letterSpacing: -0.31,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '단 수',
                           hintStyle: TextStyle(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,

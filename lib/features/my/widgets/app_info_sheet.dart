@@ -119,22 +119,26 @@ class AppInfoSheet extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildButton(
+                      context,
                       text: '피드백 보내기',
                       iconPath: 'assets/icons/feedback.svg',
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
+                      context,
                       text: '개인정보 처리방침',
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
+                      context,
                       text: '서비스 이용약관',
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
+                      context,
                       text: '오픈소스 라이선스',
                       onTap: () {},
                     ),
@@ -149,7 +153,8 @@ class AppInfoSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildButton({
+  Widget _buildButton(
+    BuildContext context, {
     required String text,
     String? iconPath,
     required VoidCallback onTap,

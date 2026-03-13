@@ -507,7 +507,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   ),
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'info',
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -520,7 +520,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'part_manage',
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -1844,7 +1844,7 @@ class MainCounterWidget extends StatelessWidget {
                             );
                           }
                         },
-                        child: const Center(
+                        child: Center(
                           child: Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Icon(
@@ -1873,7 +1873,7 @@ class MainCounterWidget extends StatelessWidget {
                             newValue: currentValue + 1,
                           );
                         },
-                        child: const Center(
+                        child: Center(
                           child: Padding(
                             padding: EdgeInsets.only(left: 20),
                             child: Icon(
