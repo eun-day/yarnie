@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/features/my/widgets/setting_section.dart';
 import 'package:yarnie/features/my/widgets/setting_item.dart';
+import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
+import 'package:yarnie/core/l10n/app_strings.dart';
 
 class MyRoot extends StatefulWidget {
   final ScrollController? controller;
@@ -20,9 +22,9 @@ class _MyRootState extends State<MyRoot> {
       controller: widget.controller,
       key: const PageStorageKey('my_scroll'),
       slivers: [
-        const SliverAppBar(
+        SliverAppBar(
           pinned: true,
-          title: Text('마이'),
+          title: Text(AppStrings.tr(context, '마이')), // temporary generic string fallback
         ),
         SliverPadding(
           padding: const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 40),
@@ -57,10 +59,18 @@ class _MyRootState extends State<MyRoot> {
                   ),
                   SettingItem(
                     iconPath: 'assets/icons/preferences.svg',
-                    title: '환경 설정',
-                    subtitle: '언어, 단위, 백업',
+                    title: AppStrings.tr(context, AppStrings.preferencesTitle),
+                    subtitle: AppStrings.tr(context, '언어, 단위, 백업'), // temp fallback
                     onTap: () {
-                      // TODO: Navigate to Preferences
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const FractionallySizedBox(
+                          heightFactor: 0.8,
+                          child: PreferencesSheet(),
+                        ),
+                      );
                     },
                   ),
                 ],
