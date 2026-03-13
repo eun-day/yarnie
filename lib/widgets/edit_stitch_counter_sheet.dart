@@ -117,7 +117,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         '스티치 카운터 수정',
                         style: TextStyle(

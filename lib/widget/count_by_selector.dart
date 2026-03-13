@@ -68,7 +68,7 @@ class CountBySelector extends StatelessWidget {
           border: Border.all(
             color: isFilled
                 ? CupertinoColors.activeBlue
-                : CupertinoTheme.of(context).colorScheme.surface, // ✅ outlined=white border
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white border
             width: 1,
           ),
         ),
@@ -76,8 +76,8 @@ class CountBySelector extends StatelessWidget {
           label,
           style: _getTextStyle(context).copyWith(
             color: isFilled
-                ? CupertinoTheme.of(context).colorScheme.surface
-                : CupertinoTheme.of(context).colorScheme.surface, // ✅ outlined=white text
+                ? Theme.of(context).colorScheme.surface
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white text
             fontWeight: FontWeight.w600,
           ),
         ),

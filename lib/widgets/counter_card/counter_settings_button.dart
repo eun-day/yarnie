@@ -50,11 +50,13 @@ class CounterSettingsButton extends StatelessWidget {
       ),
       items: [
         _buildMenuItem(
+          context: context,
           value: 'edit',
           icon: Icons.edit_outlined,
           text: '수정',
         ),
         _buildMenuItem(
+          context: context,
           value: 'delete',
           text: '삭제',
           textColor: const Color(0xFFD4183D),
@@ -75,12 +77,14 @@ class CounterSettingsButton extends StatelessWidget {
   }
 
   PopupMenuItem<String> _buildMenuItem({
+    required BuildContext context,
     required String value,
     IconData? icon,
     required String text,
-    Color textColor = Theme.of(context).colorScheme.onSurface,
+    Color? textColor,
     bool isDestructive = false,
   }) {
+    final effectiveTextColor = textColor ?? Theme.of(context).colorScheme.onSurface;
     return PopupMenuItem<String>(
       value: value,
       height: 32,
@@ -94,7 +98,7 @@ class CounterSettingsButton extends StatelessWidget {
         child: Row(
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 16, color: textColor),
+              Icon(icon, size: 16, color: effectiveTextColor),
               const SizedBox(width: 8),
             ] else if (isDestructive) ...[
               // No icon for delete, just text
@@ -104,7 +108,7 @@ class CounterSettingsButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: textColor,
+                color: effectiveTextColor,
                 letterSpacing: -0.15,
               ),
             ),

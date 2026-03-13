@@ -32,11 +32,11 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
 
   bool get _isEditing => widget.existingCounter != null;
 
-  static const List<Color> _availableColors = [
-    Color(0xFFFFFFFF), Color(0xFFFFFFF0), Color(0xFFF5F5DC), Color(0xFFFFFDD0), Color(0xFFFFB6C1), Color(0xFFFF7F50),
-    Color(0xFFDC143C), Color(0xFF800020), Color(0xFFFF8C00), Color(0xFFFFD700), Color(0xFF32CD32), Color(0xFF228B22),
-    Color(0xFF98FF98), Color(0xFF40E0D0), Color(0xFF87CEEB), Color(0xFF4169E1), Color(0xFF000080), Color(0xFFE6E6FA),
-    Color(0xFF9370DB), Color(0xFF8B4513), Theme.of(context).colorScheme.primary, Color(0xFF808080), Color(0xFF36454F), Color(0xFF000000),
+  List<Color> get _availableColors => [
+    const Color(0xFFFFFFFF), const Color(0xFFFFFFF0), const Color(0xFFF5F5DC), const Color(0xFFFFFDD0), const Color(0xFFFFB6C1), const Color(0xFFFF7F50),
+    const Color(0xFFDC143C), const Color(0xFF800020), const Color(0xFFFF8C00), const Color(0xFFFFD700), const Color(0xFF32CD32), const Color(0xFF228B22),
+    const Color(0xFF98FF98), const Color(0xFF40E0D0), const Color(0xFF87CEEB), const Color(0xFF4169E1), const Color(0xFF000080), const Color(0xFFE6E6FA),
+    const Color(0xFF9370DB), const Color(0xFF8B4513), Theme.of(context).colorScheme.primary, const Color(0xFF808080), const Color(0xFF36454F), const Color(0xFF000000),
   ];
 
   bool get _isValid {
@@ -287,7 +287,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
 
                       if (_isColorOptionsExpanded) ...[
                         const SizedBox(height: 12),
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             '배색 추적이 필요한 경우 사용할 색상을 순서대로 선택하세요',

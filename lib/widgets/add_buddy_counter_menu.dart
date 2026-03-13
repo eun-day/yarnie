@@ -77,7 +77,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                       child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn)),
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -123,11 +123,11 @@ class AddBuddyCounterMenu extends StatelessWidget {
             ),
 
             // Items
-            _buildItem('assets/icons/counter_range.svg', '범위 (Range)', onRangeSelected),
-            _buildItem('assets/icons/counter_repeat.svg', '반복 (Repeat)', onRepeatSelected),
-            _buildItem('assets/icons/counter_interval.svg', '간격 (Interval)', onIntervalSelected),
-            _buildItem('assets/icons/counter_shaping.svg', '증감 (Shaping)', onShapingSelected),
-            _buildItem('assets/icons/counter_length.svg', '길이 (Length)', onLengthSelected),
+            _buildItem(context, 'assets/icons/counter_range.svg', '범위 (Range)', onRangeSelected),
+            _buildItem(context, 'assets/icons/counter_repeat.svg', '반복 (Repeat)', onRepeatSelected),
+            _buildItem(context, 'assets/icons/counter_interval.svg', '간격 (Interval)', onIntervalSelected),
+            _buildItem(context, 'assets/icons/counter_shaping.svg', '증감 (Shaping)', onShapingSelected),
+            _buildItem(context, 'assets/icons/counter_length.svg', '길이 (Length)', onLengthSelected),
             
             const SizedBox(height: 8),
           ],
@@ -136,7 +136,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(String iconPath, String label, VoidCallback? onTap) {
+  Widget _buildItem(BuildContext context, String iconPath, String label, VoidCallback? onTap) {
     return InkWell(
       onTap: onTap,
       child: Padding(

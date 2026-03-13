@@ -170,7 +170,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                                   )
                                 : Container(
                                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                    child: const Center(
+                                    child: Center(
                                       child: Icon(
                                         Icons.image_outlined,
                                         size: 40,

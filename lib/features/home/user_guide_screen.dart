@@ -1063,7 +1063,7 @@ Widget _sectionTitle(context, String text) {
   );
 }
 
-Widget _subSectionTitle(String text) {
+Widget _subSectionTitle(BuildContext context, String text) {
   return Text(
     text,
     style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),

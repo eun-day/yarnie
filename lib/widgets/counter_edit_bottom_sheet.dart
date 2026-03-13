@@ -54,7 +54,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   '메인카운트 값 편집',
                   style: TextStyle(

@@ -96,7 +96,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Part 관리',
                           style: TextStyle(

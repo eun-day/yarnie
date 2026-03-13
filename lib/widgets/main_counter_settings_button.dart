@@ -44,8 +44,8 @@ class MainCounterSettingsButton extends StatelessWidget {
         
         // Menu Items
         itemBuilder: (context) => [
-          _buildMenuItem('change', '목표 단수 변경'),
-          _buildMenuItem('remove', '목표 단수 해제'),
+          _buildMenuItem(context, 'change', '목표 단수 변경'),
+          _buildMenuItem(context, 'remove', '목표 단수 해제'),
         ],
         
         // The Trigger Button
@@ -59,7 +59,7 @@ class MainCounterSettingsButton extends StatelessWidget {
     );
   }
 
-  PopupMenuItem<String> _buildMenuItem(String value, String text) {
+  PopupMenuItem<String> _buildMenuItem(BuildContext context, String value, String text) {
     return PopupMenuItem<String>(
       value: value,
       height: 32,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Brand Colors (Light)
-  static Color primary = Theme.of(context).colorScheme.primary;
+  static const Color primary = Color(0xFF637069);
   static const Color secondary = Color(0xFFC0D2A4);
   static const Color error = Color(0xFFD4183D);
 
@@ -13,10 +13,10 @@ class AppColors {
   static const Color dimTextSecondary = Color(0xFF8B98A5);
 
   // Light Theme Neutrals
-  static Color lightTextPrimary = Theme.of(context).colorScheme.onSurface;
-  static Color lightTextSecondary = Theme.of(context).colorScheme.onSurfaceVariant;
+  static const Color lightTextPrimary = Color(0xFF0A0A0A);
+  static const Color lightTextSecondary = Color(0xFF717182);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static Color lightMuted = Theme.of(context).colorScheme.surfaceContainerHighest;
+  static const Color lightMuted = Color(0xFFECECF0);
 }
 
 class AppTheme {
@@ -32,7 +32,7 @@ class AppTheme {
       surfaceContainerHighest: AppColors.lightMuted,
       onSurface: AppColors.lightTextPrimary,
       onSurfaceVariant: AppColors.lightTextSecondary,
-      outline: Theme.of(context).colorScheme.outline,
+      outline: const Color(0x1A000000),
     );
   }
 
@@ -40,12 +40,12 @@ class AppTheme {
     // Twitter Dim based Dark Mode
     return const ColorScheme(
       brightness: Brightness.dark,
-      primary: AppColors.primary, // Adjust if needed for dark mode
-      onPrimary: Theme.of(context).colorScheme.surface,
+      primary: AppColors.primary,
+      onPrimary: Colors.white,
       secondary: AppColors.secondary,
       onSecondary: Colors.black,
       error: AppColors.error,
-      onError: Theme.of(context).colorScheme.surface,
+      onError: Colors.white,
       surface: AppColors.dimSurface,
       onSurface: AppColors.dimTextPrimary,
       surfaceContainerHighest: Color(0xFF2F3336), // Slightly lighter than surface
@@ -64,7 +64,7 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
           backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
-          foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
+          foregroundColor: const WidgetStatePropertyAll(Colors.white),
         ),
       ),
       appBarTheme: AppBarTheme(

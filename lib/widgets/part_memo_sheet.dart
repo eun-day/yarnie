@@ -130,7 +130,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                       controller: _textController,
                       maxLines: null,
                       style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '새 메모를 입력하세요...',
                         hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         border: InputBorder.none,
@@ -151,7 +151,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
                           SizedBox(width: 4),
                           Text(

@@ -64,7 +64,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
             // Header
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
                   '목표 단수 설정',
                   textAlign: TextAlign.center,
