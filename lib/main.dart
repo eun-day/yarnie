@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
+import 'package:yarnie/core/providers/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,14 +23,23 @@ void main() async {
     debugPrint('Failed to cleanup deleted projects: $e');
   }
 
-  runApp(const ProviderScope(child: MyApp()));
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // ① 시드로 기본 팔레트 생성
     final baseScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF637069), // 브랜드 카키톤
@@ -45,8 +57,26 @@ class MyApp extends StatelessWidget {
       outline: const Color(0x1A000000), // 투명한 검정 보더
     );
 
+    final appLanguage = ref.watch(localeProvider);
+    Locale? locale;
+    if (appLanguage == AppLanguage.ko) {
+      locale = const Locale('ko');
+    } else if (appLanguage == AppLanguage.en) {
+      locale = const Locale('en');
+    }
+
     return MaterialApp(
       title: 'Yarnie',
+      locale: locale,
+      supportedLocales: const [
+        Locale('ko'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: yarnieScheme,

@@ -340,3 +340,8 @@ final projectsEffectsProvider = StreamProvider.autoDispose<ProjectsEffect>((
   final notifier = ref.watch(projectsProvider.notifier);
   return notifier.effects;
 });
+
+/// 삭제된 프로젝트 목록 Stream Provider (휴지통 기능용)
+final deletedProjectsProvider = StreamProvider.autoDispose<List<Project>>((ref) {
+  return appDb.watchDeletedProjects();
+});
