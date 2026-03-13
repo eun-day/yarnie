@@ -4,6 +4,7 @@ import 'package:yarnie/features/my/widgets/setting_item.dart';
 import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
 import 'package:yarnie/features/trash/trash_root.dart';
 import 'package:yarnie/features/home/user_guide_screen.dart';
+import 'package:yarnie/features/my/widgets/app_info_sheet.dart';
 import 'package:yarnie/core/l10n/app_strings.dart';
 
 class MyRoot extends StatefulWidget {
@@ -112,7 +113,12 @@ class _MyRootState extends State<MyRoot> {
                     title: '앱 정보',
                     subtitle: '버전 1.0.0',
                     onTap: () {
-                      // TODO: Navigate to App Info
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const AppInfoSheet(),
+                      );
                     },
                   ),
                 ],
