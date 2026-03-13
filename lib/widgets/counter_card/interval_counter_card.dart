@@ -42,19 +42,19 @@ class IntervalCounterCard extends StatelessWidget {
         children: [
           Text(
             '${intervalRows}행마다',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF717182),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: -0.15,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             '$currentCount/$totalCount${isCompleted ? ' ✓' : ''}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: 0.07,
               height: 1.33,
             ),

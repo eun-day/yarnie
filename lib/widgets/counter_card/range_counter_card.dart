@@ -49,10 +49,10 @@ class RangeCounterCard extends StatelessWidget {
         children: [
           Text(
             '$progressValue',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: 0.37,
               height: 1.0,
             ),
@@ -60,10 +60,10 @@ class RangeCounterCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '/ ${totalRows}행${isCompleted ? ' ✓' : ''}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF717182),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: -0.15,
             ),
           ),

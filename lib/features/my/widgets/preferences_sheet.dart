@@ -24,8 +24,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
         border: Border(top: BorderSide(color: Color.fromRGBO(0, 0, 0, 0.1), width: 0.5)),
       ),
@@ -38,14 +38,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               width: 100,
               height: 8,
               decoration: BoxDecoration(
-                color: const Color(0xFFECECF0),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
             const SizedBox(height: 24),
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
@@ -55,14 +55,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                       AppStrings.tr(context, AppStrings.preferencesTitle),
                       style: AppTextStyles.titleH3.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       AppStrings.tr(context, AppStrings.preferencesSubtitle),
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -73,7 +73,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             // Content List
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 children: [
                   _buildLanguageSection(),
                   const SizedBox(height: 32),
@@ -90,14 +90,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             ),
             // Save Button
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF637069),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.surface,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -110,7 +110,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                     AppStrings.tr(context, AppStrings.save),
                     style: AppTextStyles.bodyM.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                 ),
@@ -124,24 +124,24 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF0A0A0A)),
+        style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurface),
       ),
     );
   }
 
   Widget _buildHelperText(String text) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8, left: 4),
+      padding: EdgeInsets.only(top: 8, left: 4),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Inter',
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          color: Color(0xFF717182),
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           height: 16 / 12,
         ),
       ),
@@ -175,18 +175,18 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF3F3F5),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                const Text('🌐', style: TextStyle(fontSize: 14)),
+                Text('🌐', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
                   languageText,
-                  style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF0A0A0A)),
+                  style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
                 const Spacer(),
                 SvgPicture.asset(
@@ -208,7 +208,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       ),
       builder: (context) {
@@ -227,7 +227,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               ),
               const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -278,7 +278,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       title: Text(
         label,
         style: AppTextStyles.bodyM.copyWith(
-          color: isSelected ? const Color(0xFF637069) : const Color(0xFF0A0A0A),
+          color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
         ),
       ),
@@ -332,14 +332,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           color: isSelected ? const Color.fromRGBO(99, 112, 105, 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? const Color(0xFF637069) : const Color.fromRGBO(0, 0, 0, 0.1),
+            color: isSelected ? Theme.of(context).colorScheme.primary : Color.fromRGBO(0, 0, 0, 0.1),
             width: 1.5,
           ),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
-          style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF0A0A0A)),
+          style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
     );
@@ -358,9 +358,9 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           trailing: Switch(
             value: _autoBackup,
             onChanged: (val) => setState(() => _autoBackup = val),
-            activeColor: Colors.white,
+            activeColor: Theme.of(context).colorScheme.surface,
             activeTrackColor: const Color(0xFF6FB96F),
-            inactiveThumbColor: Colors.white,
+            inactiveThumbColor: Theme.of(context).colorScheme.surface,
             inactiveTrackColor: Colors.grey.shade300,
           ),
         ),
@@ -399,9 +399,9 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           trailing: Switch(
             value: _screenAwake,
             onChanged: (val) => setState(() => _screenAwake = val),
-            activeColor: Colors.white,
+            activeColor: Theme.of(context).colorScheme.surface,
             activeTrackColor: const Color(0xFF6FB96F),
-            inactiveThumbColor: Colors.white,
+            inactiveThumbColor: Theme.of(context).colorScheme.surface,
             inactiveTrackColor: Colors.grey.shade300,
           ),
         ),
@@ -429,7 +429,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               ? null
               : Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
             SvgPicture.asset(iconPath, width: 20, height: 20),
@@ -441,18 +441,18 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: -0.31,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+                    style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -526,7 +526,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           color: isSelected ? const Color.fromRGBO(99, 112, 105, 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? const Color(0xFF637069) : const Color.fromRGBO(0, 0, 0, 0.1),
+            color: isSelected ? Theme.of(context).colorScheme.primary : Color.fromRGBO(0, 0, 0, 0.1),
             width: 1.5,
           ),
         ),
@@ -542,7 +542,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                 ],
                 Text(
                   label,
-                  style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF0A0A0A)),
+                  style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ],
             ),

@@ -32,7 +32,7 @@ class LabelPickerHelper {
                     // 상단 제목 + 라벨 관리 버튼
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '라벨 선택',
                           style: TextStyle(
                             fontSize: 18,
@@ -43,7 +43,7 @@ class LabelPickerHelper {
                         if (onLabelsUpdated != null)
                           CupertinoButton(
                             padding: EdgeInsets.zero,
-                            child: const Icon(CupertinoIcons.pencil),
+                            child: Icon(CupertinoIcons.pencil),
                             onPressed: () async {
                               final updated = await _openLabelManager(
                                 ctx,
@@ -65,7 +65,7 @@ class LabelPickerHelper {
                           children: [
                             for (final l in labels)
                               CupertinoButton(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 6,
                                 ),
@@ -78,7 +78,7 @@ class LabelPickerHelper {
                                   l,
                                   style: TextStyle(
                                     color: (initial == l)
-                                        ? CupertinoColors.white
+                                        ? Theme.of(context).colorScheme.surface
                                         : CupertinoColors.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -86,7 +86,7 @@ class LabelPickerHelper {
                                 ),
                               ),
                             CupertinoButton(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 6,
                               ),
@@ -99,7 +99,7 @@ class LabelPickerHelper {
                                 '미분류',
                                 style: TextStyle(
                                   color: (initial == null)
-                                      ? CupertinoColors.white
+                                      ? Theme.of(context).colorScheme.surface
                                       : CupertinoColors.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -122,7 +122,7 @@ class LabelPickerHelper {
       return showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
@@ -143,7 +143,7 @@ class LabelPickerHelper {
                   // 상단 제목 + 라벨 관리 버튼
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         '라벨 선택',
                         style: TextStyle(
                           fontSize: 18,
@@ -163,7 +163,7 @@ class LabelPickerHelper {
                               onLabelsUpdated(updated);
                             }
                           },
-                          icon: const Icon(Icons.edit),
+                          icon: Icon(Icons.edit),
                         ),
                     ],
                   ),
@@ -179,7 +179,7 @@ class LabelPickerHelper {
                           onSelected: (_) => Navigator.pop(ctx, l),
                         ),
                       ChoiceChip(
-                        label: const Text('미분류'),
+                        label: Text('미분류'),
                         selected: initial == null,
                         onSelected: (_) => Navigator.pop(ctx, ''),
                       ),
@@ -269,7 +269,7 @@ class LabelPickerHelper {
                           }
                           controller.clear();
                         },
-                        child: const Text('추가'),
+                        child: Text('추가'),
                       ),
                     ],
                   ),
@@ -278,12 +278,12 @@ class LabelPickerHelper {
                     children: [
                       OutlinedButton(
                         onPressed: () => Navigator.pop(ctx2, null),
-                        child: const Text('취소'),
+                        child: Text('취소'),
                       ),
                       const Spacer(),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(ctx2, temp),
-                        child: const Text('저장'),
+                        child: Text('저장'),
                       ),
                     ],
                   ),

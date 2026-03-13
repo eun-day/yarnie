@@ -45,12 +45,12 @@ class StitchCounterCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0x1A000000), width: 0.52),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.52),
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.remove, size: 16, color: Color(0xFF0A0A0A)),
+                  child: Icon(Icons.remove, size: 16, color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
             ),
@@ -67,21 +67,21 @@ class StitchCounterCard extends StatelessWidget {
                 children: [
                   Text(
                     '$currentValue',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: 0.37,
                       height: 1.0,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Text(
+                  Text(
                     '코',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       letterSpacing: -0.15,
                     ),
                   ),
@@ -98,12 +98,12 @@ class StitchCounterCard extends StatelessWidget {
                 child: Container(
                   width: 40,
                   height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF637069),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.add, size: 16, color: Colors.white),
+                  child: Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
                 ),
               ),
             ),
@@ -126,12 +126,12 @@ class StitchCounterCard extends StatelessWidget {
                 maxWidth: 120,
               ),
               offset: const Offset(0, -10), // Adjust to appear above/below correctly
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               elevation: 4,
               shadowColor: const Color.fromRGBO(0, 0, 0, 0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
-                side: const BorderSide(color: Color(0x1A000000), width: 0.5),
+                side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5),
               ),
               onSelected: (value) {
                 if (value == -1) {
@@ -145,10 +145,10 @@ class StitchCounterCard extends StatelessWidget {
                   PopupMenuItem<int>(
                     value: n,
                     height: 32,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 4),
                     child: Container(
                       height: 32,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerLeft,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
@@ -156,9 +156,9 @@ class StitchCounterCard extends StatelessWidget {
                       ),
                       child: Text(
                         '+$n씩',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF0A0A0A),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -167,16 +167,16 @@ class StitchCounterCard extends StatelessWidget {
                 PopupMenuItem<int>(
                   value: -1,
                   height: 32,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 4),
                   child: Container(
                     height: 32,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8),
                     alignment: Alignment.centerLeft,
-                    child: const Text(
+                    child: Text(
                       '직접 입력...',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -184,23 +184,23 @@ class StitchCounterCard extends StatelessWidget {
               ],
               child: Container(
                 height: 24,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECF0),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
                     Text(
                       '+$countBy',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 2),
-                    const Icon(Icons.keyboard_arrow_down, size: 14, color: Color(0xFF0A0A0A)),
+                    Icon(Icons.keyboard_arrow_down, size: 14, color: Theme.of(context).colorScheme.onSurface),
                   ],
                 ),
               ),
@@ -269,12 +269,12 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         width: 360,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
             BoxShadow(
@@ -296,24 +296,24 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header
-            const Text(
+            Text(
               '증가값 설정',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: -0.44,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '한 번에 증가시킬 코 수를 입력하세요.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 letterSpacing: -0.15,
               ),
             ),
@@ -345,12 +345,12 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
+                child: Text(
                   '확인',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     letterSpacing: -0.15,
                   ),
                 ),
@@ -362,17 +362,17 @@ class _CountByCustomDialogState extends State<_CountByCustomDialog> {
               child: Container(
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0x1A000000), width: 0.52),
+                  color: Theme.of(context).colorScheme.surface,
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.52),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
+                child: Text(
                   '취소',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.15,
                   ),
                 ),

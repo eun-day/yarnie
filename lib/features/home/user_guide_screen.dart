@@ -8,7 +8,7 @@ class UserGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -17,7 +17,7 @@ class UserGuideScreen extends StatelessWidget {
             // ── Content ──
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 16,
                 ),
@@ -64,9 +64,9 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(bottom: BorderSide(color: Colors.black, width: 0.5)),
       ),
       height: 80,
@@ -79,10 +79,10 @@ class _Header extends StatelessWidget {
             child: IconButton(
               onPressed: onBack,
               padding: EdgeInsets.zero,
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back,
                 size: 16,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -96,13 +96,13 @@ class _Header extends StatelessWidget {
                 Text(
                   '사용 가이드',
                   style: AppTextStyles.titleH2.copyWith(
-                    color: const Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   'Yarnie와 함께하는 뜨개질 여정',
                   style: AppTextStyles.bodyM.copyWith(
-                    color: const Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -125,19 +125,19 @@ class _WelcomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: const Alignment(-0.6, -0.8),
           end: const Alignment(0.6, 0.8),
           colors: [
-            const Color(0xFF637069).withValues(alpha: 0.1),
-            const Color(0xFF637069).withValues(alpha: 0.05),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFF637069).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
@@ -148,18 +148,18 @@ class _WelcomeCard extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF637069).withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: const Text('🦎', style: TextStyle(fontSize: 36)),
+            child: Text('🦎', style: TextStyle(fontSize: 36)),
           ),
           const SizedBox(height: 16),
           // 타이틀
           Text(
             'Yarnie에 오신 것을 환영해요!',
             style: AppTextStyles.titleH2.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
@@ -167,7 +167,7 @@ class _WelcomeCard extends StatelessWidget {
           // 설명
           Text(
             'Yarnie는 뜨개질 프로젝트를 체계적으로 관리하고\n진행 상황을 쉽게 추적할 수 있도록 도와드려요',
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
         ],
@@ -188,7 +188,7 @@ class _TabsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('📱 3개의 탭으로 구성되어 있어요'),
+        _sectionTitle(context, '📱 3개의 탭으로 구성되어 있어요'),
         const SizedBox(height: 12),
         // 홈 탭
         _TabCard(
@@ -252,9 +252,9 @@ class _TabCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: Colors.black.withValues(alpha: 0.1),
@@ -269,11 +269,11 @@ class _TabCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF637069).withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Icon(icon, size: 24, color: const Color(0xFF0A0A0A)),
+            child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -283,14 +283,14 @@ class _TabCard extends StatelessWidget {
                 Text(
                   title,
                   style: AppTextStyles.titleH3.copyWith(
-                    color: const Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
                   style: AppTextStyles.bodyM.copyWith(
-                    color: const Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -314,14 +314,14 @@ class _CreateProjectSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('🎯 프로젝트 만들기'),
+        _sectionTitle(context, '🎯 프로젝트 만들기'),
         const SizedBox(height: 12),
         // 설명 + 스텝 카드
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Colors.black.withValues(alpha: 0.1),
@@ -334,7 +334,7 @@ class _CreateProjectSection extends StatelessWidget {
               Text(
                 '프로젝트는 하나의 완성된 작품을 의미해요. 예를 들어 "겨울 스웨터", "아기 담요", "양말" 같은 거예요.',
                 style: AppTextStyles.bodyM.copyWith(
-                  color: const Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 40),
@@ -344,7 +344,7 @@ class _CreateProjectSection extends StatelessWidget {
                 child: RichText(
                   text: TextSpan(
                     style: AppTextStyles.bodyM.copyWith(
-                      color: const Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     children: const [
                       TextSpan(text: '프로젝트 탭에서 '),
@@ -364,7 +364,7 @@ class _CreateProjectSection extends StatelessWidget {
                 child: Text(
                   '프로젝트 이름, 바늘 정보, 사진 등을 입력해요',
                   style: AppTextStyles.bodyM.copyWith(
-                    color: const Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -375,7 +375,7 @@ class _CreateProjectSection extends StatelessWidget {
                 child: Text(
                   '태그를 추가해서 분류할 수 있어요 (선택사항)',
                   style: AppTextStyles.bodyM.copyWith(
-                    color: const Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -401,18 +401,18 @@ class _StepRow extends StatelessWidget {
           width: 24,
           height: 24,
           decoration: BoxDecoration(
-            color: const Color(0xFF637069).withValues(alpha: 0.2),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
           child: Text(
             number,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
               fontWeight: FontWeight.w400,
               height: 16 / 12,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -435,14 +435,14 @@ class _PartSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('🧩 Part로 나누기'),
+        _sectionTitle(context, '🧩 Part로 나누기'),
         const SizedBox(height: 12),
         // 설명 + 예시 카드
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Colors.black.withValues(alpha: 0.1),
@@ -455,16 +455,16 @@ class _PartSection extends StatelessWidget {
               Text(
                 '프로젝트는 여러 Part로 나눌 수 있어요. 각 Part는 독립적으로 작업을 진행할 수 있어요.',
                 style: AppTextStyles.bodyM.copyWith(
-                  color: const Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 36),
               // 예시 박스
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECF0).withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -473,13 +473,13 @@ class _PartSection extends StatelessWidget {
                     Text(
                       '예시: 스웨터 프로젝트',
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.only(left: 16),
+                      padding: EdgeInsets.only(left: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -491,11 +491,11 @@ class _PartSection extends StatelessWidget {
                             '• 목둘레',
                           ])
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
+                              padding: EdgeInsets.only(bottom: 4),
                               child: Text(
                                 part,
                                 style: AppTextStyles.bodyM.copyWith(
-                                  color: const Color(0xFF717182),
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -538,7 +538,7 @@ class _CounterSystemSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('🔢 카운터 시스템'),
+        _sectionTitle(context, '🔢 카운터 시스템'),
         const SizedBox(height: 12),
 
         // 카운터 소개 카드
@@ -549,13 +549,13 @@ class _CounterSystemSection extends StatelessWidget {
         const SizedBox(height: 12),
 
         // ── 메인 카운터 ──
-        _subSectionTitle('메인 카운터 (MainCounter)'),
+        _subSectionTitle(context, '메인 카운터 (MainCounter)'),
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Colors.black.withValues(alpha: 0.1),
@@ -572,7 +572,7 @@ class _CounterSystemSection extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF637069).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
@@ -587,7 +587,7 @@ class _CounterSystemSection extends StatelessWidget {
                     child: Text(
                       '단수를 세는 기본 카운터예요. 한 번 탭하면 1단씩 증가해요.',
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -596,15 +596,15 @@ class _CounterSystemSection extends StatelessWidget {
               const SizedBox(height: 36),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECF0).withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: RichText(
                   text: TextSpan(
                     style: AppTextStyles.bodyM.copyWith(
-                      color: const Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     children: const [
                       TextSpan(
@@ -625,11 +625,11 @@ class _CounterSystemSection extends StatelessWidget {
         const SizedBox(height: 24),
 
         // ── 보조 카운터 ──
-        _subSectionTitle('보조 카운터 (BuddyCounter)'),
+        _subSectionTitle(context, '보조 카운터 (BuddyCounter)'),
         const SizedBox(height: 4),
         Text(
           '메인 카운터와 함께 사용하는 보조 카운터예요. 코 카운터와 섹션 카운터가 있어요.',
-          style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+          style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 12),
 
@@ -639,7 +639,7 @@ class _CounterSystemSection extends StatelessWidget {
           iconBgColor: const Color(0xFFF3E8FF),
           title: '코 카운터 (Stitch Counter)',
           titleStyle: AppTextStyles.titleH3.copyWith(
-            color: const Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           description: '한 단 내에서 코 수를 세는 독립적인 카운터예요. 메인 카운터와 연동되지 않아요.',
           tipBox: _UseCaseBox(
@@ -658,14 +658,14 @@ class _CounterSystemSection extends StatelessWidget {
         // 섹션 카운터
         _CounterDetailCard(
           svgPath: 'assets/icons/counter_section.svg',
-          iconBgColor: const Color(0xFF637069).withValues(alpha: 0.2),
+          iconBgColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           title: '섹션 카운터 (Section Counter)',
           titleStyle: AppTextStyles.titleH3.copyWith(
-            color: const Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           description: '메인 카운터와 연동되어 특정 구간이나 패턴을 추적하는 카운터예요. 5가지 유형이 있어요.',
-          cardBackgroundColor: const Color(0xFF637069).withValues(alpha: 0.05),
-          cardBorderColor: const Color(0xFF637069).withValues(alpha: 0.3),
+          cardBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+          cardBorderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           tipBox: _LinkedInfoBox(
             title: '🔗 메인 카운터 연동',
             description:
@@ -676,19 +676,19 @@ class _CounterSystemSection extends StatelessWidget {
 
         // ── 섹션 카운터 5가지 유형 (왼쪽 보더) ──
         Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               left: BorderSide(color: Color(0x4D637069), width: 1.5),
             ),
           ),
-          padding: const EdgeInsets.only(left: 18),
+          padding: EdgeInsets.only(left: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '섹션 카운터 5가지 유형',
                 style: AppTextStyles.bodyM.copyWith(
-                  color: const Color(0xFF637069),
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -802,13 +802,13 @@ class _LinkedSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('🔗 섹션 카운터 연동 기능'),
+        _sectionTitle(context, '🔗 섹션 카운터 연동 기능'),
         const SizedBox(height: 12),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Colors.black.withValues(alpha: 0.1),
@@ -821,40 +821,40 @@ class _LinkedSection extends StatelessWidget {
               Text(
                 '섹션 카운터는 메인 카운터와 연동할 수 있어요. 연동하면 메인 카운터가 증가할 때 자동으로 함께 계산돼요.',
                 style: AppTextStyles.bodyM.copyWith(
-                  color: const Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 36),
               // 팁 박스
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECF0).withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text.rich(
                   TextSpan(
                     style: AppTextStyles.bodyM.copyWith(
-                      color: const Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     children: [
-                      const TextSpan(
+                      TextSpan(
                         text: '💡 팁: 링크 버튼 ',
                       ),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 4,
                             vertical: 1,
                           ),
-                          margin: const EdgeInsets.only(bottom: 2),
+                          margin: EdgeInsets.only(bottom: 2),
                           decoration: BoxDecoration(
                             color: const Color(0xFFDCFCE7),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text(
+                          child: Text(
                             '🔗',
                             style: TextStyle(
                               fontSize: 12,
@@ -863,7 +863,7 @@ class _LinkedSection extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const TextSpan(
+                      TextSpan(
                         text: ' 을 눌러서 연동을 켜거나 끌 수 있어요. 초록색이면 연동 중이에요.',
                       ),
                     ],
@@ -874,7 +874,7 @@ class _LinkedSection extends StatelessWidget {
               // 참고 박스
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFAF5FF).withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
@@ -910,7 +910,7 @@ class _TipsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('✨ 활용 팁'),
+        _sectionTitle(context, '✨ 활용 팁'),
         const SizedBox(height: 12),
         _ActivityTipCard(
           title: '📝 메모를 활용하세요',
@@ -942,12 +942,12 @@ class _ActivityTipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF637069).withValues(alpha: 0.05),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFF637069).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
@@ -957,14 +957,14 @@ class _ActivityTipCard extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodyM.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 32),
           Text(
             description,
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -984,43 +984,43 @@ class _CtaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: const Alignment(-0.7, -0.7),
           end: const Alignment(0.7, 0.7),
           colors: [
-            const Color(0xFF637069).withValues(alpha: 0.1),
-            const Color(0xFF637069).withValues(alpha: 0.05),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFF637069).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
       child: Column(
         children: [
-          const Text('🦎', style: TextStyle(fontSize: 36)),
+          Text('🦎', style: TextStyle(fontSize: 36)),
           const SizedBox(height: 36),
           Text(
             '이제 시작할 준비가 되셨나요?',
             style: AppTextStyles.titleH3.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           Text(
             'Yarnie와 함께 즐거운 뜨개질 여정을 시작해보세요!\n궁금한 점이 있으면 언제든 다시 확인하세요.',
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           Text(
             '이 가이드는 홈 화면의 사용 가이드 카드 또는 마이 > 고객 지원에서 다시 볼 수 있어요.',
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 36),
@@ -1031,19 +1031,19 @@ class _CtaCard extends StatelessWidget {
             child: FilledButton(
               onPressed: onClose,
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF637069),
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.surface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   letterSpacing: -0.15,
                 ),
               ),
-              child: const Text('닫기'),
+              child: Text('닫기'),
             ),
           ),
         ],
@@ -1056,17 +1056,17 @@ class _CtaCard extends StatelessWidget {
 // Shared Widgets
 // ─────────────────────────────────────────────────────────────────────────────
 
-Widget _sectionTitle(String text) {
+Widget _sectionTitle(BuildContext context, String text) {
   return Text(
     text,
-    style: AppTextStyles.titleH3.copyWith(color: const Color(0xFF0A0A0A)),
+    style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
   );
 }
 
-Widget _subSectionTitle(String text) {
+Widget _subSectionTitle(BuildContext context, String text) {
   return Text(
     text,
-    style: AppTextStyles.titleH3.copyWith(color: const Color(0xFF0A0A0A)),
+    style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
   );
 }
 
@@ -1078,9 +1078,9 @@ class _SimpleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: Colors.black.withValues(alpha: 0.1),
@@ -1089,7 +1089,7 @@ class _SimpleCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+        style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -1118,7 +1118,7 @@ class _TipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(14),
@@ -1127,7 +1127,7 @@ class _TipCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 24)),
+          Text(emoji, style: TextStyle(fontSize: 24)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1181,7 +1181,7 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(14),
@@ -1213,7 +1213,7 @@ class _InfoCard extends StatelessWidget {
                       TextSpan(text: '$description '),
                       TextSpan(
                         text: highlight,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       TextSpan(text: descriptionSuffix),
                     ],
@@ -1245,7 +1245,7 @@ class _UseCaseBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(10),
@@ -1257,18 +1257,18 @@ class _UseCaseBox extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodyM.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           for (final item in items)
             Padding(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: EdgeInsets.only(bottom: 4),
               child: Text(
                 item,
                 style: AppTextStyles.bodyM.copyWith(
-                  color: const Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -1287,12 +1287,12 @@ class _LinkedInfoBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFF637069).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
@@ -1302,14 +1302,14 @@ class _LinkedInfoBox extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodyM.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             description,
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -1342,9 +1342,9 @@ class _CounterDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cardBackgroundColor ?? Colors.white,
+        color: cardBackgroundColor ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: cardBorderColor ?? Colors.black.withValues(alpha: 0.1),
@@ -1377,7 +1377,7 @@ class _CounterDetailCard extends StatelessWidget {
                     Text(
                       description,
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -1420,9 +1420,9 @@ class _SectionCounterTypeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: Colors.black.withValues(alpha: 0.1),
@@ -1454,14 +1454,14 @@ class _SectionCounterTypeCard extends StatelessWidget {
                     Text(
                       title,
                       style: AppTextStyles.titleH3.copyWith(
-                        color: const Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -1473,7 +1473,7 @@ class _SectionCounterTypeCard extends StatelessWidget {
           // 사용 사례 + 예시 박스
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: accentBgColor,
               borderRadius: BorderRadius.circular(10),
@@ -1485,18 +1485,18 @@ class _SectionCounterTypeCard extends StatelessWidget {
                 Text(
                   '언제 사용하나요?',
                   style: AppTextStyles.bodyM.copyWith(
-                    color: const Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
                 for (final item in useCases)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: EdgeInsets.only(bottom: 4),
                     child: Text(
                       item,
                       style: AppTextStyles.bodyM.copyWith(
-                        color: const Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -1512,10 +1512,10 @@ class _SectionCounterTypeCard extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     style: AppTextStyles.bodyM.copyWith(
-                      color: const Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     children: [
-                      const TextSpan(
+                      TextSpan(
                         text: '예시: ',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),

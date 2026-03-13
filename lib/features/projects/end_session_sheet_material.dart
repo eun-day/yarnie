@@ -83,11 +83,11 @@ class _EndSessionSheetMaterialState extends State<EndSessionSheetMaterial> {
             const SizedBox(height: 16),
             Row(
               children: [
-                OutlinedButton(onPressed: () => _close(false), child: const Text('취소')),
+                OutlinedButton(onPressed: () => _close(false), child: Text('취소')),
                 const Spacer(),
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('저장'),
+                  icon: Icon(Icons.save),
+                  label: Text('저장'),
                   onPressed: () => _close(true),
                 ),
               ],

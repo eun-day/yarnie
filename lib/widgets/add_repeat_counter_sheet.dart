@@ -130,8 +130,8 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
@@ -150,11 +150,11 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                 // Drag Handle
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.only(top: 16, bottom: 24),
+                    margin: EdgeInsets.only(top: 16, bottom: 24),
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFECECF0),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -162,25 +162,25 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
                 // Header
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _isEditing ? '반복 카운터 수정' : '반복 카운터 추가',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF0A0A0A),
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -0.31,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         '특정 패턴을 반복할 때 사용하는 카운터입니다.',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           letterSpacing: -0.15,
                         ),
                       ),
@@ -192,7 +192,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
                 // Form Content
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       // Label Field
@@ -233,7 +233,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
                 // Footer Buttons (Matching Range Counter design)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       GestureDetector(
@@ -242,15 +242,15 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? const Color(0xFF637069) : const Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             _isEditing ? '저장' : '추가',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -263,16 +263,16 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: const Color(0x1A000000), width: 0.64),
+                            color: Theme.of(context).colorScheme.surface,
+                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
+                          child: Text(
                             '취소',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -294,26 +294,26 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '라벨',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           height: 36, // Using same height as AddRangeCounterSheet
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
             controller: _labelController,
-            style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)), // Adjusted to match design
+            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface), // Adjusted to match design
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -322,9 +322,9 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
-          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );

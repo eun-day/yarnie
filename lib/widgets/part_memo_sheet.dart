@@ -61,8 +61,8 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
@@ -76,11 +76,11 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
             // Handle Bar
             Center(
               child: Container(
-                margin: const EdgeInsets.only(top: 16, bottom: 8),
+                margin: EdgeInsets.only(top: 16, bottom: 8),
                 width: 100,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECF0),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
@@ -88,25 +88,25 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '${widget.partName} - 메모',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: -0.31,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     '파트에 대한 메모를 추가하거나 수정하세요.',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       letterSpacing: -0.15,
                     ),
                   ),
@@ -116,12 +116,12 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
             // Input Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
                   Container(
                     height: 80,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF3F3F5),
                       borderRadius: BorderRadius.circular(8),
@@ -129,10 +129,10 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                     child: TextField(
                       controller: _textController,
                       maxLines: null,
-                      style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
-                      decoration: const InputDecoration(
+                      style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                      decoration: InputDecoration(
                         hintText: '새 메모를 입력하세요...',
-                        hintStyle: TextStyle(color: Color(0xFF717182)),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(vertical: 8),
@@ -146,20 +146,20 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                       height: 36,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF637069).withValues(alpha: _isInputValid ? 1.0 : 0.5),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: _isInputValid ? 1.0 : 0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.add, size: 16, color: Colors.white),
+                        children: [
+                          Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
                           SizedBox(width: 4),
                           Text(
                             '메모 추가',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -184,12 +184,12 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
                   final notes = snapshot.data!;
                   if (notes.isEmpty) {
-                    return const Padding(
+                    return Padding(
                       padding: EdgeInsets.only(bottom: 16),
                       child: Center(
                         child: Text(
                           '등록된 메모가 없습니다.',
-                          style: TextStyle(color: Color(0xFF717182)),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ),
                     );
@@ -197,7 +197,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
                   return ListView.builder(
                     shrinkWrap: true,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     itemCount: notes.length,
                     itemBuilder: (context, index) {
                       final note = notes[index];
@@ -234,33 +234,33 @@ class _MemoCard extends StatelessWidget {
         _showActionSheet(context);
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0x1A000000), width: 0.64),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+              padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
                       note.content,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.15,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   if (note.isPinned)
-                    const Icon(
+                    Icon(
                       Icons.push_pin,
                       size: 16,
                       color: Color(0xFFD4183D),
@@ -270,15 +270,15 @@ class _MemoCard extends StatelessWidget {
             ),
             Container(
               height: 0.64,
-              color: const Color(0x1A000000),
+              color: Theme.of(context).colorScheme.outline,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Text(
                 mdHm(note.createdAt),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -297,8 +297,8 @@ class _MemoActionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
@@ -306,18 +306,18 @@ class _MemoActionSheet extends StatelessWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Handle Bar
               Center(
                 child: Container(
-                  margin: const EdgeInsets.only(top: 16, bottom: 16),
+                  margin: EdgeInsets.only(top: 16, bottom: 16),
                   width: 100,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFECECF0),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -326,9 +326,9 @@ class _MemoActionSheet extends StatelessWidget {
               _ActionButton(
                 label: note.isPinned ? '상단 고정 해제' : '상단에 고정',
                 icon: Icons.push_pin_outlined,
-                backgroundColor: const Color(0xFF637069),
-                textColor: Colors.white,
-                iconColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textColor: Theme.of(context).colorScheme.surface,
+                iconColor: Theme.of(context).colorScheme.surface,
                 onTap: () {
                   appDb.togglePartNotePin(note.id);
                   Navigator.pop(context);
@@ -338,9 +338,9 @@ class _MemoActionSheet extends StatelessWidget {
               _ActionButton(
                 label: '수정',
                 icon: Icons.edit_outlined,
-                backgroundColor: Colors.white,
-                textColor: const Color(0xFF0A0A0A),
-                iconColor: const Color(0xFF0A0A0A),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.onSurface,
+                iconColor: Theme.of(context).colorScheme.onSurface,
                 showBorder: true,
                 onTap: () {
                   Navigator.pop(context);
@@ -351,7 +351,7 @@ class _MemoActionSheet extends StatelessWidget {
               _ActionButton(
                 label: '삭제',
                 icon: Icons.delete_outline,
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 textColor: const Color(0xFFD4183D),
                 iconColor: const Color(0xFFD4183D),
                 showBorder: true,
@@ -375,8 +375,8 @@ class _MemoActionSheet extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
@@ -392,32 +392,32 @@ class _MemoActionSheet extends StatelessWidget {
               // Handle Bar
               Center(
                 child: Container(
-                  margin: const EdgeInsets.only(top: 16, bottom: 8),
+                  margin: EdgeInsets.only(top: 16, bottom: 8),
                   width: 100,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFECECF0),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       '메모 수정',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Container(
                       height: 120,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF3F3F5),
                         borderRadius: BorderRadius.circular(8),
@@ -426,7 +426,7 @@ class _MemoActionSheet extends StatelessWidget {
                         controller: controller,
                         maxLines: null,
                         autofocus: true,
-                        style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
+                        style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
@@ -444,11 +444,11 @@ class _MemoActionSheet extends StatelessWidget {
                               height: 48,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: const Color(0x1A000000)),
+                                color: Theme.of(context).colorScheme.surface,
+                                border: Border.all(color: Theme.of(context).colorScheme.outline),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text('취소'),
+                              child: Text('취소'),
                             ),
                           ),
                         ),
@@ -469,12 +469,12 @@ class _MemoActionSheet extends StatelessWidget {
                               height: 48,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF637069),
+                                color: Theme.of(context).colorScheme.primary,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '저장',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                               ),
                             ),
                           ),
@@ -520,7 +520,7 @@ class _ActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
-          border: showBorder ? Border.all(color: const Color(0x1A000000), width: 0.694) : null,
+          border: showBorder ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694) : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

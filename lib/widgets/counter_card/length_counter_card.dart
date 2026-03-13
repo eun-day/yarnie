@@ -48,14 +48,14 @@ class LengthCounterCard extends StatelessWidget {
               SvgPicture.asset(
                 'assets/icons/counter_length.svg',
                 width: 14,
-                colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn),
               ),
               const SizedBox(width: 4),
               Text(
                 isCompleted ? '달성 완료 ✓' : '남은 길이',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.15,
                 ),
               ),
@@ -69,10 +69,10 @@ class LengthCounterCard extends StatelessWidget {
             children: [
               Text(
                 remainingLength.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: 0.07,
                   height: 1.33,
                 ),
@@ -80,9 +80,9 @@ class LengthCounterCard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 unit,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.15,
                 ),
               ),

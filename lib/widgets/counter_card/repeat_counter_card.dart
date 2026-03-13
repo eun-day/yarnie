@@ -55,10 +55,10 @@ class RepeatCounterCard extends StatelessWidget {
               Text(
                 '${currentRepeatCount + 1}', // Display 1-based for user? Or 0? Design shows '0 / 5회' -> maybe completed count?
                 // If '0 / 5회' means 0 completed, then we use currentRepeatCount.
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: 0.37,
                   height: 1.0,
                 ),
@@ -66,10 +66,10 @@ class RepeatCounterCard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '/ ${maxRepeatCount}회${isCompleted ? ' ✓' : ''}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.15,
                 ),
               ),
@@ -78,9 +78,9 @@ class RepeatCounterCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             '$currentRowInPattern/${rowsPerRepeat}행 (${rowsPerRepeat}행 패턴)',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF717182),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: -0.15,
             ),
           ),

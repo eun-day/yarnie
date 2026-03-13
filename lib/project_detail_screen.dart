@@ -181,7 +181,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     final projectAsync = appDb.watchProject(widget.projectId);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: StreamBuilder<Project?>(
           stream: projectAsync,
@@ -208,7 +208,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             return Column(
               children: [
                 // 1. Custom Header
-                _buildHeader(context, project),
+                _buildHeader(context, snapshot.data!),
 
                 // 2. Part Tabs
                 _buildPartTabs(context, project),
@@ -357,8 +357,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             },
           );
         },
-        backgroundColor: const Color(0xFF637069),
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.surface),
       ),
     );
   }
@@ -366,9 +366,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   Widget _buildHeader(BuildContext context, Project project) {
     return Container(
       height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(color: Color(0x0D000000), width: 0.5),
         ),
@@ -386,20 +386,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back,
                     size: 24,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Text(
                 project.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: -0.31,
                 ),
               ),
@@ -437,10 +437,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.description_outlined,
                         size: 24,
-                        color: Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     if (_selectedPartId != null)
@@ -456,15 +456,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             child: Container(
                               width: 16,
                               height: 16,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF637069),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 '$count',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.surface,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -488,26 +488,26 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   offset: const Offset(0, 40),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    side: const BorderSide(
+                    side: BorderSide(
                       color: Color(0x19000000),
                       width: 0.7,
                     ),
                   ),
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   elevation: 2,
                   padding: EdgeInsets.zero,
                   child: Container(
                     width: 42,
                     height: 36,
                     alignment: Alignment.center,
-                    child: const Icon(
+                    child: Icon(
                       Icons.more_vert,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'info',
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -515,12 +515,12 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             '프로젝트 정보',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.15,
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'part_manage',
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -528,7 +528,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             'Part 관리',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -672,17 +672,17 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         return Container(
           height: 60,
           width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
             border: Border(
-              bottom: BorderSide(color: Color(0x1A000000), width: 0.5),
+              bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5),
             ),
           ),
           child: Row(
             children: [
               // New Part Button (Fixed)
               Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   left: 12,
                   right: 8,
                   top: 12,
@@ -691,20 +691,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 child: GestureDetector(
                   onTap: () => _showAddPartDialog(context, project.id),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF637069),
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.add, color: Colors.white, size: 16),
+                        Icon(Icons.add, color: Theme.of(context).colorScheme.surface, size: 16),
                         SizedBox(width: 4),
                         Text(
                           '새 파트',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             letterSpacing: -0.31,
@@ -719,7 +719,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               // Reorderable Part List
               Expanded(
                 child: parts.isEmpty
-                    ? const Padding(
+                    ? Padding(
                         padding: EdgeInsets.only(left: 8),
                         child: Text(
                           '파트를 추가해주세요',
@@ -728,7 +728,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       )
                     : ReorderableListView.builder(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(
+                        padding: EdgeInsets.only(
                           right: 12,
                           top: 12,
                           bottom: 12,
@@ -773,8 +773,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             },
                             // 롱프레스로 드래그 시작
                             child: Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(
+                              margin: EdgeInsets.only(right: 8),
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
@@ -788,7 +788,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                                 part.name,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? Colors.white
+                                      ? Theme.of(context).colorScheme.surface
                                       : const Color(0xFF030213),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -817,7 +817,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('새 파트 추가'),
+              title: Text('새 파트 추가'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -841,7 +841,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('취소'),
+                  child: Text('취소'),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -885,7 +885,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       }
                     }
                   },
-                  child: const Text('추가'),
+                  child: Text('추가'),
                 ),
               ],
             );
@@ -897,7 +897,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
   Widget _buildIntegratedContentView(BuildContext context, int partId) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1203,7 +1203,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
 
     switch (type) {
       case 'range':
-        if (runs.isEmpty) return const Text('No Data');
+        if (runs.isEmpty) return Text('No Data');
         final run = runs.first;
         final isCompleted =
             effectiveValue >= (run.startRow + run.rowsTotal - 1);
@@ -1503,7 +1503,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       case 'length':
-        if (runs.isEmpty) return const Text('No Data');
+        if (runs.isEmpty) return Text('No Data');
         final runL = runs.first;
 
         final targetLength = spec['targetLength'] as double? ?? 0.0;
@@ -1683,38 +1683,38 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
 
   Widget _buildContent(Session? session, bool isRunning) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0x1A000000), width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.timer_outlined,
                 size: 14,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 '세션',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 _formatDuration(_elapsed),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: -0.45,
                 ),
               ),
@@ -1723,11 +1723,11 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
           GestureDetector(
             onTap: _handleToggleSession,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: isRunning
                     ? const Color(0xFFECEEF2)
-                    : const Color(0xFF637069),
+                    : Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -1735,13 +1735,13 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
                     size: 14,
-                    color: isRunning ? const Color(0xFF030213) : Colors.white,
+                    color: isRunning ? Color(0xFF030213) : Theme.of(context).colorScheme.surface,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     isRunning ? '일시정지' : (session == null ? '시작' : '이어하기'),
                     style: TextStyle(
-                      color: isRunning ? const Color(0xFF030213) : Colors.white,
+                      color: isRunning ? Color(0xFF030213) : Theme.of(context).colorScheme.surface,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.15,
@@ -1817,9 +1817,9 @@ class MainCounterWidget extends StatelessWidget {
           height: 160,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
-            // border: Border.all(color: const Color(0x1A000000), width: 0.5), // Removed border as per design screenshot usually full bleed or specific
+            // border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5), // Removed border as per design screenshot usually full bleed or specific
           ),
           child: Stack(
             children: [
@@ -1844,13 +1844,13 @@ class MainCounterWidget extends StatelessWidget {
                             );
                           }
                         },
-                        child: const Center(
+                        child: Center(
                           child: Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Icon(
                               Icons.remove,
                               size: 40,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                           ),
                         ),
@@ -1873,13 +1873,13 @@ class MainCounterWidget extends StatelessWidget {
                             newValue: currentValue + 1,
                           );
                         },
-                        child: const Center(
+                        child: Center(
                           child: Padding(
                             padding: EdgeInsets.only(left: 20),
                             child: Icon(
                               Icons.add,
                               size: 40,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                           ),
                         ),
@@ -1912,7 +1912,7 @@ class MainCounterWidget extends StatelessWidget {
                     width: 104,
                     height: 104,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: const Color(0xFFF3F4F6),
@@ -1938,10 +1938,10 @@ class MainCounterWidget extends StatelessWidget {
                       children: [
                         Text(
                           '$currentValue',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0A0A0A),
+                            color: Theme.of(context).colorScheme.onSurface,
                             letterSpacing: 0.37,
                             height: 1.1,
                           ),
@@ -1949,9 +1949,9 @@ class MainCounterWidget extends StatelessWidget {
                         if (hasTarget)
                           Text(
                             '/ $targetValue',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF717182),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w400,
                               height: 1.33,
                             ),
@@ -1971,7 +1971,7 @@ class MainCounterWidget extends StatelessWidget {
                   child: Center(
                     child: Container(
                       height: 14,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(100),
@@ -1982,7 +1982,7 @@ class MainCounterWidget extends StatelessWidget {
                           Text(
                             '$remaining줄 남음',
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.9),
+                              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
                               fontSize: 9.2,
                               fontWeight: FontWeight.w400,
                               height: 1.2,
@@ -2035,7 +2035,7 @@ class MainCounterWidget extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       widthFactor: progress,
                       child: Container(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
                       ),
                     ),
                   ),

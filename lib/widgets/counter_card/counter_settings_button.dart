@@ -40,21 +40,23 @@ class CounterSettingsButton extends StatelessWidget {
       constraints: const BoxConstraints.tightFor(width: menuWidth),
       elevation: 3,
       shadowColor: const Color.fromRGBO(0, 0, 0, 0.2),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(
+        side: BorderSide(
           color: Color.fromRGBO(0, 0, 0, 0.1),
           width: 0.52,
         ),
       ),
       items: [
         _buildMenuItem(
+          context: context,
           value: 'edit',
           icon: Icons.edit_outlined,
           text: '수정',
         ),
         _buildMenuItem(
+          context: context,
           value: 'delete',
           text: '삭제',
           textColor: const Color(0xFFD4183D),
@@ -75,26 +77,28 @@ class CounterSettingsButton extends StatelessWidget {
   }
 
   PopupMenuItem<String> _buildMenuItem({
+    required BuildContext context,
     required String value,
     IconData? icon,
     required String text,
-    Color textColor = const Color(0xFF0A0A0A),
+    Color? textColor,
     bool isDestructive = false,
   }) {
+    final effectiveTextColor = textColor ?? Theme.of(context).colorScheme.onSurface;
     return PopupMenuItem<String>(
       value: value,
       height: 32,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: EdgeInsets.symmetric(horizontal: 4),
       child: Container(
         height: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 16, color: textColor),
+              Icon(icon, size: 16, color: effectiveTextColor),
               const SizedBox(width: 8),
             ] else if (isDestructive) ...[
               // No icon for delete, just text
@@ -104,7 +108,7 @@ class CounterSettingsButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: textColor,
+                color: effectiveTextColor,
                 letterSpacing: -0.15,
               ),
             ),
@@ -126,8 +130,8 @@ class CounterSettingsButton extends StatelessWidget {
         child: SvgPicture.asset(
           'assets/icons/settings.svg',
           width: 28,
-          colorFilter: const ColorFilter.mode(
-            Color(0xFF0A0A0A),
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onSurface,
             BlendMode.srcIn,
           ),
         ),

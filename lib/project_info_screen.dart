@@ -56,8 +56,8 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
       expand: false,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
           ),
           child: Column(
@@ -69,7 +69,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                   width: 100,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFECECF0),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -78,7 +78,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
 
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,21 +87,21 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '프로젝트 정보',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.31,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             '프로젝트의 상세 정보를 확인하세요',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF717182),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -122,18 +122,18 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                       },
                       child: Container(
                         height: 32,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.transparent,
                         ),
-                        child: const Text(
+                        child: Text(
                           '수정',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF637069),
+                            color: Theme.of(context).colorScheme.primary,
                             letterSpacing: -0.15,
                           ),
                         ),
@@ -148,7 +148,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
@@ -169,12 +169,12 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                                     fit: BoxFit.cover,
                                   )
                                 : Container(
-                                    color: const Color(0xFFECECF0),
-                                    child: const Center(
+                                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                    child: Center(
                                       child: Icon(
                                         Icons.image_outlined,
                                         size: 40,
-                                        color: Color(0xFF717182),
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ),
@@ -187,7 +187,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                       _buildDetailItem(
                         '프로젝트 이름',
                         displayProject.name,
-                        valueColor: const Color(0xFF0A0A0A),
+                        valueColor: Theme.of(context).colorScheme.onSurface,
                       ),
                       const SizedBox(height: 24),
 
@@ -200,7 +200,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                               displayProject.needleType?.isNotEmpty == true
                                   ? displayProject.needleType!
                                   : '-',
-                              valueColor: const Color(0xFF0A0A0A),
+                              valueColor: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           Expanded(
@@ -209,7 +209,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                               displayProject.needleSize?.isNotEmpty == true
                                   ? displayProject.needleSize!
                                   : '-',
-                              valueColor: const Color(0xFF0A0A0A),
+                              valueColor: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -222,7 +222,7 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                         displayProject.lotNumber?.isNotEmpty == true
                             ? displayProject.lotNumber!
                             : '-',
-                        valueColor: const Color(0xFF0A0A0A),
+                        valueColor: Theme.of(context).colorScheme.onSurface,
                       ),
                       const SizedBox(height: 24),
 
@@ -230,11 +230,11 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                       _buildSection(
                         title: '태그',
                         content: projectTags.isEmpty
-                            ? const Text(
+                            ? Text(
                                 '지정된 태그가 없습니다.',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Color(0xFF717182),
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               )
                             : Wrap(
@@ -266,13 +266,13 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                             return _buildDetailItem(
                               '게이지',
                               '${parts.join(' / ')} (10cm x 10cm 기준)',
-                              valueColor: const Color(0xFF0A0A0A),
+                              valueColor: Theme.of(context).colorScheme.onSurface,
                             );
                           } else {
                             return _buildDetailItem(
                               '게이지',
                               '게이지 정보 없음',
-                              valueColor: const Color(0xFF717182),
+                              valueColor: Theme.of(context).colorScheme.onSurfaceVariant,
                             );
                           }
                         },
@@ -286,18 +286,18 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
                             ? displayProject.memo!
                             : '메모 없음',
                         valueColor: displayProject.memo?.isNotEmpty == true
-                            ? const Color(0xFF0A0A0A)
-                            : const Color(0xFF717182),
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(height: 24),
 
                       // Dates (Top border)
                       Container(
-                        padding: const EdgeInsets.only(top: 16),
-                        decoration: const BoxDecoration(
+                        padding: EdgeInsets.only(top: 16),
+                        decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(
-                              color: Color(0x1A000000),
+                              color: Theme.of(context).colorScheme.outline,
                               width: 0.7,
                             ),
                           ),
@@ -354,9 +354,9 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF717182),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
         ),
@@ -376,9 +376,9 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF717182),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
         ),
@@ -401,18 +401,18 @@ class _ProjectInfoSheetState extends ConsumerState<ProjectInfoSheet> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF717182),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),

@@ -19,21 +19,21 @@ class SessionDialogHelper {
       return showCupertinoModalPopup<bool>(
         context: context,
         builder: (ctx) => CupertinoActionSheet(
-          title: const Text('진행 중인 세션이 있습니다'),
+          title: Text('진행 중인 세션이 있습니다'),
           actions: [
             CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('이어하기'),
+              child: Text('이어하기'),
             ),
             CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('새로 시작'),
+              child: Text('새로 시작'),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(ctx, null),
-            child: const Text('취소'),
+            child: Text('취소'),
           ),
         ),
       );
@@ -41,16 +41,16 @@ class SessionDialogHelper {
       return showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('진행 중 세션'),
-          content: const Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
+          title: Text('진행 중 세션'),
+          content: Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('새로 시작'),
+              child: Text('새로 시작'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('이어하기'),
+              child: Text('이어하기'),
             ),
           ],
         ),

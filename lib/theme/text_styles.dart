@@ -5,7 +5,7 @@ class AppTextStyles {
 
   /// Title/H1
   /// Size: 24, Height: 32px, Spacing: 0.07px
-  static const TextStyle titleH1 = TextStyle(
+  static TextStyle titleH1 = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 24,
     fontWeight: FontWeight.w400,
@@ -16,7 +16,7 @@ class AppTextStyles {
 
   /// Title/H2
   /// Size: 20, Height: 28px, Spacing: -0.45px
-  static const TextStyle titleH2 = TextStyle(
+  static TextStyle titleH2 = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w400,
@@ -27,7 +27,7 @@ class AppTextStyles {
 
   /// Title/H3
   /// Size: 16, Height: 24px, Spacing: -0.31px
-  static const TextStyle titleH3 = TextStyle(
+  static TextStyle titleH3 = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -38,7 +38,7 @@ class AppTextStyles {
 
   /// Body/M
   /// Size: 14, Height: 20px, Spacing: -0.15px
-  static const TextStyle bodyM = TextStyle(
+  static TextStyle bodyM = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,

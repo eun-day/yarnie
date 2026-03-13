@@ -36,12 +36,12 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         width: 360, // Approximate width to match design relative to screen
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
             BoxShadow(
@@ -64,14 +64,14 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
             // Header
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
                   '목표 단수 설정',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.44,
                   ),
                 ),
@@ -82,7 +82,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                   ),
                 ),
@@ -95,10 +95,10 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
             NumberInputGroup(
               label: '목표 단수',
               controller: _controller,
-              textStyle: const TextStyle(
+              textStyle: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: 0.07,
               ),
               onChanged: () {
@@ -125,12 +125,12 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '저장',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -142,17 +142,17 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '취소',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -197,7 +197,7 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? const Color(0xFFC0D2A4) : Colors.white,
+          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: _isPressed ? const Color(0xFFC0D2A4) : const Color.fromRGBO(0, 0, 0, 0.1),
@@ -208,7 +208,7 @@ class _StepButtonState extends State<_StepButton> {
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Colors.white : const Color(0xFF0A0A0A),
+          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

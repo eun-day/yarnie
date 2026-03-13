@@ -23,7 +23,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 220, 
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -40,7 +40,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
         ],
       ),
       child: Material(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         clipBehavior: Clip.hardEdge,
         child: Column(
@@ -48,14 +48,14 @@ class AddBuddyCounterMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
               child: Text(
                 '카운터 유형 선택',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: -0.15,
                 ),
               ),
@@ -66,7 +66,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
             InkWell(
               onTap: onStitchSelected,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -74,10 +74,10 @@ class AddBuddyCounterMenu extends StatelessWidget {
                       width: 20,
                       height: 20,
                       alignment: Alignment.center,
-                      child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14, colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn)),
+                      child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn)),
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -86,7 +86,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -96,7 +96,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,
-                              color: Color(0xFF717182),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -110,24 +110,24 @@ class AddBuddyCounterMenu extends StatelessWidget {
             const Divider(height: 1, thickness: 1, color: Color.fromRGBO(0, 0, 0, 0.1)),
 
             // Section Header
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 4),
               child: Text(
                 '섹션 카운터',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
 
             // Items
-            _buildItem('assets/icons/counter_range.svg', '범위 (Range)', onRangeSelected),
-            _buildItem('assets/icons/counter_repeat.svg', '반복 (Repeat)', onRepeatSelected),
-            _buildItem('assets/icons/counter_interval.svg', '간격 (Interval)', onIntervalSelected),
-            _buildItem('assets/icons/counter_shaping.svg', '증감 (Shaping)', onShapingSelected),
-            _buildItem('assets/icons/counter_length.svg', '길이 (Length)', onLengthSelected),
+            _buildItem(context, 'assets/icons/counter_range.svg', '범위 (Range)', onRangeSelected),
+            _buildItem(context, 'assets/icons/counter_repeat.svg', '반복 (Repeat)', onRepeatSelected),
+            _buildItem(context, 'assets/icons/counter_interval.svg', '간격 (Interval)', onIntervalSelected),
+            _buildItem(context, 'assets/icons/counter_shaping.svg', '증감 (Shaping)', onShapingSelected),
+            _buildItem(context, 'assets/icons/counter_length.svg', '길이 (Length)', onLengthSelected),
             
             const SizedBox(height: 8),
           ],
@@ -136,18 +136,18 @@ class AddBuddyCounterMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(String iconPath, String label, VoidCallback? onTap) {
+  Widget _buildItem(BuildContext context, String iconPath, String label, VoidCallback? onTap) {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
              Container(
                 width: 20,
                 height: 20,
                 alignment: Alignment.center,
-                child: SvgPicture.asset(iconPath, width: 14, colorFilter: const ColorFilter.mode(Color(0xFF717182), BlendMode.srcIn)),
+                child: SvgPicture.asset(iconPath, width: 14, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn)),
              ),
             const SizedBox(width: 8),
             Text(
@@ -155,7 +155,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
-                color: const Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: -0.15,
               ),
             ),

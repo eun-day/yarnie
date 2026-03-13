@@ -22,18 +22,18 @@ class ProjectListTile extends StatelessWidget {
     final projectTags = _getProjectTags();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.1), width: 0.65),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.65),
       ),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(14),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -65,11 +65,11 @@ class ProjectListTile extends StatelessWidget {
                   children: [
                     Text(
                       project.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.5,
                         letterSpacing: -0.31,
                       ),
@@ -82,19 +82,19 @@ class ProjectListTile extends StatelessWidget {
                         // Date
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.calendar_today,
                               size: 12,
-                              color: Color(0xFF717182),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               _formatDate(project.createdAt),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF717182),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 height: 1.42,
                                 letterSpacing: -0.15,
                               ),
@@ -111,7 +111,7 @@ class ProjectListTile extends StatelessWidget {
                               child: Row(
                                 children: projectTags.map((tag) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(right: 4.0),
+                                    padding: EdgeInsets.only(right: 4.0),
                                     child: ColoredTagChip(
                                       key: ValueKey(tag.id),
                                       tag: tag,

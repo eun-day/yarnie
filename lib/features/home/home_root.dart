@@ -118,7 +118,7 @@ class _HomeRootState extends State<HomeRoot> {
       body: SafeArea(
         child: SingleChildScrollView(
           controller: widget.controller,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 33),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 33),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -196,12 +196,12 @@ class _WelcomeMessage extends StatelessWidget {
       children: [
         Text(
           isActiveUser ? '환영합니다! 🦎' : '안녕하세요! 🦎',
-          style: AppTextStyles.titleH1.copyWith(color: const Color(0xFF0A0A0A)),
+          style: AppTextStyles.titleH1.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 4),
         Text(
           isActiveUser ? '오늘도 즐거운 뜨개질 하세요' : '뜨개질과 함께하는 즐거운 시간을 시작해보세요',
-          style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+          style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -220,12 +220,12 @@ class _NewProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFF637069).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
@@ -236,18 +236,18 @@ class _NewProjectCard extends StatelessWidget {
             width: 96,
             height: 96,
             decoration: BoxDecoration(
-              color: const Color(0xFF637069).withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: const Text('🦎', style: TextStyle(fontSize: 48)),
+            child: Text('🦎', style: TextStyle(fontSize: 48)),
           ),
           const SizedBox(height: 16),
           // 타이틀
           Text(
             '첫 프로젝트를 시작해보세요!',
             style: AppTextStyles.titleH2.copyWith(
-              color: const Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
@@ -255,7 +255,7 @@ class _NewProjectCard extends StatelessWidget {
           // 설명 텍스트
           Text(
             '카멜레온과 함께 뜨개질 여정을 시작해요\n한 코 한 코가 모여 멋진 작품이 됩니다',
-            style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF717182)),
+            style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -265,8 +265,8 @@ class _NewProjectCard extends StatelessWidget {
             height: 36,
             child: FilledButton.icon(
               onPressed: onTap,
-              icon: const Icon(Icons.bolt, size: 16),
-              label: const Text(
+              icon: Icon(Icons.bolt, size: 16),
+              label: Text(
                 '새 프로젝트 시작하기',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -276,8 +276,8 @@ class _NewProjectCard extends StatelessWidget {
                 ),
               ),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF637069),
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.surface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -361,17 +361,17 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
       children: [
         Text(
           '최근 작업 프로젝트',
-          style: AppTextStyles.titleH3.copyWith(color: const Color(0xFF0A0A0A)),
+          style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: const Color(0xFF637069).withValues(alpha: 0.2),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               width: 0.5,
             ),
           ),
@@ -386,7 +386,7 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 alignment: Alignment.center,
-                child: const Text('🧶', style: TextStyle(fontSize: 30)),
+                child: Text('🧶', style: TextStyle(fontSize: 30)),
               ),
               const SizedBox(width: 16),
               // 프로젝트 정보
@@ -398,7 +398,7 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                     Text(
                       project.name,
                       style: AppTextStyles.titleH3.copyWith(
-                        color: const Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -409,7 +409,7 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                       Text(
                         _currentPartName!,
                         style: AppTextStyles.bodyM.copyWith(
-                          color: const Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -418,12 +418,12 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                     // 상대 시간
                     Text(
                       _timeAgo(lastTime),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                         height: 16 / 12,
-                        color: Color(0xFF717182),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -436,20 +436,20 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                 child: FilledButton(
                   onPressed: widget.onContinue,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF637069),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.surface,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    textStyle: const TextStyle(
+                    textStyle: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.15,
                     ),
                   ),
-                  child: const Text('이어하기'),
+                  child: Text('이어하기'),
                 ),
               ),
             ],
@@ -481,7 +481,7 @@ class _UserGuideCard extends StatelessWidget {
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -489,12 +489,12 @@ class _UserGuideCard extends StatelessWidget {
                 Container(
                   width: 48,
                   height: 48,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Color(0xFFDBEAFE),
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(
+                  child: Icon(
                     Icons.info_outline,
                     size: 24,
                     color: Color(0xFF1447E6),
@@ -529,22 +529,22 @@ class _UserGuideCard extends StatelessWidget {
                           onPressed: onGuide,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF1447E6),
-                            side: const BorderSide(
+                            side: BorderSide(
                               color: Color(0xFF8EC5FF),
                               width: 0.5,
                             ),
-                            backgroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            textStyle: const TextStyle(
+                            textStyle: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               letterSpacing: -0.15,
                             ),
                           ),
-                          child: const Text('사용 가이드 보기'),
+                          child: Text('사용 가이드 보기'),
                         ),
                       ),
                     ],
@@ -560,9 +560,9 @@ class _UserGuideCard extends StatelessWidget {
             child: GestureDetector(
               onTap: onClose,
               behavior: HitTestBehavior.opaque,
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.all(4),
-                child: Icon(Icons.close, size: 14, color: Color(0xFF717182)),
+                child: Icon(Icons.close, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
           ),
@@ -594,7 +594,7 @@ class _KnittingTipSection extends StatelessWidget {
       children: [
         Text(
           '뜨개질 팁',
-          style: AppTextStyles.titleH3.copyWith(color: const Color(0xFF0A0A0A)),
+          style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
         // PageView
@@ -607,7 +607,7 @@ class _KnittingTipSection extends StatelessWidget {
             itemBuilder: (context, index) {
               final tip = _knittingTips[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 12),
+                padding: EdgeInsets.only(right: 12),
                 child: _KnittingTipCard(emoji: tip.emoji, text: tip.text),
               );
             },
@@ -629,7 +629,7 @@ class _KnittingTipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFFF0FDF4).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
@@ -637,7 +637,7 @@ class _KnittingTipCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 36)),
+          Text(emoji, style: TextStyle(fontSize: 36)),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
@@ -666,7 +666,7 @@ class _DotIndicator extends StatelessWidget {
         final isActive = i == current;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 3),
+          margin: EdgeInsets.symmetric(horizontal: 3),
           width: isActive ? 24 : 6,
           height: 6,
           decoration: BoxDecoration(
@@ -690,7 +690,7 @@ class _CheeringMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFFFAF5FF).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
@@ -698,7 +698,7 @@ class _CheeringMessage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text('💝', style: TextStyle(fontSize: 36)),
+          Text('💝', style: TextStyle(fontSize: 36)),
           const SizedBox(height: 24),
           Text(
             '오늘도 뜨개질해볼까요?',

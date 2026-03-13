@@ -59,7 +59,7 @@ class CountBySelector extends StatelessWidget {
       padding: _getPadding(),
       onPressed: () => _showCountByPicker(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isFilled
               ? CupertinoColors.activeBlue
@@ -68,7 +68,7 @@ class CountBySelector extends StatelessWidget {
           border: Border.all(
             color: isFilled
                 ? CupertinoColors.activeBlue
-                : CupertinoColors.white, // ✅ outlined=white border
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white border
             width: 1,
           ),
         ),
@@ -76,8 +76,8 @@ class CountBySelector extends StatelessWidget {
           label,
           style: _getTextStyle(context).copyWith(
             color: isFilled
-                ? CupertinoColors.white
-                : CupertinoColors.white, // ✅ outlined=white text
+                ? Theme.of(context).colorScheme.surface
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white text
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -94,14 +94,14 @@ class CountBySelector extends StatelessWidget {
       onTap: () => _showCountByPicker(context),
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           color: isFilled ? scheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isFilled
                 ? scheme.primary
-                : Colors.white, // ✅ outlined=white border
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white border
             width: 1,
           ),
         ),
@@ -112,7 +112,7 @@ class CountBySelector extends StatelessWidget {
             fontWeight: FontWeight.w600,
             color: isFilled
                 ? scheme.onPrimary
-                : Colors.white, // ✅ outlined=white text
+                : Theme.of(context).colorScheme.surface, // ✅ outlined=white text
           ),
         ),
       ),
@@ -149,7 +149,7 @@ class CountBySelector extends StatelessWidget {
                   children: [
                     // 헤더 영역
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
                       ),
@@ -169,9 +169,9 @@ class CountBySelector extends StatelessWidget {
                           CupertinoButton(
                             padding: EdgeInsets.zero,
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('취소'),
+                            child: Text('취소'),
                           ),
-                          const Text(
+                          Text(
                             'Count By 설정',
                             style: TextStyle(
                               fontSize: 17,
@@ -184,7 +184,7 @@ class CountBySelector extends StatelessWidget {
                               onChanged(selectedValue);
                               Navigator.of(context).pop();
                             },
-                            child: const Text('확인'),
+                            child: Text('확인'),
                           ),
                         ],
                       ),
@@ -215,7 +215,7 @@ class CountBySelector extends StatelessWidget {
                               child: Center(
                                 child: Text(
                                   '$value',
-                                  style: const TextStyle(fontSize: 20),
+                                  style: TextStyle(fontSize: 20),
                                 ),
                               ),
                             ),
@@ -241,7 +241,7 @@ class CountBySelector extends StatelessWidget {
 
     showModalBottomSheet<void>(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
@@ -252,7 +252,7 @@ class CountBySelector extends StatelessWidget {
 
             return Container(
               height: 300,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 children: [
                   // 헤더
@@ -261,9 +261,9 @@ class CountBySelector extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('취소'),
+                        child: Text('취소'),
                       ),
-                      const Text(
+                      Text(
                         'Count By 설정',
                         style: TextStyle(
                           fontSize: 18,
@@ -275,7 +275,7 @@ class CountBySelector extends StatelessWidget {
                           onChanged(selectedValue);
                           Navigator.of(context).pop();
                         },
-                        child: const Text('확인'),
+                        child: Text('확인'),
                       ),
                     ],
                   ),
@@ -343,7 +343,7 @@ class CountBySelector extends StatelessWidget {
                           child: Center(
                             child: Container(
                               height: itemExtent,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              margin: EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 color: colorScheme.primary.withValues(
@@ -369,11 +369,11 @@ class CountBySelector extends StatelessWidget {
   EdgeInsets _getPadding() {
     switch (size) {
       case CountBySelectorSize.small:
-        return const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+        return EdgeInsets.symmetric(horizontal: 8, vertical: 4);
       case CountBySelectorSize.medium:
-        return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+        return EdgeInsets.symmetric(horizontal: 12, vertical: 8);
       case CountBySelectorSize.large:
-        return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+        return EdgeInsets.symmetric(horizontal: 16, vertical: 12);
     }
   }
 
@@ -386,13 +386,13 @@ class CountBySelector extends StatelessWidget {
     switch (size) {
       case CountBySelectorSize.small:
         return baseStyle?.copyWith(fontSize: 12) ??
-            const TextStyle(fontSize: 12);
+            TextStyle(fontSize: 12);
       case CountBySelectorSize.medium:
         return baseStyle?.copyWith(fontSize: 14) ??
-            const TextStyle(fontSize: 14);
+            TextStyle(fontSize: 14);
       case CountBySelectorSize.large:
         return baseStyle?.copyWith(fontSize: 16) ??
-            const TextStyle(fontSize: 16);
+            TextStyle(fontSize: 16);
     }
   }
 }

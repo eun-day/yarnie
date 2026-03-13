@@ -1,0 +1,96 @@
+Analyzing app...
+
+   info • Don't use 'BuildContext's across async gaps • lib/common/session_dialog_helper.dart:85:43 • use_build_context_synchronously
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:29:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:38:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:47:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:56:3 • use_super_parameters
+   info • Parameter 'connection' could be a super parameter • lib/db/app_db.dart:361:9 • use_super_parameters
+   info • Angle brackets will be interpreted as HTML • lib/db/app_db.dart:1784:15 • unintended_html_in_doc_comment
+   info • Missing type annotation • lib/features/home/user_guide_screen.dart:1059:22 • strict_top_level_inference
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/features/my/widgets/preferences_sheet.dart:361:13 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/features/my/widgets/preferences_sheet.dart:402:13 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeTrackColor instead. This feature was deprecated after v3.24.0-0.2.pre • lib/features/my/widgets/setting_item.dart:80:17 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:314:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:326:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:383:53 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • lib/features/projects/projects_root.dart:474:41 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/features/projects/projects_root.dart:474:45 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:518:76 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:526:78 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:704:37 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • lib/features/trash/trash_root.dart:84:34 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/trash/widgets/empty_trash_view.dart:16:74 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/model/tag_color_preset.dart:32:54 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/providers/counter_provider.dart:169:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/providers/counter_provider.dart:195:7 • avoid_print
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:54:7 • deprecated_member_use
+   info • 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:55:7 • deprecated_member_use
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:63:44 • deprecated_member_use
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:71:38 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • lib/widget/labelpill.dart:5:9 • use_key_in_widget_constructors
+   info • 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:55:57 • deprecated_member_use
+   info • 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:56:57 • deprecated_member_use
+   info • 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:57:57 • deprecated_member_use
+   info • 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:65:62 • deprecated_member_use
+   info • 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:66:62 • deprecated_member_use
+   info • 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:67:62 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/add_interval_counter_sheet.dart:133:58 • deprecated_member_use
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_interval_counter_sheet.dart:142:24 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_length_counter_sheet.dart:318:34 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_repeat_counter_sheet.dart:105:24 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_repeat_counter_sheet.dart:105:41 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_shaping_counter_sheet.dart:116:24 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/interval_counter_card.dart:44:14 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/interval_counter_card.dart:65:20 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/length_counter_card.dart:94:30 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/range_counter_card.dart:62:16 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/range_counter_card.dart:73:30 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/repeat_counter_card.dart:68:20 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/repeat_counter_card.dart:80:35 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/repeat_counter_card.dart:80:54 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/repeat_counter_card.dart:90:20 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:77:40 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:89:14 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:89:49 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:99:20 • unnecessary_brace_in_string_interps
+   info • Don't use 'BuildContext's across async gaps • lib/widgets/part_memo_sheet.dart:55:19 • use_build_context_synchronously
+   info • Unnecessary use of multiple underscores • lib/widgets/project_list_tile.dart:54:45 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/widgets/project_list_tile.dart:54:49 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/tag_chip.dart:44:39 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:206:53 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:236:61 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:309:43 • deprecated_member_use
+   info • The import of 'dart:async' is unnecessary because all of the used elements are also provided by the import of 'package:flutter_test/flutter_test.dart' • test/counter_feature/counter_debouncing_test.dart:1:8 • unnecessary_import
+warning • Unused import: 'package:yarnie/model/counter_data.dart' • test/counter_feature/counter_debouncing_test.dart:5:8 • unused_import
+   info • Don't invoke 'print' in production code • test/counter_feature/counter_performance_optimization_test.dart:384:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/counter_feature/counter_performance_optimization_test.dart:385:9 • avoid_print
+warning • Unused import: 'dart:io' • test/counter_feature/counter_platform_ui_test.dart:1:8 • unused_import
+   info • The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' • test/counter_feature/counter_platform_ui_test.dart:2:8 • unnecessary_import
+   info • The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/cupertino.dart' • test/counter_feature/counter_platform_ui_test.dart:4:8 • unnecessary_import
+warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • test/counter_feature/counter_platform_ui_test.dart:6:8 • unused_import
+warning • The value of the local variable 'changedValue' isn't used • test/counter_feature/counter_platform_ui_test.dart:65:11 • unused_local_variable
+warning • The value of the local variable 'changedValue' isn't used • test/counter_feature/counter_platform_ui_test.dart:85:11 • unused_local_variable
+warning • Unused import: 'package:drift/drift.dart' • test/db/counter_test.dart:2:8 • unused_import
+warning • Unused import: 'package:drift/drift.dart' • test/db/integration_test.dart:2:8 • unused_import
+warning • The value of the local variable 'sessionId' isn't used • test/db/integration_test.dart:284:13 • unused_local_variable
+warning • Unused import: 'package:drift/drift.dart' • test/db/part_test.dart:2:8 • unused_import
+warning • Unused import: 'package:drift/drift.dart' • test/db/session_test.dart:2:8 • unused_import
+warning • Dead code • test/db/session_test.dart:141:9 • dead_code
+warning • Unused import: 'helpers/test_helpers.dart' • test/part_note_test.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • test/session_management/full_lifecycle_integration_test.dart:367:7 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/full_lifecycle_integration_test.dart:368:7 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:41:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:55:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:96:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:97:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:127:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:128:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:211:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:268:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:309:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:331:13 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:371:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:373:11 • avoid_print
+
+92 issues found. (ran in 4.8s)

@@ -35,11 +35,11 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      padding: const EdgeInsets.only(
+      padding: EdgeInsets.only(
         top: 16,
         left: 0,
         right: 0,
@@ -51,16 +51,16 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   '메인카운트 값 편집',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.31,
                   ),
                 ),
@@ -70,7 +70,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                   ),
                 ),
@@ -82,17 +82,17 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
 
           // Content
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NumberInputGroup(
                   label: '현재 카운트',
                   controller: _controller,
-                  textStyle: const TextStyle(
+                  textStyle: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.normal,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: 0.07,
                   ),
                   onChanged: () {
@@ -117,22 +117,22 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                         child: Container(
                           height: 36,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
                           ),
                           alignment: Alignment.center,
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.refresh, size: 12, color: Color(0xFF0A0A0A)),
+                              Icon(Icons.refresh, size: 12, color: Theme.of(context).colorScheme.onSurface),
                               SizedBox(width: 4),
                               Text(
                                 '1로 초기화',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF0A0A0A),
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   letterSpacing: -0.15,
                                 ),
                               ),
@@ -156,12 +156,12 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           alignment: Alignment.center,
-                          child: const Text(
+                          child: Text(
                             '저장',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               letterSpacing: -0.15,
                             ),
                           ),

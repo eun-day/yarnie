@@ -64,13 +64,13 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
     final state = ref.watch(projectFormNotifierProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0A0A0A)),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Column(
@@ -78,19 +78,19 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
           children: [
             Text(
               state.isEditMode ? '프로젝트 수정' : '새 프로젝트',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: 0.07,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               state.isEditMode ? '프로젝트 정보를 수정해주세요' : '새로운 프로젝트 정보를 입력해주세요',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 letterSpacing: -0.15,
               ),
             ),
@@ -100,7 +100,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(
-            color: const Color(0x1A000000), // rgba(0,0,0,0.1)
+            color: Theme.of(context).colorScheme.outline, // rgba(0,0,0,0.1)
             height: 0.7,
           ),
         ),
@@ -108,7 +108,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -191,10 +191,10 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0x1A000000), width: 0.7)),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.7)),
         ),
         child: SafeArea(
           // Ensure it avoids safe area at bottom
@@ -205,22 +205,22 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
                   height: 36,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     border: Border.all(
-                      color: const Color(0x1A000000),
+                      color: Theme.of(context).colorScheme.outline,
                       width: 0.7,
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
+                  child: Text(
                     '취소',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -234,27 +234,27 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                           .onEvent(const SaveProject()),
                 child: Container(
                   height: 36,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF637069),
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: state.isSaving
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             strokeWidth: 2,
                           ),
                         )
                       : Text(
                           state.isEditMode ? '수정 완료' : '추가 완료',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                         ),
                 ),
@@ -269,13 +269,13 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   void _showImageSourceSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             left: 24,
             right: 24,
             bottom: 24,
@@ -296,21 +296,21 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 '이미지 추가',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: 0.05,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '사진을 촬영하거나 갤러리에서 선택하세요.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.15,
                 ),
               ),
@@ -349,9 +349,9 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0x1A000000), width: 1.4),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1.4),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -360,10 +360,10 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: -0.15,
               ),
             ),
@@ -402,12 +402,12 @@ class _ProjectImageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '프로젝트 이미지',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -416,7 +416,7 @@ class _ProjectImageSection extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0x1A000000), width: 0.7),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.7),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -435,7 +435,7 @@ class _ProjectImageSection extends StatelessWidget {
                       right: 0,
                       bottom: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 12,
                         ),
@@ -444,7 +444,7 @@ class _ProjectImageSection extends StatelessWidget {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withOpacity(0.6),
+                              Colors.black.withValues(alpha: 0.6),
                               Colors.transparent,
                             ],
                           ),
@@ -453,6 +453,7 @@ class _ProjectImageSection extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _buildImageButton(
+                                context,
                                 icon: Icons.close,
                                 label: '초기화',
                                 onTap: onImageRemoved, // 이미지 제거 콜백
@@ -461,6 +462,7 @@ class _ProjectImageSection extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: _buildImageButton(
+                                context,
                                 icon: Icons.upload_outlined,
                                 label: '변경',
                                 onTap: onImagePressed,
@@ -477,17 +479,17 @@ class _ProjectImageSection extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         height: double.infinity,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SvgPicture.asset('assets/icons/image_icon.svg'),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               '이미지 추가',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Color(0xFF717182),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -505,7 +507,8 @@ class _ProjectImageSection extends StatelessWidget {
     );
   }
 
-  Widget _buildImageButton({
+  Widget _buildImageButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
@@ -515,21 +518,21 @@ class _ProjectImageSection extends StatelessWidget {
       child: Container(
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.7),
+          border: Border.all(color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2), width: 0.7),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 16),
+            Icon(icon, color: Theme.of(context).colorScheme.surface, size: 16),
             const SizedBox(width: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 letterSpacing: -0.15,
               ),
             ),
@@ -582,11 +585,11 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.15,
             ),
             children: <TextSpan>[
@@ -605,21 +608,21 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _controller,
             onChanged: widget.onChanged,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '프로젝트 이름을 입력하세요',
               hintStyle: TextStyle(
                 fontSize: 16,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 letterSpacing: -0.31,
               ),
               border: InputBorder.none,
@@ -654,12 +657,12 @@ class _NeedleInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '바늘 종류',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -678,12 +681,12 @@ class _NeedleInfoSection extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        const Text(
+        Text(
           '바늘 사이즈',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -731,12 +734,12 @@ class _NeedleInfoSection extends StatelessWidget {
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(
-                        color: Color(0x1A000000),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
                         width: 0.7,
                       ),
                     ),
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     constraints: BoxConstraints(
                       minWidth: size.width,
                       maxWidth: size.width,
@@ -746,13 +749,13 @@ class _NeedleInfoSection extends StatelessWidget {
                       return PopupMenuItem<T>(
                         value: entry.key,
                         height: 32,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
                           entry.value,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0A0A0A),
+                            color: Theme.of(context).colorScheme.onSurface,
                             letterSpacing: -0.15,
                           ),
                         ),
@@ -769,7 +772,7 @@ class _NeedleInfoSection extends StatelessWidget {
               color: const Color(0xFFF3F3F5),
               borderRadius: BorderRadius.circular(8),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
                 Expanded(
@@ -779,8 +782,8 @@ class _NeedleInfoSection extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: displayText != null
-                          ? const Color(0xFF0A0A0A)
-                          : const Color(0xFF717182),
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                       letterSpacing: -0.15,
                     ),
                   ),
@@ -788,8 +791,8 @@ class _NeedleInfoSection extends StatelessWidget {
                 Icon(
                   Icons.keyboard_arrow_down,
                   color: itemMap.isEmpty
-                      ? const Color(0xFF717182)
-                      : const Color(0xFF0A0A0A),
+                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                      : Theme.of(context).colorScheme.onSurface,
                   size: 16,
                 ),
               ],
@@ -839,12 +842,12 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Lot Number',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -855,21 +858,21 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _lotNumberController,
             onChanged: widget.onLotNumberChanged,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '예: A12345',
               hintStyle: TextStyle(
                 fontSize: 16,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 letterSpacing: -0.31,
               ),
               border: InputBorder.none,
@@ -880,9 +883,9 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           '실의 로트 번호를 입력하세요',
-          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -927,12 +930,12 @@ class _MemoSectionState extends State<_MemoSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '메모',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -943,21 +946,21 @@ class _MemoSectionState extends State<_MemoSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           child: TextField(
             controller: _memoController,
             onChanged: widget.onMemoChanged,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               height: 1.5,
               letterSpacing: -0.31,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등',
               hintStyle: TextStyle(
                 fontSize: 16,
-                color: Color(0xFF717182),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 height: 1.5,
                 letterSpacing: -0.31,
               ),
@@ -996,12 +999,12 @@ class _TagInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '태그',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
@@ -1027,21 +1030,21 @@ class _TagInfoSection extends StatelessWidget {
           child: Container(
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0x1A000000), width: 0.7),
+              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.7),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: Color(0xFF717182), size: 16),
+                Icon(Icons.add, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
                 SizedBox(width: 4),
                 Text(
                   '태그 추가',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                   ),
                 ),
@@ -1107,19 +1110,19 @@ class _GaugeSectionState extends State<_GaugeSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '게이지',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           '10cm x 10cm에 몇 코, 몇 단인가요?',
-          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
         Row(
@@ -1134,20 +1137,20 @@ class _GaugeSectionState extends State<_GaugeSection> {
                         color: const Color(0xFFF3F3F5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.centerLeft,
                       child: TextField(
                         controller: _stitchController,
                         onChanged: widget.onStitchesChanged,
-                        style: const TextStyle(
-                          color: Color(0xFF0A0A0A),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 16,
                           letterSpacing: -0.31,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '코 수',
                           hintStyle: TextStyle(
-                            color: Color(0xFF717182),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 16,
                             letterSpacing: -0.31,
                           ),
@@ -1161,11 +1164,11 @@ class _GaugeSectionState extends State<_GaugeSection> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '코',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       letterSpacing: -0.15,
                     ),
                   ),
@@ -1183,20 +1186,20 @@ class _GaugeSectionState extends State<_GaugeSection> {
                         color: const Color(0xFFF3F3F5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.centerLeft,
                       child: TextField(
                         controller: _rowController,
                         onChanged: widget.onRowsChanged,
-                        style: const TextStyle(
-                          color: Color(0xFF0A0A0A),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 16,
                           letterSpacing: -0.31,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '단 수',
                           hintStyle: TextStyle(
-                            color: Color(0xFF717182),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 16,
                             letterSpacing: -0.31,
                           ),
@@ -1210,11 +1213,11 @@ class _GaugeSectionState extends State<_GaugeSection> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '단',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       letterSpacing: -0.15,
                     ),
                   ),

@@ -29,12 +29,12 @@ class MainCounterSettingsButton extends StatelessWidget {
           maxWidth: 224,
         ),
         // Custom styling to match Figma
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 3,
         shadowColor: const Color.fromRGBO(0, 0, 0, 0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(
+          side: BorderSide(
             color: Color.fromRGBO(0, 0, 0, 0.1),
             width: 0.5,
           ),
@@ -44,8 +44,8 @@ class MainCounterSettingsButton extends StatelessWidget {
         
         // Menu Items
         itemBuilder: (context) => [
-          _buildMenuItem('change', '목표 단수 변경'),
-          _buildMenuItem('remove', '목표 단수 해제'),
+          _buildMenuItem(context, 'change', '목표 단수 변경'),
+          _buildMenuItem(context, 'remove', '목표 단수 해제'),
         ],
         
         // The Trigger Button
@@ -53,30 +53,30 @@ class MainCounterSettingsButton extends StatelessWidget {
           'assets/icons/settings.svg',
           width: 28,
           height: 28,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.surface, BlendMode.srcIn),
         ),
       ),
     );
   }
 
-  PopupMenuItem<String> _buildMenuItem(String value, String text) {
+  PopupMenuItem<String> _buildMenuItem(BuildContext context, String value, String text) {
     return PopupMenuItem<String>(
       value: value,
       height: 32,
-      padding: const EdgeInsets.symmetric(horizontal: 4.5), // Outer padding from Figma
+      padding: EdgeInsets.symmetric(horizontal: 4.5), // Outer padding from Figma
       child: Container(
         height: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 8), // Inner padding from Figma
+        padding: EdgeInsets.symmetric(horizontal: 8), // Inner padding from Figma
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),

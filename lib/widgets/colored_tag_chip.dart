@@ -22,11 +22,11 @@ class ColoredTagChip extends StatelessWidget {
     // Use preset text color if available, otherwise calculate based on brightness
     final presetTextColor = TagColorPreset.getTextColor(tagColorValue);
     final textColor = presetTextColor ?? (ThemeData.estimateBrightnessForColor(tagColor) == Brightness.dark
-            ? Colors.white
+            ? Theme.of(context).colorScheme.surface
             : Colors.black87);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.5, vertical: 2.5),
+      padding: EdgeInsets.symmetric(horizontal: 8.5, vertical: 2.5),
       decoration: BoxDecoration(
         color: tagColor,
         borderRadius: BorderRadius.circular(8.0),

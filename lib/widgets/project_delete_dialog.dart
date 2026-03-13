@@ -14,12 +14,12 @@ class ProjectDeleteDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         width: 360, // Approximate width relative to screen
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        padding: EdgeInsets.fromLTRB(24, 24, 24, 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: const Color.fromRGBO(0, 0, 0, 0.1),
@@ -43,13 +43,13 @@ class ProjectDeleteDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header: Title
-            const Text(
+            Text(
               '프로젝트 삭제',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600, // SemiBold
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: -0.44,
                 height: 28 / 18,
               ),
@@ -63,35 +63,35 @@ class ProjectDeleteDialog extends StatelessWidget {
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       letterSpacing: -0.15,
                       height: 20 / 14,
                     ),
                     children: [
                       TextSpan(
                         text: '"$projectName"',
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      const TextSpan(
+                      TextSpan(
                         text: '을 삭제하시겠습니까?',
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
-                          color: Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   '프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                     height: 20 / 14,
                   ),
@@ -116,12 +116,12 @@ class ProjectDeleteDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '삭제',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -133,7 +133,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: const Color.fromRGBO(0, 0, 0, 0.1),
@@ -141,12 +141,12 @@ class ProjectDeleteDialog extends StatelessWidget {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '취소',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.15,
                       ),
                     ),

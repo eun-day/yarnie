@@ -17,18 +17,18 @@ class SettingSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             title,
             style: AppTextStyles.titleH3.copyWith(height: 1.0),
           ),
         ),
         Material(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: BorderSide(
-              color: Colors.black.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.outline,
               width: 0.5,
             ),
           ),
@@ -41,7 +41,7 @@ class SettingSection extends StatelessWidget {
                   Divider(
                     height: 0.5,
                     thickness: 0.5,
-                    color: Colors.black.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.outline,
                     indent: 0,
                     endIndent: 0,
                   ),
