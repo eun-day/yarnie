@@ -336,7 +336,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lengthCounter => '길이 카운터 (Length)';
 
   @override
-  String get lengthCounterDesc => '특정 길이에 도달할 때까지 작업을 추적해요.';
+  String get lengthCounterDesc => '목표 길이까지 필요한 단수를 추적합니다';
 
   @override
   String get lengthCounterUsage1 => '• \"30cm까지 뜨기\" 같은 길이 기반 작업';
@@ -696,4 +696,645 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noDeletedProjects => '삭제된 프로젝트가 없습니다';
+
+  @override
+  String partMemo(Object partName) {
+    return '$partName - 메모';
+  }
+
+  @override
+  String get partMemoDesc => '파트에 대한 메모를 추가하거나 수정하세요.';
+
+  @override
+  String get newMemoHint => '새 메모를 입력하세요...';
+
+  @override
+  String get addMemo => '메모 추가';
+
+  @override
+  String get noMemos => '등록된 메모가 없습니다.';
+
+  @override
+  String get unpin => '상단 고정 해제';
+
+  @override
+  String get pin => '상단에 고정';
+
+  @override
+  String get edit => '수정';
+
+  @override
+  String get editMemo => '메모 수정';
+
+  @override
+  String get editMainCount => '메인카운트 값 편집';
+
+  @override
+  String get editMainCountDesc => '현재 카운트 값을 직접 수정하거나 초기화할 수 있습니다';
+
+  @override
+  String get currentCount => '현재 카운트';
+
+  @override
+  String get resetToOne => '1로 초기화';
+
+  @override
+  String get rangeCounterLabel => '범위 카운터';
+
+  @override
+  String get editRangeCounter => '범위 카운터 수정';
+
+  @override
+  String get addRangeCounter => '범위 카운터 추가';
+
+  @override
+  String get rangeCounterDescSimple => '특정 행 범위를 추적하는 카운터입니다.';
+
+  @override
+  String get startRow => '시작 행';
+
+  @override
+  String get totalRows => '총 행 수';
+
+  @override
+  String get rowsHint => '예: 50';
+
+  @override
+  String get rowsHelper => '시작 행부터 몇 행 동안 추적할지 입력하세요.';
+
+  @override
+  String get add => '추가';
+
+  @override
+  String get label => '라벨';
+
+  @override
+  String get labelHint => '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요';
+
+  @override
+  String get tagSelection => '태그 선택';
+
+  @override
+  String get complete => '완료';
+
+  @override
+  String get searchTags => '태그 검색...';
+
+  @override
+  String get addNewTag => '새 태그 추가';
+
+  @override
+  String get tagName => '태그 이름';
+
+  @override
+  String get editTag => '태그 수정';
+
+  @override
+  String get shapingCounterLabel => '증감 카운터';
+
+  @override
+  String get editShapingCounter => '증감 카운터 수정';
+
+  @override
+  String get addShapingCounter => '증감 카운터 추가';
+
+  @override
+  String get shapingCounterDescSimple => '코를 늘리거나 줄이는 작업을 추적하는 카운터입니다.';
+
+  @override
+  String get intervalRows => '간격 (행)';
+
+  @override
+  String get intervalHint => '예: 2';
+
+  @override
+  String get totalTimes => '총 횟수';
+
+  @override
+  String get timesHint => '예: 10';
+
+  @override
+  String get stitchChange => '코 수 변화 (회당)';
+
+  @override
+  String get stitchChangeHint => '예: 2 또는 -2';
+
+  @override
+  String get stitchChangeHelper => '양수는 코 늘림, 음수는 코 줄임입니다.';
+
+  @override
+  String get intervalCounterLabel => '간격 카운터';
+
+  @override
+  String get editIntervalCounter => '간격 카운터 수정';
+
+  @override
+  String get addIntervalCounter => '간격 카운터 추가';
+
+  @override
+  String get intervalCounterDescSimple => '일정한 간격으로 작업을 반복할 때 사용하는 카운터입니다.';
+
+  @override
+  String get intervalTimesHelper => '간격과 총 횟수를 입력하세요.';
+
+  @override
+  String get colorOption => '배색 옵션';
+
+  @override
+  String get colorOptionDesc => '배색 추적이 필요한 경우 사용할 색상을 순서대로 선택하세요';
+
+  @override
+  String get editStitchCounter => '스티치 카운터 수정';
+
+  @override
+  String get editCounterInfo => '카운터 정보를 수정합니다.';
+
+  @override
+  String get currentValue => '현재 값';
+
+  @override
+  String get countUnit => '증감 단위';
+
+  @override
+  String get repeatCounterLabel => '반복 카운터';
+
+  @override
+  String get editRepeatCounter => '반복 카운터 수정';
+
+  @override
+  String get addRepeatCounter => '반복 카운터 추가';
+
+  @override
+  String get repeatCounterDescSimple => '특정 패턴을 반복할 때 사용하는 카운터입니다.';
+
+  @override
+  String get repeatUnit => '반복 단위 (행)';
+
+  @override
+  String get repeatTimes => '반복 횟수';
+
+  @override
+  String get repeatHelper => '패턴의 반복 단위와 횟수를 입력하세요.';
+
+  @override
+  String get deleteConfirm => '을 삭제하시겠습니까?';
+
+  @override
+  String get deleteDesc => '프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.';
+
+  @override
+  String get achieved => '달성 완료 ✓';
+
+  @override
+  String get remainingLength => '남은 길이';
+
+  @override
+  String get stitchIncrease => '코 늘림';
+
+  @override
+  String get stitchDecrease => '코 줄임';
+
+  @override
+  String nextRow(Object row) {
+    return '다음:$row행';
+  }
+
+  @override
+  String patternRows(Object current, Object total) {
+    return '$current/$total행 ($total행 패턴)';
+  }
+
+  @override
+  String fromRow(Object row) {
+    return '$row행부터';
+  }
+
+  @override
+  String get stitch => '코';
+
+  @override
+  String increaseBy(Object n) {
+    return '+$n씩';
+  }
+
+  @override
+  String get manualInput => '직접 입력...';
+
+  @override
+  String get setIncreaseValue => '증가값 설정';
+
+  @override
+  String get setIncreaseValueDesc => '한 번에 증가시킬 코 수를 입력하세요.';
+
+  @override
+  String get increaseValue => '증가값';
+
+  @override
+  String get increaseValueHint => '예: 6';
+
+  @override
+  String get confirm => '확인';
+
+  @override
+  String get exitConfirm => '한 번 더 누르면 종료됩니다.';
+
+  @override
+  String get home => '홈';
+
+  @override
+  String get selectCounterType => '카운터 유형 선택';
+
+  @override
+  String get stitchCounter => '스티치 카운터';
+
+  @override
+  String get independentCounter => '독립적인 숫자 카운터';
+
+  @override
+  String get sectionCounter => '섹션 카운터';
+
+  @override
+  String get range => '범위 (Range)';
+
+  @override
+  String get repeat => '반복 (Repeat)';
+
+  @override
+  String get interval => '간격 (Interval)';
+
+  @override
+  String get shaping => '증감 (Shaping)';
+
+  @override
+  String get length => '길이 (Length)';
+
+  @override
+  String get addLengthCounter => '길이 카운터 추가';
+
+  @override
+  String get editLengthCounter => '길이 카운터 수정';
+
+  @override
+  String get lengthCounterDescSimple => '특정 길이에 도달할 때까지 추적하는 카운터입니다.';
+
+  @override
+  String get targetLength => '목표 길이';
+
+  @override
+  String get lengthHint => '예: 30.0';
+
+  @override
+  String get lengthHelper => '목표로 하는 길이를 입력하세요.';
+
+  @override
+  String get unit => '단위';
+
+  @override
+  String get cm => 'cm';
+
+  @override
+  String get inch => 'inch';
+
+  @override
+  String get countBySetting => 'Count By 설정';
+
+  @override
+  String get lengthMeasurement => '길이 측정';
+
+  @override
+  String targetInfoLength(Object length) {
+    return '목표 ${length}cm';
+  }
+
+  @override
+  String get editLengthCounterTitle => '길이 측정 카운터 수정';
+
+  @override
+  String get addLengthCounterTitle => '길이 측정 카운터 추가';
+
+  @override
+  String get startStitch => '시작 단';
+
+  @override
+  String get targetLengthCm => '목표 길이 (cm)';
+
+  @override
+  String get rowHeightCm => '1단의 높이 (cm)';
+
+  @override
+  String get rowHeightDesc => '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요';
+
+  @override
+  String get gaugeInputComingSoon => '게이지 입력 기능 준비 중';
+
+  @override
+  String get goToGaugeInput => '게이지 입력하러 가기';
+
+  @override
+  String get expectedRows => '예상 필요 단수';
+
+  @override
+  String estimatedRowsDisplay(Object rows) {
+    return '$rows단';
+  }
+
+  @override
+  String get changeTargetRow => '목표 단수 변경';
+
+  @override
+  String get removeTargetRow => '목표 단수 해제';
+
+  @override
+  String editLogMemo(Object no) {
+    return 'log $no 메모 편집';
+  }
+
+  @override
+  String get memoRemoved => '메모가 제거되었습니다';
+
+  @override
+  String get memoSaved => '메모가 저장되었습니다';
+
+  @override
+  String memoUpdateFailed(Object error) {
+    return '메모 업데이트 실패: $error';
+  }
+
+  @override
+  String get labelRemoved => '라벨이 제거되었습니다';
+
+  @override
+  String labelChanged(Object label) {
+    return '라벨이 \"$label\"로 변경되었습니다';
+  }
+
+  @override
+  String labelUpdateFailed(Object error) {
+    return '라벨 업데이트 실패: $error';
+  }
+
+  @override
+  String get more => '더보기';
+
+  @override
+  String get fold => '접기';
+
+  @override
+  String get setTargetRow => '목표 단수 설정';
+
+  @override
+  String get setTargetRowDesc => '완료하고자 하는 총 단수를 입력하세요';
+
+  @override
+  String get targetRow => '목표 단수';
+
+  @override
+  String get manageParts => 'Part 관리';
+
+  @override
+  String get managePartsDesc =>
+      'Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.';
+
+  @override
+  String get noParts => '등록된 Part가 없습니다.';
+
+  @override
+  String get editName => '이름 수정';
+
+  @override
+  String get deletePart => 'Part 삭제';
+
+  @override
+  String deletePartConfirm(Object name) {
+    return '\'$name\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.';
+  }
+
+  @override
+  String get duplicatePartName => '이미 존재하는 파트 이름입니다.';
+
+  @override
+  String get newPartName => '새 Part 이름';
+
+  @override
+  String get rowHeightError => '1단의 높이는 목표 길이보다 작아야 합니다.';
+
+  @override
+  String get projectInfo => '프로젝트 정보';
+
+  @override
+  String get projectDelete => '프로젝트 삭제';
+
+  @override
+  String get newPartTitle => '새 파트';
+
+  @override
+  String get addPartDesc => '파트를 추가해주세요';
+
+  @override
+  String get newPartAdd => '새 파트 추가';
+
+  @override
+  String get partNameHint => '파트 이름 (예: 앞판, 소매)';
+
+  @override
+  String get session => '세션';
+
+  @override
+  String rowsRemaining(Object count) {
+    return '$count줄 남음';
+  }
+
+  @override
+  String get viewDetails => '상세 보기';
+
+  @override
+  String get editLabel => '라벨 수정';
+
+  @override
+  String get selectLabel => '라벨 선택';
+
+  @override
+  String get manageLabels => '라벨 관리';
+
+  @override
+  String get addLabel => '라벨 추가';
+
+  @override
+  String get activeSessionExists => '진행 중인 세션이 있습니다';
+
+  @override
+  String get resume => '이어하기';
+
+  @override
+  String get startNew => '새로 시작';
+
+  @override
+  String get activeSession => '진행 중 세션';
+
+  @override
+  String get activeSessionQuestion => '진행 중인 세션이 있습니다. 이어서 하시겠습니까?';
+
+  @override
+  String get projectInfoDesc => '프로젝트의 상세 정보를 확인하세요';
+
+  @override
+  String get lotNumberLabel => '실 로트 번호';
+
+  @override
+  String get noTagsAssigned => '지정된 태그가 없습니다.';
+
+  @override
+  String get noGaugeInfo => '게이지 정보 없음';
+
+  @override
+  String get noMemoInfo => '메모 없음';
+
+  @override
+  String get createdAtLabel => '생성일';
+
+  @override
+  String get updatedAtLabel => '최근 수정';
+
+  @override
+  String get gaugeStandard => '(10cm x 10cm 기준)';
+
+  @override
+  String get noCounters => '카운터가 없습니다.';
+
+  @override
+  String get addCounterGuide => '+ 버튼을 눌러 추가해보세요.';
+
+  @override
+  String completeWithEmoji(Object name) {
+    return '$name 완료! 🎉';
+  }
+
+  @override
+  String get editProject => '프로젝트 수정';
+
+  @override
+  String get newProject => '새 프로젝트';
+
+  @override
+  String get editProjectDesc => '프로젝트 정보를 수정해주세요';
+
+  @override
+  String get newProjectDesc => '새로운 프로젝트 정보를 입력해주세요';
+
+  @override
+  String get projectName => '프로젝트명';
+
+  @override
+  String get projectNameHint => '프로젝트 이름을 입력하세요';
+
+  @override
+  String get needleType => '바늘 종류';
+
+  @override
+  String get knittingNeedle => '대바늘';
+
+  @override
+  String get crochetNeedle => '코바늘';
+
+  @override
+  String get needleTypeHint => '바늘 종류를 선택하세요';
+
+  @override
+  String get needleSize => '바늘 사이즈';
+
+  @override
+  String get needleSizeHint => '먼저 바늘 종류를 선택하세요';
+
+  @override
+  String get lotNumberHint => '예: A12345';
+
+  @override
+  String get lotNumberDesc => '실의 로트 번호를 입력하세요';
+
+  @override
+  String get memoHint => '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등';
+
+  @override
+  String get tagAdd => '태그 추가';
+
+  @override
+  String get stitchesHint => '코 수';
+
+  @override
+  String get stitchesUnit => '코';
+
+  @override
+  String get rowsHintGauge => '단 수';
+
+  @override
+  String get rowsUnit => '단';
+
+  @override
+  String get editComplete => '수정 완료';
+
+  @override
+  String get addComplete => '추가 완료';
+
+  @override
+  String get addImage => '이미지 추가';
+
+  @override
+  String get imageSourceDesc => '사진을 촬영하거나 갤러리에서 선택하세요.';
+
+  @override
+  String get cameraShot => '카메라로 촬영';
+
+  @override
+  String get gallerySelect => '갤러리에서 선택';
+
+  @override
+  String get projectImage => '프로젝트 이미지';
+
+  @override
+  String get reset => '초기화';
+
+  @override
+  String get change => '변경';
+
+  @override
+  String get memo => '메모';
+
+  @override
+  String get tag => '태그';
+
+  @override
+  String get paused => '일시정지';
+
+  @override
+  String get start => '시작';
+
+  @override
+  String get dbDuplicateError => '중복된 값이 존재합니다';
+
+  @override
+  String get dbForeignKeyError => '참조하는 레코드가 존재하지 않습니다';
+
+  @override
+  String get dbRequiredError => '필수 값이 누락되었습니다';
+
+  @override
+  String get dbIntegrityError => '데이터 무결성 위반';
+
+  @override
+  String get dbConstraintError => '데이터 제약 조건을 위반했습니다';
+
+  @override
+  String get dbGeneralError => '데이터베이스 오류가 발생했습니다';
+
+  @override
+  String get dbRecordNotFoundError => '기록을 찾을 수 없습니다';
+
+  @override
+  String get defaultLabelSleeves => '소매';
+
+  @override
+  String get defaultLabelBody => '몸통';
+
+  @override
+  String get defaultLabelNeckline => '목둘레';
 }

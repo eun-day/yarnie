@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/common/time_helper.dart';
@@ -95,7 +95,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.partMemo(widget.partName),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/my/widgets/setting_section.dart';
 import 'package:yarnie/features/my/widgets/setting_item.dart';

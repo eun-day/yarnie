@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import '../db/app_db.dart';
 import 'colored_tag_chip.dart'; // Tag를 표시하기 위한 기존 위젯이라고 가정
 

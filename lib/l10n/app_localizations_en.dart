@@ -664,7 +664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionMemo => 'Session Memo';
 
   @override
-  String get enterMemo => 'Enter memo';
+  String get enterMemo => 'Enter note here...';
 
   @override
   String saveSessionConfirm(Object time) {
@@ -733,4 +733,657 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noDeletedProjects => 'No deleted projects';
+
+  @override
+  String partMemo(Object partName) {
+    return '$partName - Memos';
+  }
+
+  @override
+  String get partMemoDesc => 'Add or edit memos for this part.';
+
+  @override
+  String get newMemoHint => 'Enter a new memo...';
+
+  @override
+  String get addMemo => 'Add Memo';
+
+  @override
+  String get noMemos => 'No memos registered.';
+
+  @override
+  String get unpin => 'Unpin';
+
+  @override
+  String get pin => 'Pin to top';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get editMemo => 'Edit Memo';
+
+  @override
+  String get editMainCount => 'Edit Main Count';
+
+  @override
+  String get editMainCountDesc => 'Manually edit or reset the current count.';
+
+  @override
+  String get currentCount => 'Current Count';
+
+  @override
+  String get resetToOne => 'Reset to 1';
+
+  @override
+  String get rangeCounterLabel => 'Range Counter';
+
+  @override
+  String get editRangeCounter => 'Edit Range Counter';
+
+  @override
+  String get addRangeCounter => 'Add Range Counter';
+
+  @override
+  String get rangeCounterDescSimple =>
+      'A counter to track a specific row range.';
+
+  @override
+  String get startRow => 'Start Row';
+
+  @override
+  String get totalRows => 'Total Rows';
+
+  @override
+  String get rowsHint => 'e.g., 50';
+
+  @override
+  String get rowsHelper => 'Enter how many rows to track from the start row.';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get label => 'Label';
+
+  @override
+  String get labelHint => 'Enter a label to easily identify the counter';
+
+  @override
+  String get tagSelection => 'Tag Selection';
+
+  @override
+  String get complete => 'Complete';
+
+  @override
+  String get searchTags => 'Search tags...';
+
+  @override
+  String get addNewTag => 'Add New Tag';
+
+  @override
+  String get tagName => 'Tag Name';
+
+  @override
+  String get editTag => 'Edit Tag';
+
+  @override
+  String get shapingCounterLabel => 'Shaping Counter';
+
+  @override
+  String get editShapingCounter => 'Edit Shaping Counter';
+
+  @override
+  String get addShapingCounter => 'Add Shaping Counter';
+
+  @override
+  String get shapingCounterDescSimple =>
+      'A counter to track increases or decreases.';
+
+  @override
+  String get intervalRows => 'Interval (Rows)';
+
+  @override
+  String get intervalHint => 'e.g., 2';
+
+  @override
+  String get totalTimes => 'Total Times';
+
+  @override
+  String get timesHint => 'e.g., 10';
+
+  @override
+  String get stitchChange => 'Stitch Change (Per time)';
+
+  @override
+  String get stitchChangeHint => 'e.g., 2 or -2';
+
+  @override
+  String get stitchChangeHelper =>
+      'Positive for increases, negative for decreases.';
+
+  @override
+  String get intervalCounterLabel => 'Interval Counter';
+
+  @override
+  String get editIntervalCounter => 'Edit Interval Counter';
+
+  @override
+  String get addIntervalCounter => 'Add Interval Counter';
+
+  @override
+  String get intervalCounterDescSimple =>
+      'A counter to use when repeating work at regular intervals.';
+
+  @override
+  String get intervalTimesHelper => 'Enter the interval and total times.';
+
+  @override
+  String get colorOption => 'Color Options';
+
+  @override
+  String get colorOptionDesc =>
+      'Select colors in order if color tracking is needed';
+
+  @override
+  String get editStitchCounter => 'Edit Stitch Counter';
+
+  @override
+  String get editCounterInfo => 'Edit counter information.';
+
+  @override
+  String get currentValue => 'Current Value';
+
+  @override
+  String get countUnit => 'Increment Unit';
+
+  @override
+  String get repeatCounterLabel => 'Repeat Counter';
+
+  @override
+  String get editRepeatCounter => 'Edit Repeat Counter';
+
+  @override
+  String get addRepeatCounter => 'Add Repeat Counter';
+
+  @override
+  String get repeatCounterDescSimple =>
+      'A counter to use when repeating specific patterns.';
+
+  @override
+  String get repeatUnit => 'Repeat Unit (Rows)';
+
+  @override
+  String get repeatTimes => 'Repeat Times';
+
+  @override
+  String get repeatHelper =>
+      'Enter the pattern repeat unit and number of times.';
+
+  @override
+  String get deleteConfirm => 'Do you want to delete this project?';
+
+  @override
+  String get deleteDesc =>
+      'The project will be moved to the trash and permanently deleted after 30 days.';
+
+  @override
+  String get achieved => 'Achieved ✓';
+
+  @override
+  String get remainingLength => 'Remaining Length';
+
+  @override
+  String get stitchIncrease => 'Increase';
+
+  @override
+  String get stitchDecrease => 'Decrease';
+
+  @override
+  String nextRow(Object row) {
+    return 'Next:$row';
+  }
+
+  @override
+  String patternRows(Object current, Object total) {
+    return '$current/$total rows ($total row pattern)';
+  }
+
+  @override
+  String fromRow(Object row) {
+    return 'From row $row';
+  }
+
+  @override
+  String get stitch => 'sts';
+
+  @override
+  String increaseBy(Object n) {
+    return '+$n each';
+  }
+
+  @override
+  String get manualInput => 'Manual input...';
+
+  @override
+  String get setIncreaseValue => 'Set Increase Value';
+
+  @override
+  String get setIncreaseValueDesc =>
+      'Enter the number of stitches to increase at once.';
+
+  @override
+  String get increaseValue => 'Increase Value';
+
+  @override
+  String get increaseValueHint => 'e.g., 6';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get exitConfirm => 'Press again to exit.';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get selectCounterType => 'Select Counter Type';
+
+  @override
+  String get stitchCounter => 'Stitch Counter';
+
+  @override
+  String get independentCounter => 'Independent numeric counter';
+
+  @override
+  String get sectionCounter => 'Section Counter';
+
+  @override
+  String get range => 'Range';
+
+  @override
+  String get repeat => 'Repeat';
+
+  @override
+  String get interval => 'Interval';
+
+  @override
+  String get shaping => 'Shaping';
+
+  @override
+  String get length => 'Length';
+
+  @override
+  String get addLengthCounter => 'Add Length Counter';
+
+  @override
+  String get editLengthCounter => 'Edit Length Counter';
+
+  @override
+  String get lengthCounterDescSimple =>
+      'A counter to track until a certain length is reached.';
+
+  @override
+  String get targetLength => 'Target Length';
+
+  @override
+  String get lengthHint => 'e.g., 30.0';
+
+  @override
+  String get lengthHelper => 'Enter the target length.';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get cm => 'cm';
+
+  @override
+  String get inch => 'inch';
+
+  @override
+  String get countBySetting => 'Count By 설정';
+
+  @override
+  String get lengthMeasurement => '길이 측정';
+
+  @override
+  String targetInfoLength(Object length) {
+    return '목표 ${length}cm';
+  }
+
+  @override
+  String get editLengthCounterTitle => '길이 측정 카운터 수정';
+
+  @override
+  String get addLengthCounterTitle => '길이 측정 카운터 추가';
+
+  @override
+  String get startStitch => '시작 단';
+
+  @override
+  String get targetLengthCm => '목표 길이 (cm)';
+
+  @override
+  String get rowHeightCm => '1단의 높이 (cm)';
+
+  @override
+  String get rowHeightDesc => '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요';
+
+  @override
+  String get gaugeInputComingSoon => '게이지 입력 기능 준비 중';
+
+  @override
+  String get goToGaugeInput => '게이지 입력하러 가기';
+
+  @override
+  String get expectedRows => '예상 필요 단수';
+
+  @override
+  String estimatedRowsDisplay(Object rows) {
+    return '$rows단';
+  }
+
+  @override
+  String get changeTargetRow => '목표 단수 변경';
+
+  @override
+  String get removeTargetRow => '목표 단수 해제';
+
+  @override
+  String editLogMemo(Object no) {
+    return 'Edit log $no Note';
+  }
+
+  @override
+  String get memoRemoved => 'Note removed';
+
+  @override
+  String get memoSaved => 'Note saved';
+
+  @override
+  String memoUpdateFailed(Object error) {
+    return 'Note update failed: $error';
+  }
+
+  @override
+  String get labelRemoved => 'Label removed';
+
+  @override
+  String labelChanged(Object label) {
+    return 'Label changed to \"$label\"';
+  }
+
+  @override
+  String labelUpdateFailed(Object error) {
+    return 'Label update failed: $error';
+  }
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get fold => 'Fold';
+
+  @override
+  String get setTargetRow => '목표 단수 설정';
+
+  @override
+  String get setTargetRowDesc => '완료하고자 하는 총 단수를 입력하세요';
+
+  @override
+  String get targetRow => '목표 단수';
+
+  @override
+  String get manageParts => 'Part 관리';
+
+  @override
+  String get managePartsDesc =>
+      'Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.';
+
+  @override
+  String get noParts => '등록된 Part가 없습니다.';
+
+  @override
+  String get editName => '이름 수정';
+
+  @override
+  String get deletePart => 'Part 삭제';
+
+  @override
+  String deletePartConfirm(Object name) {
+    return '\'$name\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.';
+  }
+
+  @override
+  String get duplicatePartName => '이미 존재하는 파트 이름입니다.';
+
+  @override
+  String get newPartName => '새 Part 이름';
+
+  @override
+  String get rowHeightError => '1단의 높이는 목표 길이보다 작아야 합니다.';
+
+  @override
+  String get projectInfo => 'Project Info';
+
+  @override
+  String get projectDelete => 'Delete Project';
+
+  @override
+  String get newPartTitle => 'New Part';
+
+  @override
+  String get addPartDesc => 'Please add a Part';
+
+  @override
+  String get newPartAdd => 'Add New Part';
+
+  @override
+  String get partNameHint => 'Part name (e.g. Front, Sleeve)';
+
+  @override
+  String get session => 'Session';
+
+  @override
+  String rowsRemaining(Object count) {
+    return '$count rows left';
+  }
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get editLabel => 'Edit Label';
+
+  @override
+  String get selectLabel => 'Select Label';
+
+  @override
+  String get manageLabels => 'Manage Labels';
+
+  @override
+  String get addLabel => 'Add Label';
+
+  @override
+  String get activeSessionExists => 'An active session exists';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get startNew => 'Start New';
+
+  @override
+  String get activeSession => 'Active Session';
+
+  @override
+  String get activeSessionQuestion =>
+      'An active session exists. Do you want to continue?';
+
+  @override
+  String get projectInfoDesc => 'Check the detailed project info';
+
+  @override
+  String get lotNumberLabel => 'Yarn Lot Number';
+
+  @override
+  String get noTagsAssigned => 'No tags assigned.';
+
+  @override
+  String get noGaugeInfo => 'No gauge info';
+
+  @override
+  String get noMemoInfo => 'No notes';
+
+  @override
+  String get createdAtLabel => 'Created At';
+
+  @override
+  String get updatedAtLabel => 'Recently Updated';
+
+  @override
+  String get gaugeStandard => '(per 10cm x 10cm)';
+
+  @override
+  String get noCounters => 'No counters.';
+
+  @override
+  String get addCounterGuide => 'Tap + button to add.';
+
+  @override
+  String completeWithEmoji(Object name) {
+    return '$name completed! 🎉';
+  }
+
+  @override
+  String get editProject => 'Edit Project';
+
+  @override
+  String get newProject => 'New Project';
+
+  @override
+  String get editProjectDesc => 'Please edit the project information';
+
+  @override
+  String get newProjectDesc => 'Please enter new project information';
+
+  @override
+  String get projectName => 'Project Name';
+
+  @override
+  String get projectNameHint => 'Enter project name';
+
+  @override
+  String get needleType => 'Needle Type';
+
+  @override
+  String get knittingNeedle => 'Knitting';
+
+  @override
+  String get crochetNeedle => 'Crochet';
+
+  @override
+  String get needleTypeHint => 'Select needle type';
+
+  @override
+  String get needleSize => 'Needle Size';
+
+  @override
+  String get needleSizeHint => 'Select needle type first';
+
+  @override
+  String get lotNumberHint => 'e.g. A12345';
+
+  @override
+  String get lotNumberDesc => 'Enter the yarn lot number';
+
+  @override
+  String get memoHint =>
+      'Write notes about the project\ne.g. yarn type, color, pattern info, etc.';
+
+  @override
+  String get tagAdd => 'Add Tag';
+
+  @override
+  String get stitchesHint => 'Stitches';
+
+  @override
+  String get stitchesUnit => 'St.';
+
+  @override
+  String get rowsHintGauge => 'Rows';
+
+  @override
+  String get rowsUnit => 'R';
+
+  @override
+  String get editComplete => 'Edit Complete';
+
+  @override
+  String get addComplete => 'Add Complete';
+
+  @override
+  String get addImage => 'Add Image';
+
+  @override
+  String get imageSourceDesc => 'Take a photo or select from gallery.';
+
+  @override
+  String get cameraShot => 'Take Photo';
+
+  @override
+  String get gallerySelect => 'Select from Gallery';
+
+  @override
+  String get projectImage => 'Project Image';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get memo => 'Note';
+
+  @override
+  String get tag => 'Tag';
+
+  @override
+  String get paused => 'Paused';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get dbDuplicateError => 'A duplicate value exists';
+
+  @override
+  String get dbForeignKeyError => 'The referenced record does not exist';
+
+  @override
+  String get dbRequiredError => 'A required value is missing';
+
+  @override
+  String get dbIntegrityError => 'Data integrity violation';
+
+  @override
+  String get dbConstraintError => 'Data constraint violation';
+
+  @override
+  String get dbGeneralError => 'A database error occurred';
+
+  @override
+  String get dbRecordNotFoundError => 'Record not found';
+
+  @override
+  String get defaultLabelSleeves => 'Sleeves';
+
+  @override
+  String get defaultLabelBody => 'Body';
+
+  @override
+  String get defaultLabelNeckline => 'Neckline';
 }

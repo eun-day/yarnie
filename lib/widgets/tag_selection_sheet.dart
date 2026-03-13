@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/model/tag_color_preset.dart';
@@ -287,7 +287,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red)),
               onPressed: () {
                 ref.read(tagsProvider.notifier).onEvent(DeleteTag(tag.id));
                 Navigator.of(dialogContext).pop();

@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import '../../features/home/home_root.dart';
 import '../../features/projects/projects_root.dart';
 import '../../features/my/my_root.dart';
@@ -66,7 +66,7 @@ void _handleBack(bool didPop, Object? result) {
     _lastBack = now;
     final m = ScaffoldMessenger.of(context);
     m.removeCurrentSnackBar();
-    m.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.exitConfirm), duration: const Duration(seconds: 2)));
+    m.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.exitConfirm), duration: Duration(seconds: 2)));
   }
 
   @override
@@ -90,9 +90,9 @@ void _handleBack(bool didPop, Object? result) {
         selectedIndex: _index,
         onDestinationSelected: _onTap,
         destinations: [
-          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: AppLocalizations.of(context)!.home),
-          NavigationDestination(icon: const Icon(Icons.folder_outlined), selectedIcon: const Icon(Icons.folder), label: AppLocalizations.of(context)!.projects),
-          NavigationDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: AppLocalizations.of(context)!.my),
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: AppLocalizations.of(context)!.home),
+          NavigationDestination(icon: Icon(Icons.folder_outlined), selectedIcon: Icon(Icons.folder), label: AppLocalizations.of(context)!.projects),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: AppLocalizations.of(context)!.my),
         ],
       ),
       )

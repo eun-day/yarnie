@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
 import 'package:yarnie/widget/labelpill.dart' show LabelPill;

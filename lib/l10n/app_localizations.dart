@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @lengthCounterDesc.
   ///
   /// In ko, this message translates to:
-  /// **'특정 길이에 도달할 때까지 작업을 추적해요.'**
+  /// **'목표 길이까지 필요한 단수를 추적합니다'**
   String get lengthCounterDesc;
 
   /// No description provided for @lengthCounterUsage1.
@@ -1387,6 +1387,1230 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'삭제된 프로젝트가 없습니다'**
   String get noDeletedProjects;
+
+  /// No description provided for @partMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{partName} - 메모'**
+  String partMemo(Object partName);
+
+  /// No description provided for @partMemoDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트에 대한 메모를 추가하거나 수정하세요.'**
+  String get partMemoDesc;
+
+  /// No description provided for @newMemoHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 메모를 입력하세요...'**
+  String get newMemoHint;
+
+  /// No description provided for @addMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 추가'**
+  String get addMemo;
+
+  /// No description provided for @noMemos.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 메모가 없습니다.'**
+  String get noMemos;
+
+  /// No description provided for @unpin.
+  ///
+  /// In ko, this message translates to:
+  /// **'상단 고정 해제'**
+  String get unpin;
+
+  /// No description provided for @pin.
+  ///
+  /// In ko, this message translates to:
+  /// **'상단에 고정'**
+  String get pin;
+
+  /// No description provided for @edit.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정'**
+  String get edit;
+
+  /// No description provided for @editMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 수정'**
+  String get editMemo;
+
+  /// No description provided for @editMainCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'메인카운트 값 편집'**
+  String get editMainCount;
+
+  /// No description provided for @editMainCountDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 카운트 값을 직접 수정하거나 초기화할 수 있습니다'**
+  String get editMainCountDesc;
+
+  /// No description provided for @currentCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 카운트'**
+  String get currentCount;
+
+  /// No description provided for @resetToOne.
+  ///
+  /// In ko, this message translates to:
+  /// **'1로 초기화'**
+  String get resetToOne;
+
+  /// No description provided for @rangeCounterLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'범위 카운터'**
+  String get rangeCounterLabel;
+
+  /// No description provided for @editRangeCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'범위 카운터 수정'**
+  String get editRangeCounter;
+
+  /// No description provided for @addRangeCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'범위 카운터 추가'**
+  String get addRangeCounter;
+
+  /// No description provided for @rangeCounterDescSimple.
+  ///
+  /// In ko, this message translates to:
+  /// **'특정 행 범위를 추적하는 카운터입니다.'**
+  String get rangeCounterDescSimple;
+
+  /// No description provided for @startRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 행'**
+  String get startRow;
+
+  /// No description provided for @totalRows.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 행 수'**
+  String get totalRows;
+
+  /// No description provided for @rowsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 50'**
+  String get rowsHint;
+
+  /// No description provided for @rowsHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 행부터 몇 행 동안 추적할지 입력하세요.'**
+  String get rowsHelper;
+
+  /// No description provided for @add.
+  ///
+  /// In ko, this message translates to:
+  /// **'추가'**
+  String get add;
+
+  /// No description provided for @label.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨'**
+  String get label;
+
+  /// No description provided for @labelHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요'**
+  String get labelHint;
+
+  /// No description provided for @tagSelection.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 선택'**
+  String get tagSelection;
+
+  /// No description provided for @complete.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get complete;
+
+  /// No description provided for @searchTags.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 검색...'**
+  String get searchTags;
+
+  /// No description provided for @addNewTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 태그 추가'**
+  String get addNewTag;
+
+  /// No description provided for @tagName.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 이름'**
+  String get tagName;
+
+  /// No description provided for @editTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 수정'**
+  String get editTag;
+
+  /// No description provided for @shapingCounterLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 카운터'**
+  String get shapingCounterLabel;
+
+  /// No description provided for @editShapingCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 카운터 수정'**
+  String get editShapingCounter;
+
+  /// No description provided for @addShapingCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 카운터 추가'**
+  String get addShapingCounter;
+
+  /// No description provided for @shapingCounterDescSimple.
+  ///
+  /// In ko, this message translates to:
+  /// **'코를 늘리거나 줄이는 작업을 추적하는 카운터입니다.'**
+  String get shapingCounterDescSimple;
+
+  /// No description provided for @intervalRows.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격 (행)'**
+  String get intervalRows;
+
+  /// No description provided for @intervalHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 2'**
+  String get intervalHint;
+
+  /// No description provided for @totalTimes.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 횟수'**
+  String get totalTimes;
+
+  /// No description provided for @timesHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 10'**
+  String get timesHint;
+
+  /// No description provided for @stitchChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'코 수 변화 (회당)'**
+  String get stitchChange;
+
+  /// No description provided for @stitchChangeHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 2 또는 -2'**
+  String get stitchChangeHint;
+
+  /// No description provided for @stitchChangeHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'양수는 코 늘림, 음수는 코 줄임입니다.'**
+  String get stitchChangeHelper;
+
+  /// No description provided for @intervalCounterLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격 카운터'**
+  String get intervalCounterLabel;
+
+  /// No description provided for @editIntervalCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격 카운터 수정'**
+  String get editIntervalCounter;
+
+  /// No description provided for @addIntervalCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격 카운터 추가'**
+  String get addIntervalCounter;
+
+  /// No description provided for @intervalCounterDescSimple.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정한 간격으로 작업을 반복할 때 사용하는 카운터입니다.'**
+  String get intervalCounterDescSimple;
+
+  /// No description provided for @intervalTimesHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격과 총 횟수를 입력하세요.'**
+  String get intervalTimesHelper;
+
+  /// No description provided for @colorOption.
+  ///
+  /// In ko, this message translates to:
+  /// **'배색 옵션'**
+  String get colorOption;
+
+  /// No description provided for @colorOptionDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'배색 추적이 필요한 경우 사용할 색상을 순서대로 선택하세요'**
+  String get colorOptionDesc;
+
+  /// No description provided for @editStitchCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'스티치 카운터 수정'**
+  String get editStitchCounter;
+
+  /// No description provided for @editCounterInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터 정보를 수정합니다.'**
+  String get editCounterInfo;
+
+  /// No description provided for @currentValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 값'**
+  String get currentValue;
+
+  /// No description provided for @countUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 단위'**
+  String get countUnit;
+
+  /// No description provided for @repeatCounterLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 카운터'**
+  String get repeatCounterLabel;
+
+  /// No description provided for @editRepeatCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 카운터 수정'**
+  String get editRepeatCounter;
+
+  /// No description provided for @addRepeatCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 카운터 추가'**
+  String get addRepeatCounter;
+
+  /// No description provided for @repeatCounterDescSimple.
+  ///
+  /// In ko, this message translates to:
+  /// **'특정 패턴을 반복할 때 사용하는 카운터입니다.'**
+  String get repeatCounterDescSimple;
+
+  /// No description provided for @repeatUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 단위 (행)'**
+  String get repeatUnit;
+
+  /// No description provided for @repeatTimes.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 횟수'**
+  String get repeatTimes;
+
+  /// No description provided for @repeatHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'패턴의 반복 단위와 횟수를 입력하세요.'**
+  String get repeatHelper;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'을 삭제하시겠습니까?'**
+  String get deleteConfirm;
+
+  /// No description provided for @deleteDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.'**
+  String get deleteDesc;
+
+  /// No description provided for @achieved.
+  ///
+  /// In ko, this message translates to:
+  /// **'달성 완료 ✓'**
+  String get achieved;
+
+  /// No description provided for @remainingLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 길이'**
+  String get remainingLength;
+
+  /// No description provided for @stitchIncrease.
+  ///
+  /// In ko, this message translates to:
+  /// **'코 늘림'**
+  String get stitchIncrease;
+
+  /// No description provided for @stitchDecrease.
+  ///
+  /// In ko, this message translates to:
+  /// **'코 줄임'**
+  String get stitchDecrease;
+
+  /// No description provided for @nextRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음:{row}행'**
+  String nextRow(Object row);
+
+  /// No description provided for @patternRows.
+  ///
+  /// In ko, this message translates to:
+  /// **'{current}/{total}행 ({total}행 패턴)'**
+  String patternRows(Object current, Object total);
+
+  /// No description provided for @fromRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'{row}행부터'**
+  String fromRow(Object row);
+
+  /// No description provided for @stitch.
+  ///
+  /// In ko, this message translates to:
+  /// **'코'**
+  String get stitch;
+
+  /// No description provided for @increaseBy.
+  ///
+  /// In ko, this message translates to:
+  /// **'+{n}씩'**
+  String increaseBy(Object n);
+
+  /// No description provided for @manualInput.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력...'**
+  String get manualInput;
+
+  /// No description provided for @setIncreaseValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'증가값 설정'**
+  String get setIncreaseValue;
+
+  /// No description provided for @setIncreaseValueDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 번에 증가시킬 코 수를 입력하세요.'**
+  String get setIncreaseValueDesc;
+
+  /// No description provided for @increaseValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'증가값'**
+  String get increaseValue;
+
+  /// No description provided for @increaseValueHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 6'**
+  String get increaseValueHint;
+
+  /// No description provided for @confirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get confirm;
+
+  /// No description provided for @exitConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 번 더 누르면 종료됩니다.'**
+  String get exitConfirm;
+
+  /// No description provided for @home.
+  ///
+  /// In ko, this message translates to:
+  /// **'홈'**
+  String get home;
+
+  /// No description provided for @selectCounterType.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터 유형 선택'**
+  String get selectCounterType;
+
+  /// No description provided for @stitchCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'스티치 카운터'**
+  String get stitchCounter;
+
+  /// No description provided for @independentCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'독립적인 숫자 카운터'**
+  String get independentCounter;
+
+  /// No description provided for @sectionCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'섹션 카운터'**
+  String get sectionCounter;
+
+  /// No description provided for @range.
+  ///
+  /// In ko, this message translates to:
+  /// **'범위 (Range)'**
+  String get range;
+
+  /// No description provided for @repeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'반복 (Repeat)'**
+  String get repeat;
+
+  /// No description provided for @interval.
+  ///
+  /// In ko, this message translates to:
+  /// **'간격 (Interval)'**
+  String get interval;
+
+  /// No description provided for @shaping.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 (Shaping)'**
+  String get shaping;
+
+  /// No description provided for @length.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 (Length)'**
+  String get length;
+
+  /// No description provided for @addLengthCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 카운터 추가'**
+  String get addLengthCounter;
+
+  /// No description provided for @editLengthCounter.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 카운터 수정'**
+  String get editLengthCounter;
+
+  /// No description provided for @lengthCounterDescSimple.
+  ///
+  /// In ko, this message translates to:
+  /// **'특정 길이에 도달할 때까지 추적하는 카운터입니다.'**
+  String get lengthCounterDescSimple;
+
+  /// No description provided for @targetLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 길이'**
+  String get targetLength;
+
+  /// No description provided for @lengthHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 30.0'**
+  String get lengthHint;
+
+  /// No description provided for @lengthHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표로 하는 길이를 입력하세요.'**
+  String get lengthHelper;
+
+  /// No description provided for @unit.
+  ///
+  /// In ko, this message translates to:
+  /// **'단위'**
+  String get unit;
+
+  /// No description provided for @cm.
+  ///
+  /// In ko, this message translates to:
+  /// **'cm'**
+  String get cm;
+
+  /// No description provided for @inch.
+  ///
+  /// In ko, this message translates to:
+  /// **'inch'**
+  String get inch;
+
+  /// No description provided for @countBySetting.
+  ///
+  /// In ko, this message translates to:
+  /// **'Count By 설정'**
+  String get countBySetting;
+
+  /// No description provided for @lengthMeasurement.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 측정'**
+  String get lengthMeasurement;
+
+  /// No description provided for @targetInfoLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 {length}cm'**
+  String targetInfoLength(Object length);
+
+  /// No description provided for @editLengthCounterTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 측정 카운터 수정'**
+  String get editLengthCounterTitle;
+
+  /// No description provided for @addLengthCounterTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'길이 측정 카운터 추가'**
+  String get addLengthCounterTitle;
+
+  /// No description provided for @startStitch.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 단'**
+  String get startStitch;
+
+  /// No description provided for @targetLengthCm.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 길이 (cm)'**
+  String get targetLengthCm;
+
+  /// No description provided for @rowHeightCm.
+  ///
+  /// In ko, this message translates to:
+  /// **'1단의 높이 (cm)'**
+  String get rowHeightCm;
+
+  /// No description provided for @rowHeightDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요'**
+  String get rowHeightDesc;
+
+  /// No description provided for @gaugeInputComingSoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'게이지 입력 기능 준비 중'**
+  String get gaugeInputComingSoon;
+
+  /// No description provided for @goToGaugeInput.
+  ///
+  /// In ko, this message translates to:
+  /// **'게이지 입력하러 가기'**
+  String get goToGaugeInput;
+
+  /// No description provided for @expectedRows.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 필요 단수'**
+  String get expectedRows;
+
+  /// No description provided for @estimatedRowsDisplay.
+  ///
+  /// In ko, this message translates to:
+  /// **'{rows}단'**
+  String estimatedRowsDisplay(Object rows);
+
+  /// No description provided for @changeTargetRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 단수 변경'**
+  String get changeTargetRow;
+
+  /// No description provided for @removeTargetRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 단수 해제'**
+  String get removeTargetRow;
+
+  /// No description provided for @editLogMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'log {no} 메모 편집'**
+  String editLogMemo(Object no);
+
+  /// No description provided for @memoRemoved.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모가 제거되었습니다'**
+  String get memoRemoved;
+
+  /// No description provided for @memoSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모가 저장되었습니다'**
+  String get memoSaved;
+
+  /// No description provided for @memoUpdateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 업데이트 실패: {error}'**
+  String memoUpdateFailed(Object error);
+
+  /// No description provided for @labelRemoved.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨이 제거되었습니다'**
+  String get labelRemoved;
+
+  /// No description provided for @labelChanged.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨이 \"{label}\"로 변경되었습니다'**
+  String labelChanged(Object label);
+
+  /// No description provided for @labelUpdateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 업데이트 실패: {error}'**
+  String labelUpdateFailed(Object error);
+
+  /// No description provided for @more.
+  ///
+  /// In ko, this message translates to:
+  /// **'더보기'**
+  String get more;
+
+  /// No description provided for @fold.
+  ///
+  /// In ko, this message translates to:
+  /// **'접기'**
+  String get fold;
+
+  /// No description provided for @setTargetRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 단수 설정'**
+  String get setTargetRow;
+
+  /// No description provided for @setTargetRowDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료하고자 하는 총 단수를 입력하세요'**
+  String get setTargetRowDesc;
+
+  /// No description provided for @targetRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 단수'**
+  String get targetRow;
+
+  /// No description provided for @manageParts.
+  ///
+  /// In ko, this message translates to:
+  /// **'Part 관리'**
+  String get manageParts;
+
+  /// No description provided for @managePartsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.'**
+  String get managePartsDesc;
+
+  /// No description provided for @noParts.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 Part가 없습니다.'**
+  String get noParts;
+
+  /// No description provided for @editName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 수정'**
+  String get editName;
+
+  /// No description provided for @deletePart.
+  ///
+  /// In ko, this message translates to:
+  /// **'Part 삭제'**
+  String get deletePart;
+
+  /// No description provided for @deletePartConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'\'{name}\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.'**
+  String deletePartConfirm(Object name);
+
+  /// No description provided for @duplicatePartName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 존재하는 파트 이름입니다.'**
+  String get duplicatePartName;
+
+  /// No description provided for @newPartName.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 Part 이름'**
+  String get newPartName;
+
+  /// No description provided for @rowHeightError.
+  ///
+  /// In ko, this message translates to:
+  /// **'1단의 높이는 목표 길이보다 작아야 합니다.'**
+  String get rowHeightError;
+
+  /// No description provided for @projectInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 정보'**
+  String get projectInfo;
+
+  /// No description provided for @projectDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 삭제'**
+  String get projectDelete;
+
+  /// No description provided for @newPartTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 파트'**
+  String get newPartTitle;
+
+  /// No description provided for @addPartDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트를 추가해주세요'**
+  String get addPartDesc;
+
+  /// No description provided for @newPartAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 파트 추가'**
+  String get newPartAdd;
+
+  /// No description provided for @partNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 이름 (예: 앞판, 소매)'**
+  String get partNameHint;
+
+  /// No description provided for @session.
+  ///
+  /// In ko, this message translates to:
+  /// **'세션'**
+  String get session;
+
+  /// No description provided for @rowsRemaining.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}줄 남음'**
+  String rowsRemaining(Object count);
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In ko, this message translates to:
+  /// **'상세 보기'**
+  String get viewDetails;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 수정'**
+  String get editLabel;
+
+  /// No description provided for @selectLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 선택'**
+  String get selectLabel;
+
+  /// No description provided for @manageLabels.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 관리'**
+  String get manageLabels;
+
+  /// No description provided for @addLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 추가'**
+  String get addLabel;
+
+  /// No description provided for @activeSessionExists.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 세션이 있습니다'**
+  String get activeSessionExists;
+
+  /// No description provided for @resume.
+  ///
+  /// In ko, this message translates to:
+  /// **'이어하기'**
+  String get resume;
+
+  /// No description provided for @startNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로 시작'**
+  String get startNew;
+
+  /// No description provided for @activeSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중 세션'**
+  String get activeSession;
+
+  /// No description provided for @activeSessionQuestion.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 세션이 있습니다. 이어서 하시겠습니까?'**
+  String get activeSessionQuestion;
+
+  /// No description provided for @projectInfoDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트의 상세 정보를 확인하세요'**
+  String get projectInfoDesc;
+
+  /// No description provided for @lotNumberLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 로트 번호'**
+  String get lotNumberLabel;
+
+  /// No description provided for @noTagsAssigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'지정된 태그가 없습니다.'**
+  String get noTagsAssigned;
+
+  /// No description provided for @noGaugeInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'게이지 정보 없음'**
+  String get noGaugeInfo;
+
+  /// No description provided for @noMemoInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 없음'**
+  String get noMemoInfo;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'생성일'**
+  String get createdAtLabel;
+
+  /// No description provided for @updatedAtLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 수정'**
+  String get updatedAtLabel;
+
+  /// No description provided for @gaugeStandard.
+  ///
+  /// In ko, this message translates to:
+  /// **'(10cm x 10cm 기준)'**
+  String get gaugeStandard;
+
+  /// No description provided for @noCounters.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터가 없습니다.'**
+  String get noCounters;
+
+  /// No description provided for @addCounterGuide.
+  ///
+  /// In ko, this message translates to:
+  /// **'+ 버튼을 눌러 추가해보세요.'**
+  String get addCounterGuide;
+
+  /// No description provided for @completeWithEmoji.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 완료! 🎉'**
+  String completeWithEmoji(Object name);
+
+  /// No description provided for @editProject.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 수정'**
+  String get editProject;
+
+  /// No description provided for @newProject.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 프로젝트'**
+  String get newProject;
+
+  /// No description provided for @editProjectDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 정보를 수정해주세요'**
+  String get editProjectDesc;
+
+  /// No description provided for @newProjectDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로운 프로젝트 정보를 입력해주세요'**
+  String get newProjectDesc;
+
+  /// No description provided for @projectName.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트명'**
+  String get projectName;
+
+  /// No description provided for @projectNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 이름을 입력하세요'**
+  String get projectNameHint;
+
+  /// No description provided for @needleType.
+  ///
+  /// In ko, this message translates to:
+  /// **'바늘 종류'**
+  String get needleType;
+
+  /// No description provided for @knittingNeedle.
+  ///
+  /// In ko, this message translates to:
+  /// **'대바늘'**
+  String get knittingNeedle;
+
+  /// No description provided for @crochetNeedle.
+  ///
+  /// In ko, this message translates to:
+  /// **'코바늘'**
+  String get crochetNeedle;
+
+  /// No description provided for @needleTypeHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'바늘 종류를 선택하세요'**
+  String get needleTypeHint;
+
+  /// No description provided for @needleSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'바늘 사이즈'**
+  String get needleSize;
+
+  /// No description provided for @needleSizeHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'먼저 바늘 종류를 선택하세요'**
+  String get needleSizeHint;
+
+  /// No description provided for @lotNumberHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: A12345'**
+  String get lotNumberHint;
+
+  /// No description provided for @lotNumberDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'실의 로트 번호를 입력하세요'**
+  String get lotNumberDesc;
+
+  /// No description provided for @memoHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등'**
+  String get memoHint;
+
+  /// No description provided for @tagAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 추가'**
+  String get tagAdd;
+
+  /// No description provided for @stitchesHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'코 수'**
+  String get stitchesHint;
+
+  /// No description provided for @stitchesUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'코'**
+  String get stitchesUnit;
+
+  /// No description provided for @rowsHintGauge.
+  ///
+  /// In ko, this message translates to:
+  /// **'단 수'**
+  String get rowsHintGauge;
+
+  /// No description provided for @rowsUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'단'**
+  String get rowsUnit;
+
+  /// No description provided for @editComplete.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정 완료'**
+  String get editComplete;
+
+  /// No description provided for @addComplete.
+  ///
+  /// In ko, this message translates to:
+  /// **'추가 완료'**
+  String get addComplete;
+
+  /// No description provided for @addImage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미지 추가'**
+  String get addImage;
+
+  /// No description provided for @imageSourceDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진을 촬영하거나 갤러리에서 선택하세요.'**
+  String get imageSourceDesc;
+
+  /// No description provided for @cameraShot.
+  ///
+  /// In ko, this message translates to:
+  /// **'카메라로 촬영'**
+  String get cameraShot;
+
+  /// No description provided for @gallerySelect.
+  ///
+  /// In ko, this message translates to:
+  /// **'갤러리에서 선택'**
+  String get gallerySelect;
+
+  /// No description provided for @projectImage.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 이미지'**
+  String get projectImage;
+
+  /// No description provided for @reset.
+  ///
+  /// In ko, this message translates to:
+  /// **'초기화'**
+  String get reset;
+
+  /// No description provided for @change.
+  ///
+  /// In ko, this message translates to:
+  /// **'변경'**
+  String get change;
+
+  /// No description provided for @memo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모'**
+  String get memo;
+
+  /// No description provided for @tag.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그'**
+  String get tag;
+
+  /// No description provided for @paused.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시정지'**
+  String get paused;
+
+  /// No description provided for @start.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get start;
+
+  /// No description provided for @dbDuplicateError.
+  ///
+  /// In ko, this message translates to:
+  /// **'중복된 값이 존재합니다'**
+  String get dbDuplicateError;
+
+  /// No description provided for @dbForeignKeyError.
+  ///
+  /// In ko, this message translates to:
+  /// **'참조하는 레코드가 존재하지 않습니다'**
+  String get dbForeignKeyError;
+
+  /// No description provided for @dbRequiredError.
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 값이 누락되었습니다'**
+  String get dbRequiredError;
+
+  /// No description provided for @dbIntegrityError.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 무결성 위반'**
+  String get dbIntegrityError;
+
+  /// No description provided for @dbConstraintError.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 제약 조건을 위반했습니다'**
+  String get dbConstraintError;
+
+  /// No description provided for @dbGeneralError.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터베이스 오류가 발생했습니다'**
+  String get dbGeneralError;
+
+  /// No description provided for @dbRecordNotFoundError.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록을 찾을 수 없습니다'**
+  String get dbRecordNotFoundError;
+
+  /// No description provided for @defaultLabelSleeves.
+  ///
+  /// In ko, this message translates to:
+  /// **'소매'**
+  String get defaultLabelSleeves;
+
+  /// No description provided for @defaultLabelBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'몸통'**
+  String get defaultLabelBody;
+
+  /// No description provided for @defaultLabelNeckline.
+  ///
+  /// In ko, this message translates to:
+  /// **'목둘레'**
+  String get defaultLabelNeckline;
 }
 
 class _AppLocalizationsDelegate
