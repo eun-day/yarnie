@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yarnie/features/my/widgets/setting_section.dart';
 import 'package:yarnie/features/my/widgets/setting_item.dart';
 import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
+import 'package:yarnie/features/trash/trash_root.dart';
 import 'package:yarnie/core/l10n/app_strings.dart';
 
 class MyRoot extends StatefulWidget {
@@ -84,7 +85,12 @@ class _MyRootState extends State<MyRoot> {
                     title: '휴지통',
                     subtitle: '삭제된 프로젝트 관리',
                     onTap: () {
-                      // TODO: Navigate to Trash
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TrashRoot(),
+                        ),
+                      );
                     },
                   ),
                   SettingItem(

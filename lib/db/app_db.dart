@@ -548,6 +548,33 @@ class AppDb extends _$AppDb {
         .go();
   }
 
+  /// 휴지통에 있는 프로젝트 목록 스트림
+  Stream<List<Project>> watchDeletedProjects() {
+    return (select(projects)
+          ..where((t) => t.deletedAt.isNotNull())
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.deletedAt), // 가장 최근에 삭제된 순
+            (t) => OrderingTerm.desc(t.createdAt),
+          ]))
+        .watch();
+  }
+
+  /// 프로젝트 복원 (휴지통에서 해제)
+  Future<void> restoreProject(int projectId) async {
+    final now = DateTime.now().toUtc();
+    await (update(projects)..where((t) => t.id.equals(projectId))).write(
+      ProjectsCompanion(
+        deletedAt: const Value(null),
+        updatedAt: Value(now),
+      ),
+    );
+  }
+
+  /// 프로젝트 영구 삭제 (사용자가 직접 휴지통에서 삭제)
+  Future<void> permanentlyDeleteProject(int projectId) async {
+    await (delete(projects)..where((t) => t.id.equals(projectId))).go();
+  }
+
   // 공통: 활성 세션 조회 (RUNNING/PAUSED)
   Future<WorkSession?> getActiveSession(int projectId) {
     return (select(workSessions)
