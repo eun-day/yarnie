@@ -30,8 +30,8 @@ class SubCounterItem extends StatelessWidget {
     if (Platform.isIOS) {
       // iOS: CountBySelector를 카운터 영역 내부 우측으로 이동
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        padding: const EdgeInsets.fromLTRB(12, 12, 8, 12), // 오른쪽 패딩 추가
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: EdgeInsets.fromLTRB(12, 12, 8, 12), // 오른쪽 패딩 추가
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12.0),
@@ -55,7 +55,7 @@ class SubCounterItem extends StatelessWidget {
                   GestureDetector(
                     onLongPress: onReset,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8.0),
@@ -99,8 +99,8 @@ class SubCounterItem extends StatelessWidget {
         onDismissed: (_) => onDelete(),
         background: Container(
           alignment: Alignment.centerRight,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.errorContainer,
             borderRadius: BorderRadius.circular(12),
@@ -111,8 +111,8 @@ class SubCounterItem extends StatelessWidget {
           ),
         ),
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
@@ -122,14 +122,14 @@ class SubCounterItem extends StatelessWidget {
           child: Row(
             children: [
               IconButton.filledTonal(
-                icon: const Icon(Icons.remove),
+                icon: Icon(Icons.remove),
                 onPressed: onDecrement,
               ),
               GestureDetector(
                 onLongPress: onReset,
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
                     '$value',
                     style: Theme.of(context).textTheme.titleLarge,
@@ -137,12 +137,12 @@ class SubCounterItem extends StatelessWidget {
                 ),
               ),
               IconButton.filledTonal(
-                icon: const Icon(Icons.add),
+                icon: Icon(Icons.add),
                 onPressed: onIncrement,
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: EdgeInsets.only(right: 4.0),
                 child: CountBySelector(
                   currentValue: countByValue,
                   onChanged: onCountByChanged,
@@ -166,7 +166,7 @@ class SubCounterItem extends StatelessWidget {
   }) {
     if (Platform.isIOS) {
       return CupertinoButton(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8),
         onPressed: onPressed,
         child: Icon(
           icon,
@@ -194,7 +194,7 @@ class SubCounterItem extends StatelessWidget {
   Widget _buildDeleteButton(BuildContext context) {
     if (Platform.isIOS) {
       return CupertinoButton(
-        padding: const EdgeInsets.all(4),
+        padding: EdgeInsets.all(4),
         onPressed: onDelete,
         child: ConstrainedBox(
           constraints: const BoxConstraints(
@@ -211,12 +211,12 @@ class SubCounterItem extends StatelessWidget {
     } else {
       return IconButton(
         onPressed: onDelete,
-        icon: const Icon(Icons.close),
+        icon: Icon(Icons.close),
         iconSize: 20,
         color: Theme.of(context).colorScheme.error,
         style: IconButton.styleFrom(
           minimumSize: const Size(32, 32),
-          padding: const EdgeInsets.all(4),
+          padding: EdgeInsets.all(4),
         ),
       );
     }

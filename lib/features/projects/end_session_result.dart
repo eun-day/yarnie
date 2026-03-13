@@ -36,7 +36,7 @@ Future<EndSessionResult?> showEndSessionSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    shape: const RoundedRectangleBorder(
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => EndSessionSheetMaterial(

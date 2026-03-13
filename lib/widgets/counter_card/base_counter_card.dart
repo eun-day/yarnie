@@ -25,23 +25,23 @@ class BaseCounterCard extends StatelessWidget {
       width: 173,
       height: 160,
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.white,
+        color: backgroundColor ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0x1A000000), width: 0.64),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
       ),
       child: Column(
         children: [
           // 1. Label Area (Top)
           Padding(
-            padding: const EdgeInsets.only(top: 13, left: 13, right: 13),
+            padding: EdgeInsets.only(top: 13, left: 13, right: 13),
             child: SizedBox(
               height: 20,
               width: double.infinity,
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF0A0A0A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: -0.15,
                   fontWeight: FontWeight.w400, // Inter Regular
                 ),
@@ -58,7 +58,7 @@ class BaseCounterCard extends StatelessWidget {
 
           // 3. Bottom Toolbar Area
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13),
+            padding: EdgeInsets.symmetric(horizontal: 13),
             child: SizedBox(
               height: 32, // Toolbar height based on design
               child: bottomToolbar,
@@ -71,8 +71,8 @@ class BaseCounterCard extends StatelessWidget {
             Container(
               height: 8,
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color(0xFFECECF0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10),
@@ -123,9 +123,9 @@ class CounterCardToolbar extends StatelessWidget {
           child: infoText != null
               ? Text(
                   infoText!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                   ),
                   maxLines: 1,

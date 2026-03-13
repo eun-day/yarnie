@@ -13,7 +13,7 @@ class EmptyTrashView extends StatelessWidget {
           width: 128,
           height: 128,
           decoration: BoxDecoration(
-            color: const Color(0xFFECECF0).withOpacity(0.5),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
@@ -24,23 +24,23 @@ class EmptyTrashView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           '휴지통이 비어있습니다',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.normal,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.44,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           '삭제된 프로젝트가 없습니다',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.normal,
-            color: Color(0xFF717182),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
           textAlign: TextAlign.center,

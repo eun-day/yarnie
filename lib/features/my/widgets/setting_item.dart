@@ -29,14 +29,14 @@ class SettingItem extends StatelessWidget {
       onTap: isSwitch ? null : onTap,
       child: Container(
         height: 76.5,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFFECECF0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
@@ -46,8 +46,8 @@ class SettingItem extends StatelessWidget {
                 height: 20,
                 colorFilter: (isSwitch && initialSwitchValue) 
                     ? null 
-                    : const ColorFilter.mode(
-                        Color(0xFF717182),
+                    : ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurfaceVariant,
                         BlendMode.srcIn,
                       ),
               ),
@@ -66,7 +66,7 @@ class SettingItem extends StatelessWidget {
                   Text(
                     subtitle,
                     style: AppTextStyles.bodyM.copyWith(
-                      color: const Color(0xFF717182),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.0,
                     ),
                   ),
@@ -80,7 +80,7 @@ class SettingItem extends StatelessWidget {
                 activeColor: const Color(0xFF6FB96F),
               )
             else
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 color: Color(0xFFCBCED4),
               ),

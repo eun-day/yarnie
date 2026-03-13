@@ -63,9 +63,9 @@ class ShapingCounterCard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '$typeText $amountText',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF717182),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.15,
                 ),
               ),
@@ -75,10 +75,10 @@ class ShapingCounterCard extends StatelessWidget {
           // Next Action Row
           Text(
             isCompleted ? '완료 ✓' : '다음:${nextActionRow}행',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.44,
               height: 1.4,
             ),
@@ -87,9 +87,9 @@ class ShapingCounterCard extends StatelessWidget {
           // Sub Info
           Text(
             '${intervalRows}행마다 · $currentCount/${totalCount}회',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF717182),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: -0.15,
             ),
           ),

@@ -46,7 +46,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
     final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
@@ -56,7 +56,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -90,7 +90,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => Navigator.pop(context, null),
-                          child: const Text('취소'),
+                          child: Text('취소'),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -100,7 +100,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                             final memo = controller.text.trim();
                             Navigator.pop(context, memo.isEmpty ? '' : memo);
                           },
-                          child: const Text('저장'),
+                          child: Text('저장'),
                         ),
                       ),
                     ],
@@ -233,7 +233,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
             },
             child: Text(
               'View log ${widget.logNo} Details',
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           CupertinoActionSheetAction(
@@ -245,7 +245,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                 _showLabelSelector(context);
               }
             },
-            child: const Text('Edit Label', style: TextStyle(fontSize: 16)),
+            child: Text('Edit Label', style: TextStyle(fontSize: 16)),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
@@ -256,13 +256,13 @@ class _SessionLogTileState extends State<SessionLogTile> {
                 _showMemoEditor(context);
               }
             },
-            child: const Text('Edit Memo', style: TextStyle(fontSize: 16)),
+            child: Text('Edit Memo', style: TextStyle(fontSize: 16)),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel', style: TextStyle(fontSize: 16)),
+          child: Text('Cancel', style: TextStyle(fontSize: 16)),
         ),
       ),
     );
@@ -276,7 +276,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.visibility),
+              leading: Icon(Icons.visibility),
               title: Text('View log ${widget.logNo} Details'),
               onTap: () {
                 Navigator.pop(context);
@@ -288,8 +288,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.label_outline),
-              title: const Text('Edit Label'),
+              leading: Icon(Icons.label_outline),
+              title: Text('Edit Label'),
               onTap: () {
                 Navigator.pop(context);
                 if (widget.onEditLabel != null) {
@@ -300,8 +300,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.edit_note),
-              title: const Text('Edit Memo'),
+              leading: Icon(Icons.edit_note),
+              title: Text('Edit Memo'),
               onTap: () {
                 Navigator.pop(context);
                 if (widget.onEditMemo != null) {
@@ -324,7 +324,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
     final content = Container(
       width: double.infinity, // 전체 너비 사용
-      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -354,7 +354,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                     if (widget.label?.isNotEmpty == true) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
@@ -367,7 +367,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w500,
                             fontSize: 10,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                         ),
                       ),
@@ -381,7 +381,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           if (hasMemo) ...[
             const SizedBox(height: 4),
             Padding(
-              padding: const EdgeInsets.only(left: 60),
+              padding: EdgeInsets.only(left: 60),
               child: _buildMemoSection(theme),
             ),
           ],
@@ -515,7 +515,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
     return Container(
       width: 250,
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepPurple.withValues(alpha: 0.2),
@@ -529,7 +529,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
         children: [
           // 핀 아이콘
           Padding(
-            padding: const EdgeInsets.only(top: 1, right: 6),
+            padding: EdgeInsets.only(top: 1, right: 6),
             child: Icon(
               Icons.push_pin,
               size: 12,

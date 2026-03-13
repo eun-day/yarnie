@@ -75,7 +75,7 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   '작업 메모',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
@@ -89,7 +89,7 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                 const SizedBox(height: 16),
                 Text(
                   '작업 시간 ${fmt(widget.segment)}을 저장하시겠습니까?',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     color: CupertinoColors.label,
                   ),
@@ -98,12 +98,12 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                 Row(
                   children: [
                     CupertinoButton(
-                      child: const Text('취소'),
+                      child: Text('취소'),
                       onPressed: () => _close(false),
                     ),
                     const Spacer(),
                     CupertinoButton.filled(
-                      child: const Text('저장'),
+                      child: Text('저장'),
                       onPressed: () => _close(true),
                     ),
                   ],

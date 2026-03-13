@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/my/widgets/setting_section.dart';
 import 'package:yarnie/features/my/widgets/setting_item.dart';
 import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
@@ -6,21 +7,22 @@ import 'package:yarnie/features/trash/trash_root.dart';
 import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/features/my/widgets/app_info_sheet.dart';
 import 'package:yarnie/core/l10n/app_strings.dart';
+import 'package:yarnie/core/providers/theme_provider.dart';
 
-class MyRoot extends StatefulWidget {
+class MyRoot extends ConsumerStatefulWidget {
   final ScrollController? controller;
   const MyRoot({super.key, this.controller});
 
   @override
-  State<MyRoot> createState() => _MyRootState();
+  ConsumerState<MyRoot> createState() => _MyRootState();
 }
 
-class _MyRootState extends State<MyRoot> {
-  // Temporary state for the UI mockup
-  bool _isDarkMode = false;
-
+class _MyRootState extends ConsumerState<MyRoot> {
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
+
     return CustomScrollView(
       controller: widget.controller,
       key: const PageStorageKey('my_scroll'),
@@ -30,7 +32,7 @@ class _MyRootState extends State<MyRoot> {
           title: Text(AppStrings.tr(context, '마이')), // temporary generic string fallback
         ),
         SliverPadding(
-          padding: const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 40),
+          padding:  const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 40),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               SettingSection(
@@ -47,17 +49,17 @@ class _MyRootState extends State<MyRoot> {
                     },
                   ),
                   SettingItem(
-                    iconPath: _isDarkMode
+                    iconPath: isDarkMode
                         ? 'assets/icons/dark_mode_on.svg'
                         : 'assets/icons/dark_mode.svg',
                     title: '다크 모드',
-                    subtitle: _isDarkMode ? '켜짐' : '꺼짐',
+                    subtitle: isDarkMode ? '켜짐' : '꺼짐',
                     isSwitch: true,
-                    initialSwitchValue: _isDarkMode,
+                    initialSwitchValue: isDarkMode,
                     onSwitchChanged: (value) {
-                      setState(() {
-                        _isDarkMode = value;
-                      });
+                      ref.read(themeProvider.notifier).setThemeMode(
+                            value ? ThemeMode.dark : ThemeMode.light,
+                          );
                     },
                   ),
                   SettingItem(

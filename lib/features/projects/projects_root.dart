@@ -67,7 +67,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('프로젝트'),
+            Text('프로젝트'),
             Text(
               '${state.allProjects.length}개의 프로젝트',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -78,13 +78,13 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: EdgeInsets.only(right: 8),
             child: FilledButton.tonalIcon(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const NewProjectScreen()),
               ),
-              icon: const Icon(Icons.add, size: 20),
-              label: const Text('새 프로젝트'),
+              icon: Icon(Icons.add, size: 20),
+              label: Text('새 프로젝트'),
               style: FilledButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -258,14 +258,14 @@ class _TagFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 48,
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: 6),
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         children: [
           // 전체 칩
           Padding(
-            padding: const EdgeInsets.only(right: 6),
+            padding: EdgeInsets.only(right: 6),
             child: TagChip(
               label: '전체',
               isSelected: selectedTagIds.isEmpty,
@@ -277,7 +277,7 @@ class _TagFilterBar extends StatelessWidget {
           ...tags.map((tag) {
             final isSelected = selectedTagIds.contains(tag.id);
             return Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: EdgeInsets.only(right: 6),
               child: TagChip(
                 label: tag.name,
                 isSelected: isSelected,
@@ -305,7 +305,7 @@ class _ViewModeBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -320,7 +320,7 @@ class _ViewModeBar extends StatelessWidget {
         children: [
           // 뷰 모드 아이콘 박스
           Container(
-            padding: const EdgeInsets.all(3),
+            padding: EdgeInsets.all(3),
             decoration: BoxDecoration(
               border: Border.all(
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
@@ -419,12 +419,12 @@ class _LargeCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: EdgeInsets.only(bottom: 16.0),
           child: _LargeProjectCard(
             project: project,
             tags: tags,
@@ -492,18 +492,18 @@ class _LargeProjectCard extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           project.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             letterSpacing: -0.3125,
                           ),
                           maxLines: 1,
@@ -515,7 +515,7 @@ class _LargeProjectCard extends StatelessWidget {
                             Icon(
                               Icons.calendar_today,
                               size: 14,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -523,7 +523,7 @@ class _LargeProjectCard extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -558,13 +558,13 @@ class _LargeProjectCard extends StatelessWidget {
                   child: Container(
                     width: 24,
                     height: 24,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.transparent,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_forward_ios, size: 16),
-                      color: Colors.white,
+                      icon: Icon(Icons.arrow_forward_ios, size: 16),
+                      color: Theme.of(context).colorScheme.surface,
                       onPressed: onTap,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -619,7 +619,7 @@ class _SmallCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12,
@@ -700,28 +700,28 @@ class _SmallProjectCard extends StatelessWidget {
               bottom: 0,
               height: 32,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
                 color: Colors.black.withOpacity(0.4),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
                         project.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           height: 1.33,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios,
                       size: 12,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ],
                 ),
@@ -778,7 +778,7 @@ class _ListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
@@ -804,7 +804,7 @@ class _EmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -826,8 +826,8 @@ class _EmptyView extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const NewProjectScreen()),
                 );
               },
-              icon: const Icon(Icons.add),
-              label: const Text('프로젝트 만들기'),
+              icon: Icon(Icons.add),
+              label: Text('프로젝트 만들기'),
             ),
           ],
         ),
@@ -845,7 +845,7 @@ class _FilteredEmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -869,8 +869,8 @@ class _FilteredEmptyView extends StatelessWidget {
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onClearFilters,
-              icon: const Icon(Icons.filter_alt_off),
-              label: const Text('필터 초기화'),
+              icon: Icon(Icons.filter_alt_off),
+              label: Text('필터 초기화'),
             ),
           ],
         ),
@@ -895,8 +895,8 @@ class _ProjectMenuSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.copy),
-            title: const Text('프로젝트 복사'),
+            leading: Icon(Icons.copy),
+            title: Text('프로젝트 복사'),
             onTap: () {
               Navigator.pop(context);
               ref
@@ -905,8 +905,8 @@ class _ProjectMenuSheet extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.label),
-            title: const Text('태그 지정'),
+            leading: Icon(Icons.label),
+            title: Text('태그 지정'),
             onTap: () {
               Navigator.pop(context);
               ref

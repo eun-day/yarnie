@@ -16,7 +16,7 @@ class LabelPill extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isIOS) {
       return CupertinoButton(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         borderRadius: BorderRadius.circular(20),
         color: CupertinoColors.systemGrey6,
         onPressed: onTap,
@@ -27,14 +27,14 @@ class LabelPill extends StatelessWidget {
             children: [
               Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: CupertinoColors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(
+              Icon(
                 CupertinoIcons.chevron_down,
                 size: 16,
                 color: CupertinoColors.black,
@@ -48,7 +48,7 @@ class LabelPill extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
             color: Color.alphaBlend(
               Color.fromRGBO(
@@ -80,7 +80,7 @@ class LabelPill extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.expand_more, size: 18),
+              Icon(Icons.expand_more, size: 18),
             ],
           ),
         ),

@@ -14,19 +14,19 @@ class TrashRoot extends ConsumerWidget {
     final deletedProjectsAsync = ref.watch(deletedProjectsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             // Custom Header
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.outline,
                     width: 0.5,
                   ),
                 ),
@@ -45,16 +45,16 @@ class TrashRoot extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF0A0A0A)),
+                          child: Icon(Icons.arrow_back_ios_new, size: 20, color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
+                      Text(
                         '휴지통',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF0A0A0A),
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: 0.07,
                           height: 1.33,
                         ),
@@ -62,26 +62,26 @@ class TrashRoot extends ConsumerWidget {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 48, top: 8),
+                    padding: EdgeInsets.only(left: 48, top: 8),
                     child: deletedProjectsAsync.when(
                       data: (projects) => Text(
                         '${projects.length}개의 프로젝트 · 30일 후 자동 삭제',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
-                          color: Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           letterSpacing: -0.15,
                           height: 1.43,
                         ),
                       ),
-                      loading: () => const Text(
+                      loading: () => Text(
                         '로딩 중...',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      error: (_, __) => const Text(
+                      error: (_, __) => Text(
                         '데이터를 불러올 수 없습니다',
                         style: TextStyle(
                           fontSize: 14,
@@ -106,7 +106,7 @@ class TrashRoot extends ConsumerWidget {
                   final allTags = ref.watch(projectsProvider).allTags;
 
                   return ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     itemCount: projects.length,
                     itemBuilder: (context, index) {
                       final project = projects[index];
@@ -139,8 +139,8 @@ class TrashRoot extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
@@ -148,18 +148,18 @@ class TrashRoot extends ConsumerWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Handle Bar
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.only(top: 16, bottom: 16),
+                    margin: EdgeInsets.only(top: 16, bottom: 16),
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFECECF0),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -168,9 +168,9 @@ class TrashRoot extends ConsumerWidget {
                 _ActionButton(
                   label: '복원하기',
                   icon: Icons.restore,
-                  backgroundColor: Colors.white,
-                  textColor: const Color(0xFF0A0A0A),
-                  iconColor: const Color(0xFF0A0A0A),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  textColor: Theme.of(context).colorScheme.onSurface,
+                  iconColor: Theme.of(context).colorScheme.onSurface,
                   showBorder: true,
                   onTap: () {
                     Navigator.pop(context); // 시트 닫기
@@ -182,7 +182,7 @@ class TrashRoot extends ConsumerWidget {
                 _ActionButton(
                   label: '지금 완전 삭제하기',
                   icon: Icons.delete_forever,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   textColor: const Color(0xFFD4183D),
                   iconColor: const Color(0xFFD4183D),
                   showBorder: true,
@@ -205,33 +205,33 @@ class TrashRoot extends ConsumerWidget {
       context: context,
       builder: (ctx) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   '프로젝트 복원',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.44,
                     height: 1.55,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   '이 프로젝트를 복원하시겠습니까?',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                     height: 1.43,
                   ),
@@ -244,16 +244,16 @@ class TrashRoot extends ConsumerWidget {
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0A0A0A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '복원',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -265,20 +265,20 @@ class TrashRoot extends ConsumerWidget {
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: const Color(0x1A000000),
+                        color: Theme.of(context).colorScheme.outline,
                         width: 0.694,
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '취소',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -314,33 +314,33 @@ class TrashRoot extends ConsumerWidget {
       context: context,
       builder: (ctx) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   '완전 삭제',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0A0A0A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.44,
                     height: 1.55,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   '이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF717182),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: -0.15,
                     height: 1.43,
                   ),
@@ -357,12 +357,12 @@ class TrashRoot extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '삭제',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -374,20 +374,20 @@ class TrashRoot extends ConsumerWidget {
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: const Color(0x1A000000),
+                        color: Theme.of(context).colorScheme.outline,
                         width: 0.694,
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '취소',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF0A0A0A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.15,
                       ),
                     ),
@@ -448,7 +448,7 @@ class _ActionButton extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
           border: showBorder
-              ? Border.all(color: const Color(0x1A000000), width: 0.694)
+              ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694)
               : null,
         ),
         child: Row(

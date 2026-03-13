@@ -72,10 +72,10 @@ class NumberInputGroup extends StatelessWidget {
         if (label != null) ...[
           Text(
             label!,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF0A0A0A),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.15,
             ),
           ),
@@ -99,13 +99,13 @@ class NumberInputGroup extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(signed: true),
+                  keyboardType: TextInputType.numberWithOptions(signed: true),
                   readOnly: isReadOnly,
-                  style: textStyle ?? const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
+                  style: textStyle ?? TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hintText,
-                    hintStyle: const TextStyle(color: Color(0xFF717182)),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -129,7 +129,7 @@ class NumberInputGroup extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             helperText!,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF717182)),
+            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ],
       ],
@@ -170,9 +170,9 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? const Color(0xFFC0D2A4) : Colors.white,
+          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: _isPressed ? const Color(0xFFC0D2A4) : const Color(0x1A000000), 
+            color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.outline,
             width: 0.64
           ),
           borderRadius: BorderRadius.circular(8),
@@ -181,7 +181,7 @@ class _StepButtonState extends State<_StepButton> {
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Colors.white : const Color(0xFF0A0A0A),
+          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

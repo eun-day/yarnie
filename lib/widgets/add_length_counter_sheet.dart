@@ -173,8 +173,8 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     final estimatedRows = _estimatedRows;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
@@ -194,11 +194,11 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                 // Drag Handle
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.only(top: 16, bottom: 24),
+                    margin: EdgeInsets.only(top: 16, bottom: 24),
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFECECF0),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -206,25 +206,25 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Header
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _isEditing ? '길이 측정 카운터 수정' : '길이 측정 카운터 추가',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF0A0A0A),
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -0.31,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         '목표 길이까지 필요한 단수를 추적합니다',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF717182),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           letterSpacing: -0.15,
                         ),
                       ),
@@ -236,7 +236,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Form Content
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       _buildLabelField(),
@@ -268,7 +268,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                         helperText: _rowHeightError != null 
                             ? _rowHeightError! 
                             : '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요',
-                        helperTextColor: _rowHeightError != null ? Colors.red : const Color(0xFF717182),
+                        helperTextColor: _rowHeightError != null ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
                         action: GestureDetector(
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -276,18 +276,18 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: const Color(0x1A000000), width: 0.5),
+                              color: Theme.of(context).colorScheme.surface,
+                              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
+                            child: Text(
                               '게이지 입력하러 가기',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF0A0A0A),
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -297,29 +297,29 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                         const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFECECF0),
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 '예상 필요 단수',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Color(0xFF717182),
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   letterSpacing: -0.15,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 '${estimatedRows}단',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0A0A0A),
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   letterSpacing: 0.07,
                                 ),
                               ),
@@ -335,7 +335,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Footer Buttons
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       GestureDetector(
@@ -344,15 +344,15 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? const Color(0xFF637069) : const Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             _isEditing ? '저장' : '추가',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -365,16 +365,16 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: const Color(0x1A000000), width: 0.64),
+                            color: Theme.of(context).colorScheme.surface,
+                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
+                          child: Text(
                             '취소',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF0A0A0A),
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -396,26 +396,26 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '라벨',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF0A0A0A),
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.15,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
             controller: _labelController,
-            style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
+            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -424,9 +424,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
-          style: TextStyle(fontSize: 12, color: Color(0xFF717182)),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -453,10 +453,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF0A0A0A),
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: -0.15,
               ),
             ),
@@ -487,12 +487,12 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: const TextStyle(fontSize: 16, color: Color(0xFF0A0A0A)),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hintText,
-                    hintStyle: const TextStyle(color: Color(0xFF717182)),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -518,7 +518,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
             helperText,
             style: TextStyle(
               fontSize: 12, 
-              color: helperTextColor ?? const Color(0xFF717182),
+              color: helperTextColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -559,9 +559,9 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? const Color(0xFFC0D2A4) : Colors.white,
+          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: _isPressed ? const Color(0xFFC0D2A4) : const Color(0x1A000000), 
+            color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.outline,
             width: 0.64
           ),
           borderRadius: BorderRadius.circular(8),
@@ -570,7 +570,7 @@ class _StepButtonState extends State<_StepButton> {
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Colors.white : const Color(0xFF0A0A0A),
+          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

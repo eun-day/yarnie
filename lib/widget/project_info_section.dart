@@ -34,12 +34,12 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
       return Column(
         children: [
           CupertinoButton(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             onPressed: () => setState(() => _expanded = !_expanded),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.title, style: const TextStyle(fontSize: 16)),
+                Text(widget.title, style: TextStyle(fontSize: 16)),
                 Icon(
                   _expanded
                       ? CupertinoIcons.chevron_down
@@ -52,7 +52,7 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: widget.child,
             ),
             crossFadeState:
@@ -67,7 +67,7 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
     return ExpansionTile(
       title: Text(widget.title),
       initiallyExpanded: widget.initiallyExpanded,
-      childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       children: [widget.child],
     );
   }

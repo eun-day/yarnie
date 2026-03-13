@@ -40,7 +40,7 @@ class TimerCard extends StatelessWidget {
         children: [
           // 라벨 (상단 중앙)
           Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 12),
+            padding: EdgeInsets.only(top: 16, bottom: 12),
             child: LabelPill(text: labelText, onTap: onTapLabel, isIOS: isIOS),
           ),
           // 큰 시간

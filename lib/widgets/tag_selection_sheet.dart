@@ -76,21 +76,21 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Scaffold( // Scaffold를 사용하여 AppBar 등을 포함
           appBar: AppBar(
-            title: const Text('태그 선택'),
+            title: Text('태그 선택'),
             automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(_selectedIds); // 선택된 ID 반환
                 },
-                child: const Text('완료'),
+                child: Text('완료'),
               ),
             ],
           ),
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: TextField(
                   onChanged: (query) {
                     setState(() {
@@ -127,7 +127,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                       },
                       onLongPress: () => _showEditTagDialog(tag),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                         child: Row(
                           children: [
                             Checkbox(
@@ -153,7 +153,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
               ),
               // 새 태그 추가 영역
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -207,7 +207,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                               ));
                             }
                           },
-                          child: const Text('추가'),
+                          child: Text('추가'),
                         ),
                       ],
                     ),
@@ -239,7 +239,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
       context: context,
       builder: (BuildContext dialogContext) { // Use dialogContext to avoid conflicts
         return AlertDialog(
-          title: const Text('태그 수정'), // Always '태그 수정'
+          title: Text('태그 수정'), // Always '태그 수정'
           content: SingleChildScrollView(
             child: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -286,7 +286,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('삭제', style: TextStyle(color: Colors.red)),
+              child: Text('삭제', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 ref.read(tagsProvider.notifier).onEvent(DeleteTag(tag.id));
                 Navigator.of(dialogContext).pop();
@@ -294,13 +294,13 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
             ),
             const Spacer(),
             TextButton(
-              child: const Text('취소'),
+              child: Text('취소'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: const Text('저장'), // Always '저장'
+              child: Text('저장'), // Always '저장'
               onPressed: () {
                 final notifier = ref.read(tagsProvider.notifier);
                 notifier.onEvent(UpdateTag(

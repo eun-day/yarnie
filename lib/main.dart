@@ -5,6 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
+import 'package:yarnie/core/providers/theme_provider.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,24 +42,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ① 시드로 기본 팔레트 생성
-    final baseScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF637069), // 브랜드 카키톤
-      brightness: Brightness.light,
-    );
-
-    // ② 필요한 색상만 덮어쓰기
-    final yarnieScheme = baseScheme.copyWith(
-      primary: const Color(0xFF637069), // 브랜드 카키톤
-      secondary: const Color(0xFFC0D2A4), // 연한 올리브
-      error: const Color(0xFFD4183D), // 흰색 배경
-      surface: const Color(0xFFFFFFFF), // 카드/서피스 흰색
-      surfaceContainerHighest: const Color(0xFFECECF0), // muted 배경
-      onSurfaceVariant: const Color(0xFF717182), // 회색 텍스트
-      outline: const Color(0x1A000000), // 투명한 검정 보더
-    );
-
     final appLanguage = ref.watch(localeProvider);
+    final themeMode = ref.watch(themeProvider);
+
     Locale? locale;
     if (appLanguage == AppLanguage.ko) {
       locale = const Locale('ko');
@@ -77,16 +64,9 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: yarnieScheme,
-        filledButtonTheme: FilledButtonThemeData(
-          style: const ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Color(0xFF637069)),
-            foregroundColor: WidgetStatePropertyAll(Colors.white),
-          ),
-        ),
-      ),
+      theme: AppTheme.themeData(AppTheme.lightScheme),
+      darkTheme: AppTheme.themeData(AppTheme.darkScheme),
+      themeMode: themeMode,
       home: const RootScaffold(),
     );
   }
