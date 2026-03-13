@@ -3,6 +3,7 @@ import 'package:yarnie/features/my/widgets/setting_section.dart';
 import 'package:yarnie/features/my/widgets/setting_item.dart';
 import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
 import 'package:yarnie/features/trash/trash_root.dart';
+import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/core/l10n/app_strings.dart';
 
 class MyRoot extends StatefulWidget {
@@ -98,7 +99,12 @@ class _MyRootState extends State<MyRoot> {
                     title: '사용 가이드',
                     subtitle: 'Yarnie 사용법 배우기',
                     onTap: () {
-                      // TODO: Navigate to User Guide
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UserGuideScreen(),
+                        ),
+                      );
                     },
                   ),
                   SettingItem(
