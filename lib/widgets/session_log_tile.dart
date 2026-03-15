@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/common/label_picker_helper.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 /// 세션 로그 타일 위젯
 class SessionLogTile extends StatefulWidget {
@@ -35,10 +36,12 @@ class SessionLogTile extends StatefulWidget {
 class _SessionLogTileState extends State<SessionLogTile> {
   bool _isExpanded = false;
 
-  // 기본 라벨 목록 (stopwatch_panel과 동일하게)
-  static const List<String> _defaultLabels = ['소매', '몸통', '목둘레'];
+  List<String> _getDefaultLabels(AppLocalizations l10n) {
+    return [l10n.defaultLabelSleeves, l10n.defaultLabelBody, l10n.defaultLabelNeckline];
+  }
 
   Future<void> _showMemoEditor(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final TextEditingController controller = TextEditingController(
       text: widget.memo ?? '', // 기존 메모가 있으면 불러오기
     );
@@ -46,7 +49,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
     final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
@@ -56,14 +59,14 @@ class _SessionLogTileState extends State<SessionLogTile> {
           ),
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // 제목
                   Text(
-                    'log ${widget.logNo} 메모 편집',
+                    l10n.editLogMemo(widget.logNo.toString()),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -75,9 +78,9 @@ class _SessionLogTileState extends State<SessionLogTile> {
                   TextField(
                     controller: controller,
                     maxLines: 5,
-                    decoration: const InputDecoration(
-                      hintText: '메모를 입력하세요...',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: l10n.enterMemo,
+                      border: const OutlineInputBorder(),
                       alignLabelWithHint: true,
                     ),
                     autofocus: true,
@@ -90,7 +93,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => Navigator.pop(context, null),
-                          child: Text('취소'),
+                          child: Text(l10n.cancel),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -100,7 +103,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                             final memo = controller.text.trim();
                             Navigator.pop(context, memo.isEmpty ? '' : memo);
                           },
-                          child: Text('저장'),
+                          child: Text(l10n.save),
                         ),
                       ),
                     ],
@@ -119,13 +122,14 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
       // 기존 메모와 다른 경우만 DB 업데이트
       if (newMemo != widget.memo) {
-        await _updateSessionMemo(newMemo);
+        if (mounted) await _updateSessionMemo(newMemo);
       }
     }
     // result가 null인 경우는 취소이므로 아무것도 하지 않음
   }
 
   Future<void> _updateSessionMemo(String? newMemo) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // 메모만 업데이트 (라벨은 건드리지 않음)
       await appDb.updateSessionMemo(
@@ -138,7 +142,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newMemo == null ? '메모가 제거되었습니다' : '메모가 저장되었습니다'),
+            content: Text(newMemo == null ? l10n.memoRemoved : l10n.memoSaved),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -148,7 +152,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('메모 업데이트 실패: $e'),
+            content: Text(l10n.memoUpdateFailed(e.toString())),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -158,7 +162,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
   }
 
   Future<void> _showLabelSelector(BuildContext context) async {
-    List<String> currentLabels = [..._defaultLabels];
+    final l10n = AppLocalizations.of(context)!;
+    List<String> currentLabels = _getDefaultLabels(l10n);
 
     final selectedLabel = await LabelPickerHelper.openLabelPicker(
       context: context,
@@ -177,13 +182,14 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
       // 기존 라벨과 다른 경우만 DB 업데이트
       if (newLabel != widget.label) {
-        await _updateSessionLabel(newLabel);
+        if (mounted) await _updateSessionLabel(newLabel);
       }
     }
     // selectedLabel이 null인 경우는 취소이므로 아무것도 하지 않음
   }
 
   Future<void> _updateSessionLabel(String? newLabel) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // 라벨만 업데이트 (메모는 건드리지 않음)
       await appDb.updateSessionLabel(
@@ -197,7 +203,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              newLabel == null ? '라벨이 제거되었습니다' : '라벨이 "$newLabel"로 변경되었습니다',
+              newLabel == null ? l10n.labelRemoved : l10n.labelChanged(newLabel),
             ),
             duration: const Duration(seconds: 2),
           ),
@@ -208,7 +214,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('라벨 업데이트 실패: $e'),
+            content: Text(l10n.labelUpdateFailed(e.toString())),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -218,6 +224,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
   }
 
   void _showIOSActionSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
@@ -232,8 +239,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
               }
             },
             child: Text(
-              'View log ${widget.logNo} Details',
-              style: TextStyle(fontSize: 16),
+              l10n.viewDetails,
+              style: const TextStyle(fontSize: 16),
             ),
           ),
           CupertinoActionSheetAction(
@@ -245,7 +252,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                 _showLabelSelector(context);
               }
             },
-            child: Text('Edit Label', style: TextStyle(fontSize: 16)),
+            child: Text(l10n.editLabel, style: const TextStyle(fontSize: 16)),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
@@ -256,19 +263,20 @@ class _SessionLogTileState extends State<SessionLogTile> {
                 _showMemoEditor(context);
               }
             },
-            child: Text('Edit Memo', style: TextStyle(fontSize: 16)),
+            child: Text(l10n.editMemo, style: const TextStyle(fontSize: 16)),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel', style: TextStyle(fontSize: 16)),
+          child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
         ),
       ),
     );
   }
 
   void _showAndroidContextMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) => SafeArea(
@@ -276,8 +284,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.visibility),
-              title: Text('View log ${widget.logNo} Details'),
+              leading: const Icon(Icons.visibility),
+              title: Text(l10n.viewDetails),
               onTap: () {
                 Navigator.pop(context);
                 if (widget.onViewDetails != null) {
@@ -288,8 +296,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.label_outline),
-              title: Text('Edit Label'),
+              leading: const Icon(Icons.label_outline),
+              title: Text(l10n.editLabel),
               onTap: () {
                 Navigator.pop(context);
                 if (widget.onEditLabel != null) {
@@ -300,8 +308,8 @@ class _SessionLogTileState extends State<SessionLogTile> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.edit_note),
-              title: Text('Edit Memo'),
+              leading: const Icon(Icons.edit_note),
+              title: Text(l10n.editMemo),
               onTap: () {
                 Navigator.pop(context);
                 if (widget.onEditMemo != null) {
@@ -324,7 +332,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
     final content = Container(
       width: double.infinity, // 전체 너비 사용
-      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -354,7 +362,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                     if (widget.label?.isNotEmpty == true) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
@@ -381,7 +389,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           if (hasMemo) ...[
             const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.only(left: 60),
+              padding: const EdgeInsets.only(left: 60),
               child: _buildMemoSection(theme),
             ),
           ],
@@ -408,6 +416,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
     List<String> lines,
     ThemeData theme,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     const int maxCharsPerLine = 35; // 영어 기준
     const String moreText = '.. ';
 
@@ -424,7 +433,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
             style: theme.textTheme.bodySmall,
           ),
           TextSpan(
-            text: '더보기',
+            text: l10n.more,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w500,
@@ -443,7 +452,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
             style: theme.textTheme.bodySmall,
           ),
           TextSpan(
-            text: '더보기',
+            text: l10n.more,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w500,
@@ -466,7 +475,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           style: theme.textTheme.bodySmall,
         ),
         TextSpan(
-          text: '더보기',
+          text: l10n.more,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.primary,
             fontWeight: FontWeight.w500,
@@ -482,7 +491,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
           style: theme.textTheme.bodySmall,
         ),
         TextSpan(
-          text: '더보기',
+          text: l10n.more,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.primary,
             fontWeight: FontWeight.w500,
@@ -493,6 +502,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
   }
 
   Widget _buildMemoSection(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final memo = widget.memo!;
 
     // 줄바꿈을 고려한 truncate 판단
@@ -515,7 +525,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
 
     return Container(
       width: 250,
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepPurple.withValues(alpha: 0.2),
@@ -529,7 +539,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
         children: [
           // 핀 아이콘
           Padding(
-            padding: EdgeInsets.only(top: 1, right: 6),
+            padding: const EdgeInsets.only(top: 1, right: 6),
             child: Icon(
               Icons.push_pin,
               size: 12,
@@ -553,7 +563,7 @@ class _SessionLogTileState extends State<SessionLogTile> {
                           ),
                           if (needsTruncate)
                             TextSpan(
-                              text: ' 접기',
+                              text: ' ${l10n.fold}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w500,

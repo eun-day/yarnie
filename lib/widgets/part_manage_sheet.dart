@@ -6,6 +6,7 @@ import 'package:yarnie/modules/projects/application/part_manage_event.dart';
 import 'package:yarnie/modules/projects/application/part_manage_effect.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 /// Part 관리 시트
 /// - Part 리스트를 보여주고 드래그로 순서 변경
@@ -43,6 +44,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ref.listen(partManageEffectsProvider, (_, asyncEffect) {
       asyncEffect.whenData((effect) {
         if (effect is ShowErrorEffect) {
@@ -63,7 +65,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
         ),
@@ -76,7 +78,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
             // Handle Bar
             Center(
               child: Container(
-                margin: EdgeInsets.only(top: 16, bottom: 8),
+                margin: const EdgeInsets.only(top: 16, bottom: 8),
                 width: 100,
                 height: 8,
                 decoration: BoxDecoration(
@@ -88,7 +90,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
 
             // Header: 타이틀 + 설명 + 새 파트 추가 버튼
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -98,7 +100,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Part 관리',
+                          l10n.manageParts,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -107,9 +109,9 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                             height: 1.5,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.',
+                          l10n.managePartsDesc,
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -184,10 +186,10 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
 
                   if (parts.isEmpty && !_isAdding) {
                     return Padding(
-                      padding: EdgeInsets.only(bottom: 24),
+                      padding: const EdgeInsets.only(bottom: 24),
                       child: Center(
                         child: Text(
-                          '등록된 Part가 없습니다.',
+                          l10n.noParts,
                           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ),
@@ -240,7 +242,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                   }
 
                   return Padding(
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: ReorderableListView.builder(
                       shrinkWrap: true,
                       proxyDecorator: (child, index, animation) {
@@ -301,7 +303,7 @@ class _PartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: GestureDetector(
         onLongPress: () => _showPartActionSheet(context),
         child: Container(
@@ -317,7 +319,7 @@ class _PartItemTile extends StatelessWidget {
               ReorderableDragStartListener(
                 index: index,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 12, right: 0),
+                  padding: const EdgeInsets.only(left: 12, right: 0),
                   child: Icon(
                     Icons.drag_indicator,
                     size: 20,
@@ -377,24 +379,25 @@ class _PartActionSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
         ),
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Handle Bar
               Center(
                 child: Container(
-                  margin: EdgeInsets.only(top: 16, bottom: 16),
+                  margin: const EdgeInsets.only(top: 16, bottom: 16),
                   width: 100,
                   height: 8,
                   decoration: BoxDecoration(
@@ -405,7 +408,7 @@ class _PartActionSheet extends ConsumerWidget {
               ),
               // 이름 수정
               _ActionButton(
-                label: '이름 수정',
+                label: l10n.editName,
                 icon: Icons.edit_outlined,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 textColor: Theme.of(context).colorScheme.onSurface,
@@ -419,7 +422,7 @@ class _PartActionSheet extends ConsumerWidget {
               const SizedBox(height: 8),
               // 삭제
               _ActionButton(
-                label: '삭제',
+                label: l10n.delete,
                 icon: Icons.delete_outline,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 textColor: const Color(0xFFD4183D),
@@ -439,6 +442,7 @@ class _PartActionSheet extends ConsumerWidget {
   }
 
   void _showDeleteConfirm(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
@@ -450,12 +454,12 @@ class _PartActionSheet extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Padding(
-                padding: EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Part 삭제',
+                      l10n.deletePart,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -467,7 +471,7 @@ class _PartActionSheet extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '\'${part.name}\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.',
+                      l10n.deletePartConfirm(part.name),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -495,7 +499,7 @@ class _PartActionSheet extends ConsumerWidget {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          '삭제',
+                          l10n.delete,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -520,7 +524,7 @@ class _PartActionSheet extends ConsumerWidget {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          '취소',
+                          l10n.cancel,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -577,6 +581,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
   }
 
   Future<void> _handleSave() async {
+    final l10n = AppLocalizations.of(context)!;
     final name = _controller.text.trim();
     if (name.isEmpty) return;
     if (name == widget.initialText) {
@@ -592,7 +597,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
     if (exists) {
       if (mounted) {
         setState(() {
-          _errorText = '이미 존재하는 파트 이름입니다.';
+          _errorText = l10n.duplicatePartName;
         });
       }
       return;
@@ -603,15 +608,16 @@ class _PartInputSectionState extends State<_PartInputSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694),
         ),
-        padding: EdgeInsets.fromLTRB(12.694, 12.694, 12.694, 12),
+        padding: const EdgeInsets.fromLTRB(12.694, 12.694, 12.694, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -622,7 +628,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
                 color: const Color(0xFFF3F3F5),
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               alignment: _errorText != null ? null : Alignment.centerLeft,
               child: TextField(
                 controller: _controller,
@@ -634,7 +640,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
                   letterSpacing: -0.31,
                 ),
                 decoration: InputDecoration(
-                  hintText: '새 Part 이름',
+                  hintText: l10n.newPartName,
                   hintStyle: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -669,7 +675,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        widget.initialText == null ? '추가' : '저장',
+                        widget.initialText == null ? l10n.add : l10n.save,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -696,7 +702,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        '취소',
+                        l10n.cancel,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,

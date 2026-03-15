@@ -628,7 +628,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionMemo => '작업 메모';
 
   @override
-  String get enterMemo => '메모를 입력하세요';
+  String get enterMemo => '메모를 입력하세요...';
 
   @override
   String saveSessionConfirm(Object time) {
@@ -1145,71 +1145,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get viewDetails => '상세 보기';
-
-  @override
-  String get editLabel => '라벨 수정';
-
-  @override
-  String get selectLabel => '라벨 선택';
-
-  @override
-  String get manageLabels => '라벨 관리';
-
-  @override
-  String get addLabel => '라벨 추가';
-
-  @override
-  String get activeSessionExists => '진행 중인 세션이 있습니다';
-
-  @override
-  String get resume => '이어하기';
-
-  @override
-  String get startNew => '새로 시작';
-
-  @override
-  String get activeSession => '진행 중 세션';
-
-  @override
-  String get activeSessionQuestion => '진행 중인 세션이 있습니다. 이어서 하시겠습니까?';
-
-  @override
-  String get projectInfoDesc => '프로젝트의 상세 정보를 확인하세요';
-
-  @override
-  String get lotNumberLabel => '실 로트 번호';
-
-  @override
-  String get noTagsAssigned => '지정된 태그가 없습니다.';
-
-  @override
-  String get noGaugeInfo => '게이지 정보 없음';
-
-  @override
-  String get noMemoInfo => '메모 없음';
-
-  @override
-  String get createdAtLabel => '생성일';
-
-  @override
-  String get updatedAtLabel => '최근 수정';
-
-  @override
-  String get gaugeStandard => '(10cm x 10cm 기준)';
-
-  @override
-  String get noCounters => '카운터가 없습니다.';
-
-  @override
-  String get addCounterGuide => '+ 버튼을 눌러 추가해보세요.';
-
-  @override
-  String completeWithEmoji(Object name) {
-    return '$name 완료! 🎉';
-  }
-
-  @override
   String get editProject => '프로젝트 수정';
 
   @override
@@ -1256,6 +1191,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tagAdd => '태그 추가';
+
+  @override
+  String get gauge => '게이지';
+
+  @override
+  String get gaugeDesc => '10cm x 10cm 안에 몇 코, 몇 단인가요?';
 
   @override
   String get stitchesHint => '코 수';
@@ -1309,6 +1250,71 @@ class AppLocalizationsKo extends AppLocalizations {
   String get start => '시작';
 
   @override
+  String get projectInfoDesc => '프로젝트의 상세 정보를 확인하세요';
+
+  @override
+  String get lotNumberLabel => '실 로트 번호';
+
+  @override
+  String get noTagsAssigned => '지정된 태그가 없습니다.';
+
+  @override
+  String get noGaugeInfo => '게이지 정보 없음';
+
+  @override
+  String get noMemoInfo => '메모 없음';
+
+  @override
+  String get createdAtLabel => '생성일';
+
+  @override
+  String get updatedAtLabel => '최근 수정';
+
+  @override
+  String get gaugeStandard => '(10cm x 10cm 기준)';
+
+  @override
+  String get noCounters => '카운터가 없습니다.';
+
+  @override
+  String get addCounterGuide => '+ 버튼을 눌러 추가해보세요.';
+
+  @override
+  String completeWithEmoji(Object name) {
+    return '$name 완료! 🎉';
+  }
+
+  @override
+  String get viewDetails => '상세 보기';
+
+  @override
+  String get editLabel => '라벨 수정';
+
+  @override
+  String get selectLabel => '라벨 선택';
+
+  @override
+  String get manageLabels => '라벨 관리';
+
+  @override
+  String get addLabel => '라벨 추가';
+
+  @override
+  String get activeSessionExists => '진행 중인 세션이 있습니다';
+
+  @override
+  String get resume => '이어하기';
+
+  @override
+  String get startNew => '새로 시작';
+
+  @override
+  String get activeSession => '진행 중 세션';
+
+  @override
+  String get activeSessionQuestion => '진행 중인 세션이 있습니다. 이어서 하시겠습니까?';
+
+  @override
   String get dbDuplicateError => '중복된 값이 존재합니다';
 
   @override
@@ -1337,4 +1343,34 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get defaultLabelNeckline => '목둘레';
+
+  @override
+  String get userGuideJourney => 'Yarnie와 함께하는 뜨개질 여정';
+
+  @override
+  String get trashHeader => '휴지통';
+
+  @override
+  String trashProjectCountInfo(Object count) {
+    return '$count개의 프로젝트 · 30일 후 자동 삭제';
+  }
+
+  @override
+  String get restoreProjectTitle => '프로젝트 복원';
+
+  @override
+  String get restoreConfirmMessage => '이 프로젝트를 복원하시겠습니까?';
+
+  @override
+  String get projectRestoredMessage => '프로젝트가 복원되었습니다.';
+
+  @override
+  String get deleteForeverTitle => '완전 삭제';
+
+  @override
+  String get deleteForeverConfirmMessage =>
+      '이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+
+  @override
+  String get mainCounterTitleAlt => '메인 카운터 (MainCounter)';
 }

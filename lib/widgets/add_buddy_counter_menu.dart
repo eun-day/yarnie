@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class AddBuddyCounterMenu extends StatelessWidget {
   final VoidCallback? onStitchSelected;
@@ -21,9 +22,10 @@ class AddBuddyCounterMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: 220, 
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -49,9 +51,9 @@ class AddBuddyCounterMenu extends StatelessWidget {
           children: [
             // Header
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
               child: Text(
-                '카운터 유형 선택',
+                l10n.selectCounterType,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
@@ -60,13 +62,13 @@ class AddBuddyCounterMenu extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(height: 1, thickness: 1, color: Color.fromRGBO(0, 0, 0, 0.1)),
+            Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outline),
             
             // Stitch Counter
             InkWell(
               onTap: onStitchSelected,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -82,7 +84,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '스티치 카운터',
+                            l10n.stitchCounter,
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
@@ -90,9 +92,9 @@ class AddBuddyCounterMenu extends StatelessWidget {
                               letterSpacing: -0.15,
                             ),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
-                            '독립적인 숫자 카운터',
+                            l10n.independentCounter,
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,
@@ -107,13 +109,13 @@ class AddBuddyCounterMenu extends StatelessWidget {
               ),
             ),
 
-            const Divider(height: 1, thickness: 1, color: Color.fromRGBO(0, 0, 0, 0.1)),
+            Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outline),
 
             // Section Header
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 4),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
               child: Text(
-                '섹션 카운터',
+                l10n.sectionCounter,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
@@ -123,11 +125,11 @@ class AddBuddyCounterMenu extends StatelessWidget {
             ),
 
             // Items
-            _buildItem(context, 'assets/icons/counter_range.svg', '범위 (Range)', onRangeSelected),
-            _buildItem(context, 'assets/icons/counter_repeat.svg', '반복 (Repeat)', onRepeatSelected),
-            _buildItem(context, 'assets/icons/counter_interval.svg', '간격 (Interval)', onIntervalSelected),
-            _buildItem(context, 'assets/icons/counter_shaping.svg', '증감 (Shaping)', onShapingSelected),
-            _buildItem(context, 'assets/icons/counter_length.svg', '길이 (Length)', onLengthSelected),
+            _buildItem(context, 'assets/icons/counter_range.svg', l10n.range, onRangeSelected),
+            _buildItem(context, 'assets/icons/counter_repeat.svg', l10n.repeat, onRepeatSelected),
+            _buildItem(context, 'assets/icons/counter_interval.svg', l10n.interval, onIntervalSelected),
+            _buildItem(context, 'assets/icons/counter_shaping.svg', l10n.shaping, onShapingSelected),
+            _buildItem(context, 'assets/icons/counter_length.svg', l10n.length, onLengthSelected),
             
             const SizedBox(height: 8),
           ],
@@ -140,7 +142,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
              Container(

@@ -18,7 +18,7 @@ class UserGuideScreen extends StatelessWidget {
             // ── Content ──
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 16,
                 ),
@@ -64,11 +64,12 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 0.5)),
+        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
       ),
       height: 80,
       child: Row(
@@ -95,13 +96,13 @@ class _Header extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.userGuide,
+                  l10n.userGuide,
                   style: AppTextStyles.titleH2.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
-                  'Yarnie와 함께하는 뜨개질 여정',
+                  l10n.userGuideJourney,
                   style: AppTextStyles.bodyM.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -126,7 +127,7 @@ class _WelcomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: const Alignment(-0.6, -0.8),
@@ -153,7 +154,7 @@ class _WelcomeCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Text('🦎', style: TextStyle(fontSize: 36)),
+            child: const Text('🦎', style: TextStyle(fontSize: 36)),
           ),
           const SizedBox(height: 16),
           // 타이틀
@@ -253,12 +254,12 @@ class _TabCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Colors.black.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.outline,
           width: 0.5,
         ),
       ),
@@ -321,12 +322,12 @@ class _CreateProjectSection extends StatelessWidget {
         // 설명 + 스텝 카드
         Container(
           width: double.infinity,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.outline,
               width: 0.5,
             ),
           ),
@@ -443,12 +444,12 @@ class _PartSection extends StatelessWidget {
         // 설명 + 예시 카드
         Container(
           width: double.infinity,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.outline,
               width: 0.5,
             ),
           ),
@@ -465,7 +466,7 @@ class _PartSection extends StatelessWidget {
               // 예시 박스
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
@@ -561,7 +562,7 @@ class _CounterSystemSection extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.outline,
               width: 0.5,
             ),
           ),
@@ -813,7 +814,7 @@ class _LinkedSection extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.outline,
               width: 0.5,
             ),
           ),
@@ -943,7 +944,7 @@ class _ActivityTipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(14),
@@ -1080,12 +1081,12 @@ class _SimpleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Colors.black.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.outline,
           width: 0.5,
         ),
       ),
@@ -1120,7 +1121,7 @@ class _TipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(14),
@@ -1129,7 +1130,7 @@ class _TipCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: TextStyle(fontSize: 24)),
+          Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1183,7 +1184,7 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(14),
@@ -1215,7 +1216,7 @@ class _InfoCard extends StatelessWidget {
                       TextSpan(text: '$description '),
                       TextSpan(
                         text: highlight,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       TextSpan(text: descriptionSuffix),
                     ],
@@ -1247,7 +1248,7 @@ class _UseCaseBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(10),
@@ -1266,7 +1267,7 @@ class _UseCaseBox extends StatelessWidget {
           const SizedBox(height: 8),
           for (final item in items)
             Padding(
-              padding: EdgeInsets.only(bottom: 4),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 item,
                 style: AppTextStyles.bodyM.copyWith(
@@ -1289,7 +1290,7 @@ class _LinkedInfoBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
@@ -1344,12 +1345,12 @@ class _CounterDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardBackgroundColor ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: cardBorderColor ?? Colors.black.withValues(alpha: 0.1),
+          color: cardBorderColor ?? Theme.of(context).colorScheme.outline,
           width: 0.5,
         ),
       ),
@@ -1420,14 +1421,15 @@ class _SectionCounterTypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Colors.black.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.outline,
           width: 0.5,
         ),
       ),
@@ -1475,7 +1477,7 @@ class _SectionCounterTypeCard extends StatelessWidget {
           // 사용 사례 + 예시 박스
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: accentBgColor,
               borderRadius: BorderRadius.circular(10),
@@ -1485,7 +1487,7 @@ class _SectionCounterTypeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '언제 사용하나요?',
+                  l10n.whenToUse,
                   style: AppTextStyles.bodyM.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -1494,7 +1496,7 @@ class _SectionCounterTypeCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 for (final item in useCases)
                   Padding(
-                    padding: EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       item,
                       style: AppTextStyles.bodyM.copyWith(
@@ -1518,7 +1520,7 @@ class _SectionCounterTypeCard extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                      text: AppLocalizations.of(context)!.examplePrefix,
+                      text: l10n.examplePrefix,
                       style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                       TextSpan(text: example),

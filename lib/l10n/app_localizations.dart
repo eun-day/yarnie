@@ -1271,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterMemo.
   ///
   /// In ko, this message translates to:
-  /// **'메모를 입력하세요'**
+  /// **'메모를 입력하세요...'**
   String get enterMemo;
 
   /// No description provided for @saveSessionConfirm.
@@ -2228,132 +2228,6 @@ abstract class AppLocalizations {
   /// **'{count}줄 남음'**
   String rowsRemaining(Object count);
 
-  /// No description provided for @viewDetails.
-  ///
-  /// In ko, this message translates to:
-  /// **'상세 보기'**
-  String get viewDetails;
-
-  /// No description provided for @editLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'라벨 수정'**
-  String get editLabel;
-
-  /// No description provided for @selectLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'라벨 선택'**
-  String get selectLabel;
-
-  /// No description provided for @manageLabels.
-  ///
-  /// In ko, this message translates to:
-  /// **'라벨 관리'**
-  String get manageLabels;
-
-  /// No description provided for @addLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'라벨 추가'**
-  String get addLabel;
-
-  /// No description provided for @activeSessionExists.
-  ///
-  /// In ko, this message translates to:
-  /// **'진행 중인 세션이 있습니다'**
-  String get activeSessionExists;
-
-  /// No description provided for @resume.
-  ///
-  /// In ko, this message translates to:
-  /// **'이어하기'**
-  String get resume;
-
-  /// No description provided for @startNew.
-  ///
-  /// In ko, this message translates to:
-  /// **'새로 시작'**
-  String get startNew;
-
-  /// No description provided for @activeSession.
-  ///
-  /// In ko, this message translates to:
-  /// **'진행 중 세션'**
-  String get activeSession;
-
-  /// No description provided for @activeSessionQuestion.
-  ///
-  /// In ko, this message translates to:
-  /// **'진행 중인 세션이 있습니다. 이어서 하시겠습니까?'**
-  String get activeSessionQuestion;
-
-  /// No description provided for @projectInfoDesc.
-  ///
-  /// In ko, this message translates to:
-  /// **'프로젝트의 상세 정보를 확인하세요'**
-  String get projectInfoDesc;
-
-  /// No description provided for @lotNumberLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'실 로트 번호'**
-  String get lotNumberLabel;
-
-  /// No description provided for @noTagsAssigned.
-  ///
-  /// In ko, this message translates to:
-  /// **'지정된 태그가 없습니다.'**
-  String get noTagsAssigned;
-
-  /// No description provided for @noGaugeInfo.
-  ///
-  /// In ko, this message translates to:
-  /// **'게이지 정보 없음'**
-  String get noGaugeInfo;
-
-  /// No description provided for @noMemoInfo.
-  ///
-  /// In ko, this message translates to:
-  /// **'메모 없음'**
-  String get noMemoInfo;
-
-  /// No description provided for @createdAtLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'생성일'**
-  String get createdAtLabel;
-
-  /// No description provided for @updatedAtLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'최근 수정'**
-  String get updatedAtLabel;
-
-  /// No description provided for @gaugeStandard.
-  ///
-  /// In ko, this message translates to:
-  /// **'(10cm x 10cm 기준)'**
-  String get gaugeStandard;
-
-  /// No description provided for @noCounters.
-  ///
-  /// In ko, this message translates to:
-  /// **'카운터가 없습니다.'**
-  String get noCounters;
-
-  /// No description provided for @addCounterGuide.
-  ///
-  /// In ko, this message translates to:
-  /// **'+ 버튼을 눌러 추가해보세요.'**
-  String get addCounterGuide;
-
-  /// No description provided for @completeWithEmoji.
-  ///
-  /// In ko, this message translates to:
-  /// **'{name} 완료! 🎉'**
-  String completeWithEmoji(Object name);
-
   /// No description provided for @editProject.
   ///
   /// In ko, this message translates to:
@@ -2449,6 +2323,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'태그 추가'**
   String get tagAdd;
+
+  /// No description provided for @gauge.
+  ///
+  /// In ko, this message translates to:
+  /// **'게이지'**
+  String get gauge;
+
+  /// No description provided for @gaugeDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'10cm x 10cm 안에 몇 코, 몇 단인가요?'**
+  String get gaugeDesc;
 
   /// No description provided for @stitchesHint.
   ///
@@ -2552,6 +2438,132 @@ abstract class AppLocalizations {
   /// **'시작'**
   String get start;
 
+  /// No description provided for @projectInfoDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트의 상세 정보를 확인하세요'**
+  String get projectInfoDesc;
+
+  /// No description provided for @lotNumberLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 로트 번호'**
+  String get lotNumberLabel;
+
+  /// No description provided for @noTagsAssigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'지정된 태그가 없습니다.'**
+  String get noTagsAssigned;
+
+  /// No description provided for @noGaugeInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'게이지 정보 없음'**
+  String get noGaugeInfo;
+
+  /// No description provided for @noMemoInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 없음'**
+  String get noMemoInfo;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'생성일'**
+  String get createdAtLabel;
+
+  /// No description provided for @updatedAtLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 수정'**
+  String get updatedAtLabel;
+
+  /// No description provided for @gaugeStandard.
+  ///
+  /// In ko, this message translates to:
+  /// **'(10cm x 10cm 기준)'**
+  String get gaugeStandard;
+
+  /// No description provided for @noCounters.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터가 없습니다.'**
+  String get noCounters;
+
+  /// No description provided for @addCounterGuide.
+  ///
+  /// In ko, this message translates to:
+  /// **'+ 버튼을 눌러 추가해보세요.'**
+  String get addCounterGuide;
+
+  /// No description provided for @completeWithEmoji.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 완료! 🎉'**
+  String completeWithEmoji(Object name);
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In ko, this message translates to:
+  /// **'상세 보기'**
+  String get viewDetails;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 수정'**
+  String get editLabel;
+
+  /// No description provided for @selectLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 선택'**
+  String get selectLabel;
+
+  /// No description provided for @manageLabels.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 관리'**
+  String get manageLabels;
+
+  /// No description provided for @addLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'라벨 추가'**
+  String get addLabel;
+
+  /// No description provided for @activeSessionExists.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 세션이 있습니다'**
+  String get activeSessionExists;
+
+  /// No description provided for @resume.
+  ///
+  /// In ko, this message translates to:
+  /// **'이어하기'**
+  String get resume;
+
+  /// No description provided for @startNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로 시작'**
+  String get startNew;
+
+  /// No description provided for @activeSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중 세션'**
+  String get activeSession;
+
+  /// No description provided for @activeSessionQuestion.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 세션이 있습니다. 이어서 하시겠습니까?'**
+  String get activeSessionQuestion;
+
   /// No description provided for @dbDuplicateError.
   ///
   /// In ko, this message translates to:
@@ -2611,6 +2623,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'목둘레'**
   String get defaultLabelNeckline;
+
+  /// No description provided for @userGuideJourney.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yarnie와 함께하는 뜨개질 여정'**
+  String get userGuideJourney;
+
+  /// No description provided for @trashHeader.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴지통'**
+  String get trashHeader;
+
+  /// No description provided for @trashProjectCountInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개의 프로젝트 · 30일 후 자동 삭제'**
+  String trashProjectCountInfo(Object count);
+
+  /// No description provided for @restoreProjectTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 복원'**
+  String get restoreProjectTitle;
+
+  /// No description provided for @restoreConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 프로젝트를 복원하시겠습니까?'**
+  String get restoreConfirmMessage;
+
+  /// No description provided for @projectRestoredMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트가 복원되었습니다.'**
+  String get projectRestoredMessage;
+
+  /// No description provided for @deleteForeverTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'완전 삭제'**
+  String get deleteForeverTitle;
+
+  /// No description provided for @deleteForeverConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
+  String get deleteForeverConfirmMessage;
+
+  /// No description provided for @mainCounterTitleAlt.
+  ///
+  /// In ko, this message translates to:
+  /// **'메인 카운터 (MainCounter)'**
+  String get mainCounterTitleAlt;
 }
 
 class _AppLocalizationsDelegate

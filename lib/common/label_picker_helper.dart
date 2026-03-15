@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class LabelPickerHelper {
   // iOS/Android 공용 라벨 선택기: 선택한 라벨(String?)을 리턴
@@ -11,6 +12,7 @@ class LabelPickerHelper {
     String? initial,
     Function(List<String>)? onLabelsUpdated,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     if (Platform.isIOS) {
       // iOS: Cupertino 스타일 (modal_bottom_sheet 사용)
       return showCupertinoModalBottomSheet<String>(
@@ -33,8 +35,8 @@ class LabelPickerHelper {
                     Row(
                       children: [
                         Text(
-                          '라벨 선택',
-                          style: TextStyle(
+                          l10n.selectLabel,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -43,7 +45,7 @@ class LabelPickerHelper {
                         if (onLabelsUpdated != null)
                           CupertinoButton(
                             padding: EdgeInsets.zero,
-                            child: Icon(CupertinoIcons.pencil),
+                            child: const Icon(CupertinoIcons.pencil),
                             onPressed: () async {
                               final updated = await _openLabelManager(
                                 ctx,
@@ -65,7 +67,7 @@ class LabelPickerHelper {
                           children: [
                             for (final l in labels)
                               CupertinoButton(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 6,
                                 ),
@@ -86,19 +88,19 @@ class LabelPickerHelper {
                                 ),
                               ),
                             CupertinoButton(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 6,
                               ),
                               borderRadius: BorderRadius.circular(20),
-                              color: (initial == null)
+                              color: (initial == null || initial.isEmpty)
                                   ? CupertinoColors.activeBlue
                                   : CupertinoColors.systemGrey6,
                               onPressed: () => Navigator.pop(ctx, ''),
                               child: Text(
-                                '미분류',
+                                l10n.unclassified,
                                 style: TextStyle(
-                                  color: (initial == null)
+                                  color: (initial == null || initial.isEmpty)
                                       ? Theme.of(context).colorScheme.surface
                                       : CupertinoColors.black,
                                   fontSize: 16,
@@ -122,7 +124,7 @@ class LabelPickerHelper {
       return showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
@@ -144,8 +146,8 @@ class LabelPickerHelper {
                   Row(
                     children: [
                       Text(
-                        '라벨 선택',
-                        style: TextStyle(
+                        l10n.selectLabel,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -153,7 +155,7 @@ class LabelPickerHelper {
                       const Spacer(),
                       if (onLabelsUpdated != null)
                         IconButton(
-                          tooltip: '라벨 관리',
+                          tooltip: l10n.manageLabels,
                           onPressed: () async {
                             final updated = await _openLabelManager(
                               ctx,
@@ -163,7 +165,7 @@ class LabelPickerHelper {
                               onLabelsUpdated(updated);
                             }
                           },
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                         ),
                     ],
                   ),
@@ -179,8 +181,8 @@ class LabelPickerHelper {
                           onSelected: (_) => Navigator.pop(ctx, l),
                         ),
                       ChoiceChip(
-                        label: Text('미분류'),
-                        selected: initial == null,
+                        label: Text(l10n.unclassified),
+                        selected: initial == null || initial.isEmpty,
                         onSelected: (_) => Navigator.pop(ctx, ''),
                       ),
                     ],
@@ -200,6 +202,8 @@ class LabelPickerHelper {
   ) async {
     final temp = [...initial];
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(ctx)!;
+
     return showModalBottomSheet<List<String>>(
       context: ctx,
       isScrollControlled: true,
@@ -218,11 +222,11 @@ class LabelPickerHelper {
               builder: (_, setSB) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Align(
+                  Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '라벨 관리',
-                      style: TextStyle(
+                      l10n.manageLabels,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -246,9 +250,9 @@ class LabelPickerHelper {
                       Expanded(
                         child: TextField(
                           controller: controller,
-                          decoration: const InputDecoration(
-                            hintText: '라벨 추가',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            hintText: l10n.addLabel,
+                            border: const OutlineInputBorder(),
                             isDense: true,
                           ),
                           onSubmitted: (v) {
@@ -269,7 +273,7 @@ class LabelPickerHelper {
                           }
                           controller.clear();
                         },
-                        child: Text('추가'),
+                        child: Text(l10n.add),
                       ),
                     ],
                   ),
@@ -278,12 +282,12 @@ class LabelPickerHelper {
                     children: [
                       OutlinedButton(
                         onPressed: () => Navigator.pop(ctx2, null),
-                        child: Text('취소'),
+                        child: Text(l10n.cancel),
                       ),
                       const Spacer(),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(ctx2, temp),
-                        child: Text('저장'),
+                        child: Text(l10n.save),
                       ),
                     ],
                   ),

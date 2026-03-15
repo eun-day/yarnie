@@ -13,6 +13,7 @@ class TrashRoot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deletedProjectsAsync = ref.watch(deletedProjectsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -22,7 +23,7 @@ class TrashRoot extends ConsumerWidget {
           children: [
             // Custom Header
             Container(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
@@ -51,7 +52,7 @@ class TrashRoot extends ConsumerWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        '휴지통',
+                        l10n.trashHeader,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w500,
@@ -63,10 +64,10 @@ class TrashRoot extends ConsumerWidget {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 48, top: 8),
+                    padding: const EdgeInsets.only(left: 48, top: 8),
                     child: deletedProjectsAsync.when(
                       data: (projects) => Text(
-                        '${projects.length}개의 프로젝트 · 30일 후 자동 삭제',
+                        l10n.trashProjectCountInfo(projects.length.toString()),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
@@ -76,17 +77,17 @@ class TrashRoot extends ConsumerWidget {
                         ),
                       ),
                       loading: () => Text(
-                        '로딩 중...',
+                        l10n.loading,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       error: (_, __) => Text(
-                        '데이터를 불러올 수 없습니다',
+                        l10n.errorLoadingData,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                     ),
@@ -107,7 +108,7 @@ class TrashRoot extends ConsumerWidget {
                   final allTags = ref.watch(projectsProvider).allTags;
 
                   return ListView.builder(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     itemCount: projects.length,
                     itemBuilder: (context, index) {
                       final project = projects[index];
@@ -117,7 +118,7 @@ class TrashRoot extends ConsumerWidget {
                         onTap: () {
                           // Tap does nothing or shows a message
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('복원 후 이용할 수 있습니다.')),
+                            SnackBar(content: Text(l10n.availableAfterRestore)),
                           );
                         },
                         onLongPress: () => _showTrashActionSheet(context, ref, project),
@@ -126,7 +127,7 @@ class TrashRoot extends ConsumerWidget {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(child: Text(AppLocalizations.of(context)!.errorOccurred(error.toString()))),
+                error: (error, _) => Center(child: Text(l10n.errorOccurred(error.toString()))),
               ),
             ),
           ],
@@ -142,21 +143,21 @@ class TrashRoot extends ConsumerWidget {
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Handle Bar
                 Center(
                   child: Container(
-                    margin: EdgeInsets.only(top: 16, bottom: 16),
+                    margin: const EdgeInsets.only(top: 16, bottom: 16),
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
@@ -211,12 +212,12 @@ class TrashRoot extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.restoreProject,
+                  AppLocalizations.of(context)!.restoreProjectTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -228,7 +229,7 @@ class TrashRoot extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.restoreConfirm,
+                  AppLocalizations.of(context)!.restoreConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -297,7 +298,7 @@ class TrashRoot extends ConsumerWidget {
         await appDb.restoreProject(project.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.projectRestored)),
+            SnackBar(content: Text(AppLocalizations.of(context)!.projectRestoredMessage)),
           );
         }
       } catch (e) {
@@ -320,12 +321,12 @@ class TrashRoot extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.deleteForever,
+                  AppLocalizations.of(context)!.deleteForeverTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -337,7 +338,7 @@ class TrashRoot extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.deleteForeverConfirm,
+                  AppLocalizations.of(context)!.deleteForeverConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,

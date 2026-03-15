@@ -664,7 +664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionMemo => 'Session Memo';
 
   @override
-  String get enterMemo => 'Enter note here...';
+  String get enterMemo => 'Enter memo';
 
   @override
   String saveSessionConfirm(Object time) {
@@ -1043,53 +1043,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inch => 'inch';
 
   @override
-  String get countBySetting => 'Count By 설정';
+  String get countBySetting => 'Count By Setting';
 
   @override
-  String get lengthMeasurement => '길이 측정';
+  String get lengthMeasurement => 'Length Measurement';
 
   @override
   String targetInfoLength(Object length) {
-    return '목표 ${length}cm';
+    return 'Target ${length}cm';
   }
 
   @override
-  String get editLengthCounterTitle => '길이 측정 카운터 수정';
+  String get editLengthCounterTitle => 'Edit Length Counter';
 
   @override
-  String get addLengthCounterTitle => '길이 측정 카운터 추가';
+  String get addLengthCounterTitle => 'Add Length Counter';
 
   @override
-  String get startStitch => '시작 단';
+  String get startStitch => 'Start Row';
 
   @override
-  String get targetLengthCm => '목표 길이 (cm)';
+  String get targetLengthCm => 'Target Length (cm)';
 
   @override
-  String get rowHeightCm => '1단의 높이 (cm)';
+  String get rowHeightCm => 'Row Height (cm)';
 
   @override
-  String get rowHeightDesc => '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요';
+  String get rowHeightDesc =>
+      'Measure the height of 1 row from your sample, or calculate it from saved gauge info.';
 
   @override
-  String get gaugeInputComingSoon => '게이지 입력 기능 준비 중';
+  String get gaugeInputComingSoon => 'Gauge input feature is coming soon';
 
   @override
-  String get goToGaugeInput => '게이지 입력하러 가기';
+  String get goToGaugeInput => 'Go to gauge input';
 
   @override
-  String get expectedRows => '예상 필요 단수';
+  String get expectedRows => 'Expected Rows';
 
   @override
   String estimatedRowsDisplay(Object rows) {
-    return '$rows단';
+    return '$rows rows';
   }
 
   @override
-  String get changeTargetRow => '목표 단수 변경';
+  String get changeTargetRow => 'Change Target Row';
 
   @override
-  String get removeTargetRow => '목표 단수 해제';
+  String get removeTargetRow => 'Remove Target Row';
 
   @override
   String editLogMemo(Object no) {
@@ -1127,43 +1128,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fold => 'Fold';
 
   @override
-  String get setTargetRow => '목표 단수 설정';
+  String get setTargetRow => 'Set Target Row';
 
   @override
-  String get setTargetRowDesc => '완료하고자 하는 총 단수를 입력하세요';
+  String get setTargetRowDesc => 'Enter the total rows you want to complete';
 
   @override
-  String get targetRow => '목표 단수';
+  String get targetRow => 'Target Row';
 
   @override
-  String get manageParts => 'Part 관리';
+  String get manageParts => 'Manage Parts';
 
   @override
   String get managePartsDesc =>
-      'Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.';
+      'Long press a Part name to edit, or drag the left icon to reorder.';
 
   @override
-  String get noParts => '등록된 Part가 없습니다.';
+  String get noParts => 'No Parts registered.';
 
   @override
-  String get editName => '이름 수정';
+  String get editName => 'Edit Name';
 
   @override
-  String get deletePart => 'Part 삭제';
+  String get deletePart => 'Delete Part';
 
   @override
   String deletePartConfirm(Object name) {
-    return '\'$name\' Part를 삭제하시겠습니까?\n이 Part에 속한 모든 카운터, 세션 기록, 메모가 함께 삭제됩니다.';
+    return 'Do you want to delete the Part \'$name\'?\nAll counters, sessions, and notes in this Part will be deleted.';
   }
 
   @override
-  String get duplicatePartName => '이미 존재하는 파트 이름입니다.';
+  String get duplicatePartName => 'This part name already exists.';
 
   @override
-  String get newPartName => '새 Part 이름';
+  String get newPartName => 'New Part Name';
 
   @override
-  String get rowHeightError => '1단의 높이는 목표 길이보다 작아야 합니다.';
+  String get rowHeightError => 'Row height must be less than target length.';
 
   @override
   String get projectInfo => 'Project Info';
@@ -1189,72 +1190,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String rowsRemaining(Object count) {
     return '$count rows left';
-  }
-
-  @override
-  String get viewDetails => 'View Details';
-
-  @override
-  String get editLabel => 'Edit Label';
-
-  @override
-  String get selectLabel => 'Select Label';
-
-  @override
-  String get manageLabels => 'Manage Labels';
-
-  @override
-  String get addLabel => 'Add Label';
-
-  @override
-  String get activeSessionExists => 'An active session exists';
-
-  @override
-  String get resume => 'Resume';
-
-  @override
-  String get startNew => 'Start New';
-
-  @override
-  String get activeSession => 'Active Session';
-
-  @override
-  String get activeSessionQuestion =>
-      'An active session exists. Do you want to continue?';
-
-  @override
-  String get projectInfoDesc => 'Check the detailed project info';
-
-  @override
-  String get lotNumberLabel => 'Yarn Lot Number';
-
-  @override
-  String get noTagsAssigned => 'No tags assigned.';
-
-  @override
-  String get noGaugeInfo => 'No gauge info';
-
-  @override
-  String get noMemoInfo => 'No notes';
-
-  @override
-  String get createdAtLabel => 'Created At';
-
-  @override
-  String get updatedAtLabel => 'Recently Updated';
-
-  @override
-  String get gaugeStandard => '(per 10cm x 10cm)';
-
-  @override
-  String get noCounters => 'No counters.';
-
-  @override
-  String get addCounterGuide => 'Tap + button to add.';
-
-  @override
-  String completeWithEmoji(Object name) {
-    return '$name completed! 🎉';
   }
 
   @override
@@ -1305,6 +1240,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagAdd => 'Add Tag';
+
+  @override
+  String get gauge => 'Gauge';
+
+  @override
+  String get gaugeDesc => 'How many stitches and rows in 10cm x 10cm?';
 
   @override
   String get stitchesHint => 'Stitches';
@@ -1358,6 +1299,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String get start => 'Start';
 
   @override
+  String get projectInfoDesc => 'Check the detailed project info';
+
+  @override
+  String get lotNumberLabel => 'Yarn Lot Number';
+
+  @override
+  String get noTagsAssigned => 'No tags assigned.';
+
+  @override
+  String get noGaugeInfo => 'No gauge info';
+
+  @override
+  String get noMemoInfo => 'No notes';
+
+  @override
+  String get createdAtLabel => 'Created At';
+
+  @override
+  String get updatedAtLabel => 'Recently Updated';
+
+  @override
+  String get gaugeStandard => '(per 10cm x 10cm)';
+
+  @override
+  String get noCounters => 'No counters.';
+
+  @override
+  String get addCounterGuide => 'Tap + button to add.';
+
+  @override
+  String completeWithEmoji(Object name) {
+    return '$name completed! 🎉';
+  }
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get editLabel => 'Edit Label';
+
+  @override
+  String get selectLabel => 'Select Label';
+
+  @override
+  String get manageLabels => 'Manage Labels';
+
+  @override
+  String get addLabel => 'Add Label';
+
+  @override
+  String get activeSessionExists => 'An active session exists';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get startNew => 'Start New';
+
+  @override
+  String get activeSession => 'Active Session';
+
+  @override
+  String get activeSessionQuestion =>
+      'An active session exists. Do you want to continue?';
+
+  @override
   String get dbDuplicateError => 'A duplicate value exists';
 
   @override
@@ -1386,4 +1393,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get defaultLabelNeckline => 'Neckline';
+
+  @override
+  String get userGuideJourney => 'Your knitting journey with Yarnie';
+
+  @override
+  String get trashHeader => 'Trash';
+
+  @override
+  String trashProjectCountInfo(Object count) {
+    return '$count projects · Auto-deleted after 30 days';
+  }
+
+  @override
+  String get restoreProjectTitle => 'Restore Project';
+
+  @override
+  String get restoreConfirmMessage => 'Do you want to restore this project?';
+
+  @override
+  String get projectRestoredMessage => 'Project restored.';
+
+  @override
+  String get deleteForeverTitle => 'Delete Forever';
+
+  @override
+  String get deleteForeverConfirmMessage =>
+      'Permanently delete this project?\nThis cannot be undone.';
+
+  @override
+  String get mainCounterTitleAlt => 'Main Counter (MainCounter)';
 }

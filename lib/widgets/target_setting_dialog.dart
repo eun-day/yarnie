@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class TargetSettingDialog extends StatefulWidget {
   final int initialValue;
@@ -34,12 +35,13 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         width: 360, // Approximate width to match design relative to screen
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
@@ -66,7 +68,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '목표 단수 설정',
+                  l10n.setTargetRow,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -75,9 +77,9 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                     letterSpacing: -0.44,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  '완료하고자 하는 총 단수를 입력하세요',
+                  l10n.setTargetRowDesc,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -93,7 +95,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
 
             // Input Group
             NumberInputGroup(
-              label: '목표 단수',
+              label: l10n.targetRow,
               controller: _controller,
               textStyle: TextStyle(
                 fontSize: 24,
@@ -126,7 +128,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '저장',
+                      l10n.save,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -148,7 +150,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '취소',
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -161,54 +163,6 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// Reused from CounterEditBottomSheet pattern
-class _StepButton extends StatefulWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _StepButton({required this.icon, required this.onTap});
-
-  @override
-  State<_StepButton> createState() => _StepButtonState();
-}
-
-class _StepButtonState extends State<_StepButton> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) async {
-        widget.onTap();
-        await Future.delayed(const Duration(milliseconds: 150));
-        if (mounted) {
-          setState(() => _isPressed = false);
-        }
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: _isPressed ? const Color(0xFFC0D2A4) : const Color.fromRGBO(0, 0, 0, 0.1),
-            width: 0.5,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Icon(
-          widget.icon,
-          size: 16,
-          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

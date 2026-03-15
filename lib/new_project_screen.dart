@@ -8,7 +8,8 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/project_detail_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
-import 'package:yarnie/widgets/tag_selection_sheet.dart'; // New import
+import 'package:yarnie/widgets/tag_selection_sheet.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class NewProjectScreen extends ConsumerStatefulWidget {
   final int? projectId; // 수정 모드일 경우 null이 아님
@@ -33,6 +34,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ref.listen<AsyncValue<ProjectFormEffect>>(projectFormEffectsProvider, (
       _,
       asyncEffect,
@@ -77,7 +79,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              state.isEditMode ? '프로젝트 수정' : '새 프로젝트',
+              state.isEditMode ? l10n.editProject : l10n.newProject,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
@@ -87,7 +89,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              state.isEditMode ? '프로젝트 정보를 수정해주세요' : '새로운 프로젝트 정보를 입력해주세요',
+              state.isEditMode ? l10n.editProjectDesc : l10n.newProjectDesc,
               style: TextStyle(
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -108,7 +110,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -191,7 +193,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.7)),
@@ -205,7 +207,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
                   height: 36,
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -216,7 +218,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '취소',
+                    l10n.cancel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -234,7 +236,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                           .onEvent(const SaveProject()),
                 child: Container(
                   height: 36,
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
@@ -250,7 +252,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                           ),
                         )
                       : Text(
-                          state.isEditMode ? '수정 완료' : '추가 완료',
+                          state.isEditMode ? l10n.editComplete : l10n.addComplete,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -267,15 +269,16 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   }
 
   void _showImageSourceSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(
+          padding: const EdgeInsets.only(
             left: 24,
             right: 24,
             bottom: 24,
@@ -297,7 +300,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                '이미지 추가',
+                l10n.addImage,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -307,7 +310,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                '사진을 촬영하거나 갤러리에서 선택하세요.',
+                l10n.imageSourceDesc,
                 style: TextStyle(
                   fontSize: 14,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -317,7 +320,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               const SizedBox(height: 24),
               _buildImageSourceButton(
                 iconPath: 'assets/icons/camera_icon.svg',
-                label: '카메라로 촬영',
+                label: l10n.cameraShot,
                 onTap: () {
                   _pickImage(ImageSource.camera);
                   Navigator.of(context).pop();
@@ -326,7 +329,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               const SizedBox(height: 12),
               _buildImageSourceButton(
                 iconPath: 'assets/icons/upload_icon.svg',
-                label: '갤러리에서 선택',
+                label: l10n.gallerySelect,
                 onTap: () {
                   _pickImage(ImageSource.gallery);
                   Navigator.of(context).pop();
@@ -399,11 +402,12 @@ class _ProjectImageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '프로젝트 이미지',
+          l10n.projectImage,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -435,7 +439,7 @@ class _ProjectImageSection extends StatelessWidget {
                       right: 0,
                       bottom: 0,
                       child: Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 12,
                         ),
@@ -455,7 +459,7 @@ class _ProjectImageSection extends StatelessWidget {
                               child: _buildImageButton(
                                 context,
                                 icon: Icons.close,
-                                label: '초기화',
+                                label: l10n.reset,
                                 onTap: onImageRemoved, // 이미지 제거 콜백
                               ),
                             ),
@@ -464,7 +468,7 @@ class _ProjectImageSection extends StatelessWidget {
                               child: _buildImageButton(
                                 context,
                                 icon: Icons.upload_outlined,
-                                label: '변경',
+                                label: l10n.change,
                                 onTap: onImagePressed,
                               ),
                             ),
@@ -486,7 +490,7 @@ class _ProjectImageSection extends StatelessWidget {
                             SvgPicture.asset('assets/icons/image_icon.svg'),
                             const SizedBox(height: 8),
                             Text(
-                              '이미지 추가',
+                              l10n.addImage,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -581,6 +585,7 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -593,8 +598,8 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
               letterSpacing: -0.15,
             ),
             children: <TextSpan>[
-              TextSpan(text: '프로젝트명 '),
-              TextSpan(
+              TextSpan(text: '${l10n.projectName} '),
+              const TextSpan(
                 text: '*', // Red asterisk
                 style: TextStyle(color: Color(0xFFD4183D)),
               ),
@@ -608,7 +613,7 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _controller,
@@ -619,7 +624,7 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
               letterSpacing: -0.31,
             ),
             decoration: InputDecoration(
-              hintText: '프로젝트 이름을 입력하세요',
+              hintText: l10n.projectNameHint,
               hintStyle: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -654,11 +659,12 @@ class _NeedleInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '바늘 종류',
+          l10n.needleType,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -673,16 +679,16 @@ class _NeedleInfoSection extends StatelessWidget {
           itemMap: {
             for (var type in NeedleType.values)
               type.toString().split('.').last: type == NeedleType.knitting
-                  ? '대바늘'
-                  : '코바늘',
+                  ? l10n.knittingNeedle
+                  : l10n.crochetNeedle,
           },
           onChanged: onNeedleTypeChanged,
-          hintText: '바늘 종류를 선택하세요',
+          hintText: l10n.needleTypeHint,
         ),
         const SizedBox(height: 24),
 
         Text(
-          '바늘 사이즈',
+          l10n.needleSize,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -696,7 +702,7 @@ class _NeedleInfoSection extends StatelessWidget {
           value: needleSize,
           itemMap: {for (var size in availableNeedleSizes) size: size},
           onChanged: onNeedleSizeChanged,
-          hintText: '먼저 바늘 종류를 선택하세요',
+          hintText: l10n.needleSizeHint,
         ),
       ],
     );
@@ -749,7 +755,7 @@ class _NeedleInfoSection extends StatelessWidget {
                       return PopupMenuItem<T>(
                         value: entry.key,
                         height: 32,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
                           entry.value,
                           style: TextStyle(
@@ -772,7 +778,7 @@ class _NeedleInfoSection extends StatelessWidget {
               color: const Color(0xFFF3F3F5),
               borderRadius: BorderRadius.circular(8),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
                 Expanded(
@@ -839,11 +845,12 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Lot Number',
+          l10n.lotNumberLabel,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -858,7 +865,7 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _lotNumberController,
@@ -869,7 +876,7 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
               letterSpacing: -0.31,
             ),
             decoration: InputDecoration(
-              hintText: '예: A12345',
+              hintText: l10n.lotNumberHint,
               hintStyle: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -884,7 +891,7 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
         ),
         const SizedBox(height: 4),
         Text(
-          '실의 로트 번호를 입력하세요',
+          l10n.lotNumberDesc,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
@@ -927,11 +934,12 @@ class _MemoSectionState extends State<_MemoSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '메모',
+          l10n.memo,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -946,7 +954,7 @@ class _MemoSectionState extends State<_MemoSection> {
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: TextField(
             controller: _memoController,
             onChanged: widget.onMemoChanged,
@@ -957,7 +965,7 @@ class _MemoSectionState extends State<_MemoSection> {
               letterSpacing: -0.31,
             ),
             decoration: InputDecoration(
-              hintText: '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등',
+              hintText: l10n.memoHint,
               hintStyle: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -992,6 +1000,7 @@ class _TagInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final selectedTags = allTags
         .where((tag) => selectedTagIds.contains(tag.id))
         .toList();
@@ -1000,7 +1009,7 @@ class _TagInfoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '태그',
+          l10n.tag,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -1038,9 +1047,9 @@ class _TagInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.add, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
-                  '태그 추가',
+                  l10n.tagAdd,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -1107,11 +1116,12 @@ class _GaugeSectionState extends State<_GaugeSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '게이지',
+          l10n.gauge,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -1121,7 +1131,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
         ),
         const SizedBox(height: 4),
         Text(
-          '10cm x 10cm에 몇 코, 몇 단인가요?',
+          l10n.gaugeDesc,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
@@ -1137,7 +1147,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                         color: const Color(0xFFF3F3F5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.centerLeft,
                       child: TextField(
                         controller: _stitchController,
@@ -1148,7 +1158,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                           letterSpacing: -0.31,
                         ),
                         decoration: InputDecoration(
-                          hintText: '코 수',
+                          hintText: l10n.stitchesHint,
                           hintStyle: TextStyle(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 16,
@@ -1165,7 +1175,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '코',
+                    l10n.stitchesUnit,
                     style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1186,7 +1196,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                         color: const Color(0xFFF3F3F5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.centerLeft,
                       child: TextField(
                         controller: _rowController,
@@ -1197,7 +1207,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                           letterSpacing: -0.31,
                         ),
                         decoration: InputDecoration(
-                          hintText: '단 수',
+                          hintText: l10n.rowsHintGauge,
                           hintStyle: TextStyle(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 16,
@@ -1214,7 +1224,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '단',
+                    l10n.rowsUnit,
                     style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,

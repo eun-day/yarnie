@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class MainCounterSettingsButton extends StatelessWidget {
   final VoidCallback onChangeTarget;
@@ -13,6 +14,7 @@ class MainCounterSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Theme(
       data: Theme.of(context).copyWith(
         splashColor: Colors.transparent,
@@ -35,7 +37,7 @@ class MainCounterSettingsButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: Color.fromRGBO(0, 0, 0, 0.1),
+            color: Theme.of(context).colorScheme.outline,
             width: 0.5,
           ),
         ),
@@ -44,8 +46,8 @@ class MainCounterSettingsButton extends StatelessWidget {
         
         // Menu Items
         itemBuilder: (context) => [
-          _buildMenuItem(context, 'change', '목표 단수 변경'),
-          _buildMenuItem(context, 'remove', '목표 단수 해제'),
+          _buildMenuItem(context, 'change', l10n.changeTargetRow),
+          _buildMenuItem(context, 'remove', l10n.removeTargetRow),
         ],
         
         // The Trigger Button
@@ -63,10 +65,10 @@ class MainCounterSettingsButton extends StatelessWidget {
     return PopupMenuItem<String>(
       value: value,
       height: 32,
-      padding: EdgeInsets.symmetric(horizontal: 4.5), // Outer padding from Figma
+      padding: const EdgeInsets.symmetric(horizontal: 4.5), // Outer padding from Figma
       child: Container(
         height: 32,
-        padding: EdgeInsets.symmetric(horizontal: 8), // Inner padding from Figma
+        padding: const EdgeInsets.symmetric(horizontal: 8), // Inner padding from Figma
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),

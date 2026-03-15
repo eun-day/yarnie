@@ -27,8 +27,7 @@ import 'package:yarnie/widgets/part_manage_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
 import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
-// import 'package:yarnie/counter_panel.dart';   // 기존 패널 미사용
-// import 'package:yarnie/widget/project_info_section.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
 
@@ -162,7 +161,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           HapticFeedback.mediumImpact();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('🎉 ${counter.name} 완료!'),
+              content: Text(AppLocalizations.of(context)!.completeWithEmoji(counter.name)),
               backgroundColor: const Color(0xFF6FB96F),
               duration: const Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
@@ -179,6 +178,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final projectAsync = appDb.watchProject(widget.projectId);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -187,7 +187,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           stream: projectAsync,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(child: Text(l10n.errorOccurred(snapshot.error.toString())));
             }
             if (!snapshot.hasData || snapshot.data == null) {
               // 해당 프로젝트가 삭제되었거나 아직 로딩 중일 때
@@ -200,7 +200,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 });
                 return const SizedBox.shrink(); // 에러(블랙스크린) 방지
               }
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
 
             final project = snapshot.data!;
@@ -216,7 +216,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 // 3. Integrated Content View
                 Expanded(
                   child: _selectedPartId == null
-                      ? const Center(child: Text('파트를 선택하거나 생성해주세요.'))
+                      ? Center(child: Text(l10n.addPartDesc))
                       : _buildIntegratedContentView(context, _selectedPartId!),
                 ),
               ],
@@ -245,12 +245,12 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         try {
                           await appDb.createStitchCounter(
                             partId: _selectedPartId!,
-                            name: '스티치 카운터', // Default name
+                            name: l10n.stitchCounter, // Default name
                           );
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('생성 실패: $e')),
+                              SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
                             );
                           }
                         }
@@ -364,6 +364,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   }
 
   Widget _buildHeader(BuildContext context, Project project) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 60,
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -414,7 +415,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
                   // 파트 이름 가져오기
                   final part = await appDb.getPart(_selectedPartId!);
-                  final partName = part?.name ?? '파트';
+                  final partName = part?.name ?? l10n.newPartTitle;
 
                   if (context.mounted) {
                     showModalBottomSheet(
@@ -512,7 +513,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            '프로젝트 정보',
+                            l10n.projectInfo,
                             style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -525,7 +526,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            'Part 관리',
+                            l10n.manageParts,
                             style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -533,12 +534,12 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'delete',
                           height: 32,
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            '프로젝트 삭제',
+                            l10n.projectDelete,
                             style: TextStyle(
                               fontSize: 14,
                               color: Color(0xFFD4183D),
@@ -620,11 +621,12 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   }
 
   Widget _buildPartTabs(BuildContext context, Project project) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<List<Part>>(
       stream: appDb.watchProjectParts(project.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const SizedBox(
+          return SizedBox(
             height: 60,
             child: Center(child: Icon(Icons.error)),
           );
@@ -702,7 +704,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         Icon(Icons.add, color: Theme.of(context).colorScheme.surface, size: 16),
                         SizedBox(width: 4),
                         Text(
-                          '새 파트',
+                          l10n.newPart,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.surface,
                             fontSize: 16,
@@ -722,7 +724,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     ? Padding(
                         padding: EdgeInsets.only(left: 8),
                         child: Text(
-                          '파트를 추가해주세요',
+                          l10n.addPartDesc,
                           style: TextStyle(color: Colors.grey),
                         ),
                       )
@@ -810,6 +812,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   Future<void> _showAddPartDialog(BuildContext context, int projectId) async {
     final textController = TextEditingController();
     String? errorText;
+    final l10n = AppLocalizations.of(context)!;
 
     await showDialog(
       context: context,
@@ -817,14 +820,14 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('새 파트 추가'),
+              title: Text(l10n.newPartAdd),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: textController,
                     decoration: InputDecoration(
-                      hintText: '파트 이름 (예: 앞판, 소매)',
+                      hintText: l10n.partNameHint,
                       errorText: errorText,
                     ),
                     autofocus: true,
@@ -841,7 +844,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('취소'),
+                  child: Text(l10n.cancel),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -854,7 +857,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       );
                       if (exists) {
                         setState(() {
-                          errorText = '이미 존재하는 파트 이름입니다.';
+                          errorText = l10n.duplicatePartName;
                         });
                         return;
                       }
@@ -879,13 +882,13 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('파트 생성 실패: $e')),
+                            SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
                           );
                         }
                       }
                     }
                   },
-                  child: Text('추가'),
+                  child: Text(l10n.add),
                 ),
               ],
             );
@@ -1006,6 +1009,7 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     var allItems = [
       ..._stitchCounters.map((c) => _BuddyItem.stitch(c)),
       ..._sectionCounters.map((c) => _BuddyItem.section(c)),
@@ -1040,11 +1044,11 @@ class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
     }
 
     if (allItems.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 100,
         child: Center(
           child: Text(
-            '카운터가 없습니다.\n+ 버튼을 눌러 추가해보세요.',
+            '${l10n.noCounters}\n${l10n.addCounterGuide}',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey),
           ),
@@ -1682,8 +1686,9 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   }
 
   Widget _buildContent(Session? session, bool isRunning) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
@@ -1701,7 +1706,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
               ),
               const SizedBox(width: 8),
               Text(
-                '세션',
+                l10n.session,
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1723,7 +1728,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
           GestureDetector(
             onTap: _handleToggleSession,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: isRunning
                     ? const Color(0xFFECEEF2)
@@ -1735,13 +1740,13 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
                     size: 14,
-                    color: isRunning ? Color(0xFF030213) : Theme.of(context).colorScheme.surface,
+                    color: isRunning ? const Color(0xFF030213) : Theme.of(context).colorScheme.surface,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    isRunning ? '일시정지' : (session == null ? '시작' : '이어하기'),
+                    isRunning ? l10n.paused : (session == null ? l10n.start : l10n.resume),
                     style: TextStyle(
-                      color: isRunning ? Color(0xFF030213) : Theme.of(context).colorScheme.surface,
+                      color: isRunning ? const Color(0xFF030213) : Theme.of(context).colorScheme.surface,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.15,
@@ -1798,6 +1803,7 @@ class MainCounterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<MainCounter?>(
       stream: (appDb.select(
         appDb.mainCounters,
@@ -1846,7 +1852,7 @@ class MainCounterWidget extends StatelessWidget {
                         },
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.only(right: 20),
+                            padding: const EdgeInsets.only(right: 20),
                             child: Icon(
                               Icons.remove,
                               size: 40,
@@ -1875,7 +1881,7 @@ class MainCounterWidget extends StatelessWidget {
                         },
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.only(left: 20),
+                            padding: const EdgeInsets.only(left: 20),
                             child: Icon(
                               Icons.add,
                               size: 40,
@@ -1971,7 +1977,7 @@ class MainCounterWidget extends StatelessWidget {
                   child: Center(
                     child: Container(
                       height: 14,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(100),
@@ -1980,7 +1986,7 @@ class MainCounterWidget extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '$remaining줄 남음',
+                            l10n.rowsRemaining(remaining),
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
                               fontSize: 9.2,
