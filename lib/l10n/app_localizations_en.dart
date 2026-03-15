@@ -1057,6 +1057,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String targetInfoLengthInch(Object length) {
+    return 'Target ${length}inch';
+  }
+
+  @override
   String get editLengthCounterTitle => 'Edit Length Counter';
 
   @override
@@ -1069,10 +1074,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetLengthCm => 'Target Length (cm)';
 
   @override
+  String get targetLengthInch => 'Target Length (inch)';
+
+  @override
   String get targetLengthHint => 'e.g., 25.0';
 
   @override
   String get rowHeightCm => 'Row Height (cm)';
+
+  @override
+  String get rowHeightInch => 'Row Height (inch)';
 
   @override
   String get rowHeightHint => 'e.g., 0.33';
@@ -1257,6 +1268,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gaugeDesc => 'How many stitches and rows in 10cm x 10cm?';
 
   @override
+  String get gaugeDescInch => 'How many stitches and rows in 4in x 4in?';
+
+  @override
   String get stitchesHint => 'Stitches';
 
   @override
@@ -1330,6 +1344,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gaugeStandard => '(per 10cm x 10cm)';
+
+  @override
+  String get gaugeStandardInch => '(per 4in x 4in)';
 
   @override
   String get noCounters => 'No counters.';

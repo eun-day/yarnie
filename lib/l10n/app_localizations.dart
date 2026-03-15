@@ -1988,6 +1988,12 @@ abstract class AppLocalizations {
   /// **'목표 {length}cm'**
   String targetInfoLength(Object length);
 
+  /// No description provided for @targetInfoLengthInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 {length}inch'**
+  String targetInfoLengthInch(Object length);
+
   /// No description provided for @editLengthCounterTitle.
   ///
   /// In ko, this message translates to:
@@ -2012,6 +2018,12 @@ abstract class AppLocalizations {
   /// **'목표 길이 (cm)'**
   String get targetLengthCm;
 
+  /// No description provided for @targetLengthInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 길이 (inch)'**
+  String get targetLengthInch;
+
   /// No description provided for @targetLengthHint.
   ///
   /// In ko, this message translates to:
@@ -2023,6 +2035,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'1단의 높이 (cm)'**
   String get rowHeightCm;
+
+  /// No description provided for @rowHeightInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'1단의 높이 (inch)'**
+  String get rowHeightInch;
 
   /// No description provided for @rowHeightHint.
   ///
@@ -2354,6 +2372,12 @@ abstract class AppLocalizations {
   /// **'10cm x 10cm 안에 몇 코, 몇 단인가요?'**
   String get gaugeDesc;
 
+  /// No description provided for @gaugeDescInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'4in x 4in 안에 몇 코, 몇 단인가요?'**
+  String get gaugeDescInch;
+
   /// No description provided for @stitchesHint.
   ///
   /// In ko, this message translates to:
@@ -2503,6 +2527,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'(10cm x 10cm 기준)'**
   String get gaugeStandard;
+
+  /// No description provided for @gaugeStandardInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'(4in x 4in 기준)'**
+  String get gaugeStandardInch;
 
   /// No description provided for @noCounters.
   ///

@@ -10,6 +10,7 @@ import 'package:yarnie/project_detail_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
 import 'package:yarnie/widgets/tag_selection_sheet.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/core/providers/length_unit_provider.dart';
 
 class NewProjectScreen extends ConsumerStatefulWidget {
   final int? projectId; // 수정 모드일 경우 null이 아님
@@ -1066,7 +1067,7 @@ class _TagInfoSection extends StatelessWidget {
   }
 }
 
-class _GaugeSection extends StatefulWidget {
+class _GaugeSection extends ConsumerStatefulWidget {
   final String? initialStitches;
   final String? initialRows;
   final ValueChanged<String> onStitchesChanged;
@@ -1080,10 +1081,10 @@ class _GaugeSection extends StatefulWidget {
   });
 
   @override
-  State<_GaugeSection> createState() => _GaugeSectionState();
+  ConsumerState<_GaugeSection> createState() => _GaugeSectionState();
 }
 
-class _GaugeSectionState extends State<_GaugeSection> {
+class _GaugeSectionState extends ConsumerState<_GaugeSection> {
   late final TextEditingController _stitchController;
   late final TextEditingController _rowController;
 
@@ -1117,6 +1118,8 @@ class _GaugeSectionState extends State<_GaugeSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final lengthUnit = ref.watch(lengthUnitProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1131,7 +1134,7 @@ class _GaugeSectionState extends State<_GaugeSection> {
         ),
         const SizedBox(height: 4),
         Text(
-          l10n.gaugeDesc,
+          lengthUnit == LengthUnit.cm ? l10n.gaugeDesc : l10n.gaugeDescInch,
           style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),

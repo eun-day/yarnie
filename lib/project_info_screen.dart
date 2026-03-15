@@ -5,6 +5,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/core/providers/length_unit_provider.dart';
 
 class ProjectInfoSheet extends ConsumerWidget {
   final Project project;
@@ -19,9 +20,13 @@ class ProjectInfoSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final lengthUnit = ref.watch(lengthUnitProvider);
+
     // 태그 ID로 실제 태그 객체 찾기
     final selectedTags = project.tagIds != null
-        ? allTags.where((tag) => project.tagIds!.contains(tag.id.toString())).toList()
+        ? allTags
+              .where((tag) => project.tagIds!.contains(tag.id.toString()))
+              .toList()
         : <Tag>[];
 
     return DraggableScrollableSheet(
@@ -44,287 +49,324 @@ class ProjectInfoSheet extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Handle Bar
-            const SizedBox(height: 16),
-            Center(
-              child: Container(
-                width: 100,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(100),
+                const SizedBox(height: 16),
+                Center(
+                  child: Container(
+                    width: 100,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-            // Header: Title & Close
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
+                // Header: Title & Close
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.projectInfo,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                letterSpacing: -0.31,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.projectInfoDesc,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  NewProjectScreen(projectId: project.id),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 32,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.transparent,
+                          ),
+                          child: Text(
+                            l10n.edit,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.primary,
+                              letterSpacing: -0.15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.projectInfo,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            letterSpacing: -0.31,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.projectInfoDesc,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            letterSpacing: -0.15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => NewProjectScreen(projectId: project.id),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 32,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.transparent,
-                      ),
-                      child: Text(
-                        l10n.edit,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
-                          letterSpacing: -0.15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                controller: scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Image (if exists)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: SizedBox(
-                          width: 240,
-                          height: 135,
-                          child: (project.imagePath != null && project.imagePath!.isNotEmpty)
-                              ? Image.file(
-                                  File(project.imagePath!),
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        // Image (if exists)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              width: 240,
+                              height: 135,
+                              child:
+                                  (project.imagePath != null &&
+                                      project.imagePath!.isNotEmpty)
+                                  ? Image.file(
+                                      File(project.imagePath!),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.surfaceContainerHighest,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons
+                                                  .image_not_supported_outlined,
+                                              size: 40,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Container(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest,
                                       child: Center(
                                         child: Icon(
-                                          Icons.image_not_supported_outlined,
+                                          Icons.image_outlined,
                                           size: 40,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
-                                    );
-                                  },
-                                )
-                              : Container(
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.image_outlined,
-                                      size: 40,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
-                                  ),
-                                ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
 
-                    // Project Name
-                    _InfoRow(
-                      label: l10n.projectName,
-                      value: project.name,
-                      valueColor: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    const SizedBox(height: 24),
+                        // Project Name
+                        _InfoRow(
+                          label: l10n.projectName,
+                          value: project.name,
+                          valueColor: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        const SizedBox(height: 24),
 
-                    // Needle Info
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _InfoRow(
-                            label: l10n.needleType,
-                            value: project.needleType == 'knitting'
-                                ? l10n.knittingNeedle
-                                : project.needleType == 'crochet'
+                        // Needle Info
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _InfoRow(
+                                label: l10n.needleType,
+                                value: project.needleType == 'knitting'
+                                    ? l10n.knittingNeedle
+                                    : project.needleType == 'crochet'
                                     ? l10n.crochetNeedle
                                     : '-',
-                            valueColor: Theme.of(context).colorScheme.onSurface,
+                                valueColor: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface,
+                              ),
+                            ),
+                            Expanded(
+                              child: _InfoRow(
+                                label: l10n.needleSize,
+                                value: project.needleSize ?? '-',
+                                valueColor: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Lot Number
+                        _InfoRow(
+                          label: l10n.lotNumberLabel,
+                          value: project.lotNumber ?? '-',
+                          valueColor: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Tags
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.tag,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            if (selectedTags.isNotEmpty)
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: selectedTags
+                                    .map((tag) => ColoredTagChip(tag: tag))
+                                    .toList(),
+                              )
+                            else
+                              Text(
+                                l10n.noTagsAssigned,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Gauge
+                        Builder(
+                          builder: (context) {
+                            final List<String> parts = [];
+                            if (project.gaugeStitches != null &&
+                                project.gaugeStitches!.isNotEmpty) {
+                              parts.add(
+                                '${project.gaugeStitches}${l10n.stitchesUnit}',
+                              );
+                            }
+                            if (project.gaugeRows != null &&
+                                project.gaugeRows!.isNotEmpty) {
+                              parts.add('${project.gaugeRows}${l10n.rowsUnit}');
+                            }
+
+                            if (parts.isNotEmpty) {
+                              return _InfoRow(
+                                label: l10n.gauge,
+                                value:
+                                    '${parts.join(' / ')} ${lengthUnit == LengthUnit.cm ? l10n.gaugeStandard : l10n.gaugeStandardInch}',
+                                valueColor: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface,
+                              );
+                            } else {
+                              return _InfoRow(
+                                label: l10n.gauge,
+                                value: l10n.noGaugeInfo,
+                                valueColor: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Memo
+                        _InfoRow(
+                          label: l10n.memo,
+                          value: project.memo ?? l10n.noMemoInfo,
+                          valueColor: project.memo?.isNotEmpty == true
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Dates
+                        Container(
+                          padding: const EdgeInsets.only(top: 16),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: Theme.of(context).colorScheme.outline,
+                                width: 0.7,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _DateRow(
+                                  label: l10n.createdAtLabel,
+                                  value: _formatDate(project.createdAt, l10n),
+                                ),
+                              ),
+                              Expanded(
+                                child: _DateRow(
+                                  label: l10n.updatedAtLabel,
+                                  value: project.updatedAt != null
+                                      ? _formatDate(project.updatedAt!, l10n)
+                                      : '-',
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Expanded(
-                          child: _InfoRow(
-                            label: l10n.needleSize,
-                            value: project.needleSize ?? '-',
-                            valueColor: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
+
+                        const SizedBox(height: 40),
                       ],
                     ),
-                    const SizedBox(height: 24),
-
-                    // Lot Number
-                    _InfoRow(
-                      label: l10n.lotNumberLabel,
-                      value: project.lotNumber ?? '-',
-                      valueColor: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Tags
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.tag,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            letterSpacing: -0.15,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        if (selectedTags.isNotEmpty)
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: selectedTags
-                                .map((tag) => ColoredTagChip(tag: tag))
-                                .toList(),
-                          )
-                        else
-                          Text(
-                            l10n.noTagsAssigned,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Gauge
-                    Builder(
-                      builder: (context) {
-                        final List<String> parts = [];
-                        if (project.gaugeStitches != null && project.gaugeStitches!.isNotEmpty) {
-                          parts.add('${project.gaugeStitches}${l10n.stitchesUnit}');
-                        }
-                        if (project.gaugeRows != null && project.gaugeRows!.isNotEmpty) {
-                          parts.add('${project.gaugeRows}${l10n.rowsUnit}');
-                        }
-
-                        if (parts.isNotEmpty) {
-                          return _InfoRow(
-                            label: l10n.gauge,
-                            value: '${parts.join(' / ')} ${l10n.gaugeStandard}',
-                            valueColor: Theme.of(context).colorScheme.onSurface,
-                          );
-                        } else {
-                          return _InfoRow(
-                            label: l10n.gauge,
-                            value: l10n.noGaugeInfo,
-                            valueColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Memo
-                    _InfoRow(
-                      label: l10n.memo,
-                      value: project.memo ?? l10n.noMemoInfo,
-                      valueColor: project.memo?.isNotEmpty == true
-                          ? Theme.of(context).colorScheme.onSurface
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Dates
-                    Container(
-                      padding: const EdgeInsets.only(top: 16),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                            width: 0.7,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _DateRow(
-                              label: l10n.createdAtLabel,
-                              value: _formatDate(project.createdAt, l10n),
-                            ),
-                          ),
-                          Expanded(
-                            child: _DateRow(
-                              label: l10n.updatedAtLabel,
-                              value: project.updatedAt != null
-                                  ? _formatDate(project.updatedAt!, l10n)
-                                  : '-',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  });
-}
+  }
 
   String _formatDate(DateTime date, AppLocalizations l10n) {
     final local = date.toLocal();
@@ -380,10 +422,7 @@ class _DateRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DateRow({
-    required this.label,
-    required this.value,
-  });
+  const _DateRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
