@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
@@ -45,21 +46,15 @@ class MyApp extends ConsumerWidget {
     final appLanguage = ref.watch(localeProvider);
     final themeMode = ref.watch(themeProvider);
 
-    Locale? locale;
-    if (appLanguage == AppLanguage.ko) {
-      locale = const Locale('ko');
-    } else if (appLanguage == AppLanguage.en) {
-      locale = const Locale('en');
-    }
-
     return MaterialApp(
       title: 'Yarnie',
-      locale: locale,
+      locale: appLanguage.locale,
       supportedLocales: const [
         Locale('ko'),
         Locale('en'),
       ],
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

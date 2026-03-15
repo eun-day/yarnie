@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -18,7 +19,8 @@ class AddRepeatCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddRepeatCounterSheet> createState() => _AddRepeatCounterSheetState();
+  ConsumerState<AddRepeatCounterSheet> createState() =>
+      _AddRepeatCounterSheetState();
 }
 
 class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
@@ -33,17 +35,26 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     final startRow = int.tryParse(_startRowController.text);
     final repeatUnit = int.tryParse(_repeatUnitController.text);
     final repeatCount = int.tryParse(_repeatCountController.text);
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           repeatUnit != null && repeatUnit > 0 &&
-           repeatCount != null && repeatCount > 0;
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        repeatUnit != null &&
+        repeatUnit > 0 &&
+        repeatCount != null &&
+        repeatCount > 0;
   }
 
   @override
   void initState() {
     super.initState();
-    
-    String label = '반복 카운터';
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
+    String label = AppLocalizations.of(context)!.repeatCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String repeatUnit = '';
     String repeatCount = '';
@@ -67,6 +78,8 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     _startRowController.addListener(_updateState);
     _repeatUnitController.addListener(_updateState);
     _repeatCountController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -75,15 +88,17 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _repeatUnitController.removeListener(_updateState);
-    _repeatCountController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _repeatUnitController.dispose();
-    _repeatCountController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _repeatUnitController.removeListener(_updateState);
+      _repeatCountController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _repeatUnitController.dispose();
+      _repeatCountController.dispose();
+    }
     super.dispose();
   }
 
@@ -122,13 +137,19 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        final message = _isEditing
+            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
+            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -154,7 +175,9 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -162,12 +185,14 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
                 // Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '반복 카운터 수정' : '반복 카운터 추가',
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editRepeatCounter
+                            : AppLocalizations.of(context)!.addRepeatCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -177,7 +202,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '특정 패턴을 반복할 때 사용하는 카운터입니다.',
+                        AppLocalizations.of(context)!.repeatCounterDescSimple,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -198,10 +223,10 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                       // Label Field
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       // Start Row Field
                       NumberInputGroup(
-                        label: '시작 행',
+                        label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
                         hintText: '19',
                         onChanged: _updateState,
@@ -210,19 +235,19 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
                       // Repeat Unit Field
                       NumberInputGroup(
-                        label: '반복 단위 (행)',
+                        label: AppLocalizations.of(context)!.repeatUnit,
                         controller: _repeatUnitController,
-                        hintText: '예: 4',
+                        hintText: AppLocalizations.of(context)!.repeatUnitHint,
                         onChanged: _updateState,
                       ),
                       const SizedBox(height: 16),
 
                       // Repeat Count Field
                       NumberInputGroup(
-                        label: '반복 횟수',
+                        label: AppLocalizations.of(context)!.repeatTimes,
                         controller: _repeatCountController,
-                        hintText: '예: 10',
-                        helperText: '패턴의 반복 단위와 횟수를 입력하세요.',
+                        hintText: AppLocalizations.of(context)!.timesHint,
+                        helperText: AppLocalizations.of(context)!.repeatHelper,
                         onChanged: _updateState,
                       ),
                     ],
@@ -242,11 +267,15 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -264,11 +293,14 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -295,7 +327,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -313,7 +345,10 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface), // Adjusted to match design
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ), // Adjusted to match design
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -323,8 +358,11 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          AppLocalizations.of(context)!.labelHint,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

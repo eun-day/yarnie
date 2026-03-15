@@ -1,8 +1,8 @@
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/theme/text_styles.dart';
-import 'package:yarnie/core/l10n/app_strings.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
 
 enum LengthUnit { cm, inch }
@@ -23,11 +23,12 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-        border: Border(top: BorderSide(color: Color.fromRGBO(0, 0, 0, 0.1), width: 0.5)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
       ),
       child: SafeArea(
         child: Column(
@@ -45,14 +46,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             const SizedBox(height: 24),
             // Header
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.tr(context, AppStrings.preferencesTitle),
+                      l10n.preferencesTitle,
                       style: AppTextStyles.titleH3.copyWith(
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -60,7 +61,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      AppStrings.tr(context, AppStrings.preferencesSubtitle),
+                      l10n.preferencesSubtitle,
                       style: AppTextStyles.bodyM.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -73,7 +74,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             // Content List
             Expanded(
               child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
                   _buildLanguageSection(),
                   const SizedBox(height: 32),
@@ -90,7 +91,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             ),
             // Save Button
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -107,7 +108,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    AppStrings.tr(context, AppStrings.save),
+                    l10n.save,
                     style: AppTextStyles.bodyM.copyWith(
                       fontWeight: FontWeight.w500,
                       color: Theme.of(context).colorScheme.surface,
@@ -124,7 +125,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
         style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurface),
@@ -134,7 +135,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildHelperText(String text) {
     return Padding(
-      padding: EdgeInsets.only(top: 8, left: 4),
+      padding: const EdgeInsets.only(top: 8, left: 4),
       child: Text(
         text,
         style: TextStyle(
@@ -150,24 +151,25 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildLanguageSection() {
     final language = ref.watch(localeProvider);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     String languageText;
     switch (language) {
       case AppLanguage.ko:
-        languageText = '한국어';
+        languageText = l10n.korean;
         break;
       case AppLanguage.en:
         languageText = 'English';
         break;
       case AppLanguage.auto:
-        languageText = AppStrings.tr(context, AppStrings.languageCurrentKorean);
+        languageText = l10n.languageCurrentKorean;
         break;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.language)),
+        _buildSectionHeader(l10n.language),
         InkWell(
           onTap: () {
             _showLanguageSelectionBottomSheet();
@@ -175,14 +177,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             height: 48,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF3F3F5),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                Text('🌐', style: TextStyle(fontSize: 14)),
+                const Text('🌐', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 8),
                 Text(
                   languageText,
@@ -198,17 +200,18 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             ),
           ),
         ),
-        _buildHelperText(AppStrings.tr(context, AppStrings.languageSub)),
+        _buildHelperText(l10n.languageSub),
       ],
     );
   }
 
   void _showLanguageSelectionBottomSheet() {
     final currentLanguage = ref.read(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       ),
       builder: (context) {
@@ -227,18 +230,18 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               ),
               const SizedBox(height: 16),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    AppStrings.tr(context, AppStrings.language),
+                    l10n.language,
                     style: AppTextStyles.titleH3.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
               _buildLanguageOption(
-                label: '${AppStrings.tr(context, AppStrings.auto)} (휴대폰 설정 따름)',
+                label: l10n.autoWithDeviceSetting,
                 isSelected: currentLanguage == AppLanguage.auto,
                 onTap: () {
                   ref.read(localeProvider.notifier).setLanguage(AppLanguage.auto);
@@ -254,7 +257,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                 },
               ),
               _buildLanguageOption(
-                label: '한국어',
+                label: l10n.korean,
                 isSelected: currentLanguage == AppLanguage.ko,
                 onTap: () {
                   ref.read(localeProvider.notifier).setLanguage(AppLanguage.ko);
@@ -290,15 +293,16 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Widget _buildLengthUnitSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.lengthUnit)),
+        _buildSectionHeader(l10n.lengthUnit),
         Row(
           children: [
             Expanded(
               child: _buildRadioOption(
-                label: AppStrings.tr(context, AppStrings.lengthCm),
+                label: l10n.lengthCm,
                 isSelected: _lengthUnit == LengthUnit.cm,
                 onTap: () => setState(() => _lengthUnit = LengthUnit.cm),
               ),
@@ -306,14 +310,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             const SizedBox(width: 8),
             Expanded(
               child: _buildRadioOption(
-                label: AppStrings.tr(context, AppStrings.lengthInch),
+                label: l10n.lengthInch,
                 isSelected: _lengthUnit == LengthUnit.inch,
                 onTap: () => setState(() => _lengthUnit = LengthUnit.inch),
               ),
             ),
           ],
         ),
-        _buildHelperText(AppStrings.tr(context, AppStrings.lengthSub)),
+        _buildHelperText(l10n.lengthSub),
       ],
     );
   }
@@ -332,7 +336,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           color: isSelected ? const Color.fromRGBO(99, 112, 105, 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Color.fromRGBO(0, 0, 0, 0.1),
+            color: isSelected ? Theme.of(context).colorScheme.primary : const Color.fromRGBO(0, 0, 0, 0.1),
             width: 1.5,
           ),
         ),
@@ -346,14 +350,15 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Widget _buildDataManageSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.dataManage)),
+        _buildSectionHeader(l10n.dataManage),
         _buildOptionCard(
           iconPath: 'assets/icons/data_upload.svg',
-          title: AppStrings.tr(context, AppStrings.autoBackup),
-          subtitle: AppStrings.tr(context, AppStrings.autoBackupSub),
+          title: l10n.autoBackup,
+          subtitle: l10n.autoBackupSub,
           isHighlighted: true,
           trailing: Switch(
             value: _autoBackup,
@@ -367,8 +372,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         const SizedBox(height: 12),
         _buildOptionCard(
           iconPath: 'assets/icons/data_download.svg',
-          title: AppStrings.tr(context, AppStrings.exportData),
-          subtitle: AppStrings.tr(context, AppStrings.exportDataSub),
+          title: l10n.exportData,
+          subtitle: l10n.exportDataSub,
           isHighlighted: false,
           trailing: SvgPicture.asset('assets/icons/chevron_right.svg', width: 20, height: 20),
           onTap: () {},
@@ -376,8 +381,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         const SizedBox(height: 12),
         _buildOptionCard(
           iconPath: 'assets/icons/data_upload.svg',
-          title: AppStrings.tr(context, AppStrings.importData),
-          subtitle: AppStrings.tr(context, AppStrings.importDataSub),
+          title: l10n.importData,
+          subtitle: l10n.importDataSub,
           isHighlighted: false,
           trailing: SvgPicture.asset('assets/icons/chevron_right.svg', width: 20, height: 20),
           onTap: () {},
@@ -387,14 +392,15 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Widget _buildSessionSettingSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.sessionSetting)),
+        _buildSectionHeader(l10n.sessionSetting),
         _buildOptionCard(
           iconPath: 'assets/icons/phone_active.svg',
-          title: AppStrings.tr(context, AppStrings.screenAwake),
-          subtitle: AppStrings.tr(context, AppStrings.screenAwakeSub),
+          title: l10n.screenAwake,
+          subtitle: l10n.screenAwakeSub,
           isHighlighted: true,
           trailing: Switch(
             value: _screenAwake,
@@ -429,7 +435,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               ? null
               : Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
             SvgPicture.asset(iconPath, width: 20, height: 20),
@@ -465,11 +471,12 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Widget _buildTouchFeedbackSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(AppStrings.tr(context, AppStrings.touchFeedback)),
-        _buildHelperText(AppStrings.tr(context, AppStrings.touchFeedbackSub)),
+        _buildSectionHeader(l10n.touchFeedback),
+        _buildHelperText(l10n.touchFeedbackSub),
         const SizedBox(height: 12),
         GridView.count(
           shrinkWrap: true,
@@ -481,25 +488,25 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             children: [
               _buildFeedbackCard(
                 type: TouchFeedback.vibration,
-                label: AppStrings.tr(context, AppStrings.vibrate),
+                label: l10n.vibrate,
                 activeIconPath: 'assets/icons/phone_active.svg',
                 inactiveIconPath: 'assets/icons/phone_inactive.svg',
               ),
               _buildFeedbackCard(
                 type: TouchFeedback.sound,
-                label: AppStrings.tr(context, AppStrings.sound),
+                label: l10n.sound,
                 activeIconPath: 'assets/icons/sound_inactive.svg', // Assuming sound doesn't change color just usage
                 inactiveIconPath: 'assets/icons/sound_inactive.svg',
               ),
               _buildFeedbackCard(
                 type: TouchFeedback.both,
-                label: AppStrings.tr(context, AppStrings.both),
+                label: l10n.both,
                 activeIconPath: 'assets/icons/phone_inactive.svg', 
                 inactiveIconPath: 'assets/icons/phone_inactive.svg',
               ),
               _buildFeedbackCard(
                 type: TouchFeedback.none,
-                label: AppStrings.tr(context, AppStrings.none),
+                label: l10n.none,
                 activeIconPath: null,
                 inactiveIconPath: null,
               ),
@@ -526,7 +533,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           color: isSelected ? const Color.fromRGBO(99, 112, 105, 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Color.fromRGBO(0, 0, 0, 0.1),
+            color: isSelected ? Theme.of(context).colorScheme.primary : const Color.fromRGBO(0, 0, 0, 0.1),
             width: 1.5,
           ),
         ),

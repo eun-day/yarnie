@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -12,18 +13,21 @@ import 'package:yarnie/theme/text_styles.dart';
 const _kGuideCardDismissedKey = 'home_guide_card_dismissed';
 
 /// 뜨개질 팁 데이터
-const _knittingTips = <({String emoji, String text})>[
-  (emoji: '🧶', text: '실 끝은 최소 10cm 남겨두면 마무리가 편해요'),
-  (emoji: '📏', text: '게이지 샘플을 꼭 떠보세요. 프로젝트 성공의 비결이에요!'),
-  (emoji: '✨', text: '한 코 한 코 천천히, 서두르지 마세요'),
-  (emoji: '🎨', text: '색 조합이 고민된다면 자연에서 영감을 받아보세요'),
-  (emoji: '🌡️', text: '뜨개질 텐션이 너무 세면 손목이 아플 수 있어요. 편안하게!'),
-  (emoji: '📱', text: 'Yarnie의 섹션 카운터로 복잡한 패턴도 쉽게 추적할 수 있어요'),
-  (emoji: '🎯', text: '패턴을 읽을 때는 한 줄씩 체크하면서 진행하세요'),
-  (emoji: '🌟', text: '휴식을 자주 가지세요. 피로하면 실수가 늘어납니다'),
-  (emoji: '📐', text: '바늘 사이즈가 맞는지 확인하세요. 작품의 완성도가 달라집니다'),
-  (emoji: '💚', text: '실수를 두려워하지 마세요. 풀고 다시 뜨는 것도 연습입니다'),
-];
+List<({String emoji, String text})> _getKnittingTips(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  return [
+    (emoji: '🧶', text: l10n.knittingTip1),
+    (emoji: '📏', text: l10n.knittingTip2),
+    (emoji: '✨', text: l10n.knittingTip3),
+    (emoji: '🎨', text: l10n.knittingTip4),
+    (emoji: '🌡️', text: l10n.knittingTip5),
+    (emoji: '📱', text: l10n.knittingTip6),
+    (emoji: '🎯', text: l10n.knittingTip7),
+    (emoji: '🌟', text: l10n.knittingTip8),
+    (emoji: '📐', text: l10n.knittingTip9),
+    (emoji: '💚', text: l10n.knittingTip10),
+  ];
+}
 
 class HomeRoot extends StatefulWidget {
   final ScrollController? controller;
@@ -191,16 +195,17 @@ class _WelcomeMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isActiveUser ? '환영합니다! 🦎' : '안녕하세요! 🦎',
+          isActiveUser ? l10n.welcomeUser : l10n.helloUser,
           style: AppTextStyles.titleH1.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 4),
         Text(
-          isActiveUser ? '오늘도 즐거운 뜨개질 하세요' : '뜨개질과 함께하는 즐거운 시간을 시작해보세요',
+          isActiveUser ? l10n.enjoyKnitting : l10n.startKnitting,
           style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
@@ -245,7 +250,7 @@ class _NewProjectCard extends StatelessWidget {
           const SizedBox(height: 16),
           // 타이틀
           Text(
-            '첫 프로젝트를 시작해보세요!',
+            AppLocalizations.of(context)!.startFirstProject,
             style: AppTextStyles.titleH2.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -254,7 +259,7 @@ class _NewProjectCard extends StatelessWidget {
           const SizedBox(height: 16),
           // 설명 텍스트
           Text(
-            '카멜레온과 함께 뜨개질 여정을 시작해요\n한 코 한 코가 모여 멋진 작품이 됩니다',
+            AppLocalizations.of(context)!.startJourneyWithChameleon,
             style: AppTextStyles.bodyM.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
@@ -265,9 +270,9 @@ class _NewProjectCard extends StatelessWidget {
             height: 36,
             child: FilledButton.icon(
               onPressed: onTap,
-              icon: Icon(Icons.bolt, size: 16),
+              icon: const Icon(Icons.bolt, size: 16),
               label: Text(
-                '새 프로젝트 시작하기',
+                AppLocalizations.of(context)!.createNewProject,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
@@ -339,28 +344,38 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
     }
   }
 
-  String _timeAgo(DateTime dateTime) {
+  String _timeAgo(BuildContext context, DateTime dateTime) {
     final now = DateTime.now().toUtc();
     final diff = now.difference(dateTime);
+    final l10n = AppLocalizations.of(context)!;
 
-    if (diff.inMinutes < 1) return '방금 전';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-    if (diff.inHours < 24) return '${diff.inHours}시간 전';
-    if (diff.inDays < 7) return '${diff.inDays}일 전';
-    if (diff.inDays < 30) return '${diff.inDays ~/ 7}주 전';
-    return '${diff.inDays ~/ 30}개월 전';
+    if (diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) {
+      return l10n.minutesAgo(diff.inMinutes);
+    }
+    if (diff.inHours < 24) {
+      return l10n.hoursAgo(diff.inHours);
+    }
+    if (diff.inDays < 7) {
+      return l10n.daysAgo(diff.inDays);
+    }
+    if (diff.inDays < 30) {
+      return l10n.weeksAgo(diff.inDays ~/ 7);
+    }
+    return l10n.monthsAgo(diff.inDays ~/ 30);
   }
 
   @override
   Widget build(BuildContext context) {
     final project = widget.project;
     final lastTime = widget.lastActivity;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '최근 작업 프로젝트',
+          l10n.recentProjects,
           style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
@@ -417,7 +432,7 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                     const SizedBox(height: 4),
                     // 상대 시간
                     Text(
-                      _timeAgo(lastTime),
+                      _timeAgo(context, lastTime),
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -449,7 +464,7 @@ class _RecentWorkProjectState extends State<_RecentWorkProject> {
                       letterSpacing: -0.15,
                     ),
                   ),
-                  child: Text('이어하기'),
+                  child: Text(l10n.continueWorking),
                 ),
               ),
             ],
@@ -471,6 +486,7 @@ class _UserGuideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -481,7 +497,7 @@ class _UserGuideCard extends StatelessWidget {
       child: Stack(
         children: [
           Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -489,12 +505,12 @@ class _UserGuideCard extends StatelessWidget {
                 Container(
                   width: 48,
                   height: 48,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDBEAFE),
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: Icon(
+                  child: const Icon(
                     Icons.info_outline,
                     size: 24,
                     color: Color(0xFF1447E6),
@@ -508,14 +524,14 @@ class _UserGuideCard extends StatelessWidget {
                     children: [
                       const SizedBox(height: 2),
                       Text(
-                        '처음 사용하시나요?',
+                        l10n.firstTimeUsing,
                         style: AppTextStyles.titleH3.copyWith(
                           color: const Color(0xFF1C398E),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Yarnie는 프로젝트를 Part로 나누고, 각 Part마다 카운터로 진행 상황을 추적해요.',
+                        l10n.yarnieBriefDesc,
                         style: AppTextStyles.bodyM.copyWith(
                           color: const Color(0xFF1447E6),
                           height: 22.75 / 14,
@@ -529,7 +545,7 @@ class _UserGuideCard extends StatelessWidget {
                           onPressed: onGuide,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF1447E6),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Color(0xFF8EC5FF),
                               width: 0.5,
                             ),
@@ -537,14 +553,14 @@ class _UserGuideCard extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            textStyle: TextStyle(
+                            textStyle: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               letterSpacing: -0.15,
                             ),
                           ),
-                          child: Text('사용 가이드 보기'),
+                          child: Text(l10n.viewUserGuide),
                         ),
                       ),
                     ],
@@ -589,11 +605,12 @@ class _KnittingTipSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tips = _getKnittingTips(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '뜨개질 팁',
+          AppLocalizations.of(context)!.knittingTips,
           style: AppTextStyles.titleH3.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
@@ -602,12 +619,12 @@ class _KnittingTipSection extends StatelessWidget {
           height: 97,
           child: PageView.builder(
             controller: pageController,
-            itemCount: _knittingTips.length,
+            itemCount: tips.length,
             onPageChanged: onPageChanged,
             itemBuilder: (context, index) {
-              final tip = _knittingTips[index];
+              final tip = tips[index];
               return Padding(
-                padding: EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.only(right: 12),
                 child: _KnittingTipCard(emoji: tip.emoji, text: tip.text),
               );
             },
@@ -615,7 +632,7 @@ class _KnittingTipSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         // Dot Indicator
-        _DotIndicator(count: _knittingTips.length, current: currentPage),
+        _DotIndicator(count: tips.length, current: currentPage),
       ],
     );
   }
@@ -688,9 +705,10 @@ class _CheeringMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFFFAF5FF).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
@@ -698,10 +716,10 @@ class _CheeringMessage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text('💝', style: TextStyle(fontSize: 36)),
+          const Text('💝', style: TextStyle(fontSize: 36)),
           const SizedBox(height: 24),
           Text(
-            '오늘도 뜨개질해볼까요?',
+            l10n.knittingToday,
             style: AppTextStyles.titleH3.copyWith(
               color: const Color(0xFF59168B),
             ),
@@ -709,7 +727,7 @@ class _CheeringMessage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            '작은 시작이 큰 작품을 만들어요\n지금 바로 첫 번째 코를 떠보세요!',
+            l10n.smallStart,
             style: AppTextStyles.bodyM.copyWith(color: const Color(0xFF8200DB)),
             textAlign: TextAlign.center,
           ),

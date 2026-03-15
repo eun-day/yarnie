@@ -21,7 +21,7 @@ class DatabaseException implements Exception {
 
   @override
   String toString() =>
-      'DatabaseException: $message${cause != null ? ' (원인: $cause)' : ''}';
+      'DatabaseException: $message${cause != null ? ' (Cause: $cause)' : ''}';
 }
 
 /// 외래키 제약 위반 예외
@@ -382,32 +382,32 @@ class AppDb extends _$AppDb {
     if (errorMessage.contains('unique') ||
         errorMessage.contains('duplicate') ||
         errorMessage.contains('already exists')) {
-      return UniqueConstraintException('$context: 중복된 값이 존재합니다', e);
+      return UniqueConstraintException('$context: Duplicate value exists', e);
     }
 
     // 외래키 제약 위반 감지
     if (errorMessage.contains('foreign key')) {
-      return ForeignKeyConstraintException('$context: 참조하는 레코드가 존재하지 않습니다', e);
+      return ForeignKeyConstraintException('$context: Referenced record does not exist', e);
     }
 
     // NOT NULL 제약 위반 감지
     if (errorMessage.contains('not null')) {
-      return DataIntegrityException('$context: 필수 값이 누락되었습니다', e);
+      return DataIntegrityException('$context: Required value is missing', e);
     }
 
     // 데이터 무결성 위반 감지 (Too many elements 등)
     if (errorMessage.contains('too many') ||
         errorMessage.contains('bad state')) {
-      return DataIntegrityException('$context: 데이터 무결성 위반', e);
+      return DataIntegrityException('$context: Data integrity violation', e);
     }
 
     // 일반 제약 위반 감지
     if (errorMessage.contains('constraint')) {
-      return DataIntegrityException('$context: 데이터 제약 조건을 위반했습니다', e);
+      return DataIntegrityException('$context: Data constraint violation', e);
     }
 
     // 기타 데이터베이스 에러
-    return DatabaseException('$context: 데이터베이스 오류가 발생했습니다', e);
+    return DatabaseException('$context: Database error occurred', e);
   }
 
   /// Part당 MainCounter가 1개만 존재하는지 검증
@@ -418,7 +418,7 @@ class AppDb extends _$AppDb {
 
     if (mainCounterList.length > 1) {
       throw DataIntegrityException(
-        'Part(ID: $partId)에 MainCounter가 ${mainCounterList.length}개 존재합니다. 1개만 허용됩니다.',
+        'Part(ID: $partId) has ${mainCounterList.length} MainCounters. Only 1 is allowed.',
       );
     }
   }
@@ -438,7 +438,7 @@ class AppDb extends _$AppDb {
 
     if (activeSessions.length > 1) {
       throw DataIntegrityException(
-        'Part(ID: $partId)에 활성 세션이 ${activeSessions.length}개 존재합니다. 1개만 허용됩니다.',
+        'Part(ID: $partId) has ${activeSessions.length} active sessions. Only 1 is allowed.',
       );
     }
   }
@@ -447,7 +447,7 @@ class AppDb extends _$AppDb {
   Future<void> _validatePartExists(int partId) async {
     final part = await getPart(partId);
     if (part == null) {
-      throw RecordNotFoundException('Part(ID: $partId)를 찾을 수 없습니다');
+      throw RecordNotFoundException('Part(ID: $partId) not found');
     }
   }
 
@@ -457,7 +457,7 @@ class AppDb extends _$AppDb {
       projects,
     )..where((t) => t.id.equals(projectId))).getSingleOrNull();
     if (project == null) {
-      throw RecordNotFoundException('Project(ID: $projectId)를 찾을 수 없습니다');
+      throw RecordNotFoundException('Project(ID: $projectId) not found');
     }
   }
 
@@ -467,7 +467,7 @@ class AppDb extends _$AppDb {
       sessions,
     )..where((t) => t.id.equals(sessionId))).getSingleOrNull();
     if (session == null) {
-      throw RecordNotFoundException('Session(ID: $sessionId)을 찾을 수 없습니다');
+      throw RecordNotFoundException('Session(ID: $sessionId) not found');
     }
   }
 
@@ -475,7 +475,7 @@ class AppDb extends _$AppDb {
   Future<void> _validateTagExists(int tagId) async {
     final tag = await getTag(tagId);
     if (tag == null) {
-      throw RecordNotFoundException('Tag(ID: $tagId)를 찾을 수 없습니다');
+      throw RecordNotFoundException('Tag(ID: $tagId) not found');
     }
   }
 
@@ -613,7 +613,7 @@ class AppDb extends _$AppDb {
     return transaction(() async {
       final active = await getActiveSession(projectId);
       if (active != null) {
-        throw StateError('활성 세션이 이미 존재합니다.');
+        throw StateError('Active session already exists.');
       }
 
       final nowMs = DateTime.now().millisecondsSinceEpoch;
@@ -641,7 +641,7 @@ class AppDb extends _$AppDb {
     return transaction(() async {
       final s = await getActiveSession(projectId);
       if (s == null || s.status != SessionStatus.running) {
-        throw StateError('RUNNING 세션이 없습니다.');
+        throw StateError('No RUNNING session found.');
       }
 
       final nowMs = DateTime.now().millisecondsSinceEpoch;
@@ -666,7 +666,7 @@ class AppDb extends _$AppDb {
     await transaction(() async {
       final s = await getActiveSession(projectId);
       if (s == null || s.status != SessionStatus.paused) {
-        throw StateError('PAUSED 세션이 없습니다.');
+        throw StateError('No PAUSED session found.');
       }
 
       final nowMs = DateTime.now().millisecondsSinceEpoch;
@@ -689,7 +689,7 @@ class AppDb extends _$AppDb {
   }) async {
     await transaction(() async {
       final s = await getActiveSession(projectId);
-      if (s == null) throw StateError('활성 세션이 없습니다.');
+      if (s == null) throw StateError('No active session found.');
 
       final nowMs = DateTime.now().millisecondsSinceEpoch;
       int newElapsed = s.elapsedMs;
@@ -880,7 +880,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'Part 생성');
+      throw _handleDatabaseException(e, 'Create Part');
     }
   }
 
@@ -925,7 +925,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'Part 삭제');
+      throw _handleDatabaseException(e, 'Delete Part');
     }
   }
 
@@ -984,7 +984,7 @@ class AppDb extends _$AppDb {
       final mainCounter = await getMainCounter(partId);
       if (mainCounter == null) {
         throw RecordNotFoundException(
-          'Part(ID: $partId)의 MainCounter를 찾을 수 없습니다',
+          'MainCounter not found for Part(ID: $partId)',
         );
       }
 
@@ -1000,7 +1000,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'MainCounter 업데이트');
+      throw _handleDatabaseException(e, 'Update MainCounter');
     }
   }
 
@@ -1021,7 +1021,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow;
     } catch (e) {
-      throw _handleDatabaseException(e, 'MainCounter 목표 단수 업데이트');
+      throw _handleDatabaseException(e, 'Update MainCounter Target');
     }
   }
 
@@ -1071,7 +1071,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'StitchCounter 생성');
+      throw _handleDatabaseException(e, 'Create StitchCounter');
     }
   }
 
@@ -1178,7 +1178,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'SectionCounter 생성');
+      throw _handleDatabaseException(e, 'Create SectionCounter');
     }
   }
 
@@ -1186,7 +1186,7 @@ class AppDb extends _$AppDb {
   Future<Part> _validatePartExistsReturnPart(int partId) async {
     final part = await getPart(partId);
     if (part == null) {
-      throw RecordNotFoundException('Part(ID: $partId)를 찾을 수 없습니다');
+      throw RecordNotFoundException('Part(ID: $partId) not found');
     }
     return part;
   }
@@ -1318,7 +1318,7 @@ class AppDb extends _$AppDb {
             ord: i,
             startRow: startRow + (i * rowsPerRepeat),
             rowsTotal: rowsPerRepeat,
-            label: Value('${i + 1}회차'),
+            label: Value('Repeat ${i + 1}'),
           ),
         );
       }
@@ -1353,7 +1353,7 @@ class AppDb extends _$AppDb {
       final totalCount = spec['totalCount'] as int? ?? 0;
       final amount = spec['amount'] as int? ?? 0;
 
-      final label = amount > 0 ? '+$amount코' : '$amount코'; // +1코, -1코
+      final label = amount > 0 ? '+$amount sts' : '$amount sts'; // +1 sts, -1 sts
 
       for (var i = 0; i < totalCount; i++) {
         await into(sectionRuns).insert(
@@ -1460,7 +1460,7 @@ class AppDb extends _$AppDb {
         // 기존 세션 확인
         final existing = await getSession(partId);
         if (existing != null) {
-          throw DataIntegrityException('Part(ID: $partId)에 이미 세션이 존재합니다');
+          throw DataIntegrityException('Session already exists for Part(ID: $partId)');
         }
 
         final now = DateTime.now().toUtc();
@@ -1490,7 +1490,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, '세션 시작');
+      throw _handleDatabaseException(e, 'Start Session');
     }
   }
 
@@ -1511,13 +1511,13 @@ class AppDb extends _$AppDb {
         )..where((t) => t.id.equals(sessionId))).getSingleOrNull();
 
         if (session == null) {
-          throw RecordNotFoundException('Session(ID: $sessionId)을 찾을 수 없습니다');
+          throw RecordNotFoundException('Session(ID: $sessionId) not found');
         }
 
         // 세션 상태 검증
         if (session.status != SessionStatus2.running) {
           throw DataIntegrityException(
-            'Session(ID: $sessionId)이 실행 중이 아닙니다 (현재 상태: ${session.status})',
+            'Session(ID: $sessionId) is not running (Current status: ${session.status})',
           );
         }
 
@@ -1550,7 +1550,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, '세션 일시정지');
+      throw _handleDatabaseException(e, 'Pause Session');
     }
   }
 
@@ -1573,13 +1573,13 @@ class AppDb extends _$AppDb {
         )..where((t) => t.id.equals(sessionId))).getSingleOrNull();
 
         if (session == null) {
-          throw RecordNotFoundException('Session(ID: $sessionId)을 찾을 수 없습니다');
+          throw RecordNotFoundException('Session(ID: $sessionId) not found');
         }
 
         // 세션 상태 검증
         if (session.status != SessionStatus2.paused) {
           throw DataIntegrityException(
-            'Session(ID: $sessionId)이 일시정지 상태가 아닙니다 (현재 상태: ${session.status})',
+            'Session(ID: $sessionId) is not paused (Current status: ${session.status})',
           );
         }
 
@@ -1609,7 +1609,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, '세션 재시작');
+      throw _handleDatabaseException(e, 'Resume Session');
     }
   }
 
@@ -1862,7 +1862,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'PartNote 생성');
+      throw _handleDatabaseException(e, 'Create PartNote');
     }
   }
 
@@ -1983,7 +1983,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'Tag 생성');
+      throw _handleDatabaseException(e, 'Create Tag');
     }
   }
 
@@ -2037,7 +2037,7 @@ class AppDb extends _$AppDb {
     } on DatabaseException {
       rethrow; // 이미 DatabaseException이면 그대로 throw
     } catch (e) {
-      throw _handleDatabaseException(e, 'Tag 삭제');
+      throw _handleDatabaseException(e, 'Delete Tag');
     }
   }
 

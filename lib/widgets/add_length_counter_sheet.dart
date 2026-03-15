@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 class AddLengthCounterSheet extends ConsumerStatefulWidget {
   final int partId;
@@ -18,7 +19,8 @@ class AddLengthCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddLengthCounterSheet> createState() => _AddLengthCounterSheetState();
+  ConsumerState<AddLengthCounterSheet> createState() =>
+      _AddLengthCounterSheetState();
 }
 
 class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
@@ -34,15 +36,21 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     final targetLength = double.tryParse(_targetLengthController.text);
     final rowHeight = double.tryParse(_rowHeightController.text);
     // targetLength가 rowHeight보다 커야 의미가 있음
-    if (targetLength == null || rowHeight == null || rowHeight <= 0 || targetLength <= rowHeight) return null;
+    if (targetLength == null ||
+        rowHeight == null ||
+        rowHeight <= 0 ||
+        targetLength <= rowHeight)
+      return null;
     return (targetLength / rowHeight).ceil();
   }
 
   String? get _rowHeightError {
     final targetLength = double.tryParse(_targetLengthController.text);
     final rowHeight = double.tryParse(_rowHeightController.text);
-    if (targetLength != null && rowHeight != null && targetLength <= rowHeight) {
-      return '1단의 높이는 목표 길이보다 작아야 합니다.';
+    if (targetLength != null &&
+        rowHeight != null &&
+        targetLength <= rowHeight) {
+      return AppLocalizations.of(context)!.rowHeightError;
     }
     return null;
   }
@@ -50,17 +58,36 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final rows = _estimatedRows;
-    
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           rows != null && rows > 0;
+
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        rows != null &&
+        rows > 0;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // if label was default, update it if locale changed (only on first init ideally)
   }
 
   @override
   void initState() {
     super.initState();
-    
-    String label = '길이 측정';
+
+    // We can't use AppLocalizations here as context is not fully ready for it yet in some cases,
+    // but in initState it's usually okay if it's already in the tree.
+    // However, to be safe, we might want to handle default label carefully.
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    String label = l10n.lengthMeasurement;
     String startRow = widget.initialStartRow.toString();
     String targetLength = '';
     String rowHeight = '';
@@ -84,6 +111,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     _startRowController.addListener(_updateState);
     _targetLengthController.addListener(_onInputChanged);
     _rowHeightController.addListener(_onInputChanged);
+    _initialized = true;
   }
 
   void _onInputChanged() {
@@ -108,21 +136,24 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _targetLengthController.removeListener(_onInputChanged);
-    _rowHeightController.removeListener(_onInputChanged);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _targetLengthController.dispose();
-    _rowHeightController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _targetLengthController.removeListener(_onInputChanged);
+      _rowHeightController.removeListener(_onInputChanged);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _targetLengthController.dispose();
+      _rowHeightController.dispose();
+    }
     _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _handleSave() async {
     if (!_isValid) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final name = _labelController.text.trim();
     final startRow = int.parse(_startRowController.text);
@@ -143,7 +174,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
       'targetLength': targetLength,
       'gaugeRowsPer10cm': gauge,
       'rowHeight': rowHeight,
-      'targetInfo': '목표 ${targetLength}cm',
+      'targetInfo': l10n.targetInfoLength(targetLength.toString()),
     };
 
     try {
@@ -163,19 +194,23 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
+    final l10n = AppLocalizations.of(context)!;
     final estimatedRows = _estimatedRows;
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
         ),
@@ -194,11 +229,13 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                 // Drag Handle
                 Center(
                   child: Container(
-                    margin: EdgeInsets.only(top: 16, bottom: 24),
+                    margin: const EdgeInsets.only(top: 16, bottom: 24),
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -206,12 +243,14 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '길이 측정 카운터 수정' : '길이 측정 카운터 추가',
+                        _isEditing
+                            ? l10n.editLengthCounterTitle
+                            : l10n.addLengthCounterTitle,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -221,7 +260,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '목표 길이까지 필요한 단수를 추적합니다',
+                        l10n.lengthCounterDesc,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -236,14 +275,14 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Form Content
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       NumberInputGroup(
-                        label: '시작 단',
+                        label: l10n.startStitch,
                         controller: _startRowController,
                         hintText: '19',
                         min: 1,
@@ -252,38 +291,48 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                       const SizedBox(height: 16),
 
                       _buildDecimalInputGroup(
-                        label: '목표 길이 (cm)',
+                        label: l10n.targetLengthCm,
                         controller: _targetLengthController,
-                        hintText: '예: 25.0',
+                        hintText: l10n.targetLengthHint,
                         min: 1.0,
                       ),
                       const SizedBox(height: 16),
 
                       // Row Height (Decimal allowed)
                       _buildDecimalInputGroup(
-                        label: '1단의 높이 (cm)',
+                        label: l10n.rowHeightCm,
                         controller: _rowHeightController,
-                        hintText: '예: 0.33',
+                        hintText: l10n.rowHeightHint,
                         min: 0.1,
-                        helperText: _rowHeightError != null 
-                            ? _rowHeightError! 
-                            : '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요',
-                        helperTextColor: _rowHeightError != null ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                        helperText: _rowHeightError != null
+                            ? _rowHeightError!
+                            : l10n.rowHeightDesc,
+                        helperTextColor: _rowHeightError != null
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                         action: GestureDetector(
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('게이지 입력 기능 준비 중')),
+                              SnackBar(
+                                content: Text(l10n.gaugeInputComingSoon),
+                              ),
                             );
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
-                              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline,
+                                width: 0.5,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              '게이지 입력하러 가기',
+                              l10n.goToGaugeInput,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -297,29 +346,37 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                         const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '예상 필요 단수',
+                                l10n.expectedRows,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                   letterSpacing: -0.15,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${estimatedRows}단',
+                                l10n.estimatedRowsDisplay(
+                                  estimatedRows.toString(),
+                                ),
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   letterSpacing: 0.07,
                                 ),
                               ),
@@ -335,7 +392,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                 // Footer Buttons
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       GestureDetector(
@@ -344,11 +401,15 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : const Color(
+                                    0xFF6FB96F,
+                                  ).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing ? l10n.save : l10n.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -366,11 +427,14 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            l10n.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -393,11 +457,12 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   }
 
   Widget _buildLabelField() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          l10n.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -408,14 +473,17 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
         const SizedBox(height: 8),
         Container(
           height: 36,
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: const Color(0xFFF3F3F5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -425,8 +493,11 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          l10n.labelHint,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -471,7 +542,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
               onTap: () {
                 final current = double.tryParse(controller.text) ?? 0.0;
                 final next = (current - 0.1).clamp(min, 9999.0); // Use min here
-                controller.text = double.parse(next.toStringAsFixed(2)).toString(); 
+                controller.text = double.parse(
+                  next.toStringAsFixed(2),
+                ).toString();
                 _onInputChanged();
               },
             ),
@@ -487,12 +560,19 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hintText,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -506,7 +586,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
               onTap: () {
                 final current = double.tryParse(controller.text) ?? 0.0;
                 final next = current + 0.1;
-                controller.text = double.parse(next.toStringAsFixed(2)).toString();
+                controller.text = double.parse(
+                  next.toStringAsFixed(2),
+                ).toString();
                 _onInputChanged();
               },
             ),
@@ -517,8 +599,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
           Text(
             helperText,
             style: TextStyle(
-              fontSize: 12, 
-              color: helperTextColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              color:
+                  helperTextColor ??
+                  Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -531,10 +615,7 @@ class _StepButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _StepButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _StepButton({required this.icon, required this.onTap});
 
   @override
   State<_StepButton> createState() => _StepButtonState();
@@ -559,10 +640,14 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
+          color: _isPressed
+              ? const Color(0xFFC0D2A4)
+              : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.outline,
-            width: 0.64
+            color: _isPressed
+                ? const Color(0xFFC0D2A4)
+                : Theme.of(context).colorScheme.outline,
+            width: 0.64,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -570,7 +655,9 @@ class _StepButtonState extends State<_StepButton> {
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
+          color: _isPressed
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

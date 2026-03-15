@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 
@@ -52,7 +53,7 @@ class LengthCounterCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                isCompleted ? '달성 완료 ✓' : '남은 길이',
+                isCompleted ? AppLocalizations.of(context)!.achieved : AppLocalizations.of(context)!.remainingLength,
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -91,7 +92,7 @@ class LengthCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '$startRow~${endRow}행',
+        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

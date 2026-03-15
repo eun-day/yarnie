@@ -12,11 +12,11 @@ String ymdHm(DateTime dt) {
 }
 
 String mdHm(DateTime dt) {
-  // 예: 11월 10일 오후 08:00
+  // 예: 2025년 11월 10일 오후 08:00
   final localDt = dt.toLocal();
   final amPm = localDt.hour < 12 ? '오전' : '오후';
   final hour = localDt.hour == 0 ? 12 : (localDt.hour > 12 ? localDt.hour - 12 : localDt.hour);
-  return '${localDt.month}월 ${localDt.day}일 $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
+  return '${localDt.year}년 ${localDt.month}월 ${localDt.day}일 $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
 }
 
 extension MilliSecondsExt on int {

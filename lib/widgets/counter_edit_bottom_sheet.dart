@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
 
 class CounterEditBottomSheet extends StatefulWidget {
@@ -56,7 +57,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '메인카운트 값 편집',
+                  AppLocalizations.of(context)!.editMainCount,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -66,7 +67,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  '현재 카운트 값을 직접 수정하거나 초기화할 수 있습니다',
+                  AppLocalizations.of(context)!.editMainCountDesc,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
@@ -87,7 +88,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NumberInputGroup(
-                  label: '현재 카운트',
+                  label: AppLocalizations.of(context)!.currentCount,
                   controller: _controller,
                   textStyle: TextStyle(
                     fontSize: 24,
@@ -126,9 +127,9 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.refresh, size: 12, color: Theme.of(context).colorScheme.onSurface),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
-                                '1로 초기화',
+                                AppLocalizations.of(context)!.resetToOne,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -157,7 +158,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            '저장',
+                            AppLocalizations.of(context)!.save,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

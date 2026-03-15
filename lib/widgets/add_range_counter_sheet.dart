@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -18,7 +19,8 @@ class AddRangeCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddRangeCounterSheet> createState() => _AddRangeCounterSheetState();
+  ConsumerState<AddRangeCounterSheet> createState() =>
+      _AddRangeCounterSheetState();
 }
 
 class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
@@ -31,16 +33,24 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final totalRows = int.tryParse(_totalRowsController.text);
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           totalRows != null && totalRows > 0;
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        totalRows != null &&
+        totalRows > 0;
   }
 
   @override
   void initState() {
     super.initState();
-    
-    String label = '범위 카운터';
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
+    String label = AppLocalizations.of(context)!.rangeCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String totalRows = '';
 
@@ -60,6 +70,8 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
     _labelController.addListener(_updateState);
     _startRowController.addListener(_updateState);
     _totalRowsController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -68,13 +80,15 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _totalRowsController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _totalRowsController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _totalRowsController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _totalRowsController.dispose();
+    }
     super.dispose();
   }
 
@@ -92,7 +106,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       'startRow': startRow,
       'endRow': endRow,
       'rowsTotal': totalRows, // Renamed from totalRows to match DB
-      'targetInfo': '$startRow~$endRow행', 
+      'targetInfo': '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
     };
 
     try {
@@ -112,13 +126,19 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_isEditing ? '수정' : '생성'} 실패: $e')));
+        final message = _isEditing
+            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
+            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -144,7 +164,9 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -157,7 +179,9 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? '범위 카운터 수정' : '범위 카운터 추가',
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editRangeCounter
+                            : AppLocalizations.of(context)!.addRangeCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -167,7 +191,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '특정 행 범위를 추적하는 카운터입니다.', // Simplified text
+                        AppLocalizations.of(context)!.rangeCounterDescSimple,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -188,10 +212,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                       // Label Field
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       // Start Row Field
                       NumberInputGroup(
-                        label: '시작 행',
+                        label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
                         hintText: '19',
                         onChanged: _updateState,
@@ -200,10 +224,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
 
                       // Total Rows Field
                       NumberInputGroup(
-                        label: '총 행 수',
+                        label: AppLocalizations.of(context)!.totalRows,
                         controller: _totalRowsController,
-                        hintText: '예: 50',
-                        helperText: '시작 행부터 몇 행 동안 추적할지 입력하세요.',
+                        hintText: AppLocalizations.of(context)!.rowsHint,
+                        helperText: AppLocalizations.of(context)!.rowsHelper,
                         onChanged: _updateState,
                       ),
                     ],
@@ -223,11 +247,15 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? '저장' : '추가',
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -245,11 +273,14 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -276,7 +307,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -294,7 +325,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -304,8 +338,11 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
         ),
         const SizedBox(height: 4),
         Text(
-          '어떤 카운터인지 알아보기 쉽게 라벨을 입력해보세요',
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          AppLocalizations.of(context)!.labelHint,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

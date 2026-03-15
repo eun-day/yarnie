@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CounterSettingsButton extends StatelessWidget {
@@ -53,12 +54,12 @@ class CounterSettingsButton extends StatelessWidget {
           context: context,
           value: 'edit',
           icon: Icons.edit_outlined,
-          text: '수정',
+          text: AppLocalizations.of(context)!.edit,
         ),
         _buildMenuItem(
           context: context,
           value: 'delete',
-          text: '삭제',
+          text: AppLocalizations.of(context)!.delete,
           textColor: const Color(0xFFD4183D),
           isDestructive: true,
         ),

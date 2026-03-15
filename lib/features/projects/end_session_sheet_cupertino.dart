@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/features/projects/end_session_result.dart';
 import 'package:yarnie/widget/labelpill.dart' show LabelPill;
@@ -65,7 +66,7 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                 Align(
                   alignment: Alignment.center,
                   child: LabelPill(
-                    text: _label ?? '미분류',
+                    text: _label ?? AppLocalizations.of(context)!.unclassified,
                     isIOS: true,
                     onTap: () async {
                       final picked = await widget.onPickLabel(_label);
@@ -76,20 +77,20 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '작업 메모',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  AppLocalizations.of(context)!.sessionMemo,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
                 CupertinoTextField(
                   controller: _memoCtl,
                   focusNode: _focus,
                   maxLines: 4,
-                  placeholder: '메모를 입력하세요',
+                  placeholder: AppLocalizations.of(context)!.enterMemo,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '작업 시간 ${fmt(widget.segment)}을 저장하시겠습니까?',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.saveSessionConfirm(fmt(widget.segment)),
+                  style: const TextStyle(
                     fontSize: 14,
                     color: CupertinoColors.label,
                   ),
@@ -98,12 +99,12 @@ class _EndSessionSheetCupertinoState extends State<EndSessionSheetCupertino> {
                 Row(
                   children: [
                     CupertinoButton(
-                      child: Text('취소'),
+                      child: Text(AppLocalizations.of(context)!.cancel),
                       onPressed: () => _close(false),
                     ),
                     const Spacer(),
                     CupertinoButton.filled(
-                      child: Text('저장'),
+                      child: Text(AppLocalizations.of(context)!.save),
                       onPressed: () => _close(true),
                     ),
                   ],

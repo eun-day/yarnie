@@ -1,0 +1,344 @@
+Analyzing app...
+
+   info • Don't use 'BuildContext's across async gaps • lib/common/session_dialog_helper.dart:85:43 • use_build_context_synchronously
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:29:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:38:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:47:3 • use_super_parameters
+   info • Parameters ''message' and 'cause'' could be super parameters • lib/db/app_db.dart:56:3 • use_super_parameters
+   info • Parameter 'connection' could be a super parameter • lib/db/app_db.dart:361:9 • use_super_parameters
+   info • Angle brackets will be interpreted as HTML • lib/db/app_db.dart:1784:15 • unintended_html_in_doc_comment
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/home/home_root.dart:4:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:17:16 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:198:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:253:13 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:262:13 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:275:17 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:350:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:372:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:489:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:613:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/home_root.dart:708:18 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/home/user_guide_screen.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:98:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:161:13 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:170:13 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:189:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:229:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:315:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:437:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:541:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:803:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:912:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:986:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/home/user_guide_screen.dart:1521:29 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/my/my_root.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:32:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:39:24 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:43:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:44:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:47:48 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:55:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:56:44 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:56:79 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:67:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:68:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:85:24 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:89:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:90:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:102:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:103:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:115:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/my_root.dart:116:31 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/my/widgets/app_info_sheet.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:40:21 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:65:17 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:98:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:105:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:124:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:131:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:137:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/app_info_sheet.dart:143:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/my/widgets/preferences_sheet.dart:153:18 • undefined_identifier
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/features/my/widgets/preferences_sheet.dart:362:13 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/features/my/widgets/preferences_sheet.dart:403:13 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeTrackColor instead. This feature was deprecated after v3.24.0-0.2.pre • lib/features/my/widgets/setting_item.dart:80:17 • deprecated_member_use
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/projects/end_session_sheet_cupertino.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:69:37 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:80:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:88:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:92:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:102:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_cupertino.dart:107:35 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/projects/end_session_sheet_material.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_material.dart:62:33 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_material.dart:77:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_material.dart:82:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_material.dart:87:76 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/end_session_sheet_material.dart:91:31 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/projects/projects_root.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:71:18 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:73:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:88:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:271:22 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:315:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:327:62 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:339:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:345:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:351:28 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:384:53 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • lib/features/projects/projects_root.dart:475:41 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/features/projects/projects_root.dart:475:45 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:519:76 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:527:78 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:599:12 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/projects/projects_root.dart:706:37 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:820:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:832:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:861:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:867:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:875:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:901:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/projects/projects_root.dart:911:25 • undefined_identifier
+   info • Unnecessary use of multiple underscores • lib/features/trash/trash_root.dart:84:34 • unnecessary_underscores
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:128:57 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:169:26 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:183:26 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:218:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:230:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:252:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:277:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:299:36 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:305:36 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:327:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:339:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:361:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:386:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:408:36 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/trash_root.dart:414:36 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/features/trash/widgets/empty_trash_view.dart:2:8 • uri_does_not_exist
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/trash/widgets/empty_trash_view.dart:17:74 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/features/trash/widgets/empty_trash_view.dart:29:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/features/trash/widgets/empty_trash_view.dart:40:11 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/main.dart:5:8 • uri_does_not_exist
+  error • The values in a const list literal must be constants • lib/main.dart:57:9 • non_constant_list_element
+  error • Undefined name 'AppLocalizations' • lib/main.dart:57:9 • undefined_identifier
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/model/tag_color_preset.dart:32:54 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/providers/counter_provider.dart:169:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/providers/counter_provider.dart:195:7 • avoid_print
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/root/root_scaffold.dart:4:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/root/root_scaffold.dart:69:43 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/root/root_scaffold.dart:93:117 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/root/root_scaffold.dart:94:121 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/root/root_scaffold.dart:95:120 • undefined_identifier
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:54:7 • deprecated_member_use
+   info • 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:55:7 • deprecated_member_use
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:63:44 • deprecated_member_use
+   info • 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre • lib/theme/app_theme.dart:71:38 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • lib/widget/labelpill.dart:5:9 • use_key_in_widget_constructors
+   info • 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:55:57 • deprecated_member_use
+   info • 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:56:57 • deprecated_member_use
+   info • 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:57:57 • deprecated_member_use
+   info • 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:65:62 • deprecated_member_use
+   info • 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:66:62 • deprecated_member_use
+   info • 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round().clamp(0, 255) • lib/widget/labelpill.dart:67:62 • deprecated_member_use
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/add_interval_counter_sheet.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:57:20 • undefined_identifier
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/add_interval_counter_sheet.dart:134:58 • deprecated_member_use
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_interval_counter_sheet.dart:143:24 • unnecessary_brace_in_string_interps
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:164:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:165:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:211:38 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:211:90 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:221:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:243:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:251:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:253:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:259:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:261:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:262:37 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:275:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:297:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:325:42 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:325:79 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:347:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:374:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_interval_counter_sheet.dart:402:11 • undefined_identifier
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_length_counter_sheet.dart:318:34 • unnecessary_brace_in_string_interps
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/add_range_counter_sheet.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:44:20 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:96:41 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:117:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:118:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:164:38 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:164:87 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:174:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:198:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:207:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:209:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:210:37 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:234:42 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:234:79 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:256:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:283:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_range_counter_sheet.dart:311:11 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/add_repeat_counter_sheet.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:47:20 • undefined_identifier
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_repeat_counter_sheet.dart:106:24 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_repeat_counter_sheet.dart:106:41 • unnecessary_brace_in_string_interps
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:127:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:128:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:174:38 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:174:88 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:184:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:208:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:217:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:226:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:228:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:229:37 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:253:42 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:253:79 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:275:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:302:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_repeat_counter_sheet.dart:330:11 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/add_shaping_counter_sheet.dart:3:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:51:20 • undefined_identifier
+   info • Unnecessary braces in a string interpolation • lib/widgets/add_shaping_counter_sheet.dart:117:24 • unnecessary_brace_in_string_interps
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:117:76 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:138:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:139:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:185:38 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:185:89 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:195:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:217:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:226:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:228:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:235:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:237:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:244:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:246:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:247:37 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:273:42 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:273:79 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:295:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:322:11 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/add_shaping_counter_sheet.dart:350:11 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/counter_settings_button.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/counter_settings_button.dart:57:17 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/counter_settings_button.dart:62:17 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/interval_counter_card.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/interval_counter_card.dart:45:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/interval_counter_card.dart:66:19 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/length_counter_card.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/length_counter_card.dart:56:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/length_counter_card.dart:56:72 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/length_counter_card.dart:95:39 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/range_counter_card.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/range_counter_card.dart:63:28 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/range_counter_card.dart:74:39 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/repeat_counter_card.dart:2:8 • uri_does_not_exist
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/repeat_counter_card.dart:69:20 • unnecessary_brace_in_string_interps
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/repeat_counter_card.dart:81:13 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/repeat_counter_card.dart:91:19 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/shaping_counter_card.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/shaping_counter_card.dart:41:18 • undefined_identifier
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:91:14 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/widgets/counter_card/shaping_counter_card.dart:91:60 • unnecessary_brace_in_string_interps
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_card/stitch_counter_card.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:81:21 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:159:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:177:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:301:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:312:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:325:22 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:327:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:350:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_card/stitch_counter_card.dart:372:19 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/counter_edit_bottom_sheet.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_edit_bottom_sheet.dart:60:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_edit_bottom_sheet.dart:70:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_edit_bottom_sheet.dart:91:26 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_edit_bottom_sheet.dart:132:33 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/counter_edit_bottom_sheet.dart:161:29 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/edit_stitch_counter_sheet.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:78:75 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:123:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:133:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:157:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:166:32 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:193:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:215:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/edit_stitch_counter_sheet.dart:242:11 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/part_memo_sheet.dart:2:8 • uri_does_not_exist
+   info • Don't use 'BuildContext's across async gaps • lib/widgets/part_memo_sheet.dart:56:19 • use_build_context_synchronously
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:97:21 • undefined_identifier
+  error • Methods can't be invoked in constant expressions • lib/widgets/part_memo_sheet.dart:101:30 • const_eval_method_invocation
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:107:21 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:135:35 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:159:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:192:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:328:40 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:328:78 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:340:24 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:353:24 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:411:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:452:43 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/part_memo_sheet.dart:477:33 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/project_delete_dialog.dart:2:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_delete_dialog.dart:48:15 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_delete_dialog.dart:79:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_delete_dialog.dart:90:19 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_delete_dialog.dart:121:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_delete_dialog.dart:146:23 • undefined_identifier
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/project_list_tile.dart:3:8 • uri_does_not_exist
+   info • Unnecessary use of multiple underscores • lib/widgets/project_list_tile.dart:55:45 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/widgets/project_list_tile.dart:55:49 • unnecessary_underscores
+  error • Undefined name 'AppLocalizations' • lib/widgets/project_list_tile.dart:154:12 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/tag_chip.dart:44:39 • deprecated_member_use
+  error • Target of URI doesn't exist: 'package:flutter_gen/gen_l10n/app_localizations.dart' • lib/widgets/tag_selection_sheet.dart:4:8 • uri_does_not_exist
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:80:25 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:87:29 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:102:31 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:161:26 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:169:42 • undefined_identifier
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:207:53 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:211:39 • undefined_identifier
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:237:61 • deprecated_member_use
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:243:23 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:253:36 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:290:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:298:27 • undefined_identifier
+  error • Undefined name 'AppLocalizations' • lib/widgets/tag_selection_sheet.dart:304:27 • undefined_identifier
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/widgets/tag_selection_sheet.dart:310:43 • deprecated_member_use
+   info • The import of 'dart:async' is unnecessary because all of the used elements are also provided by the import of 'package:flutter_test/flutter_test.dart' • test/counter_feature/counter_debouncing_test.dart:1:8 • unnecessary_import
+warning • Unused import: 'package:yarnie/model/counter_data.dart' • test/counter_feature/counter_debouncing_test.dart:5:8 • unused_import
+   info • Don't invoke 'print' in production code • test/counter_feature/counter_performance_optimization_test.dart:384:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/counter_feature/counter_performance_optimization_test.dart:385:9 • avoid_print
+warning • Unused import: 'dart:io' • test/counter_feature/counter_platform_ui_test.dart:1:8 • unused_import
+   info • The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' • test/counter_feature/counter_platform_ui_test.dart:2:8 • unnecessary_import
+   info • The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/cupertino.dart' • test/counter_feature/counter_platform_ui_test.dart:4:8 • unnecessary_import
+warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • test/counter_feature/counter_platform_ui_test.dart:6:8 • unused_import
+warning • The value of the local variable 'changedValue' isn't used • test/counter_feature/counter_platform_ui_test.dart:65:11 • unused_local_variable
+warning • The value of the local variable 'changedValue' isn't used • test/counter_feature/counter_platform_ui_test.dart:85:11 • unused_local_variable
+warning • Unused import: 'package:drift/drift.dart' • test/db/counter_test.dart:2:8 • unused_import
+warning • Unused import: 'package:drift/drift.dart' • test/db/integration_test.dart:2:8 • unused_import
+warning • The value of the local variable 'sessionId' isn't used • test/db/integration_test.dart:284:13 • unused_local_variable
+warning • Unused import: 'package:drift/drift.dart' • test/db/part_test.dart:2:8 • unused_import
+warning • Unused import: 'package:drift/drift.dart' • test/db/session_test.dart:2:8 • unused_import
+warning • Dead code • test/db/session_test.dart:141:9 • dead_code
+warning • Unused import: 'helpers/test_helpers.dart' • test/part_note_test.dart:2:8 • unused_import
+   info • Don't invoke 'print' in production code • test/session_management/full_lifecycle_integration_test.dart:367:7 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/full_lifecycle_integration_test.dart:368:7 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:41:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:55:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:96:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:97:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:127:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:128:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:211:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:268:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:309:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:331:13 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:371:9 • avoid_print
+   info • Don't invoke 'print' in production code • test/session_management/large_data_performance_test.dart:373:11 • avoid_print
+
+340 issues found. (ran in 2.4s)

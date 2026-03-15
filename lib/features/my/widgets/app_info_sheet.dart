@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/theme/text_styles.dart';
 
@@ -36,7 +37,7 @@ class AppInfoSheet extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '앱 정보',
+                    AppLocalizations.of(context)!.appInfo,
                     style: AppTextStyles.titleH2.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -61,7 +62,7 @@ class AppInfoSheet extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '버전 1.0.0',
+                AppLocalizations.of(context)!.appVersion,
                 style: AppTextStyles.bodyM.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -94,14 +95,14 @@ class AppInfoSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '카멜레온 이야기',
+                        AppLocalizations.of(context)!.chameleonStory,
                         style: AppTextStyles.bodyM.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '우리의 카멜레온 친구는 색을 변환하는 능력이 없어요. 하지만 뜨개질로 다양한 색과 무늬의 옷을 만들어 입으며 매일 새로운 모습으로 행복하게 살아가고 있답니다. 여러분도 카멜레온처럼 뜨개질과 함께 즐거운 시간을 보내세요!',
+                        AppLocalizations.of(context)!.chameleonStoryDesc,
                         style: AppTextStyles.bodyM.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.6, // 22.75 / 14
@@ -120,26 +121,26 @@ class AppInfoSheet extends StatelessWidget {
                   children: [
                     _buildButton(
                       context,
-                      text: '피드백 보내기',
+                      text: AppLocalizations.of(context)!.sendFeedback,
                       iconPath: 'assets/icons/feedback.svg',
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
-                      text: '개인정보 처리방침',
+                      text: AppLocalizations.of(context)!.privacyPolicy,
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
-                      text: '서비스 이용약관',
+                      text: AppLocalizations.of(context)!.termsOfService,
                       onTap: () {},
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
-                      text: '오픈소스 라이선스',
+                      text: AppLocalizations.of(context)!.openSourceLicense,
                       onTap: () {},
                     ),
                   ],

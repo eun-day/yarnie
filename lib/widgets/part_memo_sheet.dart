@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/common/time_helper.dart';
@@ -93,7 +94,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${widget.partName} - 메모',
+                    AppLocalizations.of(context)!.partMemo(widget.partName),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -103,7 +104,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '파트에 대한 메모를 추가하거나 수정하세요.',
+                    AppLocalizations.of(context)!.partMemoDesc,
                     style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -131,7 +132,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                       maxLines: null,
                       style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
-                        hintText: '새 메모를 입력하세요...',
+                        hintText: AppLocalizations.of(context)!.newMemoHint,
                         hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         border: InputBorder.none,
                         isDense: true,
@@ -153,9 +154,9 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            '메모 추가',
+                            AppLocalizations.of(context)!.addMemo,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -175,6 +176,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
             // Memo List Section
             Flexible(
+              fit: FlexFit.loose,
               child: StreamBuilder<List<PartNote>>(
                 stream: appDb.watchPartNotes(widget.partId),
                 builder: (context, snapshot) {
@@ -185,12 +187,11 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                   final notes = snapshot.data!;
                   if (notes.isEmpty) {
                     return Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: Center(
-                        child: Text(
-                          '등록된 메모가 없습니다.',
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        AppLocalizations.of(context)!.noMemos,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     );
                   }
@@ -324,7 +325,7 @@ class _MemoActionSheet extends StatelessWidget {
               ),
               // Menu List
               _ActionButton(
-                label: note.isPinned ? '상단 고정 해제' : '상단에 고정',
+                label: note.isPinned ? AppLocalizations.of(context)!.unpin : AppLocalizations.of(context)!.pin,
                 icon: Icons.push_pin_outlined,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 textColor: Theme.of(context).colorScheme.surface,
@@ -336,7 +337,7 @@ class _MemoActionSheet extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _ActionButton(
-                label: '수정',
+                label: AppLocalizations.of(context)!.edit,
                 icon: Icons.edit_outlined,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 textColor: Theme.of(context).colorScheme.onSurface,
@@ -349,7 +350,7 @@ class _MemoActionSheet extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _ActionButton(
-                label: '삭제',
+                label: AppLocalizations.of(context)!.delete,
                 icon: Icons.delete_outline,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 textColor: const Color(0xFFD4183D),
@@ -407,7 +408,7 @@ class _MemoActionSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      '메모 수정',
+                      AppLocalizations.of(context)!.editMemo,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -448,7 +449,7 @@ class _MemoActionSheet extends StatelessWidget {
                                 border: Border.all(color: Theme.of(context).colorScheme.outline),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text('취소'),
+                              child: Text(AppLocalizations.of(context)!.cancel),
                             ),
                           ),
                         ),
@@ -473,7 +474,7 @@ class _MemoActionSheet extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                '저장',
+                                AppLocalizations.of(context)!.save,
                                 style: TextStyle(color: Theme.of(context).colorScheme.surface),
                               ),
                             ),

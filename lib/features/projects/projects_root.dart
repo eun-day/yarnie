@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../modules/projects/projects_api.dart';
@@ -67,9 +68,11 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('프로젝트'),
+            Text(AppLocalizations.of(context)!.projects),
             Text(
-              '${state.allProjects.length}개의 프로젝트',
+              AppLocalizations.of(
+                context,
+              )!.projectsCount(state.allProjects.length),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -83,9 +86,10 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const NewProjectScreen()),
               ),
-              icon: Icon(Icons.add, size: 20),
-              label: Text('새 프로젝트'),
+              icon: const Icon(Icons.add, size: 20),
+              label: Text(AppLocalizations.of(context)!.createNewProject),
               style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -265,9 +269,9 @@ class _TagFilterBar extends StatelessWidget {
         children: [
           // 전체 칩
           Padding(
-            padding: EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.only(right: 6),
             child: TagChip(
-              label: '전체',
+              label: AppLocalizations.of(context)!.all,
               isSelected: selectedTagIds.isEmpty,
               onTap: onClearFilters,
               showCloseButton: false,
@@ -335,19 +339,19 @@ class _ViewModeBar extends StatelessWidget {
                   icon: Icons.grid_view_rounded,
                   isSelected: viewMode == ProjectViewMode.largeCard,
                   onPressed: () => onViewModeChanged(ProjectViewMode.largeCard),
-                  tooltip: '큰 카드',
+                  tooltip: AppLocalizations.of(context)!.bigCard,
                 ),
                 _ViewModeIconButton(
                   icon: Icons.grid_on_rounded,
                   isSelected: viewMode == ProjectViewMode.smallCard,
                   onPressed: () => onViewModeChanged(ProjectViewMode.smallCard),
-                  tooltip: '작은 카드',
+                  tooltip: AppLocalizations.of(context)!.smallCard,
                 ),
                 _ViewModeIconButton(
                   icon: Icons.view_list_rounded,
                   isSelected: viewMode == ProjectViewMode.list,
                   onPressed: () => onViewModeChanged(ProjectViewMode.list),
-                  tooltip: '리스트',
+                  tooltip: AppLocalizations.of(context)!.list,
                 ),
               ],
             ),
@@ -515,15 +519,19 @@ class _LargeProjectCard extends StatelessWidget {
                             Icon(
                               Icons.calendar_today,
                               size: 14,
-                              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.8),
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _formatDate(project.createdAt),
+                              _formatDate(context, project.createdAt),
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surface.withOpacity(0.8),
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -593,9 +601,16 @@ class _LargeProjectCard extends StatelessWidget {
     }
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     final local = date.toLocal();
-    return '${local.year}년 ${local.month}월 ${local.day}일';
+    final l10n = AppLocalizations.of(context)!;
+    if (l10n.localeName == 'ko') {
+      final y = local.year;
+      final m = local.month.toString().padLeft(2, '0');
+      final d = local.day.toString().padLeft(2, '0');
+      return '$y년 $m월 $d일';
+    }
+    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
 
@@ -815,7 +830,7 @@ class _EmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '아직 만든 프로젝트가 없어요.\n프로젝트를 만들어볼까요?',
+              AppLocalizations.of(context)!.noProjectsYet,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -826,8 +841,8 @@ class _EmptyView extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const NewProjectScreen()),
                 );
               },
-              icon: Icon(Icons.add),
-              label: Text('프로젝트 만들기'),
+              icon: const Icon(Icons.add),
+              label: Text(AppLocalizations.of(context)!.createProject),
             ),
           ],
         ),
@@ -856,21 +871,21 @@ class _FilteredEmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '해당하는 프로젝트가 없습니다',
+              AppLocalizations.of(context)!.noMatchingProjects,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              '다른 태그를 선택하거나\n필터를 초기화해보세요',
+              AppLocalizations.of(context)!.filterResetDesc,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onClearFilters,
-              icon: Icon(Icons.filter_alt_off),
-              label: Text('필터 초기화'),
+              icon: const Icon(Icons.filter_alt_off),
+              label: Text(AppLocalizations.of(context)!.resetFilter),
             ),
           ],
         ),
@@ -895,8 +910,8 @@ class _ProjectMenuSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: Icon(Icons.copy),
-            title: Text('프로젝트 복사'),
+            leading: const Icon(Icons.copy),
+            title: Text(AppLocalizations.of(context)!.copyProject),
             onTap: () {
               Navigator.pop(context);
               ref
@@ -905,8 +920,8 @@ class _ProjectMenuSheet extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.label),
-            title: Text('태그 지정'),
+            leading: const Icon(Icons.label),
+            title: Text(AppLocalizations.of(context)!.assignTags),
             onTap: () {
               Navigator.pop(context);
               ref

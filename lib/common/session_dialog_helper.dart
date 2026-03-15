@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/providers/stopwatch_provider.dart';
 import 'package:yarnie/model/session_status.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 /// 세션 관리 관련 공통 다이얼로그 및 로직을 제공하는 헬퍼 클래스
 class SessionDialogHelper {
@@ -15,25 +16,26 @@ class SessionDialogHelper {
   /// - `false`: 새로 시작 선택
   /// - `null`: 취소 또는 다이얼로그 닫기
   static Future<bool?> askResumeOrNew(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     if (Platform.isIOS) {
       return showCupertinoModalPopup<bool>(
         context: context,
         builder: (ctx) => CupertinoActionSheet(
-          title: Text('진행 중인 세션이 있습니다'),
+          title: Text(l10n.activeSessionExists),
           actions: [
             CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text('이어하기'),
+              child: Text(l10n.resume),
             ),
             CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text('새로 시작'),
+              child: Text(l10n.startNew),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(ctx, null),
-            child: Text('취소'),
+            child: Text(l10n.cancel),
           ),
         ),
       );
@@ -41,16 +43,16 @@ class SessionDialogHelper {
       return showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('진행 중 세션'),
-          content: Text('진행 중인 세션이 있습니다. 이어서 하시겠습니까?'),
+          title: Text(l10n.activeSession),
+          content: Text(l10n.activeSessionQuestion),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text('새로 시작'),
+              child: Text(l10n.startNew),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text('이어하기'),
+              child: Text(l10n.resume),
             ),
           ],
         ),

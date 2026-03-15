@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -74,7 +75,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('수정 실패: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))));
       }
     }
   }
@@ -114,12 +115,12 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
 
                 // Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '스티치 카운터 수정',
+                        AppLocalizations.of(context)!.editStitchCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -127,9 +128,9 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
                           letterSpacing: -0.31,
                         ),
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       Text(
-                        '카운터 정보를 수정합니다.',
+                        AppLocalizations.of(context)!.editCounterInfo,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -153,7 +154,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
                       
                       // Current Value Field
                       NumberInputGroup(
-                        label: '현재 값',
+                        label: AppLocalizations.of(context)!.currentValue,
                         controller: _valueController,
                         hintText: '0',
                         onChanged: _updateState,
@@ -162,7 +163,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
 
                       // Count By Field
                       NumberInputGroup(
-                        label: '증감 단위',
+                        label: AppLocalizations.of(context)!.countUnit,
                         controller: _countByController,
                         hintText: '1',
                         min: 1,
@@ -189,7 +190,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '저장',
+                            AppLocalizations.of(context)!.save,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -211,7 +212,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '취소',
+                            AppLocalizations.of(context)!.cancel,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -238,7 +239,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '라벨',
+          AppLocalizations.of(context)!.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
