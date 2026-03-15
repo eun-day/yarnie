@@ -19,7 +19,8 @@ class AddRepeatCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddRepeatCounterSheet> createState() => _AddRepeatCounterSheetState();
+  ConsumerState<AddRepeatCounterSheet> createState() =>
+      _AddRepeatCounterSheetState();
 }
 
 class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
@@ -34,16 +35,25 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     final startRow = int.tryParse(_startRowController.text);
     final repeatUnit = int.tryParse(_repeatUnitController.text);
     final repeatCount = int.tryParse(_repeatCountController.text);
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           repeatUnit != null && repeatUnit > 0 &&
-           repeatCount != null && repeatCount > 0;
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        repeatUnit != null &&
+        repeatUnit > 0 &&
+        repeatCount != null &&
+        repeatCount > 0;
   }
 
   @override
   void initState() {
     super.initState();
-    
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
     String label = AppLocalizations.of(context)!.repeatCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String repeatUnit = '';
@@ -68,6 +78,8 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     _startRowController.addListener(_updateState);
     _repeatUnitController.addListener(_updateState);
     _repeatCountController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -76,15 +88,17 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _repeatUnitController.removeListener(_updateState);
-    _repeatCountController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _repeatUnitController.dispose();
-    _repeatCountController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _repeatUnitController.removeListener(_updateState);
+      _repeatCountController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _repeatUnitController.dispose();
+      _repeatCountController.dispose();
+    }
     super.dispose();
   }
 
@@ -126,13 +140,16 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
         final message = _isEditing
             ? AppLocalizations.of(context)!.restoreFailed(e.toString())
             : AppLocalizations.of(context)!.deleteFailed(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -158,7 +175,9 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -171,7 +190,9 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? AppLocalizations.of(context)!.editRepeatCounter : AppLocalizations.of(context)!.addRepeatCounter,
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editRepeatCounter
+                            : AppLocalizations.of(context)!.addRepeatCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -202,7 +223,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                       // Label Field
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       // Start Row Field
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.startRow,
@@ -216,7 +237,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.repeatUnit,
                         controller: _repeatUnitController,
-                        hintText: '예: 4',
+                        hintText: AppLocalizations.of(context)!.repeatUnitHint,
                         onChanged: _updateState,
                       ),
                       const SizedBox(height: 16),
@@ -246,11 +267,15 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -268,7 +293,10 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -317,7 +345,10 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface), // Adjusted to match design
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ), // Adjusted to match design
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -328,7 +359,10 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
         const SizedBox(height: 4),
         Text(
           AppLocalizations.of(context)!.labelHint,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

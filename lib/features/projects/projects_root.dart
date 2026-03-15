@@ -70,7 +70,9 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           children: [
             Text(AppLocalizations.of(context)!.projects),
             Text(
-              AppLocalizations.of(context)!.projectsCount(state.allProjects.length),
+              AppLocalizations.of(
+                context,
+              )!.projectsCount(state.allProjects.length),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -87,6 +89,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
               icon: const Icon(Icons.add, size: 20),
               label: Text(AppLocalizations.of(context)!.createNewProject),
               style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -516,7 +519,9 @@ class _LargeProjectCard extends StatelessWidget {
                             Icon(
                               Icons.calendar_today,
                               size: 14,
-                              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.8),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -524,7 +529,9 @@ class _LargeProjectCard extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surface.withOpacity(0.8),
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -596,8 +603,14 @@ class _LargeProjectCard extends StatelessWidget {
 
   String _formatDate(BuildContext context, DateTime date) {
     final local = date.toLocal();
-    return AppLocalizations.of(context)!
-        .dateDisplay(local.year, local.month, local.day);
+    final l10n = AppLocalizations.of(context)!;
+    if (l10n.localeName == 'ko') {
+      final y = local.year;
+      final m = local.month.toString().padLeft(2, '0');
+      final d = local.day.toString().padLeft(2, '0');
+      return '$y년 $m월 $d일';
+    }
+    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
 

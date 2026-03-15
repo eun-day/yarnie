@@ -19,7 +19,8 @@ class AddRangeCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddRangeCounterSheet> createState() => _AddRangeCounterSheetState();
+  ConsumerState<AddRangeCounterSheet> createState() =>
+      _AddRangeCounterSheetState();
 }
 
 class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
@@ -32,15 +33,23 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final totalRows = int.tryParse(_totalRowsController.text);
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           totalRows != null && totalRows > 0;
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        totalRows != null &&
+        totalRows > 0;
   }
 
   @override
   void initState() {
     super.initState();
-    
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
     String label = AppLocalizations.of(context)!.rangeCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String totalRows = '';
@@ -61,6 +70,8 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
     _labelController.addListener(_updateState);
     _startRowController.addListener(_updateState);
     _totalRowsController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -69,13 +80,15 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _totalRowsController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _totalRowsController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _totalRowsController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _totalRowsController.dispose();
+    }
     super.dispose();
   }
 
@@ -116,13 +129,16 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
         final message = _isEditing
             ? AppLocalizations.of(context)!.restoreFailed(e.toString())
             : AppLocalizations.of(context)!.deleteFailed(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -148,7 +164,9 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -161,7 +179,9 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? AppLocalizations.of(context)!.editRangeCounter : AppLocalizations.of(context)!.addRangeCounter,
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editRangeCounter
+                            : AppLocalizations.of(context)!.addRangeCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -192,7 +212,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                       // Label Field
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       // Start Row Field
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.startRow,
@@ -227,11 +247,15 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -249,7 +273,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -298,7 +325,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -309,7 +339,10 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
         const SizedBox(height: 4),
         Text(
           AppLocalizations.of(context)!.labelHint,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

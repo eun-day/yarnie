@@ -176,6 +176,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
             // Memo List Section
             Flexible(
+              fit: FlexFit.loose,
               child: StreamBuilder<List<PartNote>>(
                 stream: appDb.watchPartNotes(widget.partId),
                 builder: (context, snapshot) {
@@ -186,12 +187,11 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                   final notes = snapshot.data!;
                   if (notes.isEmpty) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Center(
-                        child: Text(
-                          AppLocalizations.of(context)!.noMemos,
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        AppLocalizations.of(context)!.noMemos,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     );
                   }

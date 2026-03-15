@@ -455,7 +455,7 @@ abstract class AppLocalizations {
   /// No description provided for @newPart.
   ///
   /// In ko, this message translates to:
-  /// **'+ 새 파트'**
+  /// **'새 파트'**
   String get newPart;
 
   /// No description provided for @addPartMethodSuffix.
@@ -959,7 +959,7 @@ abstract class AppLocalizations {
   /// No description provided for @createNewProject.
   ///
   /// In ko, this message translates to:
-  /// **'새 프로젝트 시작하기'**
+  /// **'새 프로젝트'**
   String get createNewProject;
 
   /// No description provided for @justNow.
@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'반복 단위 (행)'**
   String get repeatUnit;
 
+  /// No description provided for @repeatUnitHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 4'**
+  String get repeatUnitHint;
+
   /// No description provided for @repeatTimes.
   ///
   /// In ko, this message translates to:
@@ -2006,11 +2012,23 @@ abstract class AppLocalizations {
   /// **'목표 길이 (cm)'**
   String get targetLengthCm;
 
+  /// No description provided for @targetLengthHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 25.0'**
+  String get targetLengthHint;
+
   /// No description provided for @rowHeightCm.
   ///
   /// In ko, this message translates to:
   /// **'1단의 높이 (cm)'**
   String get rowHeightCm;
+
+  /// No description provided for @rowHeightHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 0.33'**
+  String get rowHeightHint;
 
   /// No description provided for @rowHeightDesc.
   ///
@@ -2677,6 +2695,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'메인 카운터 (MainCounter)'**
   String get mainCounterTitleAlt;
+
+  /// No description provided for @countByLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'count by {value}'**
+  String countByLabel(Object value);
 }
 
 class _AppLocalizationsDelegate

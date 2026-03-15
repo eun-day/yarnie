@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Yarnie helps you organize your knitting projects\nand track your progress easily.';
 
   @override
-  String get tabsConfigTitle => '📱 Composed of 3 tabs';
+  String get tabsConfigTitle => '📱 Explore the 3 Tabs';
 
   @override
   String get homeTab => 'Home Tab';
@@ -196,7 +196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addPartMethodDesc => 'In the project detail screen, tap the';
 
   @override
-  String get newPart => '+ New Part';
+  String get newPart => 'New Part';
 
   @override
   String get addPartMethodSuffix =>
@@ -399,7 +399,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useMemoDesc =>
-      'You can leave a memo for each part. It helps to leave notes like \"Made many mistakes in this section\" or \"Looserr next time\".';
+      'You can leave a memo for each part. It helps to leave notes like \"Made many mistakes in this section\" or \"Looser next time\".';
 
   @override
   String get useTags => '🎨 Categorize with Tags';
@@ -487,10 +487,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startJourneyWithChameleon =>
-      'Start your knitting journey with the chameleon\nOne stitch at a time makes a wonderful work';
+      'Start your knitting journey with the chameleon\nOne stitch at a time creates a wonderful masterpiece';
 
   @override
-  String get createNewProject => 'Start New Project';
+  String get createNewProject => 'New Project';
 
   @override
   String get justNow => 'Just now';
@@ -544,7 +544,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smallStart =>
-      'A small start makes a big work\nCast on your first stitch now!';
+      'Small beginnings create big masterpieces\nCast on your first stitch now!';
 
   @override
   String get notificationSettings => 'Notification Settings';
@@ -596,7 +596,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chameleonStoryDesc =>
-      'Our chameleon friend doesn\'t have the ability to change colors. However, by knitting clothes of various colors and patterns, he lives happily every day in a new look. We hope you also have a great time with knitting, just like the chameleon!';
+      'Our chameleon friend doesn\'t have the ability to change colors. However, by knitting clothes of various colors and patterns, he lives happily every day with a new look. We hope you also have a great time with knitting, just like the chameleon!';
 
   @override
   String get sendFeedback => 'Send Feedback';
@@ -694,7 +694,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restore => 'Restore';
 
   @override
-  String get deleteForeverNow => 'Delete Forever Now';
+  String get deleteForeverNow => 'Delete Permanently Now';
 
   @override
   String get restoreProject => 'Restore Project';
@@ -711,7 +711,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteForever => 'Delete Forever';
+  String get deleteForever => 'Delete Permanently';
 
   @override
   String get deleteForeverConfirm =>
@@ -914,6 +914,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatUnit => 'Repeat Unit (Rows)';
 
   @override
+  String get repeatUnitHint => 'e.g. 4';
+
+  @override
   String get repeatTimes => 'Repeat Times';
 
   @override
@@ -1022,7 +1025,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lengthCounterDescSimple =>
-      'A counter to track until a certain length is reached.';
+      'Tracks progress until you reach a specific length.';
 
   @override
   String get targetLength => 'Target Length';
@@ -1066,7 +1069,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetLengthCm => 'Target Length (cm)';
 
   @override
+  String get targetLengthHint => 'e.g., 25.0';
+
+  @override
   String get rowHeightCm => 'Row Height (cm)';
+
+  @override
+  String get rowHeightHint => 'e.g., 0.33';
 
   @override
   String get rowHeightDesc =>
@@ -1214,10 +1223,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get needleType => 'Needle Type';
 
   @override
-  String get knittingNeedle => 'Knitting';
+  String get knittingNeedle => 'Knitting Needles';
 
   @override
-  String get crochetNeedle => 'Crochet';
+  String get crochetNeedle => 'Crochet Hook';
 
   @override
   String get needleTypeHint => 'Select needle type';
@@ -1257,7 +1266,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rowsHintGauge => 'Rows';
 
   @override
-  String get rowsUnit => 'R';
+  String get rowsUnit => 'Rows';
 
   @override
   String get editComplete => 'Edit Complete';
@@ -1415,7 +1424,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectRestoredMessage => 'Project restored.';
 
   @override
-  String get deleteForeverTitle => 'Delete Forever';
+  String get deleteForeverTitle => 'Delete Permanently';
 
   @override
   String get deleteForeverConfirmMessage =>
@@ -1423,4 +1432,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mainCounterTitleAlt => 'Main Counter (MainCounter)';
+
+  @override
+  String countByLabel(Object value) {
+    return 'count by $value';
+  }
 }

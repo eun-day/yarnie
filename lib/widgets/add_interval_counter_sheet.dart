@@ -19,10 +19,12 @@ class AddIntervalCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddIntervalCounterSheet> createState() => _AddIntervalCounterSheetState();
+  ConsumerState<AddIntervalCounterSheet> createState() =>
+      _AddIntervalCounterSheetState();
 }
 
-class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterSheet> {
+class _AddIntervalCounterSheetState
+    extends ConsumerState<AddIntervalCounterSheet> {
   late TextEditingController _labelController;
   late TextEditingController _startRowController;
   late TextEditingController _intervalController;
@@ -34,26 +36,55 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
   bool get _isEditing => widget.existingCounter != null;
 
   List<Color> get _availableColors => [
-    const Color(0xFFFFFFFF), const Color(0xFFFFFFF0), const Color(0xFFF5F5DC), const Color(0xFFFFFDD0), const Color(0xFFFFB6C1), const Color(0xFFFF7F50),
-    const Color(0xFFDC143C), const Color(0xFF800020), const Color(0xFFFF8C00), const Color(0xFFFFD700), const Color(0xFF32CD32), const Color(0xFF228B22),
-    const Color(0xFF98FF98), const Color(0xFF40E0D0), const Color(0xFF87CEEB), const Color(0xFF4169E1), const Color(0xFF000080), const Color(0xFFE6E6FA),
-    const Color(0xFF9370DB), const Color(0xFF8B4513), Theme.of(context).colorScheme.primary, const Color(0xFF808080), const Color(0xFF36454F), const Color(0xFF000000),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFF0),
+    const Color(0xFFF5F5DC),
+    const Color(0xFFFFFDD0),
+    const Color(0xFFFFB6C1),
+    const Color(0xFFFF7F50),
+    const Color(0xFFDC143C),
+    const Color(0xFF800020),
+    const Color(0xFFFF8C00),
+    const Color(0xFFFFD700),
+    const Color(0xFF32CD32),
+    const Color(0xFF228B22),
+    const Color(0xFF98FF98),
+    const Color(0xFF40E0D0),
+    const Color(0xFF87CEEB),
+    const Color(0xFF4169E1),
+    const Color(0xFF000080),
+    const Color(0xFFE6E6FA),
+    const Color(0xFF9370DB),
+    const Color(0xFF8B4513),
+    Theme.of(context).colorScheme.primary,
+    const Color(0xFF808080),
+    const Color(0xFF36454F),
+    const Color(0xFF000000),
   ];
 
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final interval = int.tryParse(_intervalController.text);
     final totalCount = int.tryParse(_totalCountController.text);
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           interval != null && interval > 0 &&
-           totalCount != null && totalCount > 0;
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        interval != null &&
+        interval > 0 &&
+        totalCount != null &&
+        totalCount > 0;
   }
 
   @override
   void initState() {
     super.initState();
-    
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
     String label = AppLocalizations.of(context)!.intervalCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String interval = '';
@@ -66,13 +97,15 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
         startRow = spec['startRow']?.toString() ?? startRow;
         interval = spec['intervalRows']?.toString() ?? '';
         totalCount = spec['totalCount']?.toString() ?? '';
-        
+
         // Load palette
         final paletteHex = spec['palette'] as List<dynamic>?;
         if (paletteHex != null) {
           for (final hex in paletteHex) {
             try {
-              final color = Color(int.parse((hex as String).substring(1), radix: 16) + 0xFF000000);
+              final color = Color(
+                int.parse((hex as String).substring(1), radix: 16) + 0xFF000000,
+              );
               _selectedPalette.add(color);
             } catch (_) {}
           }
@@ -92,6 +125,8 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
     _startRowController.addListener(_updateState);
     _intervalController.addListener(_updateState);
     _totalCountController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -100,15 +135,17 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _intervalController.removeListener(_updateState);
-    _totalCountController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _intervalController.dispose();
-    _totalCountController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _intervalController.removeListener(_updateState);
+      _totalCountController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _intervalController.dispose();
+      _totalCountController.dispose();
+    }
     super.dispose();
   }
 
@@ -131,7 +168,9 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
     final totalCount = int.parse(_totalCountController.text);
 
     // Convert palette colors to HEX strings
-    final paletteHex = _selectedPalette.map((c) => '#${c.value.toRadixString(16).substring(2).toUpperCase()}').toList();
+    final paletteHex = _selectedPalette
+        .map((c) => '#${c.value.toRadixString(16).substring(2).toUpperCase()}')
+        .toList();
 
     // Spec JSON Construction
     final spec = {
@@ -163,13 +202,16 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
         final message = _isEditing
             ? AppLocalizations.of(context)!.restoreFailed(e.toString())
             : AppLocalizations.of(context)!.deleteFailed(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -195,7 +237,9 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -208,7 +252,9 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? AppLocalizations.of(context)!.editIntervalCounter : AppLocalizations.of(context)!.addIntervalCounter,
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editIntervalCounter
+                            : AppLocalizations.of(context)!.addIntervalCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -238,7 +284,7 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                     children: [
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
@@ -259,15 +305,20 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                         label: AppLocalizations.of(context)!.totalTimes,
                         controller: _totalCountController,
                         hintText: AppLocalizations.of(context)!.timesHint,
-                        helperText: AppLocalizations.of(context)!.intervalTimesHelper,
+                        helperText: AppLocalizations.of(
+                          context,
+                        )!.intervalTimesHelper,
                         onChanged: _updateState,
                       ),
-                      
+
                       const SizedBox(height: 24),
 
                       // Color Options Toggle
                       GestureDetector(
-                        onTap: () => setState(() => _isColorOptionsExpanded = !_isColorOptionsExpanded),
+                        onTap: () => setState(
+                          () => _isColorOptionsExpanded =
+                              !_isColorOptionsExpanded,
+                        ),
                         behavior: HitTestBehavior.opaque,
                         child: Row(
                           children: [
@@ -275,15 +326,21 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                               AppLocalizations.of(context)!.colorOption,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                                 letterSpacing: -0.15,
                               ),
                             ),
                             const SizedBox(width: 4),
                             Icon(
-                              _isColorOptionsExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              _isColorOptionsExpanded
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
                               size: 16,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ),
@@ -295,7 +352,12 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                           alignment: Alignment.centerLeft,
                           child: Text(
                             AppLocalizations.of(context)!.colorOptionDesc,
-                            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -318,11 +380,15 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -340,7 +406,10 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -389,7 +458,10 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -400,7 +472,10 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
         const SizedBox(height: 4),
         Text(
           AppLocalizations.of(context)!.labelHint,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -428,7 +503,9 @@ class _AddIntervalCounterSheetState extends ConsumerState<AddIntervalCounterShee
               color: color,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSelected ? Theme.of(context).colorScheme.primary : Color(0xFFE5E7EB),
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : Color(0xFFE5E7EB),
                 width: isSelected ? 2.5 : 1.9,
               ),
             ),

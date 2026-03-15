@@ -24,7 +24,7 @@ class AddBuddyCounterMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      width: 220, 
+      width: 220,
       decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -62,13 +62,20 @@ class AddBuddyCounterMenu extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outline),
-            
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+
             // Stitch Counter
             InkWell(
               onTap: onStitchSelected,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -76,7 +83,14 @@ class AddBuddyCounterMenu extends StatelessWidget {
                       width: 20,
                       height: 20,
                       alignment: Alignment.center,
-                      child: SvgPicture.asset('assets/icons/counter_stitch.svg', width: 14, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn)),
+                      child: SvgPicture.asset(
+                        'assets/icons/counter_stitch.svg',
+                        width: 14,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -98,7 +112,9 @@ class AddBuddyCounterMenu extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -109,7 +125,11 @@ class AddBuddyCounterMenu extends StatelessWidget {
               ),
             ),
 
-            Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outline),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Theme.of(context).colorScheme.outline,
+            ),
 
             // Section Header
             Padding(
@@ -125,12 +145,37 @@ class AddBuddyCounterMenu extends StatelessWidget {
             ),
 
             // Items
-            _buildItem(context, 'assets/icons/counter_range.svg', l10n.range, onRangeSelected),
-            _buildItem(context, 'assets/icons/counter_repeat.svg', l10n.repeat, onRepeatSelected),
-            _buildItem(context, 'assets/icons/counter_interval.svg', l10n.interval, onIntervalSelected),
-            _buildItem(context, 'assets/icons/counter_shaping.svg', l10n.shaping, onShapingSelected),
-            _buildItem(context, 'assets/icons/counter_length.svg', l10n.length, onLengthSelected),
-            
+            _buildItem(
+              context,
+              'assets/icons/counter_range.svg',
+              l10n.range,
+              onRangeSelected,
+            ),
+            _buildItem(
+              context,
+              'assets/icons/counter_repeat.svg',
+              l10n.repeat,
+              onRepeatSelected,
+            ),
+            _buildItem(
+              context,
+              'assets/icons/counter_interval.svg',
+              l10n.interval,
+              onIntervalSelected,
+            ),
+            _buildItem(
+              context,
+              'assets/icons/counter_shaping.svg',
+              l10n.shaping,
+              onShapingSelected,
+            ),
+            _buildItem(
+              context,
+              'assets/icons/counter_length.svg',
+              l10n.length,
+              onLengthSelected,
+            ),
+
             const SizedBox(height: 8),
           ],
         ),
@@ -138,19 +183,31 @@ class AddBuddyCounterMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(BuildContext context, String iconPath, String label, VoidCallback? onTap) {
+  Widget _buildItem(
+    BuildContext context,
+    String iconPath,
+    String label,
+    VoidCallback? onTap,
+  ) {
     return InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
-             Container(
-                width: 20,
-                height: 20,
-                alignment: Alignment.center,
-                child: SvgPicture.asset(iconPath, width: 14, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn)),
-             ),
+            Container(
+              width: 20,
+              height: 20,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                iconPath,
+                width: 14,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onSurfaceVariant,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
             const SizedBox(width: 8),
             Text(
               label,

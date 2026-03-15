@@ -19,10 +19,12 @@ class AddShapingCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddShapingCounterSheet> createState() => _AddShapingCounterSheetState();
+  ConsumerState<AddShapingCounterSheet> createState() =>
+      _AddShapingCounterSheetState();
 }
 
-class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet> {
+class _AddShapingCounterSheetState
+    extends ConsumerState<AddShapingCounterSheet> {
   late TextEditingController _labelController;
   late TextEditingController _startRowController;
   late TextEditingController _intervalController;
@@ -36,18 +38,28 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
     final interval = int.tryParse(_intervalController.text);
     final totalCount = int.tryParse(_totalCountController.text);
     final amount = int.tryParse(_amountController.text);
-    
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           interval != null && interval > 0 &&
-           totalCount != null && totalCount > 0 &&
-           amount != null && amount != 0; // 0은 의미 없음
+
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        interval != null &&
+        interval > 0 &&
+        totalCount != null &&
+        totalCount > 0 &&
+        amount != null &&
+        amount != 0; // 0은 의미 없음
   }
 
   @override
   void initState() {
     super.initState();
-    
+  }
+
+  bool _initialized = false;
+
+  void _initializeControllers() {
+    if (_initialized) return;
+
     String label = AppLocalizations.of(context)!.shapingCounterLabel;
     String startRow = widget.initialStartRow.toString();
     String interval = '';
@@ -76,6 +88,8 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
     _intervalController.addListener(_updateState);
     _totalCountController.addListener(_updateState);
     _amountController.addListener(_updateState);
+
+    _initialized = true;
   }
 
   void _updateState() {
@@ -84,17 +98,19 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
 
   @override
   void dispose() {
-    _labelController.removeListener(_updateState);
-    _startRowController.removeListener(_updateState);
-    _intervalController.removeListener(_updateState);
-    _totalCountController.removeListener(_updateState);
-    _amountController.removeListener(_updateState);
-    
-    _labelController.dispose();
-    _startRowController.dispose();
-    _intervalController.dispose();
-    _totalCountController.dispose();
-    _amountController.dispose();
+    if (_initialized) {
+      _labelController.removeListener(_updateState);
+      _startRowController.removeListener(_updateState);
+      _intervalController.removeListener(_updateState);
+      _totalCountController.removeListener(_updateState);
+      _amountController.removeListener(_updateState);
+
+      _labelController.dispose();
+      _startRowController.dispose();
+      _intervalController.dispose();
+      _totalCountController.dispose();
+      _amountController.dispose();
+    }
     super.dispose();
   }
 
@@ -114,7 +130,8 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
       'intervalRows': interval,
       'totalCount': totalCount,
       'amount': amount,
-      'targetInfo': '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}${AppLocalizations.of(context)!.stitch} × $totalCount회',
+      'targetInfo':
+          '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}${AppLocalizations.of(context)!.stitch} × $totalCount회',
     };
 
     try {
@@ -137,13 +154,16 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
         final message = _isEditing
             ? AppLocalizations.of(context)!.restoreFailed(e.toString())
             : AppLocalizations.of(context)!.deleteFailed(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initializeControllers();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -169,7 +189,9 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -182,7 +204,9 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? AppLocalizations.of(context)!.editShapingCounter : AppLocalizations.of(context)!.addShapingCounter,
+                        _isEditing
+                            ? AppLocalizations.of(context)!.editShapingCounter
+                            : AppLocalizations.of(context)!.addShapingCounter,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -212,7 +236,7 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                     children: [
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.startRow,
                         controller: _startRowController,
@@ -243,8 +267,12 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                       NumberInputGroup(
                         label: AppLocalizations.of(context)!.stitchChange,
                         controller: _amountController,
-                        hintText: AppLocalizations.of(context)!.stitchChangeHint,
-                        helperText: AppLocalizations.of(context)!.stitchChangeHelper,
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.stitchChangeHint,
+                        helperText: AppLocalizations.of(
+                          context,
+                        )!.stitchChangeHelper,
                         min: -999,
                         skipZero: true,
                         onChanged: _updateState,
@@ -266,11 +294,15 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _isEditing ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
+                            _isEditing
+                                ? AppLocalizations.of(context)!.save
+                                : AppLocalizations.of(context)!.add,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -288,7 +320,10 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -337,7 +372,10 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -348,7 +386,10 @@ class _AddShapingCounterSheetState extends ConsumerState<AddShapingCounterSheet>
         const SizedBox(height: 4),
         Text(
           AppLocalizations.of(context)!.labelHint,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

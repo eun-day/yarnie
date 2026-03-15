@@ -24,36 +24,45 @@ class ProjectInfoSheet extends ConsumerWidget {
         ? allTags.where((tag) => project.tagIds!.contains(tag.id.toString())).toList()
         : <Tag>[];
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Handle Bar
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.85,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Handle Bar
+            const SizedBox(height: 16),
             Center(
               child: Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 16),
-                width: 40,
-                height: 4,
+                width: 100,
+                height: 8,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE5E5EA),
-                  borderRadius: BorderRadius.circular(2),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(100),
                 ),
               ),
             ),
+            const SizedBox(height: 16),
 
             // Header: Title & Close
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Column(
@@ -62,10 +71,10 @@ class ProjectInfoSheet extends ConsumerWidget {
                         Text(
                           l10n.projectInfo,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onSurface,
-                            letterSpacing: 0.05,
+                            letterSpacing: -0.31,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -80,8 +89,8 @@ class ProjectInfoSheet extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
+                  GestureDetector(
+                    onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
@@ -90,19 +99,22 @@ class ProjectInfoSheet extends ConsumerWidget {
                         ),
                       );
                     },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      shape: RoundedRectangleBorder(
+                    child: Container(
+                      height: 32,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
+                        color: Colors.transparent,
                       ),
-                    ),
-                    child: Text(
-                      l10n.edit,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        l10n.edit,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.primary,
+                          letterSpacing: -0.15,
+                        ),
                       ),
                     ),
                   ),
@@ -113,40 +125,59 @@ class ProjectInfoSheet extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Scrollable Content
-            Flexible(
+            Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Image (if exists)
-                    if (project.imagePath != null && project.imagePath!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Image.file(
-                              File(project.imagePath!),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          width: 240,
+                          height: 135,
+                          child: (project.imagePath != null && project.imagePath!.isNotEmpty)
+                              ? Image.file(
+                                  File(project.imagePath!),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.image_not_supported_outlined,
+                                          size: 40,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Container(
                                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  child: Icon(
-                                    Icons.image_not_supported_outlined,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.image_outlined,
+                                      size: 40,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
-                          ),
+                                ),
                         ),
                       ),
+                    ),
 
                     // Project Name
-                    _InfoRow(label: l10n.projectName, value: project.name),
-                    const Divider(height: 32),
+                    _InfoRow(
+                      label: l10n.projectName,
+                      value: project.name,
+                      valueColor: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    const SizedBox(height: 24),
 
                     // Needle Info
                     Row(
@@ -159,22 +190,27 @@ class ProjectInfoSheet extends ConsumerWidget {
                                 : project.needleType == 'crochet'
                                     ? l10n.crochetNeedle
                                     : '-',
+                            valueColor: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(width: 16),
                         Expanded(
                           child: _InfoRow(
                             label: l10n.needleSize,
                             value: project.needleSize ?? '-',
+                            valueColor: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
                     ),
-                    const Divider(height: 32),
+                    const SizedBox(height: 24),
 
                     // Lot Number
-                    _InfoRow(label: l10n.lotNumberLabel, value: project.lotNumber ?? '-'),
-                    const Divider(height: 32),
+                    _InfoRow(
+                      label: l10n.lotNumberLabel,
+                      value: project.lotNumber ?? '-',
+                      valueColor: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    const SizedBox(height: 24),
 
                     // Tags
                     Column(
@@ -183,13 +219,12 @@ class ProjectInfoSheet extends ConsumerWidget {
                         Text(
                           l10n.tag,
                           style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                             letterSpacing: -0.15,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         if (selectedTags.isNotEmpty)
                           Wrap(
                             spacing: 8,
@@ -202,13 +237,13 @@ class ProjectInfoSheet extends ConsumerWidget {
                           Text(
                             l10n.noTagsAssigned,
                             style: TextStyle(
-                              fontSize: 15,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                       ],
                     ),
-                    const Divider(height: 32),
+                    const SizedBox(height: 24),
 
                     // Gauge
                     Builder(
@@ -225,46 +260,58 @@ class ProjectInfoSheet extends ConsumerWidget {
                           return _InfoRow(
                             label: l10n.gauge,
                             value: '${parts.join(' / ')} ${l10n.gaugeStandard}',
+                            valueColor: Theme.of(context).colorScheme.onSurface,
                           );
                         } else {
                           return _InfoRow(
                             label: l10n.gauge,
                             value: l10n.noGaugeInfo,
+                            valueColor: Theme.of(context).colorScheme.onSurfaceVariant,
                           );
                         }
                       },
                     ),
-                    const Divider(height: 32),
+                    const SizedBox(height: 24),
 
                     // Memo
                     _InfoRow(
                       label: l10n.memo,
                       value: project.memo ?? l10n.noMemoInfo,
-                      isMultiLine: true,
+                      valueColor: project.memo?.isNotEmpty == true
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     // Dates
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _InfoRow(
-                            label: l10n.createdAtLabel,
-                            value: _formatDate(project.createdAt, l10n),
-                            labelSize: 11,
+                    Container(
+                      padding: const EdgeInsets.only(top: 16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 0.7,
                           ),
                         ),
-                        if (project.updatedAt != null) ...[
-                          const SizedBox(width: 16),
+                      ),
+                      child: Row(
+                        children: [
                           Expanded(
-                            child: _InfoRow(
+                            child: _DateRow(
+                              label: l10n.createdAtLabel,
+                              value: _formatDate(project.createdAt, l10n),
+                            ),
+                          ),
+                          Expanded(
+                            child: _DateRow(
                               label: l10n.updatedAtLabel,
-                              value: _formatDate(project.updatedAt!, l10n),
-                              labelSize: 11,
+                              value: project.updatedAt != null
+                                  ? _formatDate(project.updatedAt!, l10n)
+                                  : '-',
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
 
                     const SizedBox(height: 40),
@@ -276,25 +323,30 @@ class ProjectInfoSheet extends ConsumerWidget {
         ),
       ),
     );
-  }
+  });
+}
 
   String _formatDate(DateTime date, AppLocalizations l10n) {
     final local = date.toLocal();
-    return l10n.dateDisplay(local.year.toString(), local.month.toString(), local.day.toString());
+    if (l10n.localeName == 'ko') {
+      final y = local.year;
+      final m = local.month.toString().padLeft(2, '0');
+      final d = local.day.toString().padLeft(2, '0');
+      return '$y년 $m월 $d일';
+    }
+    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
 
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool isMultiLine;
-  final double labelSize;
+  final Color valueColor;
 
   const _InfoRow({
     required this.label,
     required this.value,
-    this.isMultiLine = false,
-    this.labelSize = 13,
+    required this.valueColor,
   });
 
   @override
@@ -305,8 +357,7 @@ class _InfoRow extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: labelSize,
-            fontWeight: FontWeight.w500,
+            fontSize: 14,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
@@ -315,10 +366,45 @@ class _InfoRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            color: valueColor,
+            letterSpacing: -0.31,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DateRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _DateRow({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            letterSpacing: -0.15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
             color: Theme.of(context).colorScheme.onSurface,
-            height: isMultiLine ? 1.5 : 1.2,
+            letterSpacing: -0.15,
           ),
         ),
       ],

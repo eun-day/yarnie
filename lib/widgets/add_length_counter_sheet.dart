@@ -19,7 +19,8 @@ class AddLengthCounterSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddLengthCounterSheet> createState() => _AddLengthCounterSheetState();
+  ConsumerState<AddLengthCounterSheet> createState() =>
+      _AddLengthCounterSheetState();
 }
 
 class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
@@ -35,14 +36,20 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     final targetLength = double.tryParse(_targetLengthController.text);
     final rowHeight = double.tryParse(_rowHeightController.text);
     // targetLength가 rowHeight보다 커야 의미가 있음
-    if (targetLength == null || rowHeight == null || rowHeight <= 0 || targetLength <= rowHeight) return null;
+    if (targetLength == null ||
+        rowHeight == null ||
+        rowHeight <= 0 ||
+        targetLength <= rowHeight)
+      return null;
     return (targetLength / rowHeight).ceil();
   }
 
   String? get _rowHeightError {
     final targetLength = double.tryParse(_targetLengthController.text);
     final rowHeight = double.tryParse(_rowHeightController.text);
-    if (targetLength != null && rowHeight != null && targetLength <= rowHeight) {
+    if (targetLength != null &&
+        rowHeight != null &&
+        targetLength <= rowHeight) {
       return AppLocalizations.of(context)!.rowHeightError;
     }
     return null;
@@ -51,10 +58,12 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final rows = _estimatedRows;
-    
-    return _labelController.text.isNotEmpty && 
-           startRow != null && startRow > 0 && 
-           rows != null && rows > 0;
+
+    return _labelController.text.isNotEmpty &&
+        startRow != null &&
+        startRow > 0 &&
+        rows != null &&
+        rows > 0;
   }
 
   @override
@@ -66,7 +75,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   @override
   void initState() {
     super.initState();
-    
+
     // We can't use AppLocalizations here as context is not fully ready for it yet in some cases,
     // but in initState it's usually okay if it's already in the tree.
     // However, to be safe, we might want to handle default label carefully.
@@ -185,7 +194,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorOccurred(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+        );
       }
     }
   }
@@ -222,7 +233,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                     width: 100,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
@@ -235,7 +248,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? l10n.editLengthCounterTitle : l10n.addLengthCounterTitle,
+                        _isEditing
+                            ? l10n.editLengthCounterTitle
+                            : l10n.addLengthCounterTitle,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -265,7 +280,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                     children: [
                       _buildLabelField(),
                       const SizedBox(height: 16),
-                      
+
                       NumberInputGroup(
                         label: l10n.startStitch,
                         controller: _startRowController,
@@ -278,7 +293,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                       _buildDecimalInputGroup(
                         label: l10n.targetLengthCm,
                         controller: _targetLengthController,
-                        hintText: '예: 25.0',
+                        hintText: l10n.targetLengthHint,
                         min: 1.0,
                       ),
                       const SizedBox(height: 16),
@@ -287,23 +302,33 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                       _buildDecimalInputGroup(
                         label: l10n.rowHeightCm,
                         controller: _rowHeightController,
-                        hintText: '예: 0.33',
+                        hintText: l10n.rowHeightHint,
                         min: 0.1,
-                        helperText: _rowHeightError != null 
-                            ? _rowHeightError! 
+                        helperText: _rowHeightError != null
+                            ? _rowHeightError!
                             : l10n.rowHeightDesc,
-                        helperTextColor: _rowHeightError != null ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                        helperTextColor: _rowHeightError != null
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                         action: GestureDetector(
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.gaugeInputComingSoon)),
+                              SnackBar(
+                                content: Text(l10n.gaugeInputComingSoon),
+                              ),
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
-                              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline,
+                                width: 0.5,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -323,7 +348,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -333,17 +360,23 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                                 l10n.expectedRows,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                   letterSpacing: -0.15,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                l10n.estimatedRowsDisplay(estimatedRows.toString()),
+                                l10n.estimatedRowsDisplay(
+                                  estimatedRows.toString(),
+                                ),
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   letterSpacing: 0.07,
                                 ),
                               ),
@@ -368,7 +401,11 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: _isValid ? Theme.of(context).colorScheme.primary : const Color(0xFF6FB96F).withValues(alpha: 0.5),
+                            color: _isValid
+                                ? Theme.of(context).colorScheme.primary
+                                : const Color(
+                                    0xFF6FB96F,
+                                  ).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -390,7 +427,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.64),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 0.64,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -440,7 +480,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
           ),
           child: TextField(
             controller: _labelController,
-            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -451,7 +494,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
         const SizedBox(height: 4),
         Text(
           l10n.labelHint,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -496,7 +542,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
               onTap: () {
                 final current = double.tryParse(controller.text) ?? 0.0;
                 final next = (current - 0.1).clamp(min, 9999.0); // Use min here
-                controller.text = double.parse(next.toStringAsFixed(2)).toString(); 
+                controller.text = double.parse(
+                  next.toStringAsFixed(2),
+                ).toString();
                 _onInputChanged();
               },
             ),
@@ -512,12 +560,19 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hintText,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -531,7 +586,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
               onTap: () {
                 final current = double.tryParse(controller.text) ?? 0.0;
                 final next = current + 0.1;
-                controller.text = double.parse(next.toStringAsFixed(2)).toString();
+                controller.text = double.parse(
+                  next.toStringAsFixed(2),
+                ).toString();
                 _onInputChanged();
               },
             ),
@@ -542,8 +599,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
           Text(
             helperText,
             style: TextStyle(
-              fontSize: 12, 
-              color: helperTextColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              color:
+                  helperTextColor ??
+                  Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -556,10 +615,7 @@ class _StepButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _StepButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _StepButton({required this.icon, required this.onTap});
 
   @override
   State<_StepButton> createState() => _StepButtonState();
@@ -584,10 +640,14 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? const Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
+          color: _isPressed
+              ? const Color(0xFFC0D2A4)
+              : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: _isPressed ? const Color(0xFFC0D2A4) : Theme.of(context).colorScheme.outline,
-            width: 0.64
+            color: _isPressed
+                ? const Color(0xFFC0D2A4)
+                : Theme.of(context).colorScheme.outline,
+            width: 0.64,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -595,7 +655,9 @@ class _StepButtonState extends State<_StepButton> {
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
+          color: _isPressed
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

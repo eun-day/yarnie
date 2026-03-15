@@ -192,7 +192,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addPartMethodDesc => '프로젝트 상세 화면에서 왼쪽 상단의';
 
   @override
-  String get newPart => '+ 새 파트';
+  String get newPart => '새 파트';
 
   @override
   String get addPartMethodSuffix => '\n버튼을 누르면 새로운 Part를 추가할 수 있어요.';
@@ -456,7 +456,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '카멜레온과 함께 뜨개질 여정을 시작해요\n한 코 한 코가 모여 멋진 작품이 됩니다';
 
   @override
-  String get createNewProject => '새 프로젝트 시작하기';
+  String get createNewProject => '새 프로젝트';
 
   @override
   String get justNow => '방금 전';
@@ -871,6 +871,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repeatUnit => '반복 단위 (행)';
 
   @override
+  String get repeatUnitHint => '예: 4';
+
+  @override
   String get repeatTimes => '반복 횟수';
 
   @override
@@ -1019,7 +1022,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get targetLengthCm => '목표 길이 (cm)';
 
   @override
+  String get targetLengthHint => '예: 25.0';
+
+  @override
   String get rowHeightCm => '1단의 높이 (cm)';
+
+  @override
+  String get rowHeightHint => '예: 0.33';
 
   @override
   String get rowHeightDesc => '뜨개질 샘플에서 1단의 높이를 측정하거나, 저장된 게이지 정보로부터 계산할 수 있어요';
@@ -1373,4 +1382,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mainCounterTitleAlt => '메인 카운터 (MainCounter)';
+
+  @override
+  String countByLabel(Object value) {
+    return 'count by $value';
+  }
 }
