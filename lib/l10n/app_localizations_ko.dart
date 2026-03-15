@@ -1297,6 +1297,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gaugeStandard => '(10cm x 10cm 기준)';
 
   @override
+  String get gaugeStandardInch => '(4in x 4in 기준)';
+
+  @override
   String get noCounters => '카운터가 없습니다.';
 
   @override

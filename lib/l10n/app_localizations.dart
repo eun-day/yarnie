@@ -2528,6 +2528,12 @@ abstract class AppLocalizations {
   /// **'(10cm x 10cm 기준)'**
   String get gaugeStandard;
 
+  /// No description provided for @gaugeStandardInch.
+  ///
+  /// In ko, this message translates to:
+  /// **'(4in x 4in 기준)'**
+  String get gaugeStandardInch;
+
   /// No description provided for @noCounters.
   ///
   /// In ko, this message translates to:

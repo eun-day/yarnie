@@ -349,6 +349,7 @@
   "createdAtLabel": "Created At",
   "updatedAtLabel": "Recently Updated",
   "gaugeStandard": "(per 10cm x 10cm)",
+  "gaugeStandardInch": "(per 4in x 4in)",
   "noCounters": "No counters.",
   "addCounterGuide": "Tap + button to add.",
   "completeWithEmoji": "{name} completed! 🎉",

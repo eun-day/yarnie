@@ -406,6 +406,7 @@
   "createdAtLabel": "생성일",
   "updatedAtLabel": "최근 수정",
   "gaugeStandard": "(10cm x 10cm 기준)",
+  "gaugeStandardInch": "(4in x 4in 기준)",
   "noCounters": "카운터가 없습니다.",
   "addCounterGuide": "+ 버튼을 눌러 추가해보세요.",
   "completeWithEmoji": "{name} 완료! 🎉",

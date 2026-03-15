@@ -1346,6 +1346,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gaugeStandard => '(per 10cm x 10cm)';
 
   @override
+  String get gaugeStandardInch => '(per 4in x 4in)';
+
+  @override
   String get noCounters => 'No counters.';
 
   @override
