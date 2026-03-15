@@ -4,8 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/theme/text_styles.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
+import 'package:yarnie/core/providers/length_unit_provider.dart';
 
-enum LengthUnit { cm, inch }
 enum TouchFeedback { vibration, sound, both, none }
 
 class PreferencesSheet extends ConsumerStatefulWidget {
@@ -16,7 +16,6 @@ class PreferencesSheet extends ConsumerStatefulWidget {
 }
 
 class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
-  LengthUnit _lengthUnit = LengthUnit.cm;
   TouchFeedback _touchFeedback = TouchFeedback.vibration;
   bool _autoBackup = true;
   bool _screenAwake = true;
@@ -294,6 +293,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
   Widget _buildLengthUnitSection() {
     final l10n = AppLocalizations.of(context)!;
+    final lengthUnit = ref.watch(lengthUnitProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -303,16 +304,16 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             Expanded(
               child: _buildRadioOption(
                 label: l10n.lengthCm,
-                isSelected: _lengthUnit == LengthUnit.cm,
-                onTap: () => setState(() => _lengthUnit = LengthUnit.cm),
+                isSelected: lengthUnit == LengthUnit.cm,
+                onTap: () => ref.read(lengthUnitProvider.notifier).setLengthUnit(LengthUnit.cm),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _buildRadioOption(
                 label: l10n.lengthInch,
-                isSelected: _lengthUnit == LengthUnit.inch,
-                onTap: () => setState(() => _lengthUnit = LengthUnit.inch),
+                isSelected: lengthUnit == LengthUnit.inch,
+                onTap: () => ref.read(lengthUnitProvider.notifier).setLengthUnit(LengthUnit.inch),
               ),
             ),
           ],

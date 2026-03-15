@@ -5,6 +5,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/core/providers/length_unit_provider.dart';
 
 class AddLengthCounterSheet extends ConsumerStatefulWidget {
   final int partId;
@@ -154,15 +155,27 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   Future<void> _handleSave() async {
     if (!_isValid) return;
     final l10n = AppLocalizations.of(context)!;
+    final unitSetting = ref.read(lengthUnitProvider);
 
     final name = _labelController.text.trim();
     final startRow = int.parse(_startRowController.text);
-    final targetLength = double.parse(_targetLengthController.text);
-    final rowHeight = double.parse(_rowHeightController.text);
+    final targetLengthInput = double.parse(_targetLengthController.text);
+    final rowHeightInput = double.parse(_rowHeightController.text);
     final totalRows = _estimatedRows!;
 
-    // Convert back to gauge for storage
-    final gauge = 10 / rowHeight;
+    // We store internal values in cm for consistency if needed,
+    // OR we store what user input and the unit.
+    // The current logic uses 'rowHeight' for calculations.
+    // Let's keep the user's input as is but mark the unit.
+    // If unit is inch, targetLength is in inches, rowHeight is in inches.
+    // Calculations like (targetLength / rowHeight) still work because units cancel out.
+
+    // Convert to cm for 'gaugeRowsPer10cm' if we want to keep that field consistent
+    double rowHeightCm = rowHeightInput;
+    if (unitSetting == LengthUnit.inch) {
+      rowHeightCm = rowHeightInput * 2.54;
+    }
+    final gauge = 10 / rowHeightCm;
 
     // Spec JSON Construction
     final spec = {
@@ -170,11 +183,13 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
       'startRow': startRow,
       'rowsTotal': totalRows, // Important for DB
       'mode': 'target',
-      'units': 'cm',
-      'targetLength': targetLength,
+      'units': unitSetting.name,
+      'targetLength': targetLengthInput,
       'gaugeRowsPer10cm': gauge,
-      'rowHeight': rowHeight,
-      'targetInfo': l10n.targetInfoLength(targetLength.toString()),
+      'rowHeight': rowHeightInput,
+      'targetInfo': unitSetting == LengthUnit.cm
+          ? l10n.targetInfoLength(targetLengthInput.toString())
+          : l10n.targetInfoLengthInch(targetLengthInput.toString()),
     };
 
     try {
@@ -205,6 +220,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   Widget build(BuildContext context) {
     _initializeControllers();
     final l10n = AppLocalizations.of(context)!;
+    final unitSetting = ref.watch(lengthUnitProvider);
     final estimatedRows = _estimatedRows;
 
     return Container(
@@ -291,7 +307,9 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                       const SizedBox(height: 16),
 
                       _buildDecimalInputGroup(
-                        label: l10n.targetLengthCm,
+                        label: unitSetting == LengthUnit.cm
+                            ? l10n.targetLengthCm
+                            : l10n.targetLengthInch,
                         controller: _targetLengthController,
                         hintText: l10n.targetLengthHint,
                         min: 1.0,
@@ -300,10 +318,12 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
                       // Row Height (Decimal allowed)
                       _buildDecimalInputGroup(
-                        label: l10n.rowHeightCm,
+                        label: unitSetting == LengthUnit.cm
+                            ? l10n.rowHeightCm
+                            : l10n.rowHeightInch,
                         controller: _rowHeightController,
                         hintText: l10n.rowHeightHint,
-                        min: 0.1,
+                        min: 0.01,
                         helperText: _rowHeightError != null
                             ? _rowHeightError!
                             : l10n.rowHeightDesc,

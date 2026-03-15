@@ -1010,6 +1010,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String targetInfoLengthInch(Object length) {
+    return '목표 ${length}inch';
+  }
+
+  @override
   String get editLengthCounterTitle => '길이 측정 카운터 수정';
 
   @override
@@ -1022,10 +1027,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get targetLengthCm => '목표 길이 (cm)';
 
   @override
+  String get targetLengthInch => '목표 길이 (inch)';
+
+  @override
   String get targetLengthHint => '예: 25.0';
 
   @override
   String get rowHeightCm => '1단의 높이 (cm)';
+
+  @override
+  String get rowHeightInch => '1단의 높이 (inch)';
 
   @override
   String get rowHeightHint => '예: 0.33';
@@ -1206,6 +1217,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gaugeDesc => '10cm x 10cm 안에 몇 코, 몇 단인가요?';
+
+  @override
+  String get gaugeDescInch => '4in x 4in 안에 몇 코, 몇 단인가요?';
 
   @override
   String get stitchesHint => '코 수';

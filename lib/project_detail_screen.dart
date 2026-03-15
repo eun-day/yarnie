@@ -28,6 +28,7 @@ import 'package:yarnie/widgets/target_setting_dialog.dart';
 import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
 
@@ -1170,7 +1171,10 @@ class SectionCounterCardWrapper extends ConsumerWidget {
           )..where((t) => t.partId.equals(counter.partId))).watchSingleOrNull(),
           builder: (context, mainSnapshot) {
             final mainCounterVal = mainSnapshot.data?.currentValue ?? 1;
-            return _buildCard(context, counter, runs, mainCounterVal);
+            // Get lengthUnit outside of _buildCard if needed, but since SectionCounterCardWrapper
+            // is a ConsumerWidget, we can watch it here and pass it down.
+            final lengthUnit = ref.watch(lengthUnitProvider);
+            return _buildCard(context, lengthUnit, counter, runs, mainCounterVal);
           },
         );
       },
@@ -1179,6 +1183,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
 
   Widget _buildCard(
     BuildContext context,
+    LengthUnit globalUnit,
     SectionCounter counter,
     List<SectionRun> runs,
     int currentMainValue,
@@ -1510,15 +1515,27 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         if (runs.isEmpty) return Text('No Data');
         final runL = runs.first;
 
-        final targetLength = spec['targetLength'] as double? ?? 0.0;
-        final rowHeight = spec['rowHeight'] as double? ?? 0.1;
+        final targetLength = (spec['targetLength'] as num? ?? 0.0).toDouble();
+        final rowHeight = (spec['rowHeight'] as num? ?? 0.1).toDouble();
+        final unitInSpec = spec['units']?.toString() ?? 'cm';
 
         final rowsDone = (effectiveValue - runL.startRow + 1).clamp(
           0,
           runL.rowsTotal,
         );
         final rowsLeft = runL.rowsTotal - rowsDone;
-        final remainingLen = (rowsLeft * rowHeight).clamp(0.0, targetLength);
+        double remainingLen = (rowsLeft * rowHeight).clamp(0.0, targetLength);
+
+        // Unit conversion logic:
+        // We want to display in globalUnit.
+        // remainingLen is currently in unitInSpec.
+        if (unitInSpec != globalUnit.name) {
+          if (unitInSpec == 'cm' && globalUnit == LengthUnit.inch) {
+            remainingLen = remainingLen / 2.54;
+          } else if (unitInSpec == 'inch' && globalUnit == LengthUnit.cm) {
+            remainingLen = remainingLen * 2.54;
+          }
+        }
 
         final progressL = runL.rowsTotal > 0 ? rowsDone / runL.rowsTotal : 0.0;
 
@@ -1531,6 +1548,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
           LengthCounterCard(
             label: counter.name,
             remainingLength: remainingLen,
+            unit: globalUnit.name,
             startRow: runL.startRow,
             endRow: runL.startRow + runL.rowsTotal - 1,
             currentProgress: progressL,
