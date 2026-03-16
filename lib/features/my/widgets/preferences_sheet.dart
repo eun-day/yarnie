@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/theme/text_styles.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
+import 'package:yarnie/core/services/backup_service.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
 
 enum TouchFeedback { vibration, sound, both, none }
 
@@ -377,7 +380,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           subtitle: l10n.exportDataSub,
           isHighlighted: false,
           trailing: SvgPicture.asset('assets/icons/chevron_right.svg', width: 20, height: 20),
-          onTap: () {},
+          onTap: _exportData,
         ),
         const SizedBox(height: 12),
         _buildOptionCard(
@@ -564,5 +567,34 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         ),
       ),
     );
+  }
+
+  Future<void> _exportData() async {
+    try {
+      final backupPath = await ref.read(backupServiceProvider).exportBackup();
+      final xFile = XFile(backupPath);
+      
+      // 공유 시트 띄우기 (iPad 대응을 위해 sharePositionOrigin 설정 권장)
+      final box = context.findRenderObject() as RenderBox?;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [xFile],
+          subject: 'Yarnie Data Backup',
+          sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+        ),
+      );
+      
+      // 공유 후 임시 파일 삭제
+      final file = File(backupPath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error exporting data: $e')),
+        );
+      }
+    }
   }
 }
