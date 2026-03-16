@@ -360,7 +360,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(l10n.dataManage),
-        _buildOptionCard(
+        /* _buildOptionCard(
           iconPath: 'assets/icons/data_upload.svg',
           title: l10n.autoBackup,
           subtitle: l10n.autoBackupSub,
@@ -374,7 +374,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             inactiveTrackColor: Colors.grey.shade300,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 12), */
         _buildOptionCard(
           iconPath: 'assets/icons/data_download.svg',
           title: l10n.exportData,
