@@ -7,6 +7,7 @@ import 'package:yarnie/core/providers/locale_provider.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/services/backup_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 enum TouchFeedback { vibration, sound, both, none }
@@ -389,7 +390,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           subtitle: l10n.importDataSub,
           isHighlighted: false,
           trailing: SvgPicture.asset('assets/icons/chevron_right.svg', width: 20, height: 20),
-          onTap: () {},
+          onTap: _importData,
         ),
       ],
     );
@@ -570,31 +571,117 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Future<void> _exportData() async {
+    _showLoadingDialog();
     try {
       final backupPath = await ref.read(backupServiceProvider).exportBackup();
-      final xFile = XFile(backupPath);
       
-      // 공유 시트 띄우기 (iPad 대응을 위해 sharePositionOrigin 설정 권장)
+      if (!mounted) return;
+      Navigator.pop(context); // 로딩 다이얼로그 닫기
+
+      final xFile = XFile(backupPath);
       final box = context.findRenderObject() as RenderBox?;
+      
+      // 공유 시트가 닫힐 때까지 대기
       await SharePlus.instance.share(
         ShareParams(
           files: [xFile],
-          subject: 'Yarnie Data Backup',
           sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
         ),
       );
       
-      // 공유 후 임시 파일 삭제
+      // 공유 완료 후 시트 닫고 메시지 표시
+      if (mounted) {
+        final messenger = ScaffoldMessenger.of(context);
+        Navigator.pop(context); // PreferencesSheet 닫기
+        
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('데이터 내보내기가 완료되었습니다!'),
+            backgroundColor: Color(0xFF6FB96F),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      
       final file = File(backupPath);
       if (await file.exists()) {
         await file.delete();
       }
     } catch (e) {
       if (mounted) {
+        if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error exporting data: $e')),
+          SnackBar(content: Text('내보내기 실패: $e')),
         );
       }
     }
+  }
+
+  Future<void> _importData() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result == null || result.files.single.path == null) return;
+
+      if (!mounted) return;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.importData),
+          content: const Text('기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('계속하기', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm != true) return;
+
+      if (!mounted) return;
+      _showLoadingDialog(); // 로딩 시작
+
+      await ref.read(backupServiceProvider).importBackup(result.files.single.path!);
+
+      if (mounted) {
+        final messenger = ScaffoldMessenger.of(context);
+        Navigator.pop(context); // 로딩 다이얼로그 닫기
+        Navigator.pop(context); // PreferencesSheet 닫기 (메시지를 보이게 하기 위함)
+        
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('데이터 복원이 완료되었습니다!'),
+            backgroundColor: Color(0xFF6FB96F),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        if (Navigator.canPop(context)) Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('복원 실패: $e')),
+        );
+      }
+    }
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }
