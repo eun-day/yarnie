@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/widgets/exit_confirm_dialog.dart';
 import '../../features/home/home_root.dart';
 import '../../features/projects/projects_root.dart';
 import '../../features/my/my_root.dart';
@@ -15,8 +16,6 @@ class RootScaffold extends StatefulWidget {
 class _RootScaffoldState extends State<RootScaffold> {
   final _bucket = PageStorageBucket();
   int _index = 0;
-  DateTime? _lastBack; // 마지막 뒤로가기 시간
-  final Duration _exitInterval = const Duration(seconds: 2);
 
   // 탭 재탭 시 맨 위로 스크롤용 컨트롤러
   final _homeCtrl = ScrollController();
@@ -43,7 +42,7 @@ class _RootScaffoldState extends State<RootScaffold> {
     setState(() => _index = i);
   }
 
-void _handleBack(bool didPop, Object? result) {
+Future<void> _handleBack(bool didPop, Object? result) async {
     if (didPop) return;
 
     if (_index != 0) {
@@ -54,19 +53,15 @@ void _handleBack(bool didPop, Object? result) {
     // iOS에선 조용히 무시
     if (!Platform.isAndroid) return;
 
-    // Android: 두 번 눌러 종료
-    final now = DateTime.now();
-    final canExit = _lastBack != null && now.difference(_lastBack!) < _exitInterval;
+    // Android: 앱 종료 확인 팝업 노출
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) => const ExitConfirmDialog(),
+    );
 
-    if (canExit) {
+    if (shouldExit == true) {
       SystemNavigator.pop(); // 종료
-      return;
     }
-
-    _lastBack = now;
-    final m = ScaffoldMessenger.of(context);
-    m.removeCurrentSnackBar();
-    m.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.exitConfirm), duration: Duration(seconds: 2)));
   }
 
   @override

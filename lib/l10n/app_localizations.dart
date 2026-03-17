@@ -1856,6 +1856,24 @@ abstract class AppLocalizations {
   /// **'한 번 더 누르면 종료됩니다.'**
   String get exitConfirm;
 
+  /// No description provided for @exitAppTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱을 종료하시겠습니까?'**
+  String get exitAppTitle;
+
+  /// No description provided for @exitAppMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료하시려면 아래 버튼을 눌러주세요.'**
+  String get exitAppMessage;
+
+  /// No description provided for @exit.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get exit;
+
   /// No description provided for @home.
   ///
   /// In ko, this message translates to:
