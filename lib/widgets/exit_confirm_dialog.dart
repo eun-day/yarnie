@@ -101,54 +101,60 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
                       ),
                     ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             // Buttons
-            GestureDetector(
-              onTap: () => Navigator.pop(context, true),
-              child: Container(
-                height: 36,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurface,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  l10n.exit,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: colorScheme.surface,
-                    letterSpacing: -0.15,
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context, false),
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: colorScheme.outline,
+                          width: 0.694,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.cancel,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () => Navigator.pop(context, false),
-              child: Container(
-                height: 36,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: colorScheme.outline,
-                    width: 0.694,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context, true),
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: colorScheme.onSurface,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.exit,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.surface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  l10n.cancel,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: colorScheme.onSurface,
-                    letterSpacing: -0.15,
-                  ),
-                ),
-              ),
+              ],
             ),
           ],
         ),
