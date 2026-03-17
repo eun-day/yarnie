@@ -31,28 +31,21 @@ class LocaleNotifier extends Notifier<AppLanguage> {
   }
 
   AppLanguage _loadPreference() {
-    final savedCode = _prefs.getString(_languagePrefsKey);
-    if (savedCode == 'ko') {
-      return AppLanguage.ko;
-    } else if (savedCode == 'en') {
-      return AppLanguage.en;
-    } else {
+    final savedName = _prefs.getString(_languagePrefsKey);
+    try {
+      return AppLanguage.values.firstWhere((e) => e.name == savedName);
+    } catch (_) {
       return AppLanguage.auto;
     }
   }
 
   Future<void> setLanguage(AppLanguage language) async {
+    if (state == language) return;
     state = language;
-    switch (language) {
-      case AppLanguage.ko:
-        await _prefs.setString(_languagePrefsKey, 'ko');
-        break;
-      case AppLanguage.en:
-        await _prefs.setString(_languagePrefsKey, 'en');
-        break;
-      case AppLanguage.auto:
-        await _prefs.remove(_languagePrefsKey);
-        break;
+    if (language == AppLanguage.auto) {
+      await _prefs.remove(_languagePrefsKey);
+    } else {
+      await _prefs.setString(_languagePrefsKey, language.name);
     }
   }
 }

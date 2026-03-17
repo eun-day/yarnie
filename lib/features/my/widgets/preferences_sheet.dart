@@ -20,8 +20,6 @@ class PreferencesSheet extends ConsumerStatefulWidget {
 }
 
 class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
-  bool _autoBackup = true;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -88,36 +86,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                   _buildSessionSettingSection(settings),
                   const SizedBox(height: 32),
                   _buildTouchFeedbackSection(settings),
-                  const SizedBox(height: 48), // Bottom padding before save button
+                  const SizedBox(height: 48), // Bottom padding
                 ],
-              ),
-            ),
-            // Save Button
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.surface,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    l10n.save,
-                    style: AppTextStyles.bodyM.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.surface,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],
@@ -246,25 +216,25 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
               _buildLanguageOption(
                 label: l10n.autoWithDeviceSetting,
                 isSelected: currentLanguage == AppLanguage.auto,
-                onTap: () {
-                  ref.read(localeProvider.notifier).setLanguage(AppLanguage.auto);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await ref.read(localeProvider.notifier).setLanguage(AppLanguage.auto);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
               _buildLanguageOption(
                 label: 'English',
                 isSelected: currentLanguage == AppLanguage.en,
-                onTap: () {
-                  ref.read(localeProvider.notifier).setLanguage(AppLanguage.en);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await ref.read(localeProvider.notifier).setLanguage(AppLanguage.en);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
               _buildLanguageOption(
                 label: l10n.korean,
                 isSelected: currentLanguage == AppLanguage.ko,
-                onTap: () {
-                  ref.read(localeProvider.notifier).setLanguage(AppLanguage.ko);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await ref.read(localeProvider.notifier).setLanguage(AppLanguage.ko);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
               const SizedBox(height: 16),
@@ -360,6 +330,21 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(l10n.dataManage),
+        /* _buildOptionCard(
+          iconPath: 'assets/icons/data_upload.svg',
+          title: l10n.autoBackup,
+          subtitle: l10n.autoBackupSub,
+          isHighlighted: true,
+          trailing: Switch(
+            value: false, // 임시 값
+            onChanged: (val) {},
+            activeColor: Theme.of(context).colorScheme.surface,
+            activeTrackColor: const Color(0xFF6FB96F),
+            inactiveThumbColor: Theme.of(context).colorScheme.surface,
+            inactiveTrackColor: Colors.grey.shade300,
+          ),
+        ),
+        const SizedBox(height: 12), */
         _buildOptionCard(
           iconPath: 'assets/icons/data_download.svg',
           title: l10n.exportData,
@@ -522,8 +507,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
 
     return InkWell(
       enableFeedback: false,
-      onTap: () {
-        ref.read(settingsProvider.notifier).setTouchFeedback(type);
+      onTap: () async {
+        await ref.read(settingsProvider.notifier).setTouchFeedback(type);
         HapticHelper.validateAndFeedback(type);
       },
       borderRadius: BorderRadius.circular(10),
@@ -575,18 +560,17 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       final xFile = XFile(backupPath);
       final box = context.findRenderObject() as RenderBox?;
       
-      // 공유 시트가 닫힐 때까지 대기
-      await SharePlus.instance.share(
+      // 공유 시트 호출 및 결과 확인
+      final result = await SharePlus.instance.share(
         ShareParams(
           files: [xFile],
           sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
         ),
       );
       
-      // 공유 완료 후 시트 닫고 메시지 표시
-      if (mounted) {
+      // 실제 전송(Success)되었을 때만 성공 메시지 표시
+      if (result.status == ShareResultStatus.success && mounted) {
         final messenger = ScaffoldMessenger.of(context);
-        Navigator.pop(context); // PreferencesSheet 닫기
         
         messenger.clearSnackBars();
         messenger.showSnackBar(

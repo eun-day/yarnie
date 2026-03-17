@@ -25,6 +25,7 @@ class LengthUnitNotifier extends Notifier<LengthUnit> {
   }
 
   Future<void> setLengthUnit(LengthUnit unit) async {
+    if (state == unit) return;
     state = unit;
     await _prefs.setString(_lengthUnitPrefsKey, unit.name);
   }
