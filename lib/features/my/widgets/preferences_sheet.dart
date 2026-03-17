@@ -5,12 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/theme/text_styles.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
+import 'package:yarnie/core/providers/settings_provider.dart';
+import 'package:yarnie/common/haptic_helper.dart';
 import 'package:yarnie/core/services/backup_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
-
-enum TouchFeedback { vibration, sound, both, none }
 
 class PreferencesSheet extends ConsumerStatefulWidget {
   const PreferencesSheet({super.key});
@@ -20,13 +20,13 @@ class PreferencesSheet extends ConsumerStatefulWidget {
 }
 
 class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
-  TouchFeedback _touchFeedback = TouchFeedback.vibration;
   bool _autoBackup = true;
-  bool _screenAwake = true;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -85,9 +85,9 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                   const SizedBox(height: 32),
                   _buildDataManageSection(),
                   const SizedBox(height: 32),
-                  _buildSessionSettingSection(),
+                  _buildSessionSettingSection(settings),
                   const SizedBox(height: 32),
-                  _buildTouchFeedbackSection(),
+                  _buildTouchFeedbackSection(settings),
                   const SizedBox(height: 48), // Bottom padding before save button
                 ],
               ),
@@ -360,21 +360,6 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(l10n.dataManage),
-        /* _buildOptionCard(
-          iconPath: 'assets/icons/data_upload.svg',
-          title: l10n.autoBackup,
-          subtitle: l10n.autoBackupSub,
-          isHighlighted: true,
-          trailing: Switch(
-            value: _autoBackup,
-            onChanged: (val) => setState(() => _autoBackup = val),
-            activeColor: Theme.of(context).colorScheme.surface,
-            activeTrackColor: const Color(0xFF6FB96F),
-            inactiveThumbColor: Theme.of(context).colorScheme.surface,
-            inactiveTrackColor: Colors.grey.shade300,
-          ),
-        ),
-        const SizedBox(height: 12), */
         _buildOptionCard(
           iconPath: 'assets/icons/data_download.svg',
           title: l10n.exportData,
@@ -396,7 +381,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     );
   }
 
-  Widget _buildSessionSettingSection() {
+  Widget _buildSessionSettingSection(AppSettings settings) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,8 +393,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           subtitle: l10n.screenAwakeSub,
           isHighlighted: true,
           trailing: Switch(
-            value: _screenAwake,
-            onChanged: (val) => setState(() => _screenAwake = val),
+            value: settings.screenAwake,
+            onChanged: (val) => ref.read(settingsProvider.notifier).setScreenAwake(val),
             activeColor: Theme.of(context).colorScheme.surface,
             activeTrackColor: const Color(0xFF6FB96F),
             inactiveThumbColor: Theme.of(context).colorScheme.surface,
@@ -475,7 +460,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     );
   }
 
-  Widget _buildTouchFeedbackSection() {
+  Widget _buildTouchFeedbackSection(AppSettings settings) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,28 +477,32 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           physics: const NeverScrollableScrollPhysics(),
             children: [
               _buildFeedbackCard(
-                type: TouchFeedback.vibration,
+                type: TouchFeedbackType.vibration,
                 label: l10n.vibrate,
                 activeIconPath: 'assets/icons/phone_active.svg',
                 inactiveIconPath: 'assets/icons/phone_inactive.svg',
+                currentType: settings.touchFeedback,
               ),
               _buildFeedbackCard(
-                type: TouchFeedback.sound,
+                type: TouchFeedbackType.sound,
                 label: l10n.sound,
                 activeIconPath: 'assets/icons/sound_inactive.svg', // Assuming sound doesn't change color just usage
                 inactiveIconPath: 'assets/icons/sound_inactive.svg',
+                currentType: settings.touchFeedback,
               ),
               _buildFeedbackCard(
-                type: TouchFeedback.both,
+                type: TouchFeedbackType.both,
                 label: l10n.both,
                 activeIconPath: 'assets/icons/phone_inactive.svg', 
                 inactiveIconPath: 'assets/icons/phone_inactive.svg',
+                currentType: settings.touchFeedback,
               ),
               _buildFeedbackCard(
-                type: TouchFeedback.none,
+                type: TouchFeedbackType.none,
                 label: l10n.none,
                 activeIconPath: null,
                 inactiveIconPath: null,
+                currentType: settings.touchFeedback,
               ),
             ],
           ),
@@ -522,16 +511,21 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
   }
 
   Widget _buildFeedbackCard({
-    required TouchFeedback type,
+    required TouchFeedbackType type,
     required String label,
     required String? activeIconPath,
     required String? inactiveIconPath,
+    required TouchFeedbackType currentType,
   }) {
-    final isSelected = _touchFeedback == type;
+    final isSelected = currentType == type;
     final iconPath = isSelected ? activeIconPath : inactiveIconPath;
 
     return InkWell(
-      onTap: () => setState(() => _touchFeedback = type),
+      enableFeedback: false,
+      onTap: () {
+        ref.read(settingsProvider.notifier).setTouchFeedback(type);
+        HapticHelper.validateAndFeedback(type);
+      },
       borderRadius: BorderRadius.circular(10),
       child: Container(
         decoration: BoxDecoration(

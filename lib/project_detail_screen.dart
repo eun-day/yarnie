@@ -29,6 +29,8 @@ import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
+import 'package:yarnie/core/providers/settings_provider.dart';
+import 'package:yarnie/common/haptic_helper.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
 
@@ -936,15 +938,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   }
 }
 
-class BuddyCounterListWidget extends StatefulWidget {
+class BuddyCounterListWidget extends ConsumerStatefulWidget {
   final int partId;
   const BuddyCounterListWidget({super.key, required this.partId});
 
   @override
-  State<BuddyCounterListWidget> createState() => _BuddyCounterListWidgetState();
+  ConsumerState<BuddyCounterListWidget> createState() => _BuddyCounterListWidgetState();
 }
 
-class _BuddyCounterListWidgetState extends State<BuddyCounterListWidget> {
+class _BuddyCounterListWidgetState extends ConsumerState<BuddyCounterListWidget> {
   List<StitchCounter> _stitchCounters = [];
   List<SectionCounter> _sectionCounters = [];
   String? _buddyCounterOrder;
@@ -1815,13 +1817,14 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   }
 }
 
-class MainCounterWidget extends StatelessWidget {
+class MainCounterWidget extends ConsumerWidget {
   final int partId;
   const MainCounterWidget({super.key, required this.partId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
     return StreamBuilder<MainCounter?>(
       stream: (appDb.select(
         appDb.mainCounters,
@@ -1856,12 +1859,14 @@ class MainCounterWidget extends StatelessWidget {
                         0xFFC0D2A4,
                       ), // Decrement Button Default
                       child: InkWell(
+                        enableFeedback: false,
                         splashColor: const Color(0xFF7D8D6A), // Splashing color
                         highlightColor: const Color(
                           0xFFAABF93,
                         ), // Active (Pressed) state color
                         onTap: () {
                           if (currentValue > 1) {
+                            HapticHelper.validateAndFeedback(settings.touchFeedback);
                             appDb.updateMainCounter(
                               partId: partId,
                               newValue: currentValue - 1,
@@ -1887,11 +1892,13 @@ class MainCounterWidget extends StatelessWidget {
                         0xFF6FB96F,
                       ), // Increment Button Default
                       child: InkWell(
+                        enableFeedback: false,
                         splashColor: const Color(0xFF4C8A4C), // Splashing color
                         highlightColor: const Color(
                           0xFF63A763,
                         ), // Active (Pressed) state color
                         onTap: () {
+                          HapticHelper.validateAndFeedback(settings.touchFeedback);
                           appDb.updateMainCounter(
                             partId: partId,
                             newValue: currentValue + 1,
