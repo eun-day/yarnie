@@ -2,7 +2,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
@@ -49,9 +51,57 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   StreamSubscription<MainCounter?>? _mainCounterSub;
   int? _prevMainValue;
 
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+  AdSize? _adSize;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadBannerAd();
+  }
+
+  Future<void> _loadBannerAd() async {
+    if (_bannerAd != null) return;
+
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getAnchoredAdaptiveBannerAdSize(
+      orientation,
+      MediaQuery.of(context).size.width.truncate(),
+    );
+
+    if (size == null) {
+      debugPrint('Unable to get adaptive banner size.');
+      return;
+    }
+
+    _adSize = size;
+
+    _bannerAd = BannerAd(
+      adUnitId: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716',
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint('BannerAd failed to load: $error');
+        },
+      ),
+    )..load();
+  }
+
   @override
   void dispose() {
     _mainCounterSub?.cancel();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -362,6 +412,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(Icons.add, color: Theme.of(context).colorScheme.surface),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: _adSize?.height.toDouble() ?? AdSize.banner.height.toDouble(),
+          width: _adSize?.width.toDouble() ?? double.infinity,
+          child: _isAdLoaded && _bannerAd != null
+              ? AdWidget(ad: _bannerAd!)
+              : const SizedBox.shrink(),
+        ),
       ),
     );
   }
