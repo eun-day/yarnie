@@ -2,7 +2,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
@@ -49,9 +51,40 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   StreamSubscription<MainCounter?>? _mainCounterSub;
   int? _prevMainValue;
 
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint('BannerAd failed to load: $error');
+        },
+      ),
+    )..load();
+  }
+
   @override
   void dispose() {
     _mainCounterSub?.cancel();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -362,6 +395,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(Icons.add, color: Theme.of(context).colorScheme.surface),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: AdSize.banner.height.toDouble(),
+          width: AdSize.banner.width.toDouble(),
+          child: _isAdLoaded && _bannerAd != null
+              ? AdWidget(ad: _bannerAd!)
+              : const SizedBox.shrink(),
+        ),
       ),
     );
   }
