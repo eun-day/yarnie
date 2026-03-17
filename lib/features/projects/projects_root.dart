@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +13,7 @@ import '../../widgets/tag_chip.dart';
 import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 import '../../widgets/project_list_tile.dart';
+import '../../widgets/project_native_ad.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -25,6 +28,9 @@ class ProjectsRoot extends ConsumerStatefulWidget {
 }
 
 class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
+  NativeAd? _smallAd;
+  NativeAd? _mediumAd;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +39,68 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
       ref.read(projectsProvider.notifier).onEvent(const LoadProjects());
       _loadViewMode();
     });
+    _loadAds();
+  }
+
+  @override
+  void dispose() {
+    _smallAd?.dispose();
+    _mediumAd?.dispose();
+    super.dispose();
+  }
+
+  void _loadAds() {
+    final adUnitId = Platform.isAndroid
+        ? 'ca-app-pub-3940256099942544/2247696110'
+        : 'ca-app-pub-3940256099942544/3986624511';
+
+    // Load Small Ad
+    _smallAd = NativeAd(
+      adUnitId: adUnitId,
+      listener: NativeAdListener(
+        onAdLoaded: (ad) {
+          debugPrint('Small $NativeAd loaded.');
+          if (mounted) setState(() {});
+        },
+        onAdFailedToLoad: (ad, error) {
+          debugPrint('Small $NativeAd failed to load: $error');
+          ad.dispose();
+          if (mounted) {
+            setState(() {
+              _smallAd = null;
+            });
+          }
+        },
+      ),
+      request: const AdRequest(),
+      nativeTemplateStyle: NativeTemplateStyle(
+        templateType: TemplateType.small,
+      ),
+    )..load();
+
+    // Load Medium Ad
+    _mediumAd = NativeAd(
+      adUnitId: adUnitId,
+      listener: NativeAdListener(
+        onAdLoaded: (ad) {
+          debugPrint('Medium $NativeAd loaded.');
+          if (mounted) setState(() {});
+        },
+        onAdFailedToLoad: (ad, error) {
+          debugPrint('Medium $NativeAd failed to load: $error');
+          ad.dispose();
+          if (mounted) {
+            setState(() {
+              _mediumAd = null;
+            });
+          }
+        },
+      ),
+      request: const AdRequest(),
+      nativeTemplateStyle: NativeTemplateStyle(
+        templateType: TemplateType.medium,
+      ),
+    )..load();
   }
 
   /// 저장된 뷰 모드 불러오기
@@ -161,6 +229,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
           onLongPress: (id) => _showProjectMenu(id),
+          ad: _mediumAd,
         );
       case ProjectViewMode.smallCard:
         return _SmallCardView(
@@ -168,6 +237,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
           onLongPress: (id) => _showProjectMenu(id),
+          ad: _smallAd,
         );
       case ProjectViewMode.list:
         return _ListView(
@@ -175,6 +245,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
           onLongPress: (id) => _showProjectMenu(id),
+          ad: _smallAd,
         );
     }
   }
@@ -412,20 +483,28 @@ class _LargeCardView extends StatelessWidget {
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
+  final NativeAd? ad;
 
   const _LargeCardView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
     required this.onLongPress,
+    this.ad,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showAd = ad != null && projects.isNotEmpty;
+
     return ListView.builder(
       padding: EdgeInsets.all(16),
-      itemCount: projects.length,
+      itemCount: projects.length + (showAd ? 1 : 0),
       itemBuilder: (context, index) {
+        if (showAd && index == projects.length) {
+          return ProjectNativeAd(ad: ad!, type: TemplateType.medium);
+        }
+
         final project = projects[index];
         return Padding(
           padding: EdgeInsets.only(bottom: 16.0),
@@ -623,16 +702,20 @@ class _SmallCardView extends StatelessWidget {
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
+  final NativeAd? ad;
 
   const _SmallCardView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
     required this.onLongPress,
+    this.ad,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showAd = ad != null && projects.isNotEmpty;
+
     return GridView.builder(
       padding: EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -641,8 +724,12 @@ class _SmallCardView extends StatelessWidget {
         mainAxisSpacing: 12,
         childAspectRatio: 4 / 3,
       ),
-      itemCount: projects.length,
+      itemCount: projects.length + (showAd ? 1 : 0),
       itemBuilder: (context, index) {
+        if (showAd && index == projects.length) {
+          return ProjectNativeAd(ad: ad!, type: TemplateType.small);
+        }
+
         final project = projects[index];
         return _SmallProjectCard(
           project: project,
@@ -782,20 +869,28 @@ class _ListView extends StatelessWidget {
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
+  final NativeAd? ad;
 
   const _ListView({
     required this.projects,
     required this.tags,
     required this.onProjectTap,
     required this.onLongPress,
+    this.ad,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showAd = ad != null && projects.isNotEmpty;
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: projects.length,
+      itemCount: projects.length + (showAd ? 1 : 0),
       itemBuilder: (context, index) {
+        if (showAd && index == projects.length) {
+          return ProjectNativeAd(ad: ad!, type: TemplateType.small);
+        }
+
         final project = projects[index];
         return ProjectListTile(
           project: project,
