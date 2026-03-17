@@ -988,6 +988,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exitConfirm => 'Press again to exit.';
 
   @override
+  String get exitAppTitle => 'Do you want to exit the app?';
+
+  @override
+  String get exitAppMessage => 'Please press the button below to exit.';
+
+  @override
+  String get exit => 'Exit';
+
+  @override
   String get home => 'Home';
 
   @override

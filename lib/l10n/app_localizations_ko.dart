@@ -942,6 +942,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exitConfirm => '한 번 더 누르면 종료됩니다.';
 
   @override
+  String get exitAppTitle => '앱을 종료하시겠습니까?';
+
+  @override
+  String get exitAppMessage => '종료하시려면 아래 버튼을 눌러주세요.';
+
+  @override
+  String get exit => '종료';
+
+  @override
   String get home => '홈';
 
   @override
