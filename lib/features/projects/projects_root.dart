@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import '../../widgets/tag_chip.dart';
 import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 import '../../widgets/project_list_tile.dart';
+import '../../widgets/common_banner_ad.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -131,6 +133,11 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
             Expanded(child: _buildBody(state)),
           ],
         ),
+      ),
+      bottomNavigationBar: CommonBannerAdWidget(
+        adUnitId: Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/6300978111'
+            : 'ca-app-pub-3940256099942544/2934735716',
       ),
     );
   }
