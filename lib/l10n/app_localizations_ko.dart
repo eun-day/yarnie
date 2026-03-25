@@ -1419,4 +1419,59 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get yarniePremiumSub => '더 많은 기능을 무제한으로';
+
+  @override
+  String get premiumTitle1 => '제한 없이 자유롭게,';
+
+  @override
+  String get premiumTitle2 => '나만의 뜨개 세상을 넓혀보세요!';
+
+  @override
+  String get premiumFeature1Title => '광고 완벽 제거';
+
+  @override
+  String get premiumFeature1Sub => '방해 없는 온전한 뜨개 시간';
+
+  @override
+  String get premiumFeature2Title => '프로젝트 무제한';
+
+  @override
+  String get premiumFeature2Sub => '원하는 만큼 문어발 늘리기';
+
+  @override
+  String get premiumFeature3Title => 'Part & 카운터 무제한';
+
+  @override
+  String get premiumFeature3Sub => '복잡한 도안도 문제없이 추적';
+
+  @override
+  String get premiumComingSoon => '추후 업데이트될 통계 및 위젯 기능도 추가 비용 없이 누리세요!';
+
+  @override
+  String get premiumPrice => '6,900원';
+
+  @override
+  String get premiumPriceDesc => '월 구독료 없이, 평생 소장';
+
+  @override
+  String get premiumOneTime => 'One-time payment';
+
+  @override
+  String get premiumStartBtn => 'Yarnie 프리미엄 시작하기';
+
+  @override
+  String get premiumBtnDesc => '구매 후 즉시 모든 프리미엄 기능을 사용할 수 있어요';
+
+  @override
+  String get premiumRestore => '구매 복원';
+
+  @override
+  String get premiumTerms => '이용약관';
+
+  @override
+  String get premiumPrivacy => '개인정보처리방침';
+
+  @override
+  String get premiumFooterDesc =>
+      '구매는 Apple ID 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.';
 }
