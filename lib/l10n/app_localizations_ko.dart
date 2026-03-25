@@ -1413,4 +1413,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String countByLabel(Object value) {
     return 'count by $value';
   }
+
+  @override
+  String get yarniePremium => 'Yarnie 프리미엄';
+
+  @override
+  String get yarniePremiumSub => '더 많은 기능을 무제한으로';
 }

@@ -111,6 +111,16 @@ class _MyRootState extends ConsumerState<MyRoot> {
                     },
                   ),
                   SettingItem(
+                    iconPath: 'assets/icons/yarnie_premium.svg',
+                    title: AppLocalizations.of(context)!.yarniePremium,
+                    subtitle: AppLocalizations.of(context)!.yarniePremiumSub,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(AppLocalizations.of(context)!.comingSoon)),
+                      );
+                    },
+                  ),
+                  SettingItem(
                     iconPath: 'assets/icons/app_info.svg',
                     title: AppLocalizations.of(context)!.appInfo,
                     subtitle: AppLocalizations.of(context)!.appVersion,

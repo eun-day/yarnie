@@ -2749,6 +2749,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'count by {value}'**
   String countByLabel(Object value);
+
+  /// No description provided for @yarniePremium.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yarnie 프리미엄'**
+  String get yarniePremium;
+
+  /// No description provided for @yarniePremiumSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'더 많은 기능을 무제한으로'**
+  String get yarniePremiumSub;
 }
 
 class _AppLocalizationsDelegate

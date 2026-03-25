@@ -442,5 +442,7 @@
   "deleteForeverTitle": "완전 삭제",
   "deleteForeverConfirmMessage": "이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
   "mainCounterTitleAlt": "메인 카운터 (MainCounter)",
-  "countByLabel": "count by {value}"
+  "countByLabel": "count by {value}",
+  "yarniePremium": "Yarnie 프리미엄",
+  "yarniePremiumSub": "더 많은 기능을 무제한으로"
 }

@@ -441,5 +441,7 @@
   "targetLengthInch": "Target Length (inch)",
   "targetLengthHint": "e.g., 25.0",
   "targetRow": "Target Row",
-  "countByLabel": "count by {value}"
+  "countByLabel": "count by {value}",
+  "yarniePremium": "Yarnie Premium",
+  "yarniePremiumSub": "Unlimited features"
 }

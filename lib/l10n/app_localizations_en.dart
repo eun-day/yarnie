@@ -1463,4 +1463,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String countByLabel(Object value) {
     return 'count by $value';
   }
+
+  @override
+  String get yarniePremium => 'Yarnie Premium';
+
+  @override
+  String get yarniePremiumSub => 'Unlimited features';
 }
