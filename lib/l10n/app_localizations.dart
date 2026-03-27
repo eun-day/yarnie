@@ -2749,6 +2749,126 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'count by {value}'**
   String countByLabel(Object value);
+
+  /// No description provided for @yarniePremium.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yarnie 프리미엄'**
+  String get yarniePremium;
+
+  /// No description provided for @yarniePremiumSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'더 많은 기능을 무제한으로'**
+  String get yarniePremiumSub;
+
+  /// No description provided for @premiumTitle1.
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 없이 자유롭게,'**
+  String get premiumTitle1;
+
+  /// No description provided for @premiumTitle2.
+  ///
+  /// In ko, this message translates to:
+  /// **'나만의 뜨개 세상을 넓혀보세요!'**
+  String get premiumTitle2;
+
+  /// No description provided for @premiumFeature1Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 완벽 제거'**
+  String get premiumFeature1Title;
+
+  /// No description provided for @premiumFeature1Sub.
+  ///
+  /// In ko, this message translates to:
+  /// **'방해 없는 온전한 뜨개 시간'**
+  String get premiumFeature1Sub;
+
+  /// No description provided for @premiumFeature2Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 무제한'**
+  String get premiumFeature2Title;
+
+  /// No description provided for @premiumFeature2Sub.
+  ///
+  /// In ko, this message translates to:
+  /// **'원하는 만큼 문어발 늘리기'**
+  String get premiumFeature2Sub;
+
+  /// No description provided for @premiumFeature3Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'Part & 카운터 무제한'**
+  String get premiumFeature3Title;
+
+  /// No description provided for @premiumFeature3Sub.
+  ///
+  /// In ko, this message translates to:
+  /// **'복잡한 도안도 문제없이 추적'**
+  String get premiumFeature3Sub;
+
+  /// No description provided for @premiumComingSoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'추후 업데이트될 통계 및 위젯 기능도 추가 비용 없이 누리세요!'**
+  String get premiumComingSoon;
+
+  /// No description provided for @premiumPrice.
+  ///
+  /// In ko, this message translates to:
+  /// **'6,900원'**
+  String get premiumPrice;
+
+  /// No description provided for @premiumPriceDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'월 구독료 없이, 평생 소장'**
+  String get premiumPriceDesc;
+
+  /// No description provided for @premiumOneTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'One-time payment'**
+  String get premiumOneTime;
+
+  /// No description provided for @premiumStartBtn.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yarnie 프리미엄 시작하기'**
+  String get premiumStartBtn;
+
+  /// No description provided for @premiumBtnDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매 후 즉시 모든 프리미엄 기능을 사용할 수 있어요'**
+  String get premiumBtnDesc;
+
+  /// No description provided for @premiumRestore.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매 복원'**
+  String get premiumRestore;
+
+  /// No description provided for @premiumTerms.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용약관'**
+  String get premiumTerms;
+
+  /// No description provided for @premiumPrivacy.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보처리방침'**
+  String get premiumPrivacy;
+
+  /// No description provided for @premiumFooterDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매는 Apple ID 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.'**
+  String get premiumFooterDesc;
 }
 
 class _AppLocalizationsDelegate

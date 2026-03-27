@@ -46,4 +46,15 @@ class AppTextStyles {
     letterSpacing: -0.15,
     color: Colors.black,
   );
+
+  /// Body/S
+  /// Size: 12, Height: 16px, Spacing: 0.0px
+  static TextStyle bodyS = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 16 / 12, // 1.33
+    letterSpacing: 0.0,
+    color: Colors.black,
+  );
 }

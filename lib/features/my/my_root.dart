@@ -7,6 +7,7 @@ import 'package:yarnie/features/my/widgets/preferences_sheet.dart';
 import 'package:yarnie/features/trash/trash_root.dart';
 import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/features/my/widgets/app_info_sheet.dart';
+import 'package:yarnie/features/my/yarnie_premium_screen.dart';
 import 'package:yarnie/core/providers/theme_provider.dart';
 
 class MyRoot extends ConsumerStatefulWidget {
@@ -106,6 +107,19 @@ class _MyRootState extends ConsumerState<MyRoot> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const UserGuideScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  SettingItem(
+                    iconPath: 'assets/icons/yarnie_premium.svg',
+                    title: AppLocalizations.of(context)!.yarniePremium,
+                    subtitle: AppLocalizations.of(context)!.yarniePremiumSub,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const YarniePremiumScreen(),
                         ),
                       );
                     },

@@ -1463,4 +1463,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String countByLabel(Object value) {
     return 'count by $value';
   }
+
+  @override
+  String get yarniePremium => 'Yarnie Premium';
+
+  @override
+  String get yarniePremiumSub => 'Unlimited features';
+
+  @override
+  String get premiumTitle1 => 'Freedom without limits,';
+
+  @override
+  String get premiumTitle2 => 'Expand your knitting world!';
+
+  @override
+  String get premiumFeature1Title => 'Completely ad-free';
+
+  @override
+  String get premiumFeature1Sub => 'Uninterrupted knitting time';
+
+  @override
+  String get premiumFeature2Title => 'Unlimited Projects';
+
+  @override
+  String get premiumFeature2Sub => 'Cast on as many projects as you want';
+
+  @override
+  String get premiumFeature3Title => 'Unlimited Parts & Counters';
+
+  @override
+  String get premiumFeature3Sub => 'Track complex patterns easily';
+
+  @override
+  String get premiumComingSoon =>
+      'Enjoy future statistics and widget updates at no extra cost!';
+
+  @override
+  String get premiumPrice => '\$4.99';
+
+  @override
+  String get premiumPriceDesc => 'No monthly fees, yours forever';
+
+  @override
+  String get premiumOneTime => 'One-time payment';
+
+  @override
+  String get premiumStartBtn => 'Start Yarnie Premium';
+
+  @override
+  String get premiumBtnDesc =>
+      'All premium features are available immediately after purchase';
+
+  @override
+  String get premiumRestore => 'Restore Purchases';
+
+  @override
+  String get premiumTerms => 'Terms of Use';
+
+  @override
+  String get premiumPrivacy => 'Privacy Policy';
+
+  @override
+  String get premiumFooterDesc =>
+      'Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
 }
