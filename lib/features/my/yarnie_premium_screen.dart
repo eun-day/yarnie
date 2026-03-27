@@ -1,10 +1,43 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/theme/text_styles.dart';
 
-class YarniePremiumScreen extends StatelessWidget {
+class YarniePremiumScreen extends ConsumerStatefulWidget {
   const YarniePremiumScreen({super.key});
+
+  @override
+  ConsumerState<YarniePremiumScreen> createState() => _YarniePremiumScreenState();
+}
+
+class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
+  Package? _lifetimePackage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOfferings();
+  }
+
+  Future<void> _loadOfferings() async {
+    try {
+      final offerings = await Purchases.getOfferings();
+      if (offerings.current != null && offerings.current!.lifetime != null) {
+        if (mounted) {
+          setState(() {
+            _lifetimePackage = offerings.current!.lifetime;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading offerings: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +224,7 @@ class YarniePremiumScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            l10n.premiumPrice,
+                            _lifetimePackage?.storeProduct.priceString ?? l10n.premiumPrice,
                             style: AppTextStyles.titleH1.copyWith(
                               fontSize: 36,
                               color: const Color(0xFF0A0A0A),
@@ -228,11 +261,38 @@ class YarniePremiumScreen extends StatelessWidget {
                     
                     // CTA Button
                     InkWell(
-                      onTap: () {
-                        // Handle purchase
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.comingSoon)),
-                        );
+                      onTap: () async {
+                        if (_lifetimePackage == null) return;
+
+                        try {
+                          final purchaseResult = await Purchases.purchasePackage(_lifetimePackage!);
+                          final customerInfo = purchaseResult.customerInfo;
+                          if (customerInfo.entitlements.active.containsKey('premium')) {
+                            if (context.mounted) {
+                              await ref.read(premiumProvider.notifier).refreshStatus();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            }
+                          }
+                        } on PlatformException catch (e) {
+                          if (context.mounted) {
+                            var errorCode = PurchasesErrorHelper.getErrorCode(e);
+                            if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.premiumPurchaseCancelled)),
+                              );
+                            } else if (errorCode == PurchasesErrorCode.networkError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.premiumNetworkError)),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.premiumPurchaseFailed)),
+                              );
+                            }
+                          }
+                        }
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
@@ -285,11 +345,32 @@ class YarniePremiumScreen extends StatelessWidget {
                     
                     // Footer Links
                     TextButton(
-                      onPressed: () {
-                        // Handle restore
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.comingSoon)),
-                        );
+                      onPressed: () async {
+                        try {
+                          final customerInfo = await Purchases.restorePurchases();
+                          if (customerInfo.entitlements.active.containsKey('premium')) {
+                            if (context.mounted) {
+                              await ref.read(premiumProvider.notifier).refreshStatus();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(l10n.premiumRestoreSuccess)),
+                                );
+                              }
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.premiumRestoreNoHistory)),
+                              );
+                            }
+                          }
+                        } on PlatformException catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.premiumPurchaseFailed)),
+                            );
+                          }
+                        }
                       },
                       child: Text(
                         l10n.premiumRestore,
@@ -326,7 +407,7 @@ class YarniePremiumScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      l10n.premiumFooterDesc,
+                      Platform.isIOS ? l10n.premiumFooterDescIOS : l10n.premiumFooterDescAndroid,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodyS.copyWith(
                         color: const Color(0xFF717182),

@@ -461,5 +461,11 @@
   "premiumRestore": "Restore Purchases",
   "premiumTerms": "Terms of Use",
   "premiumPrivacy": "Privacy Policy",
-  "premiumFooterDesc": "Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button."
+  "premiumFooterDescIOS": "Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.",
+  "premiumFooterDescAndroid": "Purchases are billed to your Google Play account. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.",
+  "premiumPurchaseCancelled": "Purchase was cancelled.",
+  "premiumPurchaseFailed": "Purchase failed. Please try again.",
+  "premiumRestoreSuccess": "Purchases restored successfully.",
+  "premiumRestoreNoHistory": "No purchase history found to restore.",
+  "premiumNetworkError": "A network error occurred. Please check your connection."
 }
