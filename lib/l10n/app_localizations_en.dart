@@ -1526,4 +1526,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumFooterDesc =>
       'Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
+
+  @override
+  String get premiumPurchaseCancelled => 'Purchase was cancelled.';
+
+  @override
+  String get premiumPurchaseFailed => 'Purchase failed. Please try again.';
+
+  @override
+  String get premiumRestoreSuccess => 'Purchases restored successfully.';
+
+  @override
+  String get premiumRestoreNoHistory => 'No purchase history found to restore.';
+
+  @override
+  String get premiumNetworkError =>
+      'A network error occurred. Please check your connection.';
 }
