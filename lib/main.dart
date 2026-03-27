@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,6 +16,20 @@ import 'package:yarnie/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   unawaited(MobileAds.instance.initialize());
+
+  // RevenueCat SDK 초기화
+  String apiKey = '';
+  if (Platform.isIOS) {
+    apiKey = 'appl_NhwQkFMfsQMHbeQARtdYGIJmros';
+  } else if (Platform.isAndroid) {
+    apiKey = 'goog_YYXVYRZQeWDAodvssxJXwOOZonT';
+  }
+
+  if (apiKey.isNotEmpty) {
+    await Purchases.setLogLevel(LogLevel.debug);
+    PurchasesConfiguration configuration = PurchasesConfiguration(apiKey);
+    await Purchases.configure(configuration);
+  }
 
   final projects = await appDb.watchAll().first;
   for (final project in projects) {
