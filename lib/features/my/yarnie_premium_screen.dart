@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -406,7 +407,7 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      l10n.premiumFooterDesc,
+                      Platform.isIOS ? l10n.premiumFooterDescIOS : l10n.premiumFooterDescAndroid,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodyS.copyWith(
                         color: const Color(0xFF717182),

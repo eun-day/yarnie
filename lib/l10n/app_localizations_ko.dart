@@ -1472,8 +1472,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumPrivacy => '개인정보처리방침';
 
   @override
-  String get premiumFooterDesc =>
+  String get premiumFooterDescIOS =>
       '구매는 Apple ID 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.';
+
+  @override
+  String get premiumFooterDescAndroid =>
+      '구매는 Google Play 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.';
 
   @override
   String get premiumPurchaseCancelled => '결제가 취소되었습니다.';

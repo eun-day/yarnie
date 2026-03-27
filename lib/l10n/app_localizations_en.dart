@@ -1524,8 +1524,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumPrivacy => 'Privacy Policy';
 
   @override
-  String get premiumFooterDesc =>
+  String get premiumFooterDescIOS =>
       'Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
+
+  @override
+  String get premiumFooterDescAndroid =>
+      'Purchases are billed to your Google Play account. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
 
   @override
   String get premiumPurchaseCancelled => 'Purchase was cancelled.';
