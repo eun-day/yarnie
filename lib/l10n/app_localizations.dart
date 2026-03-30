@@ -2864,11 +2864,47 @@ abstract class AppLocalizations {
   /// **'개인정보처리방침'**
   String get premiumPrivacy;
 
-  /// No description provided for @premiumFooterDesc.
+  /// No description provided for @premiumFooterDescIOS.
   ///
   /// In ko, this message translates to:
   /// **'구매는 Apple ID 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.'**
-  String get premiumFooterDesc;
+  String get premiumFooterDescIOS;
+
+  /// No description provided for @premiumFooterDescAndroid.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매는 Google Play 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.'**
+  String get premiumFooterDescAndroid;
+
+  /// No description provided for @premiumPurchaseCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제가 취소되었습니다.'**
+  String get premiumPurchaseCancelled;
+
+  /// No description provided for @premiumPurchaseFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제에 실패했습니다. 다시 시도해주세요.'**
+  String get premiumPurchaseFailed;
+
+  /// No description provided for @premiumRestoreSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매 내역이 성공적으로 복원되었습니다.'**
+  String get premiumRestoreSuccess;
+
+  /// No description provided for @premiumRestoreNoHistory.
+  ///
+  /// In ko, this message translates to:
+  /// **'복원할 구매 내역이 없습니다.'**
+  String get premiumRestoreNoHistory;
+
+  /// No description provided for @premiumNetworkError.
+  ///
+  /// In ko, this message translates to:
+  /// **'네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.'**
+  String get premiumNetworkError;
 }
 
 class _AppLocalizationsDelegate

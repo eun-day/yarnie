@@ -1472,6 +1472,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumPrivacy => '개인정보처리방침';
 
   @override
-  String get premiumFooterDesc =>
+  String get premiumFooterDescIOS =>
       '구매는 Apple ID 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.';
+
+  @override
+  String get premiumFooterDescAndroid =>
+      '구매는 Google Play 계정으로 청구되며, 기기를 변경하거나 앱을 재설치한 경우 구매 복원 버튼을 통해 프리미엄 기능을 복원할 수 있습니다.';
+
+  @override
+  String get premiumPurchaseCancelled => '결제가 취소되었습니다.';
+
+  @override
+  String get premiumPurchaseFailed => '결제에 실패했습니다. 다시 시도해주세요.';
+
+  @override
+  String get premiumRestoreSuccess => '구매 내역이 성공적으로 복원되었습니다.';
+
+  @override
+  String get premiumRestoreNoHistory => '복원할 구매 내역이 없습니다.';
+
+  @override
+  String get premiumNetworkError => '네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.';
 }

@@ -1524,6 +1524,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumPrivacy => 'Privacy Policy';
 
   @override
-  String get premiumFooterDesc =>
+  String get premiumFooterDescIOS =>
       'Purchases are billed to your Apple ID. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
+
+  @override
+  String get premiumFooterDescAndroid =>
+      'Purchases are billed to your Google Play account. If you change devices or reinstall the app, you can restore premium features using the Restore Purchases button.';
+
+  @override
+  String get premiumPurchaseCancelled => 'Purchase was cancelled.';
+
+  @override
+  String get premiumPurchaseFailed => 'Purchase failed. Please try again.';
+
+  @override
+  String get premiumRestoreSuccess => 'Purchases restored successfully.';
+
+  @override
+  String get premiumRestoreNoHistory => 'No purchase history found to restore.';
+
+  @override
+  String get premiumNetworkError =>
+      'A network error occurred. Please check your connection.';
 }
