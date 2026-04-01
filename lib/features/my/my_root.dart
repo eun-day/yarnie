@@ -9,6 +9,7 @@ import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/features/my/widgets/app_info_sheet.dart';
 import 'package:yarnie/features/my/yarnie_premium_screen.dart';
 import 'package:yarnie/core/providers/theme_provider.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 
 class MyRoot extends ConsumerStatefulWidget {
   final ScrollController? controller;
@@ -30,7 +31,21 @@ class _MyRootState extends ConsumerState<MyRoot> {
       slivers: [
         SliverAppBar(
           pinned: true,
-          title: Text(AppLocalizations.of(context)!.my),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(AppLocalizations.of(context)!.my),
+              if (ref.watch(premiumProvider))
+                Text(
+                  "Premium Member 👑",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+            ],
+          ),
         ),
         SliverPadding(
           padding:  const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 40),

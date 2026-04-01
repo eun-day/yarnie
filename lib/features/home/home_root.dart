@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yarnie/db/app_db.dart';
@@ -9,6 +11,10 @@ import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/project_detail_screen.dart';
 import 'package:yarnie/features/home/user_guide_screen.dart';
 import 'package:yarnie/theme/text_styles.dart';
+import 'package:yarnie/widgets/common_banner_ad.dart';
+import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
+import 'package:yarnie/core/premium/premium_policy.dart';
 
 const _kGuideCardDismissedKey = 'home_guide_card_dismissed';
 
@@ -29,17 +35,17 @@ List<({String emoji, String text})> _getKnittingTips(BuildContext context) {
   ];
 }
 
-class HomeRoot extends StatefulWidget {
+class HomeRoot extends ConsumerStatefulWidget {
   final ScrollController? controller;
   final String title;
 
   const HomeRoot({super.key, this.controller, this.title = 'Yarnie'});
 
   @override
-  State<HomeRoot> createState() => _HomeRootState();
+  ConsumerState<HomeRoot> createState() => _HomeRootState();
 }
 
-class _HomeRootState extends State<HomeRoot> {
+class _HomeRootState extends ConsumerState<HomeRoot> {
   bool _showGuideCard = false; // SharedPreferences 로드 전까지 숨김
   int _currentTipPage = 0;
   late final PageController _tipPageController;
@@ -119,6 +125,15 @@ class _HomeRootState extends State<HomeRoot> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: ref.watch(premiumProvider)
+          ? null
+          : AdVisibilityWrapper(
+              child: CommonBannerAdWidget(
+                adUnitId: Platform.isAndroid
+                    ? 'ca-app-pub-3940256099942544/6300978111'
+                    : 'ca-app-pub-3940256099942544/2934735716',
+              ),
+            ),
       body: SafeArea(
         child: SingleChildScrollView(
           controller: widget.controller,
@@ -146,13 +161,19 @@ class _HomeRootState extends State<HomeRoot> {
                 )
               else
                 _NewProjectCard(
+                  projectCount: _projects.length,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NewProjectScreen(),
-                      ),
-                    );
+                    final isPremium = ref.read(premiumProvider);
+                    if (PremiumPolicy.canCreateProject(_projects.length, isPremium)) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewProjectScreen(),
+                        ),
+                      );
+                    } else {
+                      PremiumUIHelper.showUpsellSnackbar(context);
+                    }
                   },
                 ),
               const SizedBox(height: 16),
@@ -217,12 +238,20 @@ class _WelcomeMessage extends StatelessWidget {
 // 2a. NewProjectCard (신규 사용자)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _NewProjectCard extends StatelessWidget {
+class _NewProjectCard extends ConsumerWidget {
+  final int projectCount;
   final VoidCallback onTap;
-  const _NewProjectCard({required this.onTap});
+  const _NewProjectCard({required this.projectCount, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPremium = ref.watch(premiumProvider);
+    final isLocked = !PremiumPolicy.canCreateProject(projectCount, isPremium);
+    final buttonStyle = PremiumUIHelper.getButtonStyle(
+      isLocked: isLocked,
+      defaultIcon: Icons.bolt,
+      defaultBackgroundColor: Theme.of(context).colorScheme.primary,
+    );
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(24),
@@ -270,7 +299,7 @@ class _NewProjectCard extends StatelessWidget {
             height: 36,
             child: FilledButton.icon(
               onPressed: onTap,
-              icon: const Icon(Icons.bolt, size: 16),
+              icon: Icon(buttonStyle.$1, size: 16),
               label: Text(
                 AppLocalizations.of(context)!.createNewProject,
                 style: TextStyle(
@@ -281,7 +310,7 @@ class _NewProjectCard extends StatelessWidget {
                 ),
               ),
               style: FilledButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: buttonStyle.$2,
                 foregroundColor: Theme.of(context).colorScheme.surface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

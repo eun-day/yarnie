@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:yarnie/widgets/common_banner_ad.dart';
+import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
+import 'package:yarnie/core/premium/premium_policy.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
@@ -230,8 +233,37 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         ),
       ),
       // FAB for adding counters
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          final isPremium = ref.watch(premiumProvider);
+          final counterCountStream = _selectedPartId == null
+              ? Stream<int>.value(0)
+              : appDb.customSelect(
+                  'SELECT (SELECT COUNT(*) FROM stitch_counters WHERE part_id = ?) + (SELECT COUNT(*) FROM section_counters WHERE part_id = ?) as total',
+                  variables: [
+                    Variable.withInt(_selectedPartId!),
+                    Variable.withInt(_selectedPartId!),
+                  ],
+                  readsFrom: {appDb.stitchCounters, appDb.sectionCounters},
+                ).map((row) => row.read<int>('total')).watchSingle();
+
+          return StreamBuilder<int>(
+            stream: counterCountStream,
+            builder: (context, snapshot) {
+              final counterCount = snapshot.data ?? 0;
+              final isLocked = !PremiumPolicy.canCreateCounter(counterCount, isPremium);
+              final buttonStyle = PremiumUIHelper.getButtonStyle(
+                isLocked: isLocked,
+                defaultIcon: Icons.add,
+                defaultBackgroundColor: Theme.of(context).colorScheme.primary,
+              );
+
+              return FloatingActionButton(
+                onPressed: () {
+                  if (isLocked) {
+                    PremiumUIHelper.showUpsellSnackbar(context);
+                    return;
+                  }
           showDialog(
             context: context,
             barrierColor:
@@ -362,14 +394,22 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             },
           );
         },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(Icons.add, color: Theme.of(context).colorScheme.surface),
+                backgroundColor: buttonStyle.$2,
+                child: Icon(buttonStyle.$1, color: Theme.of(context).colorScheme.surface),
+              );
+            },
+          );
+        },
       ),
-      bottomNavigationBar: CommonBannerAdWidget(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/6300978111'
-            : 'ca-app-pub-3940256099942544/2934735716',
-      ),
+      bottomNavigationBar: ref.watch(premiumProvider)
+          ? null
+          : AdVisibilityWrapper(
+              child: CommonBannerAdWidget(
+                adUnitId: Platform.isAndroid
+                    ? 'ca-app-pub-3940256099942544/6300978111'
+                    : 'ca-app-pub-3940256099942544/2934735716',
+              ),
+            ),
     );
   }
 
@@ -700,31 +740,49 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   top: 12,
                   bottom: 12,
                 ),
-                child: GestureDetector(
-                  onTap: () => _showAddPartDialog(context, project.id),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Row(
-                      children: [
-                        Icon(Icons.add, color: Theme.of(context).colorScheme.surface, size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          l10n.newPart,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: -0.31,
-                          ),
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final isPremium = ref.watch(premiumProvider);
+                    final isLocked = !PremiumPolicy.canCreatePart(parts.length, isPremium);
+                    final buttonStyle = PremiumUIHelper.getButtonStyle(
+                      isLocked: isLocked,
+                      defaultIcon: Icons.add,
+                      defaultBackgroundColor: Theme.of(context).colorScheme.primary,
+                    );
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (!isLocked) {
+                          _showAddPartDialog(context, project.id);
+                        } else {
+                          PremiumUIHelper.showUpsellSnackbar(context);
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: buttonStyle.$2,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                      ],
-                    ),
-                  ),
+                        alignment: Alignment.center,
+                        child: Row(
+                          children: [
+                            Icon(buttonStyle.$1, color: Theme.of(context).colorScheme.surface, size: 16),
+                            SizedBox(width: 4),
+                            Text(
+                              l10n.newPart,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.surface,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: -0.31,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
                 ),
               ),
 

@@ -1,19 +1,21 @@
 import 'dart:io' show Platform;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/exit_confirm_dialog.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 import '../../features/home/home_root.dart';
 import '../../features/projects/projects_root.dart';
 import '../../features/my/my_root.dart';
 
-class RootScaffold extends StatefulWidget {
+class RootScaffold extends ConsumerStatefulWidget {
   const RootScaffold({super.key});
   @override
-  State<RootScaffold> createState() => _RootScaffoldState();
+  ConsumerState<RootScaffold> createState() => _RootScaffoldState();
 }
 
-class _RootScaffoldState extends State<RootScaffold> {
+class _RootScaffoldState extends ConsumerState<RootScaffold> {
   final _bucket = PageStorageBucket();
   int _index = 0;
 
@@ -52,6 +54,12 @@ Future<void> _handleBack(bool didPop, Object? result) async {
 
     // iOS에선 조용히 무시
     if (!Platform.isAndroid) return;
+
+    final isPremium = ref.read(premiumProvider);
+    if (isPremium) {
+      SystemNavigator.pop();
+      return;
+    }
 
     // Android: 앱 종료 확인 팝업 노출
     final shouldExit = await showDialog<bool>(

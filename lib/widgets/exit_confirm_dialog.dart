@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
 
 class ExitConfirmDialog extends StatefulWidget {
   const ExitConfirmDialog({super.key});
@@ -89,17 +90,19 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
             ),
             const SizedBox(height: 16),
             // 광고 영역 (300x250)
-            SizedBox(
-              width: 300,
-              height: 250,
-              child: _isAdLoaded
-                  ? AdWidget(ad: _bannerAd!)
-                  : Container(
-                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
-                      child: const Center(
-                        child: CircularProgressIndicator(),
+            AdVisibilityWrapper(
+              child: SizedBox(
+                width: 300,
+                height: 250,
+                child: _isAdLoaded
+                    ? AdWidget(ad: _bannerAd!)
+                    : Container(
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
-                    ),
+              ),
             ),
             const SizedBox(height: 20),
             // Buttons
