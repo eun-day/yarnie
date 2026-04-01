@@ -38,6 +38,8 @@ import 'package:yarnie/core/providers/settings_provider.dart';
 import 'package:yarnie/common/haptic_helper.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
+import 'package:yarnie/modules/projects/application/part_counters_notifier.dart';
+import 'package:yarnie/modules/projects/application/part_counters_event.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {
   final int projectId;
@@ -63,6 +65,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   void _listenToMainCounter(int partId) {
     _mainCounterSub?.cancel();
     _prevMainValue = null; // Reset for new part
+
+    ref.read(partCountersProvider.notifier).onEvent(LoadPartCountersCount(partId));
 
     _mainCounterSub =
         (appDb.select(appDb.mainCounters)
@@ -236,22 +240,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       floatingActionButton: Consumer(
         builder: (context, ref, _) {
           final isPremium = ref.watch(premiumProvider);
-          final counterCountStream = _selectedPartId == null
-              ? Stream<int>.value(0)
-              : appDb.customSelect(
-                  'SELECT (SELECT COUNT(*) FROM stitch_counters WHERE part_id = ?) + (SELECT COUNT(*) FROM section_counters WHERE part_id = ?) as total',
-                  variables: [
-                    Variable.withInt(_selectedPartId!),
-                    Variable.withInt(_selectedPartId!),
-                  ],
-                  readsFrom: {appDb.stitchCounters, appDb.sectionCounters},
-                ).map((row) => row.read<int>('total')).watchSingle();
-
-          return StreamBuilder<int>(
-            stream: counterCountStream,
-            builder: (context, snapshot) {
-              final counterCount = snapshot.data ?? 0;
-              final isLocked = !PremiumPolicy.canCreateCounter(counterCount, isPremium);
+          final partCountersState = ref.watch(partCountersProvider);
+          final counterCount = partCountersState.totalCount;
+          final isLocked = !PremiumPolicy.canCreateCounter(counterCount, isPremium);
               final buttonStyle = PremiumUIHelper.getButtonStyle(
                 isLocked: isLocked,
                 defaultIcon: Icons.add,
@@ -397,8 +388,6 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 backgroundColor: buttonStyle.$2,
                 child: Icon(buttonStyle.$1, color: Theme.of(context).colorScheme.surface),
               );
-            },
-          );
         },
       ),
       bottomNavigationBar: ref.watch(premiumProvider)

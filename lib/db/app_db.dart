@@ -527,6 +527,17 @@ class AppDb extends _$AppDb {
     projects,
   )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).watchSingleOrNull();
 
+  /// 특정 파트의 버디 카운터 (스티치 + 섹션) 총 갯수를 스트림으로 반환
+  Stream<int> watchBuddyCountersCount(int partId) {
+    return customSelect(
+      'SELECT (SELECT COUNT(*) FROM stitch_counters WHERE part_id = ?1) + (SELECT COUNT(*) FROM section_counters WHERE part_id = ?1) as total',
+      variables: [
+        Variable.withInt(partId),
+      ],
+      readsFrom: {stitchCounters, sectionCounters},
+    ).map((row) => row.read<int>('total')).watchSingle();
+  }
+
   /// 프로젝트 휴지통 이동 (소프트 딜리트)
   Future<void> softDeleteProject(int projectId) async {
     final now = DateTime.now().toUtc();
