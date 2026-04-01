@@ -2905,6 +2905,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.'**
   String get premiumNetworkError;
+
+  /// No description provided for @upsellSnackbarMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'Yarnie 평생권을 구입하시면 무제한으로 만드실 수 있어요!'**
+  String get upsellSnackbarMessage;
+
+  /// No description provided for @upsellSnackbarAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리미엄 보기'**
+  String get upsellSnackbarAction;
 }
 
 class _AppLocalizationsDelegate

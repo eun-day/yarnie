@@ -13,6 +13,9 @@ import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 import '../../widgets/project_list_tile.dart';
 import '../../widgets/common_banner_ad.dart';
+import '../../widgets/ad_visibility_wrapper.dart';
+import '../../core/providers/premium_provider.dart';
+import '../../core/premium/premium_policy.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -84,18 +87,37 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 8),
-            child: FilledButton.tonalIcon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const NewProjectScreen()),
-              ),
-              icon: const Icon(Icons.add, size: 20),
-              label: Text(AppLocalizations.of(context)!.createNewProject),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+            child: Consumer(
+              builder: (context, ref, _) {
+                final isPremium = ref.watch(premiumProvider);
+                final isLocked = !PremiumPolicy.canCreateProject(state.allProjects.length, isPremium);
+                final buttonStyle = PremiumUIHelper.getButtonStyle(
+                  isLocked: isLocked,
+                  defaultIcon: Icons.add,
+                  defaultBackgroundColor: const Color(0xFF637069),
+                );
+
+                return FilledButton.tonalIcon(
+                  onPressed: () {
+                    if (!isLocked) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const NewProjectScreen()),
+                      );
+                    } else {
+                      PremiumUIHelper.showUpsellSnackbar(context);
+                    }
+                  },
+                  icon: Icon(buttonStyle.$1, size: 20),
+                  label: Text(AppLocalizations.of(context)!.createNewProject),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: buttonStyle.$2,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -134,11 +156,15 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           ],
         ),
       ),
-      bottomNavigationBar: CommonBannerAdWidget(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/6300978111'
-            : 'ca-app-pub-3940256099942544/2934735716',
-      ),
+      bottomNavigationBar: ref.watch(premiumProvider)
+          ? null
+          : AdVisibilityWrapper(
+              child: CommonBannerAdWidget(
+                adUnitId: Platform.isAndroid
+                    ? 'ca-app-pub-3940256099942544/6300978111'
+                    : 'ca-app-pub-3940256099942544/2934735716',
+              ),
+            ),
     );
   }
 
@@ -819,11 +845,20 @@ class _ListView extends StatelessWidget {
 // 빈 상태 뷰
 // ============================================================
 
-class _EmptyView extends StatelessWidget {
+class _EmptyView extends ConsumerWidget {
   const _EmptyView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(projectsProvider);
+    final isPremium = ref.watch(premiumProvider);
+    final isLocked = !PremiumPolicy.canCreateProject(state.allProjects.length, isPremium);
+    final buttonStyle = PremiumUIHelper.getButtonStyle(
+      isLocked: isLocked,
+      defaultIcon: Icons.add,
+      defaultBackgroundColor: Theme.of(context).colorScheme.primary,
+    );
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(24),
@@ -844,12 +879,19 @@ class _EmptyView extends StatelessWidget {
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const NewProjectScreen()),
-                );
+                if (!isLocked) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const NewProjectScreen()),
+                  );
+                } else {
+                  PremiumUIHelper.showUpsellSnackbar(context);
+                }
               },
-              icon: const Icon(Icons.add),
+              icon: Icon(buttonStyle.$1),
               label: Text(AppLocalizations.of(context)!.createProject),
+              style: FilledButton.styleFrom(
+                backgroundColor: buttonStyle.$2,
+              ),
             ),
           ],
         ),
