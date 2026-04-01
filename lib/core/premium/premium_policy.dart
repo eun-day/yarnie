@@ -39,9 +39,9 @@ class PremiumUIHelper {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Yarnie 평생권을 구입하시면 무제한으로 만드실 수 있어요!"),
+        content: Text(AppLocalizations.of(context)!.upsellSnackbarMessage),
         action: SnackBarAction(
-          label: "프리미엄 보기",
+          label: AppLocalizations.of(context)!.upsellSnackbarAction,
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const YarniePremiumScreen()),

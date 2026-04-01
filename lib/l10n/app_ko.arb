@@ -468,5 +468,7 @@
   "premiumPurchaseFailed": "결제에 실패했습니다. 다시 시도해주세요.",
   "premiumRestoreSuccess": "구매 내역이 성공적으로 복원되었습니다.",
   "premiumRestoreNoHistory": "복원할 구매 내역이 없습니다.",
-  "premiumNetworkError": "네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요."
+  "premiumNetworkError": "네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.",
+  "upsellSnackbarMessage": "Yarnie 평생권을 구입하시면 무제한으로 만드실 수 있어요!",
+  "upsellSnackbarAction": "프리미엄 보기"
 }

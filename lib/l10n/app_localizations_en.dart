@@ -1546,4 +1546,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumNetworkError =>
       'A network error occurred. Please check your connection.';
+
+  @override
+  String get upsellSnackbarMessage =>
+      'Purchase Yarnie Premium to create unlimited projects!';
+
+  @override
+  String get upsellSnackbarAction => 'View Premium';
 }

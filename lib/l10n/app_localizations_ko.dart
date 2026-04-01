@@ -1493,4 +1493,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get premiumNetworkError => '네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.';
+
+  @override
+  String get upsellSnackbarMessage => 'Yarnie 평생권을 구입하시면 무제한으로 만드실 수 있어요!';
+
+  @override
+  String get upsellSnackbarAction => '프리미엄 보기';
 }

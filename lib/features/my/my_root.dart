@@ -31,19 +31,22 @@ class _MyRootState extends ConsumerState<MyRoot> {
       slivers: [
         SliverAppBar(
           pinned: true,
+          centerTitle: true,
           title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(AppLocalizations.of(context)!.my),
-              if (ref.watch(premiumProvider))
+              if (ref.watch(premiumProvider)) ...[
+                const SizedBox(height: 4),
                 Text(
                   "Premium Member 👑",
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: const Color(0xFF6FB96F),
                   ),
                 ),
+              ],
             ],
           ),
         ),

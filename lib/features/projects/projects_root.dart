@@ -94,7 +94,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
                 final buttonStyle = PremiumUIHelper.getButtonStyle(
                   isLocked: isLocked,
                   defaultIcon: Icons.add,
-                  defaultBackgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  defaultBackgroundColor: const Color(0xFF637069),
                 );
 
                 return FilledButton.tonalIcon(
