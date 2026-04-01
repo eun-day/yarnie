@@ -2852,6 +2852,48 @@ abstract class AppLocalizations {
   /// **'구매 복원'**
   String get premiumRestore;
 
+  /// No description provided for @premiumRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 요청'**
+  String get premiumRefund;
+
+  /// No description provided for @premiumRefundAndroidTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 안내'**
+  String get premiumRefundAndroidTitle;
+
+  /// No description provided for @premiumRefundAndroidMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'구글 플레이 정책상 스토어 구매 내역에서 직접 환불을 신청해야 합니다.'**
+  String get premiumRefundAndroidMessage;
+
+  /// No description provided for @premiumRefundAndroidGo.
+  ///
+  /// In ko, this message translates to:
+  /// **'이동하기'**
+  String get premiumRefundAndroidGo;
+
+  /// No description provided for @premiumRefundSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 요청이 완료되었습니다.'**
+  String get premiumRefundSuccess;
+
+  /// No description provided for @premiumRefundFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 요청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'**
+  String get premiumRefundFailed;
+
+  /// No description provided for @premiumRefundTryAgain.
+  ///
+  /// In ko, this message translates to:
+  /// **'잠시 후 다시 시도해 주세요'**
+  String get premiumRefundTryAgain;
+
   /// No description provided for @premiumTerms.
   ///
   /// In ko, this message translates to:
