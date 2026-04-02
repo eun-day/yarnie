@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:yarnie/widgets/premium_refund_dialog.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/theme/text_styles.dart';
@@ -344,40 +345,93 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                     const SizedBox(height: 32),
                     
                     // Footer Links
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          final customerInfo = await Purchases.restorePurchases();
-                          if (customerInfo.entitlements.active.containsKey('premium')) {
-                            if (context.mounted) {
-                              await ref.read(premiumProvider.notifier).refreshStatus();
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            try {
+                              final customerInfo = await Purchases.restorePurchases();
+                              if (customerInfo.entitlements.active.containsKey('premium')) {
+                                if (context.mounted) {
+                                  await ref.read(premiumProvider.notifier).refreshStatus();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(l10n.premiumRestoreSuccess)),
+                                    );
+                                  }
+                                }
+                              } else {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.premiumRestoreNoHistory)),
+                                  );
+                                }
+                              }
+                            } on PlatformException catch (_) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l10n.premiumRestoreSuccess)),
+                                  SnackBar(content: Text(l10n.premiumPurchaseFailed)),
                                 );
                               }
                             }
-                          } else {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.premiumRestoreNoHistory)),
+                          },
+                          child: Text(
+                            l10n.premiumRestore,
+                            style: AppTextStyles.bodyM.copyWith(
+                              color: const Color(0xFF637069),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        TextButton(
+                          onPressed: () async {
+                            if (Platform.isIOS) {
+                              try {
+                                final refundRequestStatus = await Purchases.beginRefundRequestForActiveEntitlement();
+                                if (context.mounted) {
+                                  switch (refundRequestStatus) {
+                                    case RefundRequestStatus.success:
+                                      await ref.read(premiumProvider.notifier).refreshStatus();
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(l10n.premiumRefundSuccess)),
+                                        );
+                                      }
+                                      break;
+                                    case RefundRequestStatus.userCancelled:
+                                      // User cancelled, no message needed or optional snackbar
+                                      break;
+                                    case RefundRequestStatus.error:
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(l10n.premiumRefundFailed)),
+                                      );
+                                      break;
+                                  }
+                                }
+                              } catch (e) {
+                                debugPrint('Error during refund request: $e');
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.premiumRefundTryAgain)),
+                                  );
+                                }
+                              }
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const PremiumRefundDialog(),
                               );
                             }
-                          }
-                        } on PlatformException catch (_) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.premiumPurchaseFailed)),
-                            );
-                          }
-                        }
-                      },
-                      child: Text(
-                        l10n.premiumRestore,
-                        style: AppTextStyles.bodyM.copyWith(
-                          color: const Color(0xFF637069),
+                          },
+                          child: Text(
+                            l10n.premiumRefund,
+                            style: AppTextStyles.bodyM.copyWith(
+                              color: const Color(0xFF637069),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

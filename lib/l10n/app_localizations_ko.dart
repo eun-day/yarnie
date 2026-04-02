@@ -1466,6 +1466,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumRestore => '구매 복원';
 
   @override
+  String get premiumRefund => '환불 요청';
+
+  @override
+  String get premiumRefundAndroidTitle => '환불 안내';
+
+  @override
+  String get premiumRefundAndroidMessage =>
+      '구글 플레이 정책상 스토어 구매 내역에서 직접 환불을 신청해야 합니다.';
+
+  @override
+  String get premiumRefundAndroidGo => '이동하기';
+
+  @override
+  String get premiumRefundSuccess => '환불 요청이 완료되었습니다.';
+
+  @override
+  String get premiumRefundFailed => '환불 요청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get premiumRefundTryAgain => '잠시 후 다시 시도해 주세요';
+
+  @override
   String get premiumTerms => '이용약관';
 
   @override

@@ -1518,6 +1518,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumRestore => 'Restore Purchases';
 
   @override
+  String get premiumRefund => 'Refund Request';
+
+  @override
+  String get premiumRefundAndroidTitle => 'Refund Info';
+
+  @override
+  String get premiumRefundAndroidMessage =>
+      'According to Google Play policy, you must request a refund directly from your store purchase history.';
+
+  @override
+  String get premiumRefundAndroidGo => 'Go';
+
+  @override
+  String get premiumRefundSuccess => 'Refund request completed.';
+
+  @override
+  String get premiumRefundFailed =>
+      'An error occurred during the refund request. Please try again in a moment.';
+
+  @override
+  String get premiumRefundTryAgain => 'Please try again in a moment';
+
+  @override
   String get premiumTerms => 'Terms of Use';
 
   @override

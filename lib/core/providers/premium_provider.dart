@@ -1,8 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PremiumNotifier extends Notifier<bool> {
+  AppLifecycleListener? _lifecycleListener;
+
   @override
   bool build() {
     _init();
@@ -21,6 +24,12 @@ class PremiumNotifier extends Notifier<bool> {
     Purchases.addCustomerInfoUpdateListener((customerInfo) {
       _updatePurchaseStatus(customerInfo);
     });
+
+    // 앱이 포그라운드로 돌아올 때 프리미엄 상태 갱신
+    // (Android 환불 등 외부에서 권한 변경 시 즉시 반영)
+    _lifecycleListener = AppLifecycleListener(
+      onResume: () => refreshStatus(),
+    );
   }
 
   void _updatePurchaseStatus(CustomerInfo customerInfo) {

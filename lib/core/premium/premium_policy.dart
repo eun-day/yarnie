@@ -39,16 +39,29 @@ class PremiumUIHelper {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context)!.upsellSnackbarMessage),
-        action: SnackBarAction(
-          label: AppLocalizations.of(context)!.upsellSnackbarAction,
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const YarniePremiumScreen()),
-            );
-          },
+        content: Row(
+          children: [
+            Expanded(
+              child: Text(AppLocalizations.of(context)!.upsellSnackbarMessage),
+            ),
+            const SizedBox(width: 8),
+            TextButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const YarniePremiumScreen()),
+                );
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFA8C5B0),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              child: Text(AppLocalizations.of(context)!.upsellSnackbarAction),
+            ),
+          ],
         ),
         behavior: SnackBarBehavior.floating,
+        padding: const EdgeInsets.only(left: 16, right: 8, top: 6, bottom: 6),
       ),
     );
   }
