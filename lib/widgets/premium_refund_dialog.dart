@@ -68,7 +68,7 @@ class PremiumRefundDialog extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    final url = Uri.parse('https://support.google.com/googleplay/answer/2479637');
+                    final url = Uri.parse('https://play.google.com/store/account/orderhistory');
                     if (await canLaunchUrl(url)) {
                       await launchUrl(url, mode: LaunchMode.externalApplication);
                     }

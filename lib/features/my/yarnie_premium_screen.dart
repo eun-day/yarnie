@@ -392,9 +392,12 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                                 if (context.mounted) {
                                   switch (refundRequestStatus) {
                                     case RefundRequestStatus.success:
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(l10n.premiumRefundSuccess)),
-                                      );
+                                      await ref.read(premiumProvider.notifier).refreshStatus();
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(l10n.premiumRefundSuccess)),
+                                        );
+                                      }
                                       break;
                                     case RefundRequestStatus.userCancelled:
                                       // User cancelled, no message needed or optional snackbar
