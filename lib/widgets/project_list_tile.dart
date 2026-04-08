@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import '../db/app_db.dart';
-import 'colored_tag_chip.dart'; // Tag를 표시하기 위한 기존 위젯이라고 가정
+import 'colored_tag_chip.dart';
+import 'project_image.dart';
 
 class ProjectListTile extends StatelessWidget {
   final Project project;
@@ -49,11 +50,9 @@ class ProjectListTile extends StatelessWidget {
                 child: project.imagePath != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          project.imagePath!,
+                        child: ProjectImage(
+                          imagePath: project.imagePath,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              Container(color: const Color(0xFFD9D9D9)),
                         ),
                       )
                     : Container(color: const Color(0xFFD9D9D9)),

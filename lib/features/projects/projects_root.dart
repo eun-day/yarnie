@@ -12,6 +12,7 @@ import '../../widgets/tag_chip.dart';
 import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 import '../../widgets/project_list_tile.dart';
+import '../../widgets/project_image.dart';
 import '../../widgets/common_banner_ad.dart';
 import '../../widgets/ad_visibility_wrapper.dart';
 import '../../core/providers/premium_provider.dart';
@@ -505,11 +506,9 @@ class _LargeProjectCard extends StatelessWidget {
             children: [
               // 배경 이미지
               project.imagePath != null
-                  ? Image.network(
-                      project.imagePath!,
+                  ? ProjectImage(
+                      imagePath: project.imagePath,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          Container(color: const Color(0xFFD9D9D9)),
                     )
                   : Container(color: const Color(0xFFD9D9D9)),
               // 하단 정보 섹션
@@ -719,10 +718,10 @@ class _SmallProjectCard extends StatelessWidget {
             Container(
               color: const Color(0xFFD9D9D9),
               child: project.imagePath != null
-                  ? Image.network(
-                      project.imagePath!,
+                  ? ProjectImage(
+                      imagePath: project.imagePath,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => _placeholderImage(context),
+                      placeholder: _placeholderImage(context),
                     )
                   : _placeholderImage(context),
             ),
