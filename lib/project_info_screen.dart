@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
+import 'package:yarnie/widgets/project_image.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 
@@ -156,26 +156,24 @@ class ProjectInfoSheet extends ConsumerWidget {
                               child:
                                   (project.imagePath != null &&
                                       project.imagePath!.isNotEmpty)
-                                  ? Image.file(
-                                      File(project.imagePath!),
+                                  ? ProjectImage(
+                                      imagePath: project.imagePath,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.surfaceContainerHighest,
-                                          child: Center(
-                                            child: Icon(
-                                              Icons
-                                                  .image_not_supported_outlined,
-                                              size: 40,
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                            ),
+                                      placeholder: Container(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerHighest,
+                                        child: Center(
+                                          child: Icon(
+                                            Icons
+                                                .image_not_supported_outlined,
+                                            size: 40,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
                                           ),
-                                        );
-                                      },
+                                        ),
+                                      ),
                                     )
                                   : Container(
                                       color: Theme.of(

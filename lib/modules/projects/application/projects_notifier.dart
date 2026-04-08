@@ -48,6 +48,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         await _loadData();
 
       case ProjectsUpdated(:final projects):
+        // 태그 목록도 갱신 (프로젝트 생성 시 새 태그가 추가될 수 있음)
+        final tags = await appDb.getAllTags();
         // 필터링과 상태 업데이트를 한 번에 처리
         final ids = state.selectedTagIds;
         final filtered = ids.isEmpty
@@ -58,6 +60,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         state = state.copyWith(
           allProjects: projects,
           filteredProjects: filtered,
+          allTags: tags,
           isLoading: false,
           error: null,
         );
