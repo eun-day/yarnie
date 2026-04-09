@@ -6,6 +6,7 @@ import 'package:yarnie/widgets/colored_tag_chip.dart';
 import 'package:yarnie/widgets/project_image.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
+import 'package:yarnie/common/time_helper.dart';
 
 class ProjectInfoSheet extends ConsumerWidget {
   final Project project;
@@ -165,8 +166,7 @@ class ProjectInfoSheet extends ConsumerWidget {
                                         ).colorScheme.surfaceContainerHighest,
                                         child: Center(
                                           child: Icon(
-                                            Icons
-                                                .image_not_supported_outlined,
+                                            Icons.image_not_supported_outlined,
                                             size: 40,
                                             color: Theme.of(
                                               context,
@@ -338,14 +338,20 @@ class ProjectInfoSheet extends ConsumerWidget {
                               Expanded(
                                 child: _DateRow(
                                   label: l10n.createdAtLabel,
-                                  value: _formatDate(project.createdAt, l10n),
+                                  value: formatDateDisplay(
+                                    project.createdAt,
+                                    l10n,
+                                  ),
                                 ),
                               ),
                               Expanded(
                                 child: _DateRow(
                                   label: l10n.updatedAtLabel,
                                   value: project.updatedAt != null
-                                      ? _formatDate(project.updatedAt!, l10n)
+                                      ? formatDateDisplay(
+                                          project.updatedAt!,
+                                          l10n,
+                                        )
                                       : '-',
                                 ),
                               ),
@@ -364,17 +370,6 @@ class ProjectInfoSheet extends ConsumerWidget {
         );
       },
     );
-  }
-
-  String _formatDate(DateTime date, AppLocalizations l10n) {
-    final local = date.toLocal();
-    if (l10n.localeName == 'ko') {
-      final y = local.year;
-      final m = local.month.toString().padLeft(2, '0');
-      final d = local.day.toString().padLeft(2, '0');
-      return '$y년 $m월 $d일';
-    }
-    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
 

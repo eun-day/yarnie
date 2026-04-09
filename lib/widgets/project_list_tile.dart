@@ -4,6 +4,7 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import '../db/app_db.dart';
 import 'colored_tag_chip.dart';
 import 'project_image.dart';
+import '../common/time_helper.dart';
 
 class ProjectListTile extends StatelessWidget {
   final Project project;
@@ -89,7 +90,10 @@ class ProjectListTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _formatDate(context, project.createdAt),
+                              formatDateDisplay(
+                                project.createdAt,
+                                AppLocalizations.of(context)!,
+                              ),
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
@@ -146,17 +150,5 @@ class ProjectListTile extends StatelessWidget {
     } catch (_) {
       return [];
     }
-  }
-
-  String _formatDate(BuildContext context, DateTime date) {
-    final local = date.toLocal();
-    final l10n = AppLocalizations.of(context)!;
-    if (l10n.localeName == 'ko') {
-      final y = local.year;
-      final m = local.month.toString().padLeft(2, '0');
-      final d = local.day.toString().padLeft(2, '0');
-      return '$y년 $m월 $d일';
-    }
-    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
