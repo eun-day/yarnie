@@ -186,7 +186,7 @@
   "bigCard": "Large Card",
   "smallCard": "Small Card",
   "list": "List",
-  "dateDisplay": "{year}/{month}/{day}",
+  "dateDisplay": "{month}/{day}/{year}",
   "noProjectsYet": "No projects yet.\nShall we create a project?",
   "createProject": "Create Project",
   "noMatchingProjects": "No matching projects found",

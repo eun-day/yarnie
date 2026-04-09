@@ -17,6 +17,7 @@ import '../../widgets/common_banner_ad.dart';
 import '../../widgets/ad_visibility_wrapper.dart';
 import '../../core/providers/premium_provider.dart';
 import '../../core/premium/premium_policy.dart';
+import '../../common/time_helper.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -557,7 +558,10 @@ class _LargeProjectCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _formatDate(context, project.createdAt),
+                              formatDateDisplay(
+                                project.createdAt,
+                                AppLocalizations.of(context)!,
+                              ),
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
@@ -631,18 +635,6 @@ class _LargeProjectCard extends StatelessWidget {
     } catch (_) {
       return [];
     }
-  }
-
-  String _formatDate(BuildContext context, DateTime date) {
-    final local = date.toLocal();
-    final l10n = AppLocalizations.of(context)!;
-    if (l10n.localeName == 'ko') {
-      final y = local.year;
-      final m = local.month.toString().padLeft(2, '0');
-      final d = local.day.toString().padLeft(2, '0');
-      return '$y년 $m월 $d일';
-    }
-    return l10n.dateDisplay(local.year, local.month, local.day);
   }
 }
 

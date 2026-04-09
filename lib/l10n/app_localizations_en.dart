@@ -632,7 +632,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String dateDisplay(Object day, Object month, Object year) {
-    return '$year/$month/$day';
+    return '$month/$day/$year';
   }
 
   @override
