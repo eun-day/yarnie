@@ -71,212 +71,227 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
         ),
       ),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Handle Bar
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 16, bottom: 8),
-                width: 100,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(100),
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutQuad,
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Handle Bar
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 16, bottom: 8),
+                  width: 100,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
                 ),
               ),
-            ),
 
-            // Header: 타이틀 + 설명 + 새 파트 추가 버튼
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title & Description
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.manageParts,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            letterSpacing: -0.31,
-                            height: 1.5,
+              // Header: 타이틀 + 설명 + 새 파트 추가 버튼
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title & Description
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.manageParts,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              letterSpacing: -0.31,
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.managePartsDesc,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            letterSpacing: -0.15,
-                            height: 1.43,
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.managePartsDesc,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                              letterSpacing: -0.15,
+                              height: 1.43,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // New Part Button (+)
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isAdding = true;
-                        _renamingPartId = null;
-                      });
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    // New Part Button (+)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isAdding = true;
+                          _renamingPartId = null;
+                        });
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Part List
-            Flexible(
-              child: Builder(
-                builder: (context) {
-                  if (state.isLoading && state.parts.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              // Part List
+              Flexible(
+                child: Builder(
+                  builder: (context) {
+                    if (state.isLoading && state.parts.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  final parts = state.parts;
+                    final parts = state.parts;
 
-                  // items 배열을 구성합니다.
-                  // adding 상태면 제일 첫 번째 아이템으로 input section을 넣습니다.
-                  final List<Widget> listItems = [];
+                    // items 배열을 구성합니다.
+                    // adding 상태면 제일 첫 번째 아이템으로 input section을 넣습니다.
+                    final List<Widget> listItems = [];
 
-                  if (_isAdding) {
-                    listItems.add(
-                      _PartInputSection(
-                        key: const ValueKey('add_new_part'),
-                        projectId: widget.projectId,
-                        onSave: (newName) {
-                          ref
-                              .read(partManageProvider.notifier)
-                              .onEvent(CreatePart(widget.projectId, newName));
-                          setState(() {
-                            _isAdding = false;
-                          });
-                        },
-                        onCancel: () {
-                          setState(() {
-                            _isAdding = false;
-                          });
-                        },
-                      ),
-                    );
-                  }
-
-                  if (parts.isEmpty && !_isAdding) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: Center(
-                        child: Text(
-                          l10n.noParts,
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                    );
-                  }
-
-                  for (int i = 0; i < parts.length; i++) {
-                    final part = parts[i];
-                    if (_renamingPartId == part.id) {
+                    if (_isAdding) {
                       listItems.add(
                         _PartInputSection(
-                          key: ValueKey('rename_${part.id}'),
+                          key: const ValueKey('add_new_part'),
                           projectId: widget.projectId,
-                          initialText: part.name,
                           onSave: (newName) {
                             ref
                                 .read(partManageProvider.notifier)
-                                .onEvent(UpdatePart(part.id, newName));
+                                .onEvent(CreatePart(widget.projectId, newName));
                             setState(() {
-                              _renamingPartId = null;
-                            });
-                            widget.onPartChanged?.call(part.id);
-                          },
-                          onCancel: () {
-                            setState(() {
-                              _renamingPartId = null;
-                            });
-                          },
-                        ),
-                      );
-                    } else {
-                      listItems.add(
-                        _PartItemTile(
-                          key: ValueKey(part.id),
-                          index: i,
-                          part: part,
-                          projectId: widget.projectId,
-                          onRenameRequest: () {
-                            setState(() {
-                              _renamingPartId = part.id;
                               _isAdding = false;
                             });
                           },
-                          onDeleted: () {
-                            widget.onPartChanged?.call(null);
+                          onCancel: () {
+                            setState(() {
+                              _isAdding = false;
+                            });
                           },
                         ),
                       );
                     }
-                  }
 
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: ReorderableListView.builder(
-                      shrinkWrap: true,
-                      proxyDecorator: (child, index, animation) {
-                        return Material(
-                          elevation: 4,
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          child: child,
+                    if (parts.isEmpty && !_isAdding) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Center(
+                          child: Text(
+                            l10n.noParts,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    for (int i = 0; i < parts.length; i++) {
+                      final part = parts[i];
+                      if (_renamingPartId == part.id) {
+                        listItems.add(
+                          _PartInputSection(
+                            key: ValueKey('rename_${part.id}'),
+                            projectId: widget.projectId,
+                            initialText: part.name,
+                            onSave: (newName) {
+                              ref
+                                  .read(partManageProvider.notifier)
+                                  .onEvent(UpdatePart(part.id, newName));
+                              setState(() {
+                                _renamingPartId = null;
+                              });
+                              widget.onPartChanged?.call(part.id);
+                            },
+                            onCancel: () {
+                              setState(() {
+                                _renamingPartId = null;
+                              });
+                            },
+                          ),
                         );
-                      },
-                      onReorder: (oldIndex, newIndex) {
-                        if (oldIndex < newIndex) {
-                          newIndex -= 1;
-                        }
-                        final reordered = List<Part>.from(parts);
-                        final item = reordered.removeAt(oldIndex);
-                        reordered.insert(newIndex, item);
+                      } else {
+                        listItems.add(
+                          _PartItemTile(
+                            key: ValueKey(part.id),
+                            index: i,
+                            part: part,
+                            projectId: widget.projectId,
+                            onRenameRequest: () {
+                              setState(() {
+                                _renamingPartId = part.id;
+                                _isAdding = false;
+                              });
+                            },
+                            onDeleted: () {
+                              widget.onPartChanged?.call(null);
+                            },
+                          ),
+                        );
+                      }
+                    }
 
-                        final partIds = reordered.map((e) => e.id).toList();
-                        ref
-                            .read(partManageProvider.notifier)
-                            .onEvent(ReorderParts(widget.projectId, partIds));
-                        HapticFeedback.lightImpact();
-                      },
-                      itemCount: listItems.length,
-                      itemBuilder: (context, index) {
-                        return listItems[index];
-                      },
-                    ),
-                  );
-                },
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: ReorderableListView.builder(
+                        shrinkWrap: true,
+                        proxyDecorator: (child, index, animation) {
+                          return Material(
+                            elevation: 4,
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            child: child,
+                          );
+                        },
+                        onReorder: (oldIndex, newIndex) {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final reordered = List<Part>.from(parts);
+                          final item = reordered.removeAt(oldIndex);
+                          reordered.insert(newIndex, item);
+
+                          final partIds = reordered.map((e) => e.id).toList();
+                          ref
+                              .read(partManageProvider.notifier)
+                              .onEvent(ReorderParts(widget.projectId, partIds));
+                          HapticFeedback.lightImpact();
+                        },
+                        itemCount: listItems.length,
+                        itemBuilder: (context, index) {
+                          return listItems[index];
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -311,7 +326,10 @@ class _PartItemTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline,
+              width: 0.694,
+            ),
           ),
           child: Row(
             children: [
@@ -323,7 +341,9 @@ class _PartItemTile extends StatelessWidget {
                   child: Icon(
                     Icons.drag_indicator,
                     size: 20,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -401,7 +421,9 @@ class _PartActionSheet extends ConsumerWidget {
                   width: 100,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -615,7 +637,10 @@ class _PartInputSectionState extends State<_PartInputSection> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline,
+            width: 0.694,
+          ),
         ),
         padding: const EdgeInsets.fromLTRB(12.694, 12.694, 12.694, 12),
         child: Column(
@@ -751,7 +776,10 @@ class _ActionButton extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
           border: showBorder
-              ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.694)
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 0.694,
+                )
               : null,
         ),
         child: Row(
