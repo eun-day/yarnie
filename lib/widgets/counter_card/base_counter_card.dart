@@ -22,7 +22,6 @@ class BaseCounterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 173,
       height: 160,
       decoration: BoxDecoration(
         color: backgroundColor ?? Theme.of(context).colorScheme.surface,
@@ -37,16 +36,47 @@ class BaseCounterCard extends StatelessWidget {
             child: SizedBox(
               height: 20,
               width: double.infinity,
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  letterSpacing: -0.15,
-                  fontWeight: FontWeight.w400, // Inter Regular
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final textStyle = TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    letterSpacing: -0.15,
+                    fontWeight: FontWeight.w400,
+                  );
+                  final textSpan = TextSpan(text: label, style: textStyle);
+                  final textPainter = TextPainter(
+                    text: textSpan,
+                    maxLines: 1,
+                    textDirection: TextDirection.ltr,
+                  )..layout(maxWidth: constraints.maxWidth);
+                  final isOverflowing = textPainter.didExceedMaxLines;
+
+                  final textWidget = Text(
+                    label,
+                    style: textStyle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  );
+
+                  if (!isOverflowing) return textWidget;
+
+                  return Tooltip(
+                    message: label,
+                    triggerMode: TooltipTriggerMode.tap,
+                    preferBelow: false,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    textStyle: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      letterSpacing: -0.15,
+                    ),
+                    child: textWidget,
+                  );
+                },
               ),
             ),
           ),

@@ -31,81 +31,75 @@ class StitchCounterCard extends StatelessWidget {
     return BaseCounterCard(
       label: label,
       progress: null, // 스티치 카운터는 프로그레스 바 없음
-      content: SizedBox(
-        width: 156,
-        height: 55,
-        child: Stack(
+      content: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Decrease Button
-            Positioned(
-              left: 0,
-              top: 7.5,
-              child: GestureDetector(
-                onTap: onDecrement,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.52),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(Icons.remove, size: 16, color: Theme.of(context).colorScheme.onSurface),
+            GestureDetector(
+              onTap: onDecrement,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.52),
+                ),
+                alignment: Alignment.center,
+                child: Icon(Icons.remove, size: 16, color: Theme.of(context).colorScheme.onSurface),
+              ),
+            ),
+            const SizedBox(width: 4),
+
+            // Value Display
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '$currentValue',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        letterSpacing: 0.37,
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      AppLocalizations.of(context)!.stitch,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        letterSpacing: -0.15,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            
-            // Value Display
-            Positioned(
-              left: 48,
-              top: 9,
-              right: 48, // Center between buttons
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    '$currentValue',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).colorScheme.onSurface,
-                      letterSpacing: 0.37,
-                      height: 1.0,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    AppLocalizations.of(context)!.stitch,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      letterSpacing: -0.15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(width: 4),
 
             // Increase Button
-            Positioned(
-              right: 0,
-              top: 7.5,
-              child: GestureDetector(
-                onTap: onIncrement,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
+            GestureDetector(
+              onTap: onIncrement,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle,
                 ),
+                alignment: Alignment.center,
+                child: Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
               ),
             ),
           ],
