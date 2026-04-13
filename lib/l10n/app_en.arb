@@ -476,5 +476,7 @@
   "premiumRestoreNoHistory": "No purchase history found to restore.",
   "premiumNetworkError": "A network error occurred. Please check your connection.",
   "upsellSnackbarMessage": "Purchase Yarnie Premium to create unlimited projects!",
-  "upsellSnackbarAction": "View Premium"
+  "upsellSnackbarAction": "View Premium",
+  "everyNRows": "Every {n} rows",
+  "row": "rows"
 }

@@ -1521,4 +1521,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get upsellSnackbarAction => '프리미엄 보기';
+
+  @override
+  String everyNRows(Object n) {
+    return '$n행마다';
+  }
+
+  @override
+  String get row => '행';
 }

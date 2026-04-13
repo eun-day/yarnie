@@ -2959,6 +2959,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'프리미엄 보기'**
   String get upsellSnackbarAction;
+
+  /// No description provided for @everyNRows.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}행마다'**
+  String everyNRows(Object n);
+
+  /// No description provided for @row.
+  ///
+  /// In ko, this message translates to:
+  /// **'행'**
+  String get row;
 }
 
 class _AppLocalizationsDelegate
