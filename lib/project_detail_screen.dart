@@ -1421,11 +1421,31 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final startRowInt = spec['startRow'] as int? ?? 1;
 
         int completedCount = 0;
-        for (final r in runs) {
+        int activeRunIndex = -1;
+        for (int i = 0; i < runs.length; i++) {
+          final r = runs[i];
           if (effectiveValue >= r.startRow + r.rowsTotal) {
             completedCount++;
           } else if (effectiveValue >= r.startRow) {
+            activeRunIndex = i;
             break;
+          }
+        }
+
+        // 현재 활성 run의 색상 정보 추출
+        // activeRunIndex가 있으면 해당 run, 없으면 마지막 완료 run
+        Color? currentColor;
+        String? currentColorLabel;
+        final displayRunIndex = activeRunIndex >= 0
+            ? activeRunIndex
+            : (completedCount > 0 ? completedCount - 1 : 0);
+        if (displayRunIndex < runs.length) {
+          final displayRun = runs[displayRunIndex];
+          if (displayRun.label != null && displayRun.label!.startsWith('#')) {
+            try {
+              final hexStr = displayRun.label!.substring(1);
+              currentColor = Color(int.parse(hexStr, radix: 16) + 0xFF000000);
+            } catch (_) {}
           }
         }
 
@@ -1444,6 +1464,8 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isLinked: counter.linkState == LinkState.linked,
             backgroundColor: backgroundColor,
             isCompleted: isCompleted,
+            currentColor: currentColor,
+            currentColorLabel: currentColorLabel,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
                 appDb.unlinkSectionCounter(

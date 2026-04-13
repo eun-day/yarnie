@@ -1576,4 +1576,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upsellSnackbarAction => 'View Premium';
+
+  @override
+  String everyNRows(Object n) {
+    return 'Every $n rows';
+  }
+
+  @override
+  String get row => 'rows';
 }
