@@ -34,11 +34,11 @@ class RepeatCounterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Total progress across all repeats? Or just current repeat?
-    // Design shows progress bar. Usually represents total completion.
-    // Let's assume linear progress: (currentRepeat * rowsPerRepeat + currentRow) / (maxRepeat * rowsPerRepeat)
+    // Total progress across all repeats.
+    // Progress = completed rows (not including current row in pattern)
+    // e.g. repeat 0, row 1 → 0 completed (0%)
     final totalRows = maxRepeatCount * rowsPerRepeat;
-    final currentTotal = (currentRepeatCount * rowsPerRepeat) + currentRowInPattern;
+    final currentTotal = (currentRepeatCount * rowsPerRepeat) + (currentRowInPattern - 1);
     final progressRatio = totalRows > 0 ? currentTotal / totalRows : 0.0;
 
     return BaseCounterCard(
@@ -54,8 +54,7 @@ class RepeatCounterCard extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                '${currentRepeatCount + 1}', // Display 1-based for user? Or 0? Design shows '0 / 5회' -> maybe completed count?
-                // If '0 / 5회' means 0 completed, then we use currentRepeatCount.
+                '${(currentRepeatCount + 1).clamp(1, maxRepeatCount)}',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w400,
@@ -66,7 +65,7 @@ class RepeatCounterCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                '/ ${maxRepeatCount}회${isCompleted ? ' ✓' : ''}',
+                AppLocalizations.of(context)!.repeatCountSuffix(maxRepeatCount, isCompleted ? ' ✓' : ''),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

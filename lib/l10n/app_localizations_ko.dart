@@ -904,7 +904,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String patternRows(Object current, Object total) {
-    return '$current/$total행 ($total행 패턴)';
+    return '$current/$total행';
   }
 
   @override
@@ -1529,4 +1529,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get row => '행';
+
+  @override
+  String repeatCountSuffix(int count, String checkmark) {
+    return '/ $count회$checkmark';
+  }
+
+  @override
+  String shapingDecrease(int n) {
+    return '$n코 줄임';
+  }
+
+  @override
+  String shapingIncrease(int n) {
+    return '$n코 늘림';
+  }
+
+  @override
+  String get shapingActionNow => '지금 바로 진행!';
+
+  @override
+  String shapingActionNotYet(int row) {
+    return '평단 (다음: $row행)';
+  }
 }

@@ -283,7 +283,7 @@
   "stitchIncrease": "Increase",
   "stitchDecrease": "Decrease",
   "nextRow": "Next:{row}",
-  "patternRows": "{current}/{total} rows ({total} row pattern)",
+  "patternRows": "Row {current} of {total}",
   "fromRow": "From row {row}",
   "stitch": "sts",
   "increaseBy": "+{n} each",
@@ -478,5 +478,31 @@
   "upsellSnackbarMessage": "Purchase Yarnie Premium to create unlimited projects!",
   "upsellSnackbarAction": "View Premium",
   "everyNRows": "Every {n} rows",
-  "row": "rows"
+  "row": "rows",
+  "repeatCountSuffix": "/ {count} times{checkmark}",
+  "shapingDecrease": "Dec {n} sts",
+  "@shapingDecrease": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shapingIncrease": "Inc {n} sts",
+  "@shapingIncrease": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shapingActionNow": "NOW!",
+  "shapingActionNotYet": "Work even (Next: {row})",
+  "@shapingActionNotYet": {
+    "placeholders": {
+      "row": {
+        "type": "int"
+      }
+    }
+  }
 }

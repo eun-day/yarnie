@@ -105,7 +105,7 @@
   "shapingCounterUsage3": "• 목둘레나 어깨선 줄임",
   "shapingCounterExample": "\"양쪽에서 6회 늘림: 68코 → 80코\"",
   "lengthCounter": "길이 카운터 (Length)",
-  "lengthCounterDesc": "특정 길이에 도달할 때까지 작업을 추적해요.",
+  "lengthCounterDesc": "목표 길이까지 필요한 단수를 추적합니다",
   "lengthCounterUsage1": "• \"30cm까지 뜨기\" 같은 길이 기반 작업",
   "lengthCounterUsage2": "• 스카프나 담요의 원하는 길이 도달",
   "lengthCounterUsage3": "• 소매 길이나 몸통 길이 추적",
@@ -282,7 +282,7 @@
   "stitchIncrease": "코 늘림",
   "stitchDecrease": "코 줄임",
   "nextRow": "다음:{row}행",
-  "patternRows": "{current}/{total}행 ({total}행 패턴)",
+  "patternRows": "{current}/{total}행",
   "fromRow": "{row}행부터",
   "stitch": "코",
   "increaseBy": "+{n}씩",
@@ -321,7 +321,6 @@
   "targetInfoLengthInch": "목표 {length}inch",
   "editLengthCounterTitle": "길이 측정 카운터 수정",
   "addLengthCounterTitle": "길이 측정 카운터 추가",
-  "lengthCounterDesc": "목표 길이까지 필요한 단수를 추적합니다",
   "startStitch": "시작 단",
   "targetLengthCm": "목표 길이 (cm)",
   "targetLengthInch": "목표 길이 (inch)",
@@ -479,5 +478,41 @@
   "upsellSnackbarMessage": "Yarnie 평생권을 구입하시면 무제한으로 만드실 수 있어요!",
   "upsellSnackbarAction": "프리미엄 보기",
   "everyNRows": "{n}행마다",
-  "row": "행"
+  "row": "행",
+  "repeatCountSuffix": "/ {count}회{checkmark}",
+  "@repeatCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "checkmark": {
+        "type": "String"
+      }
+    }
+  },
+  "shapingDecrease": "{n}코 줄임",
+  "@shapingDecrease": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shapingIncrease": "{n}코 늘림",
+  "@shapingIncrease": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shapingActionNow": "지금 바로 진행!",
+  "shapingActionNotYet": "평단 (다음: {row}행)",
+  "@shapingActionNotYet": {
+    "placeholders": {
+      "row": {
+        "type": "int"
+      }
+    }
+  }
 }
