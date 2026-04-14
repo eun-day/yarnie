@@ -1793,7 +1793,7 @@ abstract class AppLocalizations {
   /// No description provided for @patternRows.
   ///
   /// In ko, this message translates to:
-  /// **'{current}/{total}행 ({total}행 패턴)'**
+  /// **'{current}/{total}행'**
   String patternRows(Object current, Object total);
 
   /// No description provided for @fromRow.
@@ -2971,6 +2971,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'행'**
   String get row;
+
+  /// No description provided for @repeatCountSuffix.
+  ///
+  /// In ko, this message translates to:
+  /// **'/ {count}회{checkmark}'**
+  String repeatCountSuffix(int count, String checkmark);
+
+  /// No description provided for @shapingDecrease.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}코 줄임'**
+  String shapingDecrease(int n);
+
+  /// No description provided for @shapingIncrease.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}코 늘림'**
+  String shapingIncrease(int n);
+
+  /// No description provided for @shapingActionNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 바로 진행!'**
+  String get shapingActionNow;
+
+  /// No description provided for @shapingActionNotYet.
+  ///
+  /// In ko, this message translates to:
+  /// **'평단 (다음: {row}행)'**
+  String shapingActionNotYet(int row);
 }
 
 class _AppLocalizationsDelegate

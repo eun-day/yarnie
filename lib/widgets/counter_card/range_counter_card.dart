@@ -34,10 +34,13 @@ class RangeCounterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Calculate progress (clamp 0..totalRows)
     // Range: startRow ~ endRow
-    // If current < startRow: 0
-    // If current > endRow: totalRows
-    final progressValue = (currentMainValue - startRow + 1).clamp(0, totalRows);
-    final progressRatio = totalRows > 0 ? progressValue / totalRows : 0.0;
+    // Progress = completed rows (not including current row)
+    // e.g. startRow=1, current=1 → 0 completed (0%), current=2 → 1 completed (10%)
+    final completedRows = (currentMainValue - startRow).clamp(0, totalRows);
+    final progressRatio = totalRows > 0 ? completedRows / totalRows : 0.0;
+    
+    // Display = current active row in this range (1-based index)
+    final displayValue = (currentMainValue - startRow + 1).clamp(0, totalRows);
 
     return BaseCounterCard(
       label: label,
@@ -49,7 +52,7 @@ class RangeCounterCard extends StatelessWidget {
         textBaseline: TextBaseline.alphabetic,
         children: [
           Text(
-            '$progressValue',
+            '$displayValue',
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w400,
@@ -60,7 +63,7 @@ class RangeCounterCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            '/ $totalRows${AppLocalizations.of(context)!.stitch}${isCompleted ? ' ✓' : ''}',
+            '/ $totalRows${AppLocalizations.of(context)!.row}${isCompleted ? ' ✓' : ''}',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -71,7 +74,7 @@ class RangeCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
+        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.row}',
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

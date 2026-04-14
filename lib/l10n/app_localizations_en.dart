@@ -949,7 +949,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String patternRows(Object current, Object total) {
-    return '$current/$total rows ($total row pattern)';
+    return 'Row $current of $total';
   }
 
   @override
@@ -1584,4 +1584,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get row => 'rows';
+
+  @override
+  String repeatCountSuffix(int count, String checkmark) {
+    return '/ $count times$checkmark';
+  }
+
+  @override
+  String shapingDecrease(int n) {
+    return 'Dec $n sts';
+  }
+
+  @override
+  String shapingIncrease(int n) {
+    return 'Inc $n sts';
+  }
+
+  @override
+  String get shapingActionNow => 'NOW!';
+
+  @override
+  String shapingActionNotYet(int row) {
+    return 'Work even (Next: $row)';
+  }
 }

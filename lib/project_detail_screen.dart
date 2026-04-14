@@ -106,7 +106,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
       if (type == 'range') {
         final run = runs.first;
-        final end = run.startRow + run.rowsTotal - 1;
+        final end = run.startRow + run.rowsTotal;
         wasCompleted = oldVal >= end;
         isCompleted = newVal >= end;
       } else if (type == 'repeat') {
@@ -155,7 +155,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         final rowHeight = spec['rowHeight'] as double? ?? 0.1;
 
         bool check(int val) {
-          final rowsDone = (val - runL.startRow + 1).clamp(0, runL.rowsTotal);
+          final rowsDone = (val - runL.startRow).clamp(0, runL.rowsTotal);
           final rowsLeft = runL.rowsTotal - rowsDone;
           final remainingLen = (rowsLeft * rowHeight).clamp(0.0, targetLength);
           final progressL = runL.rowsTotal > 0
@@ -1271,7 +1271,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         if (runs.isEmpty) return Text('No Data');
         final run = runs.first;
         final isCompleted =
-            effectiveValue >= (run.startRow + run.rowsTotal - 1);
+            effectiveValue >= (run.startRow + run.rowsTotal);
         final backgroundColor = isCompleted
             ? completedColor
             : (counter.linkState == LinkState.linked ? null : unlinkedColor);
@@ -1513,16 +1513,20 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final startRowShaping = spec['startRow'] as int? ?? 1;
 
         int shapingCompleted = 0;
-        int nextActionRow = startRowShaping + intervalRowsShaping;
+        int nextActionRow = startRowShaping;
 
         for (int i = 0; i < runs.length; i++) {
           final r = runs[i];
-          final actionRow = r.startRow + r.rowsTotal;
+          final runEndRow = r.startRow + r.rowsTotal;
 
-          if (effectiveValue >= actionRow) {
+          if (effectiveValue >= runEndRow) {
             shapingCompleted++;
           } else {
-            nextActionRow = actionRow;
+            if (effectiveValue <= r.startRow) {
+              nextActionRow = r.startRow;
+            } else {
+              nextActionRow = runEndRow;
+            }
             break;
           }
         }
@@ -1548,6 +1552,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             isLinked: counter.linkState == LinkState.linked,
             backgroundColor: backgroundColor,
             isCompleted: isCompleted,
+            isActionRow: effectiveValue == nextActionRow && !isCompleted,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
                 appDb.unlinkSectionCounter(
@@ -1597,7 +1602,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final rowHeight = (spec['rowHeight'] as num? ?? 0.1).toDouble();
         final unitInSpec = spec['units']?.toString() ?? 'cm';
 
-        final rowsDone = (effectiveValue - runL.startRow + 1).clamp(
+        final rowsDone = (effectiveValue - runL.startRow).clamp(
           0,
           runL.rowsTotal,
         );

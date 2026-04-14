@@ -16,6 +16,7 @@ class ShapingCounterCard extends StatelessWidget {
   final VoidCallback? onDelete;
   final Color? backgroundColor;
   final bool isCompleted;
+  final bool isActionRow; // 현재 행이 코 줄임/늘림을 실행해야 하는 행인지 여부
 
   const ShapingCounterCard({
     super.key,
@@ -32,6 +33,7 @@ class ShapingCounterCard extends StatelessWidget {
     this.onDelete,
     this.backgroundColor,
     this.isCompleted = false,
+    this.isActionRow = false,
   });
 
   @override
@@ -41,8 +43,8 @@ class ShapingCounterCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     // Determine icon and text based on amount
     final isIncrease = amount > 0;
-    final typeText = isIncrease ? l10n.stitchIncrease : l10n.stitchDecrease;
-    final amountText = isIncrease ? '+$amount${l10n.stitch}' : '$amount${l10n.stitch}';
+    final amountAbs = amount.abs();
+    final actionText = isIncrease ? l10n.shapingIncrease(amountAbs) : l10n.shapingDecrease(amountAbs);
     final color = isIncrease ? const Color(0xFF6FB96F) : const Color(0xFFF08C1F); // Green for +, Orange for -
 
     return BaseCounterCard(
@@ -64,7 +66,7 @@ class ShapingCounterCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                '$typeText $amountText',
+                actionText,
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -75,16 +77,45 @@ class ShapingCounterCard extends StatelessWidget {
           ),
           
           // Next Action Row
-          Text(
-            isCompleted ? '${l10n.complete} ✓' : l10n.nextRow(nextActionRow),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w400,
-              color: Theme.of(context).colorScheme.onSurface,
-              letterSpacing: -0.44,
-              height: 1.4,
+          if (isCompleted)
+            Text(
+              '${l10n.complete} ✓',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).colorScheme.onSurface,
+                letterSpacing: -0.44,
+                height: 1.4,
+              ),
+            )
+          else if (isActionRow)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                l10n.shapingActionNow,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            )
+          else
+            Text(
+              l10n.shapingActionNotYet(nextActionRow), 
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).colorScheme.onSurface,
+                letterSpacing: -0.44,
+                height: 1.4,
+              ),
             ),
-          ),
           
           // Sub Info
           Text(
