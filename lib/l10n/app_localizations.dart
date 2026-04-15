@@ -1997,7 +1997,7 @@ abstract class AppLocalizations {
   /// No description provided for @lengthMeasurement.
   ///
   /// In ko, this message translates to:
-  /// **'길이 측정'**
+  /// **'길이 카운터'**
   String get lengthMeasurement;
 
   /// No description provided for @targetInfoLength.
@@ -2996,11 +2996,59 @@ abstract class AppLocalizations {
   /// **'지금 바로 진행!'**
   String get shapingActionNow;
 
-  /// No description provided for @shapingActionNotYet.
+  /// No description provided for @shapingWorkEven.
   ///
   /// In ko, this message translates to:
-  /// **'평단 (다음: {row}행)'**
-  String shapingActionNotYet(int row);
+  /// **'평단'**
+  String get shapingWorkEven;
+
+  /// No description provided for @shapingNextActionRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음: {row}행'**
+  String shapingNextActionRow(int row);
+
+  /// No description provided for @shapingModePattern.
+  ///
+  /// In ko, this message translates to:
+  /// **'패턴'**
+  String get shapingModePattern;
+
+  /// No description provided for @shapingModeDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력'**
+  String get shapingModeDirect;
+
+  /// No description provided for @shapingRowsLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 단수'**
+  String get shapingRowsLabel;
+
+  /// No description provided for @shapingRowsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 2, 5, 9, 11'**
+  String get shapingRowsHint;
+
+  /// No description provided for @shapingRowsHelper.
+  ///
+  /// In ko, this message translates to:
+  /// **'코를 증감할 단수를 쉼표로 구분하여 입력하세요'**
+  String get shapingRowsHelper;
+
+  /// No description provided for @shapingDirectSubInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{current}/{total}회'**
+  String shapingDirectSubInfo(Object current, Object total);
+
+  /// No description provided for @preview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리보기'**
+  String get preview;
 }
 
 class _AppLocalizationsDelegate

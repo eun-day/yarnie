@@ -1511,6 +1511,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final amount = spec['amount'] as int? ?? 0;
         final intervalRowsShaping = spec['intervalRows'] as int? ?? 1;
         final startRowShaping = spec['startRow'] as int? ?? 1;
+        final isDirect = spec['mode'] == 'direct';
 
         int shapingCompleted = 0;
         int nextActionRow = startRowShaping;
@@ -1553,6 +1554,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
             backgroundColor: backgroundColor,
             isCompleted: isCompleted,
             isActionRow: effectiveValue == nextActionRow && !isCompleted,
+            isDirect: isDirect,
             onLinkTap: () {
               if (counter.linkState == LinkState.linked) {
                 appDb.unlinkSectionCounter(

@@ -1011,7 +1011,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get countBySetting => 'Count By 설정';
 
   @override
-  String get lengthMeasurement => '길이 측정';
+  String get lengthMeasurement => '길이 카운터';
 
   @override
   String targetInfoLength(Object length) {
@@ -1549,7 +1549,33 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shapingActionNow => '지금 바로 진행!';
 
   @override
-  String shapingActionNotYet(int row) {
-    return '평단 (다음: $row행)';
+  String get shapingWorkEven => '평단';
+
+  @override
+  String shapingNextActionRow(int row) {
+    return '다음: $row행';
   }
+
+  @override
+  String get shapingModePattern => '패턴';
+
+  @override
+  String get shapingModeDirect => '직접 입력';
+
+  @override
+  String get shapingRowsLabel => '증감 단수';
+
+  @override
+  String get shapingRowsHint => '예: 2, 5, 9, 11';
+
+  @override
+  String get shapingRowsHelper => '코를 증감할 단수를 쉼표로 구분하여 입력하세요';
+
+  @override
+  String shapingDirectSubInfo(Object current, Object total) {
+    return '$current/$total회';
+  }
+
+  @override
+  String get preview => '미리보기';
 }

@@ -17,6 +17,7 @@ class ShapingCounterCard extends StatelessWidget {
   final Color? backgroundColor;
   final bool isCompleted;
   final bool isActionRow; // 현재 행이 코 줄임/늘림을 실행해야 하는 행인지 여부
+  final bool isDirect; // 직접 입력 모드 여부
 
   const ShapingCounterCard({
     super.key,
@@ -34,6 +35,7 @@ class ShapingCounterCard extends StatelessWidget {
     this.backgroundColor,
     this.isCompleted = false,
     this.isActionRow = false,
+    this.isDirect = false,
   });
 
   @override
@@ -90,7 +92,7 @@ class ShapingCounterCard extends StatelessWidget {
             )
           else if (isActionRow)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(6),
@@ -98,7 +100,7 @@ class ShapingCounterCard extends StatelessWidget {
               child: Text(
                 l10n.shapingActionNow,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: color,
                   letterSpacing: -0.3,
@@ -106,26 +108,34 @@ class ShapingCounterCard extends StatelessWidget {
               ),
             )
           else
-            Text(
-              l10n.shapingActionNotYet(nextActionRow), 
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-                color: Theme.of(context).colorScheme.onSurface,
-                letterSpacing: -0.44,
-                height: 1.4,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                l10n.shapingWorkEven, 
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  letterSpacing: -0.3,
+                ),
               ),
             ),
-          
-          // Sub Info
-          Text(
-            '${intervalRows}${l10n.stitch} · $currentCount/${totalCount}회',
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              letterSpacing: -0.15,
+            
+          if (!isCompleted && !isActionRow) ...[
+            const SizedBox(height: 2),
+            Text(
+              l10n.shapingNextActionRow(nextActionRow),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                letterSpacing: -0.15,
+              ),
             ),
-          ),
+          ],
         ],
       ),
       bottomToolbar: CounterCardToolbar(

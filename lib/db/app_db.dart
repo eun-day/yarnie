@@ -1359,23 +1359,49 @@ class AppDb extends _$AppDb {
       }
     } else if (type == 'shaping') {
       // Shaping 타입: 코 수 증감
-      final startRow = spec['startRow'] as int? ?? 0;
-      final intervalRows = spec['intervalRows'] as int? ?? 0;
-      final totalCount = spec['totalCount'] as int? ?? 0;
       final amount = spec['amount'] as int? ?? 0;
+      final mode = spec['mode'] as String?;
+      final label = amount > 0 ? '+$amount sts' : '$amount sts';
 
-      final label = amount > 0 ? '+$amount sts' : '$amount sts'; // +1 sts, -1 sts
+      if (mode == 'direct') {
+        // 직접 입력 모드: rows 배열에서 개별 run 생성
+        final List<dynamic> rowsList = spec['rows'] ?? [];
+        final rows = rowsList.map((e) => (e as int)).toList();
+        rows.sort();
 
-      for (var i = 0; i < totalCount; i++) {
-        await into(sectionRuns).insert(
-          SectionRunsCompanion.insert(
-            sectionCounterId: sectionCounterId,
-            ord: i,
-            startRow: startRow + (i * intervalRows),
-            rowsTotal: intervalRows,
-            label: Value(label),
-          ),
-        );
+        for (var i = 0; i < rows.length; i++) {
+          // rowsTotal = 다음 row까지의 거리, 마지막은 1
+          final rowsTotal = (i < rows.length - 1)
+              ? rows[i + 1] - rows[i]
+              : 1;
+
+          await into(sectionRuns).insert(
+            SectionRunsCompanion.insert(
+              sectionCounterId: sectionCounterId,
+              ord: i,
+              startRow: rows[i],
+              rowsTotal: rowsTotal,
+              label: Value(label),
+            ),
+          );
+        }
+      } else {
+        // 패턴 모드: 기존 로직
+        final startRow = spec['startRow'] as int? ?? 0;
+        final intervalRows = spec['intervalRows'] as int? ?? 0;
+        final totalCount = spec['totalCount'] as int? ?? 0;
+
+        for (var i = 0; i < totalCount; i++) {
+          await into(sectionRuns).insert(
+            SectionRunsCompanion.insert(
+              sectionCounterId: sectionCounterId,
+              ord: i,
+              startRow: startRow + (i * intervalRows),
+              rowsTotal: intervalRows,
+              label: Value(label),
+            ),
+          );
+        }
       }
     } else if (type == 'length') {
       // Length 타입: 단일 목표 구간

@@ -279,7 +279,7 @@
   "deleteConfirm": "Do you want to delete this project?",
   "deleteDesc": "The project will be moved to the trash and permanently deleted after 30 days.",
   "achieved": "Achieved ✓",
-  "remainingLength": "Remaining Length",
+  "remainingLength": "Remaining",
   "stitchIncrease": "Increase",
   "stitchDecrease": "Decrease",
   "nextRow": "Next:{row}",
@@ -421,7 +421,7 @@
   "expectedRows": "Expected Rows",
   "gaugeInputComingSoon": "Gauge input feature is coming soon",
   "goToGaugeInput": "Go to gauge input",
-  "lengthMeasurement": "Length Measurement",
+  "lengthMeasurement": "Length Counter",
   "manageParts": "Manage Parts",
   "managePartsDesc": "Long press a Part name to edit, or drag the left icon to reorder.",
   "newPartName": "New Part Name",
@@ -497,12 +497,20 @@
     }
   },
   "shapingActionNow": "NOW!",
-  "shapingActionNotYet": "Work even (Next: {row})",
-  "@shapingActionNotYet": {
+  "shapingWorkEven": "Work even",
+  "shapingNextActionRow": "Next: row {row}",
+  "@shapingNextActionRow": {
     "placeholders": {
       "row": {
         "type": "int"
       }
     }
-  }
+  },
+  "shapingModePattern": "Pattern",
+  "shapingModeDirect": "Direct",
+  "shapingRowsLabel": "Shaping Rows",
+  "shapingRowsHint": "e.g., 2, 5, 9, 11",
+  "shapingRowsHelper": "Enter row numbers for shaping, separated by commas",
+  "shapingDirectSubInfo": "{current}/{total} times",
+  "preview": "Preview"
 }
