@@ -316,7 +316,7 @@
   "cm": "cm",
   "inch": "inch",
   "countBySetting": "Count By 설정",
-  "lengthMeasurement": "길이 측정",
+  "lengthMeasurement": "길이 카운터",
   "targetInfoLength": "목표 {length}cm",
   "targetInfoLengthInch": "목표 {length}inch",
   "editLengthCounterTitle": "길이 측정 카운터 수정",
@@ -507,12 +507,20 @@
     }
   },
   "shapingActionNow": "지금 바로 진행!",
-  "shapingActionNotYet": "평단 (다음: {row}행)",
-  "@shapingActionNotYet": {
+  "shapingWorkEven": "평단",
+  "shapingNextActionRow": "다음: {row}행",
+  "@shapingNextActionRow": {
     "placeholders": {
       "row": {
         "type": "int"
       }
     }
-  }
+  },
+  "shapingModePattern": "패턴",
+  "shapingModeDirect": "직접 입력",
+  "shapingRowsLabel": "증감 단수",
+  "shapingRowsHint": "예: 2, 5, 9, 11",
+  "shapingRowsHelper": "코를 증감할 단수를 쉼표로 구분하여 입력하세요",
+  "shapingDirectSubInfo": "{current}/{total}회",
+  "preview": "미리보기"
 }

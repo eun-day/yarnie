@@ -92,7 +92,7 @@ class LengthCounterCard extends StatelessWidget {
         ],
       ),
       bottomToolbar: CounterCardToolbar(
-        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.stitch}',
+        infoText: '$startRow~$endRow${AppLocalizations.of(context)!.row}',
         showLinkButton: true,
         isLinked: isLinked,
         onLinkTap: onLinkTap,

@@ -934,7 +934,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achieved => 'Achieved ✓';
 
   @override
-  String get remainingLength => 'Remaining Length';
+  String get remainingLength => 'Remaining';
 
   @override
   String get stitchIncrease => 'Increase';
@@ -1058,7 +1058,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get countBySetting => 'Count By Setting';
 
   @override
-  String get lengthMeasurement => 'Length Measurement';
+  String get lengthMeasurement => 'Length Counter';
 
   @override
   String targetInfoLength(Object length) {
@@ -1604,7 +1604,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shapingActionNow => 'NOW!';
 
   @override
-  String shapingActionNotYet(int row) {
-    return 'Work even (Next: $row)';
+  String get shapingWorkEven => 'Work even';
+
+  @override
+  String shapingNextActionRow(int row) {
+    return 'Next: row $row';
   }
+
+  @override
+  String get shapingModePattern => 'Pattern';
+
+  @override
+  String get shapingModeDirect => 'Direct';
+
+  @override
+  String get shapingRowsLabel => 'Shaping Rows';
+
+  @override
+  String get shapingRowsHint => 'e.g., 2, 5, 9, 11';
+
+  @override
+  String get shapingRowsHelper =>
+      'Enter row numbers for shaping, separated by commas';
+
+  @override
+  String shapingDirectSubInfo(Object current, Object total) {
+    return '$current/$total times';
+  }
+
+  @override
+  String get preview => 'Preview';
 }
