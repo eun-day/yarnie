@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/theme/text_styles.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:yarnie/features/my/screens/open_source_licenses_screen.dart';
 
 class AppInfoSheet extends StatelessWidget {
   const AppInfoSheet({super.key});
@@ -123,25 +125,50 @@ class AppInfoSheet extends StatelessWidget {
                       context,
                       text: AppLocalizations.of(context)!.sendFeedback,
                       iconPath: 'assets/icons/feedback.svg',
-                      onTap: () {},
+                      onTap: () async {
+                        final Uri emailLaunchUri = Uri(
+                          scheme: 'mailto',
+                          path: 'yarnie.support@gmail.com',
+                        );
+                        if (!await launchUrl(emailLaunchUri)) {
+                          debugPrint('Could not launch $emailLaunchUri');
+                        }
+                      },
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
                       text: AppLocalizations.of(context)!.privacyPolicy,
-                      onTap: () {},
+                      onTap: () async {
+                        final url = Uri.parse('https://sprinkle-crawdad-024.notion.site/Privacy-Policy-34308fa3261c8053aaa3c3b21e26d04b?source=copy_link');
+                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                          debugPrint('Could not launch $url');
+                        }
+                      },
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
                       text: AppLocalizations.of(context)!.termsOfService,
-                      onTap: () {},
+                      onTap: () async {
+                        final url = Uri.parse('https://sprinkle-crawdad-024.notion.site/Terms-of-Service-34408fa3261c80679ec6fab334633443?source=copy_link');
+                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                          debugPrint('Could not launch $url');
+                        }
+                      },
                     ),
                     const SizedBox(height: 8),
                     _buildButton(
                       context,
                       text: AppLocalizations.of(context)!.openSourceLicense,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OpenSourceLicensesScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
