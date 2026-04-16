@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,43 +15,54 @@ import 'package:yarnie/core/providers/theme_provider.dart';
 import 'package:yarnie/theme/app_theme.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  unawaited(MobileAds.instance.initialize());
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // RevenueCat SDK 초기화
-  String apiKey = '';
-  if (Platform.isIOS) {
-    apiKey = 'appl_NhwQkFMfsQMHbeQARtdYGIJmros';
-  } else if (Platform.isAndroid) {
-    apiKey = 'goog_YYXVYRZQeWDAodvssxJXwOOZonT';
-  }
+  SharedPreferences? prefs;
 
-  if (apiKey.isNotEmpty) {
-    await Purchases.setLogLevel(LogLevel.debug);
-    PurchasesConfiguration configuration = PurchasesConfiguration(apiKey);
-    await Purchases.configure(configuration);
-  }
+  await Future.wait([
+    Future(() async {
+      unawaited(MobileAds.instance.initialize());
 
-  final projects = await appDb.watchAll().first;
-  for (final project in projects) {
-    debugPrint(
-      '📌Project: id=${project.id}, name=${project.name}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}',
-    );
-  }
+      // RevenueCat SDK 초기화
+      String apiKey = '';
+      if (Platform.isIOS) {
+        apiKey = 'appl_NhwQkFMfsQMHbeQARtdYGIJmros';
+      } else if (Platform.isAndroid) {
+        apiKey = 'goog_YYXVYRZQeWDAodvssxJXwOOZonT';
+      }
 
-  // 삭제된지 30일이 지난 프로젝트 영구 삭제
-  try {
-    await appDb.cleanupDeletedProjects();
-  } catch (e) {
-    debugPrint('Failed to cleanup deleted projects: $e');
-  }
+      if (apiKey.isNotEmpty) {
+        await Purchases.setLogLevel(LogLevel.debug);
+        PurchasesConfiguration configuration = PurchasesConfiguration(apiKey);
+        await Purchases.configure(configuration);
+      }
 
-  final prefs = await SharedPreferences.getInstance();
+      final projects = await appDb.watchAll().first;
+      for (final project in projects) {
+        debugPrint(
+          '📌Project: id=${project.id}, name=${project.name}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}',
+        );
+      }
+
+      // 삭제된지 30일이 지난 프로젝트 영구 삭제
+      try {
+        await appDb.cleanupDeletedProjects();
+      } catch (e) {
+        debugPrint('Failed to cleanup deleted projects: $e');
+      }
+
+      prefs = await SharedPreferences.getInstance();
+    }),
+    Future.delayed(const Duration(seconds: 1)),
+  ]);
+
+  FlutterNativeSplash.remove();
 
   runApp(
     ProviderScope(
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
+        if (prefs != null) sharedPreferencesProvider.overrideWithValue(prefs!),
       ],
       child: const MyApp(),
     ),
