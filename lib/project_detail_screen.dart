@@ -12,6 +12,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
+import 'package:yarnie/common/ad_helper.dart';
 import 'package:yarnie/widgets/add_buddy_counter_menu.dart';
 import 'package:yarnie/widgets/add_interval_counter_sheet.dart';
 import 'package:yarnie/widgets/add_length_counter_sheet.dart';
@@ -394,9 +395,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
           ? null
           : AdVisibilityWrapper(
               child: CommonBannerAdWidget(
-                adUnitId: Platform.isAndroid
-                    ? 'ca-app-pub-3940256099942544/6300978111'
-                    : 'ca-app-pub-3940256099942544/2934735716',
+                adUnitId: AdHelper.projectDetailBannerId,
               ),
             ),
     );

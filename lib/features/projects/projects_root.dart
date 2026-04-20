@@ -18,6 +18,7 @@ import '../../widgets/ad_visibility_wrapper.dart';
 import '../../core/providers/premium_provider.dart';
 import '../../core/premium/premium_policy.dart';
 import '../../common/time_helper.dart';
+import '../../common/ad_helper.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -162,9 +163,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
           ? null
           : AdVisibilityWrapper(
               child: CommonBannerAdWidget(
-                adUnitId: Platform.isAndroid
-                    ? 'ca-app-pub-3940256099942544/6300978111'
-                    : 'ca-app-pub-3940256099942544/2934735716',
+                adUnitId: AdHelper.projectListBannerId,
               ),
             ),
     );

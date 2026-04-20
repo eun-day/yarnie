@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
+import 'package:yarnie/common/ad_helper.dart';
 
 class ExitConfirmDialog extends StatefulWidget {
   const ExitConfirmDialog({super.key});
@@ -22,9 +23,7 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
   }
 
   void _loadAd() {
-    final adUnitId = Platform.isAndroid
-        ? 'ca-app-pub-3940256099942544/6300978111'
-        : 'ca-app-pub-3940256099942544/2934735716';
+    final adUnitId = AdHelper.exitDialogBannerId;
 
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
