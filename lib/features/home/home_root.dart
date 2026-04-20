@@ -15,6 +15,7 @@ import 'package:yarnie/widgets/common_banner_ad.dart';
 import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/core/premium/premium_policy.dart';
+import 'package:yarnie/common/ad_helper.dart';
 
 const _kGuideCardDismissedKey = 'home_guide_card_dismissed';
 
@@ -129,9 +130,7 @@ class _HomeRootState extends ConsumerState<HomeRoot> {
           ? null
           : AdVisibilityWrapper(
               child: CommonBannerAdWidget(
-                adUnitId: Platform.isAndroid
-                    ? 'ca-app-pub-3940256099942544/6300978111'
-                    : 'ca-app-pub-3940256099942544/2934735716',
+                adUnitId: AdHelper.homeBannerId,
               ),
             ),
       body: SafeArea(
