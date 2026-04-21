@@ -48,10 +48,12 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>NSCameraUsageDescription</key>
-		<string>프로젝트 사진을 촬영하기 위해 카메라에 접근합니다.</string>
+		<string>Yarnie needs camera access to take photos of your projects.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>프로젝트에 이미지를 첨부하기 위해 사진 라이브러리에 접근합니다.</string>
+		<string>Yarnie needs photo library access to attach images to your projects.</string>
 		<key>UIStatusBarHidden</key>
+		<false/>
+		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
 	</dict>
 </plist>
