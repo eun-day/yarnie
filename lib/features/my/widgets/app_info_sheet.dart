@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/theme/text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yarnie/features/my/screens/open_source_licenses_screen.dart';
 
-class AppInfoSheet extends StatelessWidget {
+class AppInfoSheet extends StatefulWidget {
   const AppInfoSheet({super.key});
+
+  @override
+  State<AppInfoSheet> createState() => _AppInfoSheetState();
+}
+
+class _AppInfoSheetState extends State<AppInfoSheet> {
+  int _yarnieTapCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +64,37 @@ class AppInfoSheet extends StatelessWidget {
                 style: TextStyle(fontSize: 60, height: 1.0),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Yarnie',
-                style: AppTextStyles.titleH1.copyWith(
-                  fontWeight: FontWeight.w400, // or font-normal in figma text-[24px]
-                  color: Theme.of(context).colorScheme.onSurface,
+              GestureDetector(
+                onTap: () async {
+                  _yarnieTapCount++;
+                  if (_yarnieTapCount >= 5) {
+                    _yarnieTapCount = 0;
+                    try {
+                      final appUserId = await Purchases.appUserID;
+                      await Clipboard.setData(ClipboardData(text: appUserId));
+                      if (context.mounted) {
+                        // 바텀시트를 먼저 닫아야 스낵바가 뒤에 가려지지 않습니다.
+                        Navigator.of(context).pop();
+                        
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('RevenueCat ID 복사 완료:\n$appUserId'),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint('Failed to get App User ID: $e');
+                    }
+                  }
+                },
+                child: Text(
+                  'Yarnie',
+                  style: AppTextStyles.titleH1.copyWith(
+                    fontWeight: FontWeight.w400, // or font-normal in figma text-[24px]
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
