@@ -19,6 +19,7 @@ import '../../core/providers/premium_provider.dart';
 import '../../core/premium/premium_policy.dart';
 import '../../common/time_helper.dart';
 import '../../common/ad_helper.dart';
+import '../../theme/app_theme.dart';
 
 /// SharedPreferences 키
 const _kViewModeKey = 'projects_view_mode';
@@ -505,12 +506,11 @@ class _LargeProjectCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               // 배경 이미지
-              project.imagePath != null
-                  ? ProjectImage(
-                      imagePath: project.imagePath,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(color: const Color(0xFFD9D9D9)),
+              ProjectImage(
+                imagePath: project.imagePath,
+                fit: BoxFit.cover,
+                fallbackPadding: 48,
+              ),
               // 하단 정보 섹션
               Positioned(
                 left: 0,
@@ -521,10 +521,15 @@ class _LargeProjectCard extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
-                      colors: [
-                        const Color.fromRGBO(0, 0, 0, 0.6),
-                        const Color.fromRGBO(0, 0, 0, 0.0),
-                      ],
+                      colors: project.imagePath == null
+                          ? [
+                              AppColors.primary.withOpacity(0.85),
+                              AppColors.primary.withOpacity(0.0),
+                            ]
+                          : [
+                              const Color.fromRGBO(0, 0, 0, 0.6),
+                              const Color.fromRGBO(0, 0, 0, 0.0),
+                            ],
                     ),
                   ),
                   child: Padding(
@@ -707,14 +712,11 @@ class _SmallProjectCard extends StatelessWidget {
           children: [
             // 이미지 영역
             Container(
-              color: const Color(0xFFD9D9D9),
-              child: project.imagePath != null
-                  ? ProjectImage(
-                      imagePath: project.imagePath,
-                      fit: BoxFit.cover,
-                      placeholder: _placeholderImage(context),
-                    )
-                  : _placeholderImage(context),
+              color: Colors.white,
+              child: ProjectImage(
+                imagePath: project.imagePath,
+                fit: BoxFit.cover,
+              ),
             ),
 
             // 좌측 상단 태그
@@ -771,15 +773,7 @@ class _SmallProjectCard extends StatelessWidget {
     );
   }
 
-  Widget _placeholderImage(BuildContext context) {
-    return Center(
-      child: Icon(
-        Icons.image,
-        size: 48,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
+
 
   List<Tag> _getProjectTags() {
     if (project.tagIds == null || project.tagIds!.isEmpty) return [];

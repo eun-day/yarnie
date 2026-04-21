@@ -48,15 +48,14 @@ class ProjectListTile extends StatelessWidget {
                   color: const Color(0xFFD9D9D9),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: project.imagePath != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: ProjectImage(
-                          imagePath: project.imagePath,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Container(color: const Color(0xFFD9D9D9)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: ProjectImage(
+                    imagePath: project.imagePath,
+                    fit: BoxFit.cover,
+                    fallbackPadding: 0,
+                  ),
+                ),
               ),
               const SizedBox(width: 16),
               // 정보

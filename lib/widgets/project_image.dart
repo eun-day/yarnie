@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import '../../core/utils/project_image_utils.dart';
 
 /// 프로젝트 이미지를 표시하는 위젯
@@ -10,32 +11,46 @@ class ProjectImage extends StatelessWidget {
   final String? imagePath;
   final BoxFit fit;
   final Widget? placeholder;
+  final double fallbackPadding;
 
   const ProjectImage({
     super.key,
     required this.imagePath,
     this.fit = BoxFit.cover,
     this.placeholder,
+    this.fallbackPadding = 16.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final defaultImage = placeholder ??
+        Container(
+          color: AppColors.secondary,
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.all(fallbackPadding),
+            child: Image.asset(
+              'assets/splash_icon.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+
     if (imagePath == null) {
-      return placeholder ?? Container(color: const Color(0xFFD9D9D9));
+      return defaultImage;
     }
 
     return FutureBuilder<String?>(
       future: ProjectImageUtils.toAbsolutePath(imagePath),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data == null) {
-          return placeholder ?? Container(color: const Color(0xFFD9D9D9));
+          return defaultImage;
         }
         final absPath = snapshot.data!;
         return Image.file(
           File(absPath),
           fit: fit,
-          errorBuilder: (_, __, ___) =>
-              placeholder ?? Container(color: const Color(0xFFD9D9D9)),
+          errorBuilder: (_, __, ___) => defaultImage,
         );
       },
     );

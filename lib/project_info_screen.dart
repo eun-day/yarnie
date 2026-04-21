@@ -155,40 +155,10 @@ class ProjectInfoSheet extends ConsumerWidget {
                               width: 240,
                               height: 135,
                               child:
-                                  (project.imagePath != null &&
-                                      project.imagePath!.isNotEmpty)
-                                  ? ProjectImage(
-                                      imagePath: project.imagePath,
-                                      fit: BoxFit.cover,
-                                      placeholder: Container(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest,
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.image_not_supported_outlined,
-                                            size: 40,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : Container(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surfaceContainerHighest,
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.image_outlined,
-                                          size: 40,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ),
+                                  ProjectImage(
+                                    imagePath: project.imagePath,
+                                    fit: BoxFit.cover,
+                                  ),
                             ),
                           ),
                         ),
