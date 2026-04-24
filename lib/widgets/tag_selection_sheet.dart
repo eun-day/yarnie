@@ -21,6 +21,8 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
   late Set<int> _selectedIds;
   String _searchQuery = '';
   late final TextEditingController _newTagNameController;
+  final FocusNode _newTagFocusNode = FocusNode();
+  bool _isAdding = false;
 
   final List<Color> _colorPalette = TagColorPreset.all.map((e) => e.backgroundColor).toList();
   late Color _newTagColor; // Make it late, initialize in initState
@@ -52,18 +54,8 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
   @override
   void dispose() {
     _newTagNameController.dispose();
+    _newTagFocusNode.dispose();
     super.dispose();
-  }
-
-  /// 선택된 색상의 Display Name 반환
-  String _getColorDisplayName(Color color) {
-    try {
-      return TagColorPreset.all
-          .firstWhere((p) => p.backgroundColor.value == color.value)
-          .name;
-    } catch (_) {
-      return '';
-    }
   }
 
   @override
@@ -84,9 +76,9 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
     final filteredTags = _filterTags(tagsState.allTags, _searchQuery);
 
     return DraggableScrollableSheet(
-      initialChildSize: 0.80, // 시트가 차지하는 초기 화면 높이 비율
+      initialChildSize: 0.8, // 시트가 차지하는 초기 화면 높이 비율
       minChildSize: 0.5, // 최소 높이
-      maxChildSize: 0.90, // 최대 높이
+      maxChildSize: 0.8, // 최대 높이
       expand: false, // 시트가 항상 전체 화면을 차지하지 않도록
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
@@ -113,29 +105,64 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                 ),
               ),
 
-              // ─── 헤더: 타이틀 + 서브타이틀 ───
+              // ─── 헤더: 타이틀 + 서브타이틀 + 추가 버튼 ───
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.tagSelection,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.onSurface,
-                        letterSpacing: -0.3,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.tagSelection,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.onSurface,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.tagSelectionSubtitle,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              letterSpacing: -0.15,
+                              height: 1.43,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.tagSelectionSubtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: -0.15,
-                        height: 1.43,
+                    const SizedBox(width: 12),
+                    // New Tag Button (+)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isAdding = !_isAdding;
+                          if (_isAdding) {
+                            _newTagNameController.clear();
+                            _newTagColor = _colorPalette.first;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _newTagFocusNode.requestFocus();
+                            });
+                          }
+                        });
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _isAdding ? Icons.close : Icons.add,
+                          size: 20,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
                   ],
@@ -223,9 +250,15 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                 child: ListView.builder(
                   controller: scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemCount: filteredTags.length,
+                  itemCount: filteredTags.length + (_isAdding ? 1 : 0),
                   itemBuilder: (context, index) {
-                    final tag = filteredTags[index];
+                    // 새 태그 추가 영역 (리스트 최상단)
+                    if (_isAdding && index == 0) {
+                      return _buildNewTagInputArea(theme, l10n);
+                    }
+
+                    final tagIndex = _isAdding ? index - 1 : index;
+                    final tag = filteredTags[tagIndex];
                     final isSelected = _selectedIds.contains(tag.id);
 
                     return InkWell(
@@ -283,151 +316,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                 ),
               ),
 
-              // ─── 구분선 ───
-              Divider(
-                height: 1,
-                thickness: 0.5,
-                color: theme.colorScheme.outlineVariant.withOpacity(0.5),
-                indent: 20,
-                endIndent: 20,
-              ),
 
-              // ─── 새 태그 추가 영역 ───
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.addNewTag,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: -0.15,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        // 태그 이름 입력
-                        Expanded(
-                          child: TextField(
-                            controller: _newTagNameController,
-                            decoration: InputDecoration(
-                              hintText: l10n.tagName,
-                              hintStyle: TextStyle(
-                                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
-                                fontSize: 14,
-                              ),
-                              filled: true,
-                              fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: theme.colorScheme.primary,
-                                  width: 1.5,
-                                ),
-                              ),
-                              isDense: true,
-                            ),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        // 색상 선택 버튼
-                        GestureDetector(
-                          onTap: _showColorPicker,
-                          child: Container(
-                            height: 44,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                              ),
-                              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 16,
-                                  height: 16,
-                                  decoration: BoxDecoration(
-                                    color: _newTagColor,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.black12),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  _getColorDisplayName(_newTagColor),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: theme.colorScheme.onSurface,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // ─── "+ 새 태그 만들기" 버튼 ───
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (_newTagNameController.text.isNotEmpty) {
-                            ref.read(tagsProvider.notifier).onEvent(CreateTag(
-                              name: _newTagNameController.text,
-                              color: _newTagColor.value,
-                            ));
-                          }
-                        },
-                        icon: const Icon(Icons.add, size: 18),
-                        label: Text(
-                          l10n.createNewTagButton,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF7CB670),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
 
               // ─── "적용" 버튼 ───
               Padding(
@@ -465,6 +354,157 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
         );
       },
     );
+  }
+
+  /// 새 태그 추가 인라인 입력 영역 (리스트 최상단에 표시)
+  Widget _buildNewTagInputArea(ThemeData theme, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: theme.colorScheme.outline,
+            width: 0.694,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 태그 이름 입력 + 색상 선택
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _newTagNameController,
+                    focusNode: _newTagFocusNode,
+                    decoration: InputDecoration(
+                      hintText: l10n.tagName,
+                      hintStyle: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                        fontSize: 14,
+                      ),
+                      filled: true,
+                      fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                      isDense: true,
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    onSubmitted: (_) => _handleCreateTag(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // 색상 선택 버튼
+                GestureDetector(
+                  onTap: _showColorPicker,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: _newTagColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // 버튼 영역
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _handleCreateTag,
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF7CB670),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.createNewTagButton,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.surface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isAdding = false;
+                      });
+                    },
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        border: Border.all(
+                          color: theme.colorScheme.outline,
+                          width: 0.694,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.cancel,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.onSurface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 새 태그 생성 처리
+  void _handleCreateTag() {
+    if (_newTagNameController.text.isNotEmpty) {
+      ref.read(tagsProvider.notifier).onEvent(CreateTag(
+        name: _newTagNameController.text,
+        color: _newTagColor.value,
+      ));
+      setState(() {
+        _isAdding = false;
+      });
+    }
   }
 
   /// 색상 선택 팝업
