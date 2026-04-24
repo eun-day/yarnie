@@ -58,6 +58,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
@@ -69,6 +70,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
           topRight: Radius.circular(10),
         ),
       ),
+      padding: EdgeInsets.only(bottom: bottomInset),
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,

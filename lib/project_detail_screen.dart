@@ -699,6 +699,23 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               }
             }
           });
+        } else if (parts.isNotEmpty &&
+            _selectedPartId != null &&
+            !parts.any((p) => p.id == _selectedPartId)) {
+          // 현재 선택된 파트가 삭제되어 목록에 없는 경우 → 첫 번째 파트로 전환
+          final fallbackPartId = parts.first.id;
+          Future.microtask(() {
+            if (mounted && _selectedPartId != fallbackPartId) {
+              setState(() {
+                _selectedPartId = fallbackPartId;
+                _listenToMainCounter(fallbackPartId);
+              });
+              appDb.updateProjectCurrentPart(
+                projectId: project.id,
+                partId: fallbackPartId,
+              );
+            }
+          });
         } else if (parts.isEmpty && _selectedPartId != null) {
           Future.microtask(() {
             if (mounted && _selectedPartId != null) {
@@ -741,7 +758,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     return GestureDetector(
                       onTap: () {
                         if (!isLocked) {
-                          _showAddPartDialog(context, project.id);
+                          _showAddPartSheet(context, project.id);
                         } else {
                           PremiumUIHelper.showUpsellSnackbar(context);
                         }
@@ -865,88 +882,22 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     );
   }
 
-  Future<void> _showAddPartDialog(BuildContext context, int projectId) async {
-    final textController = TextEditingController();
-    String? errorText;
-    final l10n = AppLocalizations.of(context)!;
-
-    await showDialog(
+  Future<void> _showAddPartSheet(BuildContext context, int projectId) async {
+    await showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(l10n.newPartAdd),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: textController,
-                    decoration: InputDecoration(
-                      hintText: l10n.partNameHint,
-                      errorText: errorText,
-                    ),
-                    autofocus: true,
-                    onChanged: (_) {
-                      if (errorText != null) {
-                        setState(() {
-                          errorText = null;
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.cancel),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final name = textController.text.trim();
-                    if (name.isNotEmpty) {
-                      // 중복 체크
-                      final exists = await appDb.isPartNameExists(
-                        projectId: projectId,
-                        name: name,
-                      );
-                      if (exists) {
-                        setState(() {
-                          errorText = l10n.duplicatePartName;
-                        });
-                        return;
-                      }
-
-                      try {
-                        final newPartId = await appDb.createPart(
-                          projectId: projectId,
-                          name: name,
-                        );
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          // 새로 생성된 파트를 자동 선택 및 저장
-                          setState(() {
-                            _selectedPartId = newPartId;
-                            _listenToMainCounter(newPartId);
-                          });
-                          appDb.updateProjectCurrentPart(
-                            projectId: projectId,
-                            partId: newPartId,
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
-                          );
-                        }
-                      }
-                    }
-                  },
-                  child: Text(l10n.add),
-                ),
-              ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return _AddPartSheet(
+          projectId: projectId,
+          onPartCreated: (newPartId) {
+            setState(() {
+              _selectedPartId = newPartId;
+              _listenToMainCounter(newPartId);
+            });
+            appDb.updateProjectCurrentPart(
+              projectId: projectId,
+              partId: newPartId,
             );
           },
         );
@@ -2157,6 +2108,240 @@ class MainCounterWidget extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// 새 파트 추가 바텀 시트 — PartManageSheet와 동일한 디자인 언어 사용
+class _AddPartSheet extends StatefulWidget {
+  final int projectId;
+  final ValueChanged<int> onPartCreated;
+
+  const _AddPartSheet({
+    required this.projectId,
+    required this.onPartCreated,
+  });
+
+  @override
+  State<_AddPartSheet> createState() => _AddPartSheetState();
+}
+
+class _AddPartSheetState extends State<_AddPartSheet> {
+  final TextEditingController _controller = TextEditingController();
+  String? _errorText;
+  bool _isSaving = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    final l10n = AppLocalizations.of(context)!;
+    final name = _controller.text.trim();
+    if (name.isEmpty) return;
+
+    // 중복 체크
+    final exists = await appDb.isPartNameExists(
+      projectId: widget.projectId,
+      name: name,
+    );
+    if (exists) {
+      setState(() {
+        _errorText = l10n.duplicatePartName;
+      });
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final newPartId = await appDb.createPart(
+        projectId: widget.projectId,
+        name: name,
+      );
+      if (mounted) {
+        Navigator.pop(context);
+        widget.onPartCreated(newPartId);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Handle Bar
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 16, bottom: 8),
+                width: 100,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+            ),
+
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Text(
+                l10n.newPartAdd,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  letterSpacing: -0.31,
+                  height: 1.5,
+                ),
+              ),
+            ),
+
+            // Input Section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // TextField
+                  Container(
+                    height: _errorText != null ? null : 36,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F3F5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    alignment: _errorText != null ? null : Alignment.centerLeft,
+                    child: TextField(
+                      controller: _controller,
+                      autofocus: true,
+                      onSubmitted: (_) => _handleSave(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        letterSpacing: -0.31,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: l10n.partNameHint,
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          letterSpacing: -0.31,
+                        ),
+                        errorText: _errorText,
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      onChanged: (_) {
+                        if (_errorText != null) {
+                          setState(() {
+                            _errorText = null;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: _isSaving ? null : _handleSave,
+                          child: Container(
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: _isSaving
+                                ? SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Theme.of(context).colorScheme.surface,
+                                    ),
+                                  )
+                                : Text(
+                                    l10n.add,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context).colorScheme.surface,
+                                      letterSpacing: -0.15,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline,
+                                width: 0.694,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              l10n.cancel,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
