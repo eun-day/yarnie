@@ -3049,6 +3049,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'미리보기'**
   String get preview;
+
+  /// No description provided for @tagSelectionDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그를 길게 눌러 수정하거나 삭제할 수 있어요.'**
+  String get tagSelectionDesc;
+
+  /// No description provided for @tagSelectionSubtitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트에 태그를 추가하거나 기존 태그를 선택하세요.'**
+  String get tagSelectionSubtitle;
+
+  /// No description provided for @createNewTagButton.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 태그 만들기'**
+  String get createNewTagButton;
+
+  /// No description provided for @applyTags.
+  ///
+  /// In ko, this message translates to:
+  /// **'적용'**
+  String get applyTags;
+
+  /// No description provided for @deleteTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 삭제'**
+  String get deleteTag;
+
+  /// No description provided for @deleteTagConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'\'{name}\' 태그를 삭제하시겠습니까?\n이 태그가 지정된 모든 프로젝트에서 제거됩니다.'**
+  String deleteTagConfirm(Object name);
 }
 
 class _AppLocalizationsDelegate

@@ -225,6 +225,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
   void _showProjectMenu(int projectId) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       builder: (_) => _ProjectMenuSheet(projectId: projectId),
     );
   }
@@ -938,31 +939,124 @@ class _ProjectMenuSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.copy),
-            title: Text(AppLocalizations.of(context)!.copyProject),
-            onTap: () {
-              Navigator.pop(context);
-              ref
-                  .read(projectsProvider.notifier)
-                  .onEvent(DuplicateProject(projectId));
-            },
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle Bar
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 16, bottom: 16),
+                  width: 100,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+              ),
+              // 복제
+              _ProjectMenuButton(
+                label: l10n.copyProject,
+                icon: Icons.copy,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.onSurface,
+                iconColor: Theme.of(context).colorScheme.onSurface,
+                showBorder: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  ref
+                      .read(projectsProvider.notifier)
+                      .onEvent(DuplicateProject(projectId));
+                },
+              ),
+              const SizedBox(height: 8),
+              // 태그 지정
+              _ProjectMenuButton(
+                label: l10n.assignTags,
+                icon: Icons.label_outline,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.onSurface,
+                iconColor: Theme.of(context).colorScheme.onSurface,
+                showBorder: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  ref
+                      .read(projectsProvider.notifier)
+                      .onEvent(OpenAssignTagsDialog(projectId));
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.label),
-            title: Text(AppLocalizations.of(context)!.assignTags),
-            onTap: () {
-              Navigator.pop(context);
-              ref
-                  .read(projectsProvider.notifier)
-                  .onEvent(OpenAssignTagsDialog(projectId));
-            },
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProjectMenuButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color iconColor;
+  final bool showBorder;
+  final VoidCallback onTap;
+
+  const _ProjectMenuButton({
+    required this.label,
+    required this.icon,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.iconColor,
+    this.showBorder = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(8),
+          border: showBorder
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 0.694,
+                )
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: iconColor),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+                letterSpacing: -0.15,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

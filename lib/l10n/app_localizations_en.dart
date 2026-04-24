@@ -1634,4 +1634,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get preview => 'Preview';
+
+  @override
+  String get tagSelectionDesc => 'Long press a tag to edit or delete.';
+
+  @override
+  String get tagSelectionSubtitle =>
+      'Add a tag to your project or select an existing one.';
+
+  @override
+  String get createNewTagButton => 'Create New Tag';
+
+  @override
+  String get applyTags => 'Apply';
+
+  @override
+  String get deleteTag => 'Delete Tag';
+
+  @override
+  String deleteTagConfirm(Object name) {
+    return 'Do you want to delete the tag \'$name\'?\nIt will be removed from all projects.';
+  }
 }

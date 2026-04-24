@@ -1578,4 +1578,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get preview => '미리보기';
+
+  @override
+  String get tagSelectionDesc => '태그를 길게 눌러 수정하거나 삭제할 수 있어요.';
+
+  @override
+  String get tagSelectionSubtitle => '프로젝트에 태그를 추가하거나 기존 태그를 선택하세요.';
+
+  @override
+  String get createNewTagButton => '새 태그 만들기';
+
+  @override
+  String get applyTags => '적용';
+
+  @override
+  String get deleteTag => '태그 삭제';
+
+  @override
+  String deleteTagConfirm(Object name) {
+    return '\'$name\' 태그를 삭제하시겠습니까?\n이 태그가 지정된 모든 프로젝트에서 제거됩니다.';
+  }
 }
