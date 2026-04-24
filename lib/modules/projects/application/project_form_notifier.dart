@@ -66,7 +66,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       case SaveProject():
         await _saveProject();
       case UpdateSelectedTags(:final tagIds):
-        state = state.copyWith(selectedTagIds: tagIds);
+        final allTags = await appDb.getAllTags();
+        state = state.copyWith(
+          selectedTagIds: tagIds,
+          allAvailableTags: allTags,
+        );
     }
   }
 
