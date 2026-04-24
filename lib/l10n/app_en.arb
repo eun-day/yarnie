@@ -512,5 +512,11 @@
   "shapingRowsHint": "e.g., 2, 5, 9, 11",
   "shapingRowsHelper": "Enter row numbers for shaping, separated by commas",
   "shapingDirectSubInfo": "{current}/{total} times",
-  "preview": "Preview"
+  "preview": "Preview",
+  "tagSelectionDesc": "Long press a tag to edit or delete.",
+  "tagSelectionSubtitle": "Add a tag to your project or select an existing one.",
+  "createNewTagButton": "Create New Tag",
+  "applyTags": "Apply",
+  "deleteTag": "Delete Tag",
+  "deleteTagConfirm": "Do you want to delete the tag '{name}'?\nIt will be removed from all projects."
 }

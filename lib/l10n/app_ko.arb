@@ -522,5 +522,11 @@
   "shapingRowsHint": "예: 2, 5, 9, 11",
   "shapingRowsHelper": "코를 증감할 단수를 쉼표로 구분하여 입력하세요",
   "shapingDirectSubInfo": "{current}/{total}회",
-  "preview": "미리보기"
+  "preview": "미리보기",
+  "tagSelectionDesc": "태그를 길게 눌러 수정하거나 삭제할 수 있어요.",
+  "tagSelectionSubtitle": "프로젝트에 태그를 추가하거나 기존 태그를 선택하세요.",
+  "createNewTagButton": "새 태그 만들기",
+  "applyTags": "적용",
+  "deleteTag": "태그 삭제",
+  "deleteTagConfirm": "'{name}' 태그를 삭제하시겠습니까?\n이 태그가 지정된 모든 프로젝트에서 제거됩니다."
 }
