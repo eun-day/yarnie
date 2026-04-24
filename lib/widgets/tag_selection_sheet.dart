@@ -78,7 +78,7 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
     return DraggableScrollableSheet(
       initialChildSize: 0.8, // 시트가 차지하는 초기 화면 높이 비율
       minChildSize: 0.5, // 최소 높이
-      maxChildSize: 0.8, // 최대 높이
+      maxChildSize: 0.9, // 최대 높이
       expand: false, // 시트가 항상 전체 화면을 차지하지 않도록
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
