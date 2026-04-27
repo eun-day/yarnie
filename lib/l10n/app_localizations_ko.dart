@@ -63,7 +63,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exportData => '데이터 내보내기';
 
   @override
-  String get exportDataSub => '모든 프로젝트를 JSON 파일로 저장';
+  String get exportDataSub => '프로젝트 데이터와 이미지를 파일로 저장';
 
   @override
   String get importData => '데이터 가져오기';

@@ -571,6 +571,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       // 실제 전송(Success)되었을 때만 성공 메시지 표시
       if (result.status == ShareResultStatus.success && mounted) {
         final messenger = ScaffoldMessenger.of(context);
+        Navigator.pop(context); // PreferencesSheet 닫기 (스낵바가 보이도록)
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
@@ -601,7 +602,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['json'],
+        allowedExtensions: ['yarnie', 'json'],
       );
 
       if (result == null || result.files.single.path == null) return;

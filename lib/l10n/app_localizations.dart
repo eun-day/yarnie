@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportDataSub.
   ///
   /// In ko, this message translates to:
-  /// **'모든 프로젝트를 JSON 파일로 저장'**
+  /// **'프로젝트 데이터와 이미지를 파일로 저장'**
   String get exportDataSub;
 
   /// No description provided for @importData.

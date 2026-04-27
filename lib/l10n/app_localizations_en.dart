@@ -64,7 +64,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportData => 'Export data';
 
   @override
-  String get exportDataSub => 'Save all projects as a JSON file';
+  String get exportDataSub => 'Save project data and images as a file';
 
   @override
   String get importData => 'Import data';

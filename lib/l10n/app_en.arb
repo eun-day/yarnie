@@ -18,7 +18,7 @@
   "autoBackup": "Auto backup",
   "autoBackupSub": "Automatically backup data every day",
   "exportData": "Export data",
-  "exportDataSub": "Save all projects as a JSON file",
+  "exportDataSub": "Save project data and images as a file",
   "importData": "Import data",
   "importDataSub": "Restore from a backup file",
   "screenAwake": "Keep screen on",
