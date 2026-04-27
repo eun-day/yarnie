@@ -18,7 +18,7 @@
   "autoBackup": "자동 백업",
   "autoBackupSub": "매일 자동으로 데이터 백업",
   "exportData": "데이터 내보내기",
-  "exportDataSub": "모든 프로젝트를 JSON 파일로 저장",
+  "exportDataSub": "프로젝트 데이터와 이미지를 파일로 저장",
   "importData": "데이터 가져오기",
   "importDataSub": "백업 파일에서 복원하기",
   "screenAwake": "화면 꺼짐 방지",

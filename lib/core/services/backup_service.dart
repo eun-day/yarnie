@@ -1,43 +1,96 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:drift/drift.dart';
+import 'package:archive/archive.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
-import 'package:share_plus/share_plus.dart';
 
 class BackupService {
   final AppDb _db;
 
   BackupService(this._db);
 
-  /// 모든 DB 데이터를 JSON으로 내보내고 저장된 임시 파일 경로를 반환합니다.
+  /// 모든 DB 데이터 + 프로젝트 이미지를 ZIP으로 묶어 내보냅니다.
+  /// 반환: 임시 디렉토리에 생성된 .yarnie 파일 경로
   Future<String> exportBackup() async {
     final Map<String, dynamic> backupData = {
       'metadata': {
-        'version': 1,
+        'version': 2,
         'exported_at': DateTime.now().toUtc().toIso8601String(),
-        'app_identifier': 'com.example.yarnie',
+        'app_identifier': 'com.yes.yarnie',
       },
       'data': await _fetchAllTableData(),
     };
 
-    final String jsonString = const JsonEncoder.withIndent('  ').convert(backupData);
-    
-    final directory = await getTemporaryDirectory();
-    final String formattedDate = DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
-    final fileName = 'yarnie_backup_$formattedDate.json';
-    final file = File('${directory.path}/$fileName');
-    
-    await file.writeAsString(jsonString);
+    final String jsonString =
+        const JsonEncoder.withIndent('  ').convert(backupData);
+
+    // ZIP 아카이브 생성
+    final archive = Archive();
+
+    // 1) JSON 데이터 파일 추가
+    final jsonBytes = utf8.encode(jsonString);
+    archive.addFile(ArchiveFile(
+      'data.json',
+      jsonBytes.length,
+      jsonBytes,
+    ));
+
+    // 2) 프로젝트 이미지 파일 수집 및 추가
+    final docDir = await getApplicationDocumentsDirectory();
+    final imageDir = Directory(p.join(docDir.path, 'project_images'));
+
+    if (await imageDir.exists()) {
+      final imageFiles = imageDir
+          .listSync(recursive: true)
+          .whereType<File>();
+      for (final imageFile in imageFiles) {
+        // 상대 경로 유지 (예: project_images/123456.jpg)
+        final relativePath =
+            p.relative(imageFile.path, from: docDir.path);
+        final bytes = await imageFile.readAsBytes();
+        archive.addFile(ArchiveFile(
+          relativePath,
+          bytes.length,
+          bytes,
+        ));
+      }
+    }
+
+    // ZIP 인코딩
+    final zipData = ZipEncoder().encode(archive);
+
+    // 임시 디렉토리에 .yarnie 파일로 저장
+    final tempDir = await getTemporaryDirectory();
+    final String formattedDate =
+        DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
+    final fileName = 'yarnie_backup_$formattedDate.yarnie';
+    final file = File(p.join(tempDir.path, fileName));
+
+    await file.writeAsBytes(zipData);
     return file.path;
   }
 
-  /// JSON 백업 파일을 읽어 DB를 복원합니다.
+  /// 백업 파일을 읽어 DB를 복원합니다.
+  /// .yarnie (ZIP) 파일과 레거시 .json 파일 모두 지원합니다.
   Future<void> importBackup(String filePath) async {
     final file = File(filePath);
+    final extension = p.extension(filePath).toLowerCase();
+
+    if (extension == '.json') {
+      // 레거시 JSON 형식 지원
+      await _importFromJson(file);
+    } else {
+      // .yarnie (ZIP) 형식
+      await _importFromZip(file);
+    }
+  }
+
+  /// 레거시 JSON 파일에서 복원 (이미지 없음)
+  Future<void> _importFromJson(File file) async {
     final String jsonString = await file.readAsString();
     final Map<String, dynamic> backupData = jsonDecode(jsonString);
 
@@ -46,7 +99,59 @@ class BackupService {
     }
 
     final data = backupData['data'] as Map<String, dynamic>;
+    await _restoreDatabase(data);
+  }
 
+  /// ZIP(.yarnie) 파일에서 데이터 + 이미지 복원
+  Future<void> _importFromZip(File file) async {
+    final bytes = await file.readAsBytes();
+    final archive = ZipDecoder().decodeBytes(bytes);
+
+    // 1) data.json 찾기
+    final dataFile = archive.findFile('data.json');
+    if (dataFile == null) {
+      throw const FormatException(
+          'Invalid backup file: data.json not found');
+    }
+
+    final jsonString = utf8.decode(dataFile.content as List<int>);
+    final Map<String, dynamic> backupData = jsonDecode(jsonString);
+
+    if (backupData['metadata'] == null || backupData['data'] == null) {
+      throw const FormatException('Invalid backup file format');
+    }
+
+    final data = backupData['data'] as Map<String, dynamic>;
+
+    // 2) 기존 이미지 디렉토리 정리
+    final docDir = await getApplicationDocumentsDirectory();
+    final imageDir = Directory(p.join(docDir.path, 'project_images'));
+    if (await imageDir.exists()) {
+      await imageDir.delete(recursive: true);
+    }
+
+    // 3) 아카이브에서 이미지 파일 복원
+    for (final entry in archive) {
+      if (entry.name == 'data.json') continue;
+      if (!entry.isFile) continue;
+
+      // project_images/ 로 시작하는 파일만 복원
+      if (entry.name.startsWith('project_images/')) {
+        final destPath = p.join(docDir.path, entry.name);
+        final destFile = File(destPath);
+
+        // 디렉토리 생성
+        await destFile.parent.create(recursive: true);
+        await destFile.writeAsBytes(entry.content as List<int>);
+      }
+    }
+
+    // 4) DB 복원
+    await _restoreDatabase(data);
+  }
+
+  /// DB 데이터 복원 (공통 로직)
+  Future<void> _restoreDatabase(Map<String, dynamic> data) async {
     await _db.transaction(() async {
       // 1. 기존 데이터 삭제 (순서 주의: 외래키 제약 때문에 역순 삭제 권장)
       await _deleteAllData();
