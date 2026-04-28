@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yarnie/widgets/premium_refund_dialog.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
@@ -437,7 +438,12 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final url = Uri.parse('https://sprinkle-crawdad-024.notion.site/Terms-of-Service-34408fa3261c80679ec6fab334633443?source=copy_link');
+                            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                              debugPrint('Could not launch $url');
+                            }
+                          },
                           child: Text(
                             l10n.premiumTerms,
                             style: AppTextStyles.bodyS.copyWith(
@@ -449,7 +455,12 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                         const Text('·', style: TextStyle(color: Color(0xFF717182))),
                         const SizedBox(width: 4),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final url = Uri.parse('https://sprinkle-crawdad-024.notion.site/Privacy-Policy-34308fa3261c8053aaa3c3b21e26d04b?source=copy_link');
+                            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                              debugPrint('Could not launch $url');
+                            }
+                          },
                           child: Text(
                             l10n.premiumPrivacy,
                             style: AppTextStyles.bodyS.copyWith(
