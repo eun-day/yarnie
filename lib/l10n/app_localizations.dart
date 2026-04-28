@@ -1121,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @appVersion.
   ///
   /// In ko, this message translates to:
-  /// **'버전 1.0.0'**
+  /// **'버전'**
   String get appVersion;
 
   /// No description provided for @korean.

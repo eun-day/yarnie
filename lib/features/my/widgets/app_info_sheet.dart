@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/theme/text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yarnie/features/my/screens/open_source_licenses_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class AppInfoSheet extends StatefulWidget {
   const AppInfoSheet({super.key});
@@ -16,6 +17,26 @@ class AppInfoSheet extends StatefulWidget {
 
 class _AppInfoSheetState extends State<AppInfoSheet> {
   int _yarnieTapCount = 0;
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = packageInfo.version;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load app version: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +120,7 @@ class _AppInfoSheetState extends State<AppInfoSheet> {
               ),
               const SizedBox(height: 8),
               Text(
-                AppLocalizations.of(context)!.appVersion,
+                '${AppLocalizations.of(context)!.appVersion} $_appVersion',
                 style: AppTextStyles.bodyM.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

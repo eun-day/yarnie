@@ -548,7 +548,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appInfo => '앱 정보';
 
   @override
-  String get appVersion => '버전 1.0.0';
+  String get appVersion => '버전';
 
   @override
   String get korean => '한국어';

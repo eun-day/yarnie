@@ -583,7 +583,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appInfo => 'App Info';
 
   @override
-  String get appVersion => 'Version 1.0.0';
+  String get appVersion => 'Version';
 
   @override
   String get korean => 'Korean';

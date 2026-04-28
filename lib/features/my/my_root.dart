@@ -10,6 +10,7 @@ import 'package:yarnie/features/my/widgets/app_info_sheet.dart';
 import 'package:yarnie/features/my/yarnie_premium_screen.dart';
 import 'package:yarnie/core/providers/theme_provider.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class MyRoot extends ConsumerStatefulWidget {
   final ScrollController? controller;
@@ -20,6 +21,27 @@ class MyRoot extends ConsumerStatefulWidget {
 }
 
 class _MyRootState extends ConsumerState<MyRoot> {
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = packageInfo.version;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load app version: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
@@ -145,7 +167,7 @@ class _MyRootState extends ConsumerState<MyRoot> {
                   SettingItem(
                     iconPath: 'assets/icons/app_info.svg',
                     title: AppLocalizations.of(context)!.appInfo,
-                    subtitle: AppLocalizations.of(context)!.appVersion,
+                    subtitle: '${AppLocalizations.of(context)!.appVersion} $_appVersion',
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
