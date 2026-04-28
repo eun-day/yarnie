@@ -602,7 +602,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['yarnie', 'json'],
+        allowedExtensions: ['zip', 'json'],
       );
 
       if (result == null || result.files.single.path == null) return;
@@ -610,17 +610,91 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       if (!mounted) return;
       final confirm = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.importData),
-          content: const Text('기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('계속하기', style: TextStyle(color: Colors.red)),
+        builder: (ctx) {
+          return Dialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ],
-        ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.importData,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      letterSpacing: -0.44,
+                      height: 1.55,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      letterSpacing: -0.15,
+                      height: 1.43,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(ctx, true),
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4183D),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '계속하기',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.surface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(ctx, false),
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 0.694,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.cancel,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
 
       if (confirm != true) return;

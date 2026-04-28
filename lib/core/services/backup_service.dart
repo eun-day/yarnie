@@ -14,7 +14,7 @@ class BackupService {
   BackupService(this._db);
 
   /// 모든 DB 데이터 + 프로젝트 이미지를 ZIP으로 묶어 내보냅니다.
-  /// 반환: 임시 디렉토리에 생성된 .yarnie 파일 경로
+  /// 반환: 임시 디렉토리에 생성된 .zip 파일 경로
   Future<String> exportBackup() async {
     final Map<String, dynamic> backupData = {
       'metadata': {
@@ -63,11 +63,11 @@ class BackupService {
     // ZIP 인코딩
     final zipData = ZipEncoder().encode(archive);
 
-    // 임시 디렉토리에 .yarnie 파일로 저장
+    // 임시 디렉토리에 .zip 파일로 저장
     final tempDir = await getTemporaryDirectory();
     final String formattedDate =
         DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
-    final fileName = 'yarnie_backup_$formattedDate.yarnie';
+    final fileName = 'yarnie_backup_$formattedDate.zip';
     final file = File(p.join(tempDir.path, fileName));
 
     await file.writeAsBytes(zipData);
@@ -75,7 +75,7 @@ class BackupService {
   }
 
   /// 백업 파일을 읽어 DB를 복원합니다.
-  /// .yarnie (ZIP) 파일과 레거시 .json 파일 모두 지원합니다.
+  /// .zip 파일과 레거시 .json 파일 모두 지원합니다.
   Future<void> importBackup(String filePath) async {
     final file = File(filePath);
     final extension = p.extension(filePath).toLowerCase();
@@ -84,7 +84,7 @@ class BackupService {
       // 레거시 JSON 형식 지원
       await _importFromJson(file);
     } else {
-      // .yarnie (ZIP) 형식
+      // ZIP 형식 (.zip)
       await _importFromZip(file);
     }
   }
@@ -102,7 +102,7 @@ class BackupService {
     await _restoreDatabase(data);
   }
 
-  /// ZIP(.yarnie) 파일에서 데이터 + 이미지 복원
+  /// ZIP 파일에서 데이터 + 이미지 복원
   Future<void> _importFromZip(File file) async {
     final bytes = await file.readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes);
