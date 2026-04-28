@@ -21,15 +21,30 @@ class NewProjectScreen extends ConsumerStatefulWidget {
 }
 
 class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
+  late final FocusNode _imageFocusNode;
+  late final FocusNode _needleTypeFocusNode;
+  late final FocusNode _needleSizeFocusNode;
+
   @override
   void initState() {
     super.initState();
+    _imageFocusNode = FocusNode();
+    _needleTypeFocusNode = FocusNode();
+    _needleSizeFocusNode = FocusNode();
     // 초기 데이터 로드는 initState에서 한 번만 수행
     Future.microtask(
       () => ref
           .read(projectFormNotifierProvider.notifier)
           .onEvent(LoadProjectData(widget.projectId)),
     );
+  }
+
+  @override
+  void dispose() {
+    _imageFocusNode.dispose();
+    _needleTypeFocusNode.dispose();
+    _needleSizeFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -116,13 +131,16 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
             children: [
               _ProjectNameSection(
                 initialValue: state.name,
+                autofocus: widget.projectId == null,
                 onChanged: (value) => ref
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(ProjectNameChanged(value)),
+                onNextPressed: () => _imageFocusNode.requestFocus(),
               ),
               const SizedBox(height: 24),
               _ProjectImageSection(
                 imagePath: state.imagePath,
+                focusNode: _imageFocusNode,
                 onImagePressed: () => _showImageSourceSheet(context),
                 onImageRemoved: () => ref
                     .read(projectFormNotifierProvider.notifier)
@@ -133,9 +151,16 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 needleType: state.needleType,
                 needleSize: state.needleSize,
                 availableNeedleSizes: state.availableNeedleSizes,
-                onNeedleTypeChanged: (value) => ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(NeedleTypeChanged(value)),
+                typeFocusNode: _needleTypeFocusNode,
+                sizeFocusNode: _needleSizeFocusNode,
+                onNeedleTypeChanged: (value) {
+                  ref
+                      .read(projectFormNotifierProvider.notifier)
+                      .onEvent(NeedleTypeChanged(value));
+                  if (value != null) {
+                    _needleSizeFocusNode.requestFocus();
+                  }
+                },
                 onNeedleSizeChanged: (value) => ref
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(NeedleSizeChanged(value)),
@@ -383,6 +408,8 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
       ref
           .read(projectFormNotifierProvider.notifier)
           .onEvent(ImagePathChanged(pickedFile.path));
+      
+      _needleTypeFocusNode.requestFocus();
     }
   }
 }
@@ -393,11 +420,13 @@ class _ProjectImageSection extends StatelessWidget {
   final String? imagePath;
   final VoidCallback onImagePressed;
   final VoidCallback onImageRemoved;
+  final FocusNode focusNode;
 
   const _ProjectImageSection({
     this.imagePath,
     required this.onImagePressed,
     required this.onImageRemoved,
+    required this.focusNode,
   });
 
   @override
@@ -416,12 +445,24 @@ class _ProjectImageSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.7),
-          ),
+        Focus(
+          focusNode: focusNode,
+          child: ListenableBuilder(
+            listenable: focusNode,
+            builder: (context, child) {
+              final isFocused = focusNode.hasFocus;
+              return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isFocused ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline, 
+                  width: isFocused ? 2.0 : 0.7
+                ),
+              ),
+              child: child,
+            );
+          },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: AspectRatio(
@@ -507,7 +548,8 @@ class _ProjectImageSection extends StatelessWidget {
             ),
           ),
         ),
-      ],
+      ),
+    ],
     );
   }
 
@@ -550,10 +592,14 @@ class _ProjectImageSection extends StatelessWidget {
 class _ProjectNameSection extends StatefulWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
+  final bool autofocus;
+  final VoidCallback onNextPressed;
 
   const _ProjectNameSection({
     required this.initialValue,
     required this.onChanged,
+    this.autofocus = false,
+    required this.onNextPressed,
   });
 
   @override
@@ -617,7 +663,9 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _controller,
+            autofocus: widget.autofocus,
             onChanged: widget.onChanged,
+            onSubmitted: (_) => widget.onNextPressed(),
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).colorScheme.onSurface,
@@ -648,6 +696,8 @@ class _NeedleInfoSection extends StatelessWidget {
   final List<String> availableNeedleSizes;
   final ValueChanged<String?> onNeedleTypeChanged;
   final ValueChanged<String?> onNeedleSizeChanged;
+  final FocusNode typeFocusNode;
+  final FocusNode sizeFocusNode;
 
   const _NeedleInfoSection({
     required this.needleType,
@@ -655,6 +705,8 @@ class _NeedleInfoSection extends StatelessWidget {
     required this.availableNeedleSizes,
     required this.onNeedleTypeChanged,
     required this.onNeedleSizeChanged,
+    required this.typeFocusNode,
+    required this.sizeFocusNode,
   });
 
   @override
@@ -684,6 +736,7 @@ class _NeedleInfoSection extends StatelessWidget {
           },
           onChanged: onNeedleTypeChanged,
           hintText: l10n.needleTypeHint,
+          focusNode: typeFocusNode,
         ),
         const SizedBox(height: 24),
 
@@ -703,6 +756,7 @@ class _NeedleInfoSection extends StatelessWidget {
           itemMap: {for (var size in availableNeedleSizes) size: size},
           onChanged: onNeedleSizeChanged,
           hintText: l10n.needleSizeHint,
+          focusNode: sizeFocusNode,
         ),
       ],
     );
@@ -714,71 +768,81 @@ class _NeedleInfoSection extends StatelessWidget {
     required Map<T, String> itemMap,
     required ValueChanged<T?> onChanged,
     required String hintText,
+    required FocusNode focusNode,
   }) {
     final displayText = value != null ? itemMap[value] : null;
 
     return Builder(
       builder: (dropdownContext) {
-        return GestureDetector(
-          onTap: itemMap.isEmpty
-              ? null
-              : () async {
-                  final renderBox =
-                      dropdownContext.findRenderObject() as RenderBox;
-                  final offset = renderBox.localToGlobal(Offset.zero);
-                  final size = renderBox.size;
-                  final screenWidth = MediaQuery.of(dropdownContext).size.width;
+        return Focus(
+          focusNode: focusNode,
+          child: ListenableBuilder(
+            listenable: focusNode,
+            builder: (context, child) {
+              final isFocused = focusNode.hasFocus;
+              return GestureDetector(
+              onTap: itemMap.isEmpty
+                  ? null
+                  : () async {
+                      final renderBox =
+                          dropdownContext.findRenderObject() as RenderBox;
+                      final offset = renderBox.localToGlobal(Offset.zero);
+                      final size = renderBox.size;
+                      final screenWidth = MediaQuery.of(dropdownContext).size.width;
 
-                  final result = await showMenu<T>(
-                    context: dropdownContext,
-                    position: RelativeRect.fromLTRB(
-                      offset.dx,
-                      offset.dy + size.height + 4,
-                      screenWidth - offset.dx - size.width,
-                      0,
-                    ),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.outline,
-                        width: 0.7,
-                      ),
-                    ),
-                    color: Theme.of(context).colorScheme.surface,
-                    constraints: BoxConstraints(
-                      minWidth: size.width,
-                      maxWidth: size.width,
-                      maxHeight: 288,
-                    ),
-                    items: itemMap.entries.map((entry) {
-                      return PopupMenuItem<T>(
-                        value: entry.key,
-                        height: 32,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(
-                          entry.value,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            letterSpacing: -0.15,
+                      final result = await showMenu<T>(
+                        context: dropdownContext,
+                        position: RelativeRect.fromLTRB(
+                          offset.dx,
+                          offset.dy + size.height + 4,
+                          screenWidth - offset.dx - size.width,
+                          0,
+                        ),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 0.7,
                           ),
                         ),
+                        color: Theme.of(context).colorScheme.surface,
+                        constraints: BoxConstraints(
+                          minWidth: size.width,
+                          maxWidth: size.width,
+                          maxHeight: 288,
+                        ),
+                        items: itemMap.entries.map((entry) {
+                          return PopupMenuItem<T>(
+                            value: entry.key,
+                            height: 32,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              entry.value,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                letterSpacing: -0.15,
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       );
-                    }).toList(),
-                  );
-                  if (result != null) {
-                    onChanged(result);
-                  }
-                },
-          child: Container(
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F3F5),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+                      if (result != null) {
+                        onChanged(result);
+                      }
+                    },
+              child: Container(
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F3F5),
+                  borderRadius: BorderRadius.circular(8),
+                  border: isFocused 
+                      ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) 
+                      : Border.all(color: Colors.transparent, width: 1.5),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
                 Expanded(
@@ -803,6 +867,9 @@ class _NeedleInfoSection extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        );
+            },
           ),
         );
       },
