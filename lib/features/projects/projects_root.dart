@@ -940,6 +940,10 @@ class _ProjectMenuSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final state = ref.watch(projectsProvider);
+    final isPremium = ref.watch(premiumProvider);
+    final isLocked = !PremiumPolicy.canCreateProject(state.allProjects.length, isPremium);
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -969,13 +973,17 @@ class _ProjectMenuSheet extends ConsumerWidget {
               // 복제
               _ProjectMenuButton(
                 label: l10n.copyProject,
-                icon: Icons.copy,
+                icon: isLocked ? Icons.lock : Icons.copy,
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                textColor: Theme.of(context).colorScheme.onSurface,
-                iconColor: Theme.of(context).colorScheme.onSurface,
+                textColor: isLocked ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.onSurface,
+                iconColor: isLocked ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.onSurface,
                 showBorder: true,
                 onTap: () {
                   Navigator.pop(context);
+                  if (isLocked) {
+                    PremiumUIHelper.showUpsellSnackbar(context);
+                    return;
+                  }
                   ref
                       .read(projectsProvider.notifier)
                       .onEvent(DuplicateProject(projectId));
