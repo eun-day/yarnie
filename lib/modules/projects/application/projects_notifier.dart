@@ -166,20 +166,9 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         return;
       }
 
-      // 새 프로젝트 생성
-      final newId = await appDb.createProject(
-        name: '${original.name} (복사)',
-        needleType: original.needleType,
-        needleSize: original.needleSize,
-        lotNumber: original.lotNumber,
-        memo: original.memo,
-      );
-
-      // 태그 복사
-      final tagIds = _parseTagIds(original.tagIds);
-      if (tagIds.isNotEmpty) {
-        await appDb.updateProjectTags(projectId: newId, tagIds: tagIds);
-      }
+      // 새 프로젝트 생성 (깊은 복사)
+      final newName = '${original.name} (복사)';
+      await appDb.duplicateProjectDeep(projectId, newName);
 
       _emit(const ShowSuccessMessage('프로젝트가 복사되었습니다'));
     } catch (e) {

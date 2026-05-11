@@ -501,6 +501,129 @@ class AppDb extends _$AppDb {
     );
   }
 
+  /// 프로젝트 깊은 복사 (파트, 카운터(값 포함), 메모 포함. 세션 제외)
+  Future<int> duplicateProjectDeep(int originalProjectId, String newName) async {
+    return await transaction(() async {
+      // 1. 원본 프로젝트 가져오기
+      final originalProject = await (select(projects)..where((t) => t.id.equals(originalProjectId))).getSingleOrNull();
+      if (originalProject == null) {
+        throw RecordNotFoundException('Project(ID: $originalProjectId) not found');
+      }
+
+      // 2. 새 프로젝트 생성 (껍데기 및 태그/이미지)
+      final newProjectId = await into(projects).insert(
+        ProjectsCompanion.insert(
+          name: newName,
+          needleType: Value(originalProject.needleType),
+          needleSize: Value(originalProject.needleSize),
+          lotNumber: Value(originalProject.lotNumber),
+          memo: Value(originalProject.memo),
+          gaugeStitches: Value(originalProject.gaugeStitches),
+          gaugeRows: Value(originalProject.gaugeRows),
+          imagePath: Value(originalProject.imagePath),
+          tagIds: Value(originalProject.tagIds),
+        ),
+      );
+
+      // 3. 원본 파트 목록 가져오기
+      final originalParts = await (select(parts)..where((t) => t.projectId.equals(originalProjectId))).get();
+      
+      int? firstNewPartId;
+      int? newCurrentPartId;
+
+      for (final originalPart in originalParts) {
+        // 새 파트 생성
+        final newPartId = await into(parts).insert(
+          PartsCompanion.insert(
+            projectId: newProjectId,
+            name: originalPart.name,
+            orderIndex: originalPart.orderIndex,
+            buddyCounterOrder: Value(originalPart.buddyCounterOrder),
+          ),
+        );
+
+        if (firstNewPartId == null) firstNewPartId = newPartId;
+        if (originalProject.currentPartId == originalPart.id) newCurrentPartId = newPartId;
+
+        // 4. MainCounter 복사
+        final originalMainCounters = await (select(mainCounters)..where((t) => t.partId.equals(originalPart.id))).get();
+        for (final mc in originalMainCounters) {
+          await into(mainCounters).insert(
+            MainCountersCompanion.insert(
+              partId: newPartId,
+              currentValue: Value(mc.currentValue),
+              targetValue: Value(mc.targetValue),
+            ),
+          );
+        }
+
+        // 5. StitchCounters 복사
+        final originalStitchCounters = await (select(stitchCounters)..where((t) => t.partId.equals(originalPart.id))).get();
+        for (final sc in originalStitchCounters) {
+          await into(stitchCounters).insert(
+            StitchCountersCompanion.insert(
+              partId: newPartId,
+              name: sc.name,
+              currentValue: Value(sc.currentValue),
+              countBy: Value(sc.countBy),
+            ),
+          );
+        }
+
+        // 6. SectionCounters & SectionRuns 복사
+        final originalSectionCounters = await (select(sectionCounters)..where((t) => t.partId.equals(originalPart.id))).get();
+        for (final secC in originalSectionCounters) {
+          final newSecCId = await into(sectionCounters).insert(
+            SectionCountersCompanion.insert(
+              partId: newPartId,
+              name: secC.name,
+              specJson: secC.specJson,
+              linkState: Value(secC.linkState),
+              frozenMainAt: Value(secC.frozenMainAt),
+            ),
+          );
+
+          // SectionRuns 복사
+          final originalRuns = await (select(sectionRuns)..where((t) => t.sectionCounterId.equals(secC.id))).get();
+          for (final run in originalRuns) {
+            await into(sectionRuns).insert(
+              SectionRunsCompanion.insert(
+                sectionCounterId: newSecCId,
+                ord: run.ord,
+                startRow: run.startRow,
+                rowsTotal: run.rowsTotal,
+                label: Value(run.label),
+                state: Value(run.state),
+              ),
+            );
+          }
+        }
+
+        // 7. PartNotes 복사
+        final originalNotes = await (select(partNotes)..where((t) => t.partId.equals(originalPart.id))).get();
+        for (final note in originalNotes) {
+          await into(partNotes).insert(
+            PartNotesCompanion.insert(
+              partId: newPartId,
+              content: note.content,
+              isPinned: Value(note.isPinned),
+            ),
+          );
+        }
+      }
+
+      // currentPartId 업데이트
+      final targetPartId = newCurrentPartId ?? firstNewPartId;
+      if (targetPartId != null) {
+        await (update(projects)..where((t) => t.id.equals(newProjectId))).write(
+          ProjectsCompanion(currentPartId: Value(targetPartId)),
+        );
+      }
+
+      return newProjectId;
+    });
+  }
+
   Future<bool> updateProject(ProjectsCompanion entity) async {
     final now = DateTime.now().toUtc();
     final updatedRows =
