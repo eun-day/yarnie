@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class CounterSettingsButton extends StatelessWidget {
   final VoidCallback? onEdit;
@@ -85,7 +86,7 @@ class CounterSettingsButton extends StatelessWidget {
     Color? textColor,
     bool isDestructive = false,
   }) {
-    final effectiveTextColor = textColor ?? Theme.of(context).colorScheme.onSurface;
+    final effectiveTextColor = textColor ?? context.counterLabelColor;
     return PopupMenuItem<String>(
       value: value,
       height: 32,
@@ -132,7 +133,7 @@ class CounterSettingsButton extends StatelessWidget {
           'assets/icons/settings.svg',
           width: 28,
           colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.onSurface,
+            context.buddySettingsIcon,
             BlendMode.srcIn,
           ),
         ),

@@ -75,3 +75,80 @@ class AppTheme {
     );
   }
 }
+
+extension YarnieThemeX on BuildContext {
+  bool get isDarkMode => Theme.of(this).colorScheme.brightness == Brightness.dark;
+
+  // 1. Part Tab Colors
+  Color get selectedPartBg => isDarkMode ? const Color(0xFF2A502A) : const Color(0xFF6FB96F);
+  Color get selectedPartText => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Colors.white;
+  Color get unselectedPartBg => isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFECEEF2);
+  Color get unselectedPartText => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : const Color(0xFF030213);
+  Color get unselectedPartBorderColor => isDarkMode ? Theme.of(this).colorScheme.outline : Colors.transparent;
+
+  Color partTabBg(bool isSelected) {
+    return isSelected ? selectedPartBg : unselectedPartBg;
+  }
+
+  Color partTabText(bool isSelected) {
+    return isSelected ? selectedPartText : unselectedPartText;
+  }
+
+  BoxBorder? partTabBorder(bool isSelected) {
+    if (isSelected) return null;
+    return Border.all(
+      color: unselectedPartBorderColor,
+      width: 0.8,
+    );
+  }
+
+  // 2. Main Counter Colors
+  Color get counterIncrementBg => isDarkMode ? const Color(0xFF2A502A) : const Color(0xFF6FB96F);
+  Color get counterDecrementBg => isDarkMode ? const Color(0xFF465338) : const Color(0xFFC0D2A4);
+  Color get counterIconColor => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Colors.white;
+  Color get counterValueText => isDarkMode ? Theme.of(this).colorScheme.secondary : Theme.of(this).colorScheme.onSurfaceVariant;
+  Color get counterSettingsIcon => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Theme.of(this).colorScheme.surface;
+  Color get counterDecSplash => isDarkMode ? const Color(0xFF2D3624) : const Color(0xFF7D8D6A);
+  Color get counterDecHighlight => isDarkMode ? const Color(0xFF38422D) : const Color(0xFFAABF93);
+  Color get counterIncSplash => isDarkMode ? const Color(0xFF193219) : const Color(0xFF4C8A4C);
+  Color get counterIncHighlight => isDarkMode ? const Color(0xFF213F21) : const Color(0xFF63A763);
+  Color get mainCounterBorderColor => isDarkMode ? Theme.of(this).colorScheme.outline : const Color(0xFFF3F4F6);
+
+  // 3. Session Timer Button Colors
+  Color get sessionPausedBg => isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFECEEF2);
+  Color get sessionPausedText => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : const Color(0xFF030213);
+  Color get sessionActiveText => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Theme.of(this).colorScheme.surface;
+  Color get sessionPausedBorderColor => isDarkMode ? Theme.of(this).colorScheme.outline : Colors.transparent;
+
+  Color sessionButtonBg(bool isRunning) {
+    return isRunning
+        ? sessionPausedBg
+        : Theme.of(this).colorScheme.primary;
+  }
+
+  BoxBorder? sessionButtonBorder(bool isRunning) {
+    if (!isRunning) return null;
+    return Border.all(
+      color: sessionPausedBorderColor,
+      width: 0.8,
+    );
+  }
+
+  // 4. Input & Action Button Colors (Save, Reset, etc.)
+  Color get saveBtnBg => isDarkMode ? const Color(0xFF2A502A) : const Color(0xFF6FB96F);
+  Color get saveBtnText => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Theme.of(this).colorScheme.surface;
+  Color get resetBtnBorderColor => isDarkMode ? Theme.of(this).colorScheme.outline : const Color.fromRGBO(0, 0, 0, 0.1);
+
+  // 5. Buddy Counter Colors
+  Color get counterLabelColor => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : Theme.of(this).colorScheme.onSurface;
+  Color get buddySettingsIcon => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : Theme.of(this).colorScheme.onSurface;
+  Color get buddyValueText => isDarkMode ? Colors.white.withValues(alpha: 0.5) : Theme.of(this).colorScheme.onSurface;
+
+  // 6. Section Link & Status Colors
+  Color get completedCardBg => isDarkMode ? const Color(0xFF2A502A).withValues(alpha: 0.15) : const Color(0xFFF0FDF4);
+  Color get unlinkedCardBg => isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF8F9FA);
+
+  // 7. Input Field Colors
+  Color get inputFieldBg => isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF3F3F5);
+  Color get numberInputBg => isDarkMode ? Theme.of(this).colorScheme.surfaceContainerHighest : const Color(0xFFF3F3F5);
+}

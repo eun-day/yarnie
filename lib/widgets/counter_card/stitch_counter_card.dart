@@ -3,6 +3,7 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
 import 'package:yarnie/widgets/counter_card/counter_settings_button.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class StitchCounterCard extends StatelessWidget {
   final String label;
@@ -48,7 +49,7 @@ class StitchCounterCard extends StatelessWidget {
                   border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.52),
                 ),
                 alignment: Alignment.center,
-                child: Icon(Icons.remove, size: 16, color: Theme.of(context).colorScheme.onSurface),
+                child: Icon(Icons.remove, size: 16, color: context.counterLabelColor),
               ),
             ),
             const SizedBox(width: 4),
@@ -67,7 +68,7 @@ class StitchCounterCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w400,
-                        color: Theme.of(context).colorScheme.onSurface,
+                      color: context.buddyValueText,
                         letterSpacing: 0.37,
                         height: 1.0,
                       ),
@@ -99,7 +100,7 @@ class StitchCounterCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
-                child: Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.surface),
+                child: Icon(Icons.add, size: 16, color: context.counterIconColor),
               ),
             ),
           ],
@@ -147,13 +148,13 @@ class StitchCounterCard extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
-                        color: countBy == n ? const Color(0xFFF3F3F5) : null,
+                        color: countBy == n ? (context.isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF3F3F5)) : null,
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.increaseBy(n),
                         style: TextStyle(
                           fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.counterLabelColor,
                         ),
                       ),
                     ),
@@ -171,7 +172,7 @@ class StitchCounterCard extends StatelessWidget {
                       AppLocalizations.of(context)!.manualInput,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.counterLabelColor,
                       ),
                     ),
                   ),
@@ -191,11 +192,11 @@ class StitchCounterCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.counterLabelColor,
                       ),
                     ),
                     const SizedBox(width: 2),
-                    Icon(Icons.keyboard_arrow_down, size: 14, color: Theme.of(context).colorScheme.onSurface),
+                    Icon(Icons.keyboard_arrow_down, size: 14, color: context.counterLabelColor),
                   ],
                 ),
               ),
