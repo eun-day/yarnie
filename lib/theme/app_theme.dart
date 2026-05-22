@@ -156,5 +156,5 @@ extension YarnieThemeX on BuildContext {
   Color get headerIconColor => isDarkMode ? Colors.white.withValues(alpha: 0.65) : const Color(0xFF030213);
   Color get headerTitleColor => isDarkMode ? Colors.white.withValues(alpha: 0.9) : const Color(0xFF030213);
   Color get popupMenuTextColor => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : const Color(0xFF030213);
-  Color get sessionTimerTextColor => isDarkMode ? Colors.white.withValues(alpha: 0.9) : const Color(0xFF030213);
+  Color get sessionTimerTextColor => counterValueText;
 }
