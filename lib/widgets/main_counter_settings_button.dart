@@ -82,7 +82,7 @@ class MainCounterSettingsButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: context.popupMenuTextColor,
             letterSpacing: -0.15,
           ),
         ),
