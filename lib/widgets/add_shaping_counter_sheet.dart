@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 enum _ShapingMode { pattern, direct }
 
@@ -374,7 +375,7 @@ class _AddShapingCounterSheetState
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: _isValid
-                                ? Theme.of(context).colorScheme.primary
+                                ? context.saveBtnBg
                                 : Color(0xFF6FB96F).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -385,7 +386,7 @@ class _AddShapingCounterSheetState
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.surface,
+                              color: context.saveBtnText,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -410,7 +411,7 @@ class _AddShapingCounterSheetState
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              color: context.unselectedPartText,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -446,7 +447,7 @@ class _AddShapingCounterSheetState
           height: 36,
           padding: EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
@@ -480,7 +481,7 @@ class _AddShapingCounterSheetState
       height: 36,
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F5),
+        color: context.inputFieldBg,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -563,7 +564,7 @@ class _AddShapingCounterSheetState
           height: 48,
           padding: EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class MainCounterSettingsButton extends StatelessWidget {
   final VoidCallback onChangeTarget;
@@ -55,7 +56,10 @@ class MainCounterSettingsButton extends StatelessWidget {
           'assets/icons/settings.svg',
           width: 28,
           height: 28,
-          colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.surface, BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(
+            context.counterSettingsIcon,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );
@@ -78,7 +82,7 @@ class MainCounterSettingsButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: -0.15,
           ),
         ),

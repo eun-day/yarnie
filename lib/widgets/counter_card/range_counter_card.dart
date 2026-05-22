@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class RangeCounterCard extends StatelessWidget {
   final String label;
@@ -56,7 +57,7 @@ class RangeCounterCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w400,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: context.buddyValueText,
               letterSpacing: 0.37,
               height: 1.0,
             ),

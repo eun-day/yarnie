@@ -37,6 +37,7 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/providers/settings_provider.dart';
 import 'package:yarnie/common/haptic_helper.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
 import 'package:yarnie/modules/projects/application/part_counters_notifier.dart';
@@ -409,7 +410,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          bottom: BorderSide(color: Color(0x0D000000), width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5),
         ),
       ),
       child: Row(
@@ -428,7 +429,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   child: Icon(
                     Icons.arrow_back,
                     size: 24,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -438,7 +439,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.31,
                 ),
               ),
@@ -528,7 +529,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                     side: BorderSide(
-                      color: Color(0x19000000),
+                      color: Theme.of(context).colorScheme.outline,
                       width: 0.7,
                     ),
                   ),
@@ -541,7 +542,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.more_vert,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   itemBuilder: (BuildContext context) =>
@@ -554,7 +555,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             l10n.projectInfo,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -567,7 +568,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             l10n.manageParts,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -580,7 +581,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             l10n.projectDelete,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFFD4183D),
+                              color: Theme.of(context).colorScheme.error,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -853,18 +854,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFF6FB96F)
-                                    : const Color(0xFFECEEF2),
+                                color: context.partTabBg(isSelected),
+                                border: context.partTabBorder(isSelected),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 part.name,
                                 style: TextStyle(
-                                  color: isSelected
-                                      ? Theme.of(context).colorScheme.surface
-                                      : const Color(0xFF030213),
+                                  color: context.partTabText(isSelected),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                   letterSpacing: -0.31,
@@ -1213,8 +1211,8 @@ class SectionCounterCardWrapper extends ConsumerWidget {
       return Opacity(opacity: isActive ? 1.0 : 0.5, child: child);
     }
 
-    final unlinkedColor = const Color(0xFFF8F9FA);
-    final completedColor = const Color(0xFFF0FDF4);
+    final unlinkedColor = context.unlinkedCardBg;
+    final completedColor = context.completedCardBg;
 
     switch (type) {
       case 'range':
@@ -1772,7 +1770,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: -0.45,
                 ),
               ),
@@ -1783,9 +1781,8 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: isRunning
-                    ? const Color(0xFFECEEF2)
-                    : Theme.of(context).colorScheme.primary,
+                color: context.sessionButtonBg(isRunning),
+                border: context.sessionButtonBorder(isRunning),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -1793,13 +1790,17 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
                     size: 14,
-                    color: isRunning ? const Color(0xFF030213) : Theme.of(context).colorScheme.surface,
+                    color: isRunning
+                        ? context.sessionPausedText
+                        : context.sessionActiveText,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     isRunning ? l10n.paused : (session == null ? l10n.start : l10n.resume),
                     style: TextStyle(
-                      color: isRunning ? const Color(0xFF030213) : Theme.of(context).colorScheme.surface,
+                      color: isRunning
+                          ? context.sessionPausedText
+                          : context.sessionActiveText,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.15,
@@ -1888,15 +1889,11 @@ class MainCounterWidget extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Material(
-                      color: const Color(
-                        0xFFC0D2A4,
-                      ), // Decrement Button Default
+                      color: context.counterDecrementBg,
                       child: InkWell(
                         enableFeedback: false,
-                        splashColor: const Color(0xFF7D8D6A), // Splashing color
-                        highlightColor: const Color(
-                          0xFFAABF93,
-                        ), // Active (Pressed) state color
+                        splashColor: context.counterDecSplash,
+                        highlightColor: context.counterDecHighlight,
                         onTap: () {
                           if (currentValue > 1) {
                             HapticHelper.validateAndFeedback(settings.touchFeedback);
@@ -1912,7 +1909,7 @@ class MainCounterWidget extends ConsumerWidget {
                             child: Icon(
                               Icons.remove,
                               size: 40,
-                              color: Theme.of(context).colorScheme.surface,
+                              color: context.counterIconColor,
                             ),
                           ),
                         ),
@@ -1921,15 +1918,11 @@ class MainCounterWidget extends ConsumerWidget {
                   ),
                   Expanded(
                     child: Material(
-                      color: const Color(
-                        0xFF6FB96F,
-                      ), // Increment Button Default
+                      color: context.counterIncrementBg,
                       child: InkWell(
                         enableFeedback: false,
-                        splashColor: const Color(0xFF4C8A4C), // Splashing color
-                        highlightColor: const Color(
-                          0xFF63A763,
-                        ), // Active (Pressed) state color
+                        splashColor: context.counterIncSplash,
+                        highlightColor: context.counterIncHighlight,
                         onTap: () {
                           HapticHelper.validateAndFeedback(settings.touchFeedback);
                           appDb.updateMainCounter(
@@ -1943,7 +1936,7 @@ class MainCounterWidget extends ConsumerWidget {
                             child: Icon(
                               Icons.add,
                               size: 40,
-                              color: Theme.of(context).colorScheme.surface,
+                              color: context.counterIconColor,
                             ),
                           ),
                         ),
@@ -1979,7 +1972,7 @@ class MainCounterWidget extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.surface,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFFF3F4F6),
+                        color: context.mainCounterBorderColor,
                         width: 3.67,
                       ),
                       boxShadow: const [
@@ -2005,7 +1998,7 @@ class MainCounterWidget extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.onSurface,
+                            color: context.counterValueText,
                             letterSpacing: 0.37,
                             height: 1.1,
                           ),

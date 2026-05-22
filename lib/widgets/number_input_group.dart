@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class NumberInputGroup extends StatelessWidget {
   final String? label;
@@ -75,7 +76,7 @@ class NumberInputGroup extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: context.unselectedPartText,
               letterSpacing: -0.15,
             ),
           ),
@@ -92,7 +93,7 @@ class NumberInputGroup extends StatelessWidget {
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F3F5),
+                  color: context.numberInputBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
@@ -170,18 +171,19 @@ class _StepButtonState extends State<_StepButton> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.surface,
+          color: _isPressed ? context.counterDecrementBg : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: _isPressed ? Color(0xFFC0D2A4) : Theme.of(context).colorScheme.outline,
-            width: 0.64
-          ),
+              color: _isPressed ? context.counterDecrementBg : Theme.of(context).colorScheme.outline,
+              width: 0.64),
           borderRadius: BorderRadius.circular(8),
         ),
         alignment: Alignment.center,
         child: Icon(
           widget.icon,
           size: 16,
-          color: _isPressed ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
+          color: _isPressed
+              ? Theme.of(context).colorScheme.surface
+              : context.unselectedPartText,
         ),
       ),
     );

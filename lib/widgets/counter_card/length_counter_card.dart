@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/widgets/counter_card/base_counter_card.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class LengthCounterCard extends StatelessWidget {
   final String label;
@@ -73,7 +74,7 @@ class LengthCounterCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: context.buddyValueText,
                   letterSpacing: 0.07,
                   height: 1.33,
                 ),

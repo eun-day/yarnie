@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/widgets/counter_card/counter_settings_button.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 /// 공통으로 사용할 카드 베이스 위젯
 class BaseCounterCard extends StatelessWidget {
@@ -40,7 +41,7 @@ class BaseCounterCard extends StatelessWidget {
                 builder: (context, constraints) {
                   final textStyle = TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: context.counterLabelColor,
                     letterSpacing: -0.15,
                     fontWeight: FontWeight.w400,
                   );

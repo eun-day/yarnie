@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 class CounterEditBottomSheet extends StatefulWidget {
   final int initialValue;
@@ -63,7 +64,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: context.counterLabelColor,
                       letterSpacing: -0.31,
                     ),
                   ),
@@ -95,7 +96,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                     textStyle: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.normal,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: context.unselectedPartText,
                       letterSpacing: 0.07,
                     ),
                     onChanged: () {
@@ -122,20 +123,27 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
+                              border: Border.all(
+                                color: context.resetBtnBorderColor,
+                                width: 0.5,
+                              ),
                             ),
                             alignment: Alignment.center,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.refresh, size: 12, color: Theme.of(context).colorScheme.onSurface),
+                                Icon(
+                                  Icons.refresh,
+                                  size: 12,
+                                  color: context.unselectedPartText,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   AppLocalizations.of(context)!.resetToOne,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: context.unselectedPartText,
                                     letterSpacing: -0.15,
                                   ),
                                 ),
@@ -155,7 +163,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                           child: Container(
                             height: 36,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6FB96F),
+                              color: context.saveBtnBg,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             alignment: Alignment.center,
@@ -164,7 +172,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.surface,
+                                color: context.saveBtnText,
                                 letterSpacing: -0.15,
                               ),
                             ),
