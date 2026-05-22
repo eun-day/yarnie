@@ -106,7 +106,7 @@ extension YarnieThemeX on BuildContext {
   Color get counterIncrementBg => isDarkMode ? const Color(0xFF2A502A) : const Color(0xFF6FB96F);
   Color get counterDecrementBg => isDarkMode ? const Color(0xFF465338) : const Color(0xFFC0D2A4);
   Color get counterIconColor => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Colors.white;
-  Color get counterValueText => isDarkMode ? Theme.of(this).colorScheme.secondary : Theme.of(this).colorScheme.onSurfaceVariant;
+  Color get counterValueText => isDarkMode ? Theme.of(this).colorScheme.secondary : const Color(0xFF030213);
   Color get counterSettingsIcon => isDarkMode ? Colors.white.withValues(alpha: 0.65) : Theme.of(this).colorScheme.surface;
   Color get counterDecSplash => isDarkMode ? const Color(0xFF2D3624) : const Color(0xFF7D8D6A);
   Color get counterDecHighlight => isDarkMode ? const Color(0xFF38422D) : const Color(0xFFAABF93);
@@ -151,4 +151,10 @@ extension YarnieThemeX on BuildContext {
   // 7. Input Field Colors
   Color get inputFieldBg => isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF3F3F5);
   Color get numberInputBg => isDarkMode ? Theme.of(this).colorScheme.surfaceContainerHighest : const Color(0xFFF3F3F5);
+
+  // 8. Header & Text Colors (Black in Light Mode)
+  Color get headerIconColor => isDarkMode ? Colors.white.withValues(alpha: 0.65) : const Color(0xFF030213);
+  Color get headerTitleColor => isDarkMode ? Colors.white.withValues(alpha: 0.9) : const Color(0xFF030213);
+  Color get popupMenuTextColor => isDarkMode ? Theme.of(this).colorScheme.onSurfaceVariant : const Color(0xFF030213);
+  Color get sessionTimerTextColor => isDarkMode ? Colors.white.withValues(alpha: 0.9) : const Color(0xFF030213);
 }

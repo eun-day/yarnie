@@ -429,7 +429,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   child: Icon(
                     Icons.arrow_back,
                     size: 24,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: context.headerIconColor,
                   ),
                 ),
               ),
@@ -439,7 +439,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: context.headerTitleColor,
                   letterSpacing: -0.31,
                 ),
               ),
@@ -480,7 +480,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                       child: Icon(
                         Icons.description_outlined,
                         size: 24,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: context.headerIconColor,
                       ),
                     ),
                     if (_selectedPartId != null)
@@ -542,7 +542,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.more_vert,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: context.headerIconColor,
                     ),
                   ),
                   itemBuilder: (BuildContext context) =>
@@ -555,7 +555,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             l10n.projectInfo,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: context.popupMenuTextColor,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -568,7 +568,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             l10n.manageParts,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: context.popupMenuTextColor,
                               letterSpacing: -0.15,
                             ),
                           ),
@@ -1770,7 +1770,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: context.sessionTimerTextColor,
                   letterSpacing: -0.45,
                 ),
               ),
