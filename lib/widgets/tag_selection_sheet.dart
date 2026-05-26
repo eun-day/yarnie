@@ -38,15 +38,28 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
   }
 
   void _handleEffect(TagsEffect effect) {
+    final l10n = AppLocalizations.of(context)!;
     if (effect is ShowTagSuccessMessage) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(effect.message)),
       );
       _newTagNameController.clear(); // 새 태그 생성 후 필드 초기화
-      // Navigator.of(context).pop(); // 다이얼로그 닫기 (태그 추가/수정/삭제 후) - 바텀 시트 내에서 다이얼로그만 닫아야 함.
+    } else if (effect is ShowLocalizedTagSuccessMessage) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(effect.messageBuilder(l10n))),
+      );
+      _newTagNameController.clear();
     } else if (effect is ShowTagErrorMessage) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(effect.message), backgroundColor: Theme.of(context).colorScheme.error),
+        SnackBar(
+            content: Text(effect.message),
+            backgroundColor: Theme.of(context).colorScheme.error),
+      );
+    } else if (effect is ShowLocalizedTagErrorMessage) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(effect.messageBuilder(l10n)),
+            backgroundColor: Theme.of(context).colorScheme.error),
       );
     }
   }

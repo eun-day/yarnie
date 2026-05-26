@@ -9,10 +9,20 @@ class ShowTagSuccessMessage extends TagsEffect {
   const ShowTagSuccessMessage(this.message);
 }
 
+class ShowLocalizedTagSuccessMessage extends TagsEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedTagSuccessMessage(this.messageBuilder);
+}
+
 /// 에러 메시지 표시
 class ShowTagErrorMessage extends TagsEffect {
   final String message;
   const ShowTagErrorMessage(this.message);
+}
+
+class ShowLocalizedTagErrorMessage extends TagsEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedTagErrorMessage(this.messageBuilder);
 }
 
 /// 태그 편집 다이얼로그 표시

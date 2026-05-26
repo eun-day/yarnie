@@ -71,6 +71,7 @@ class MyApp extends ConsumerWidget {
       supportedLocales: const [
         Locale('ko'),
         Locale('en'),
+        Locale('ja'),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,

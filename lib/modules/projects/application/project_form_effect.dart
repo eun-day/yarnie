@@ -19,6 +19,11 @@ class ShowProjectFormErrorMessage extends ProjectFormEffect {
   const ShowProjectFormErrorMessage(this.message);
 }
 
+class ShowLocalizedProjectFormErrorMessage extends ProjectFormEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedProjectFormErrorMessage(this.messageBuilder);
+}
+
 /// 성공 메시지 표시
 class ShowProjectFormSuccessMessage extends ProjectFormEffect {
   final String message;

@@ -99,7 +99,8 @@ class _AppInfoSheetState extends State<AppInfoSheet> {
                         
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('RevenueCat ID 복사 완료:\n$appUserId'),
+                            content: Text(AppLocalizations.of(context)!
+                                .copyRevenueCatIdSuccess(appUserId)),
                             behavior: SnackBarBehavior.floating,
                             duration: const Duration(seconds: 4),
                           ),

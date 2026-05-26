@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yarnie/l10n/app_localizations.dart';
 
 enum CountByLabelStyle { short, full }
 
@@ -31,11 +32,12 @@ class CountBySelector extends StatelessWidget {
   });
 
   String _labelText(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (labelStyle) {
       case CountByLabelStyle.short:
         return '+$currentValue'; // 예: +8
       case CountByLabelStyle.full:
-        return 'count by $currentValue'; // 예: count by 8
+        return l10n.countByLabel(currentValue); // 예: count by 8
     }
   }
 
@@ -169,10 +171,10 @@ class CountBySelector extends StatelessWidget {
                           CupertinoButton(
                             padding: EdgeInsets.zero,
                             onPressed: () => Navigator.of(context).pop(),
-                            child: Text('취소'),
+                            child: Text(AppLocalizations.of(context)!.cancel),
                           ),
                           Text(
-                            'Count By 설정',
+                            AppLocalizations.of(context)!.setCountBy,
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
@@ -184,7 +186,7 @@ class CountBySelector extends StatelessWidget {
                               onChanged(selectedValue);
                               Navigator.of(context).pop();
                             },
-                            child: Text('확인'),
+                            child: Text(AppLocalizations.of(context)!.confirm),
                           ),
                         ],
                       ),
@@ -261,10 +263,10 @@ class CountBySelector extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('취소'),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                       Text(
-                        'Count By 설정',
+                        AppLocalizations.of(context)!.setCountBy,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -275,7 +277,7 @@ class CountBySelector extends StatelessWidget {
                           onChanged(selectedValue);
                           Navigator.of(context).pop();
                         },
-                        child: Text('확인'),
+                        child: Text(AppLocalizations.of(context)!.confirm),
                       ),
                     ],
                   ),

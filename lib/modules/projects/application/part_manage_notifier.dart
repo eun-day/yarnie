@@ -55,7 +55,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
         .watchProjectParts(projectId)
         .listen(
           (parts) => onEvent(PartsUpdated(parts)),
-          onError: (e, st) => onEvent(ShowPartManageError('파트 로드 실패: $e')),
+          onError: (e, st) => _emit(ShowLocalizedErrorEffect((l10n) => l10n.loadPartsFailed(e.toString()))),
         );
   }
 
@@ -66,7 +66,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
         name: name,
       );
       if (exists) {
-        _emit(const ShowErrorEffect('이미 존재하는 파트 이름입니다.'));
+        _emit(ShowLocalizedErrorEffect((l10n) => l10n.duplicatePartName));
         return;
       }
 
@@ -76,7 +76,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
       );
       _emit(PartCreatedEffect(newPartId));
     } catch (e) {
-      _emit(ShowErrorEffect('파트 생성 실패: $e'));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.createPartFailed(e.toString())));
     }
   }
 
@@ -86,7 +86,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
         PartsCompanion(id: Value(partId), name: Value(name)),
       );
     } catch (e) {
-      _emit(ShowErrorEffect('파트 수정 실패: $e'));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.updatePartFailed(e.toString())));
     }
   }
 
@@ -104,7 +104,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
 
       await appDb.reorderParts(projectId: projectId, partIds: partIds);
     } catch (e) {
-      _emit(ShowErrorEffect('파트 순서 변경 실패: $e'));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.reorderPartsFailed(e.toString())));
     }
   }
 
@@ -112,7 +112,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
     try {
       await appDb.deletePart(partId);
     } catch (e) {
-      _emit(ShowErrorEffect('파트 삭제 실패: $e'));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.deletePartFailed(e.toString())));
     }
   }
 

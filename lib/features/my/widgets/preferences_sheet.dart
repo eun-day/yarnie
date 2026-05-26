@@ -132,7 +132,10 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         languageText = l10n.korean;
         break;
       case AppLanguage.en:
-        languageText = 'English';
+        languageText = l10n.english;
+        break;
+      case AppLanguage.ja:
+        languageText = l10n.japanese;
         break;
       case AppLanguage.auto:
         languageText = l10n.languageCurrentKorean;
@@ -222,10 +225,18 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                 },
               ),
               _buildLanguageOption(
-                label: 'English',
+                label: l10n.english,
                 isSelected: currentLanguage == AppLanguage.en,
                 onTap: () async {
                   await ref.read(localeProvider.notifier).setLanguage(AppLanguage.en);
+                  if (context.mounted) Navigator.pop(context);
+                },
+              ),
+              _buildLanguageOption(
+                label: l10n.japanese,
+                isSelected: currentLanguage == AppLanguage.ja,
+                onTap: () async {
+                  await ref.read(localeProvider.notifier).setLanguage(AppLanguage.ja);
                   if (context.mounted) Navigator.pop(context);
                 },
               ),
@@ -570,13 +581,14 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       
       // 실제 전송(Success)되었을 때만 성공 메시지 표시
       if (result.status == ShareResultStatus.success && mounted) {
+        final l10n = AppLocalizations.of(context)!;
         final messenger = ScaffoldMessenger.of(context);
         Navigator.pop(context); // PreferencesSheet 닫기 (스낵바가 보이도록)
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('데이터 내보내기가 완료되었습니다!'),
+          SnackBar(
+            content: Text(l10n.exportSuccess),
             backgroundColor: Color(0xFF6FB96F),
             behavior: SnackBarBehavior.floating,
           ),
@@ -589,9 +601,10 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('내보내기 실패: $e')),
+          SnackBar(content: Text(l10n.exportFailed(e.toString()))),
         );
       }
     }
@@ -634,7 +647,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?',
+                    l10n.importWarning,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -655,7 +668,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        '계속하기',
+                        l10n.continueProcess,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -711,8 +724,8 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('데이터 복원이 완료되었습니다!'),
+          SnackBar(
+            content: Text(l10n.importSuccess),
             backgroundColor: Color(0xFF6FB96F),
             behavior: SnackBarBehavior.floating,
           ),
@@ -722,7 +735,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       if (mounted) {
         if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('복원 실패: $e')),
+          SnackBar(content: Text(l10n.restoreFailed(e.toString()))),
         );
       }
     }

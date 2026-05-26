@@ -1661,4 +1661,190 @@ class AppLocalizationsEn extends AppLocalizations {
   String deleteTagConfirm(Object name) {
     return 'Do you want to delete the tag \'$name\'?\nIt will be removed from all projects.';
   }
+
+  @override
+  String get am => 'AM';
+
+  @override
+  String get pm => 'PM';
+
+  @override
+  String get projectNotFound => 'Project not found';
+
+  @override
+  String loadDataFailed(Object error) {
+    return 'Failed to load data: $error';
+  }
+
+  @override
+  String get enterProjectName => 'Please enter project name';
+
+  @override
+  String saveProjectFailed(Object error) {
+    return 'Failed to save project: $error';
+  }
+
+  @override
+  String loadProjectsFailed(Object error) {
+    return 'Failed to load projects: $error';
+  }
+
+  @override
+  String initFailed(Object error) {
+    return 'Initialization failed: $error';
+  }
+
+  @override
+  String get copySuffix => '(copy)';
+
+  @override
+  String get projectCopied => 'Project copied';
+
+  @override
+  String copyProjectFailed(Object error) {
+    return 'Failed to copy project: $error';
+  }
+
+  @override
+  String get tagsAssigned => 'Tags assigned';
+
+  @override
+  String assignTagsFailed(Object error) {
+    return 'Failed to assign tags: $error';
+  }
+
+  @override
+  String get projectCreated => 'Project created';
+
+  @override
+  String createProjectFailed(Object error) {
+    return 'Failed to create project: $error';
+  }
+
+  @override
+  String get projectUpdated => 'Project updated';
+
+  @override
+  String updateProjectFailed(Object error) {
+    return 'Failed to update project: $error';
+  }
+
+  @override
+  String get projectDeleted => 'Project deleted';
+
+  @override
+  String deleteProjectFailed(Object error) {
+    return 'Failed to delete project: $error';
+  }
+
+  @override
+  String loadCounterCountFailed(Object error) {
+    return 'Failed to load counter count: $error';
+  }
+
+  @override
+  String loadPartsFailed(Object error) {
+    return 'Failed to load parts: $error';
+  }
+
+  @override
+  String createPartFailed(Object error) {
+    return 'Failed to create part: $error';
+  }
+
+  @override
+  String updatePartFailed(Object error) {
+    return 'Failed to update part: $error';
+  }
+
+  @override
+  String reorderPartsFailed(Object error) {
+    return 'Failed to reorder parts: $error';
+  }
+
+  @override
+  String deletePartFailed(Object error) {
+    return 'Failed to delete part: $error';
+  }
+
+  @override
+  String loadTagsFailed(Object error) {
+    return 'Failed to load tags: $error';
+  }
+
+  @override
+  String get enterTagName => 'Please enter tag name';
+
+  @override
+  String get tagCreated => 'Tag created';
+
+  @override
+  String createTagFailed(Object error) {
+    return 'Failed to create tag: $error';
+  }
+
+  @override
+  String get tagUpdated => 'Tag updated';
+
+  @override
+  String updateTagFailed(Object error) {
+    return 'Failed to update tag: $error';
+  }
+
+  @override
+  String get tagDeleted => 'Tag deleted';
+
+  @override
+  String deleteTagFailed(Object error) {
+    return 'Failed to delete tag: $error';
+  }
+
+  @override
+  String shapingTargetInfoPattern(
+    Object amount,
+    Object interval,
+    Object totalCount,
+    Object unit,
+  ) {
+    return 'Every $interval rows $amount$unit × $totalCount times';
+  }
+
+  @override
+  String shapingTargetInfoDirect(Object amount, Object rows, Object unit) {
+    return 'At rows $rows, $amount$unit';
+  }
+
+  @override
+  String intervalTargetInfo(Object interval, Object totalCount) {
+    return 'Every $interval rows × $totalCount times';
+  }
+
+  @override
+  String get exportSuccess => 'Data export completed!';
+
+  @override
+  String exportFailed(Object error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get importWarning =>
+      'Existing data will be deleted and replaced with backup data. Do you want to continue?';
+
+  @override
+  String get continueProcess => 'Continue';
+
+  @override
+  String get importSuccess => 'Data restoration completed!';
+
+  @override
+  String copyRevenueCatIdSuccess(Object id) {
+    return 'RevenueCat ID copied:\n$id';
+  }
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get japanese => 'Japanese';
 }

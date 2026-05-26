@@ -74,6 +74,13 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
+        } else if (effect is ShowLocalizedProjectFormErrorMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(effect.messageBuilder(l10n)),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
         }
       });
     });

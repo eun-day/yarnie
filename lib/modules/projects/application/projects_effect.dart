@@ -22,10 +22,20 @@ class ShowErrorMessage extends ProjectsEffect {
   const ShowErrorMessage(this.message);
 }
 
+class ShowLocalizedErrorMessage extends ProjectsEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedErrorMessage(this.messageBuilder);
+}
+
 /// 성공 메시지 표시
 class ShowSuccessMessage extends ProjectsEffect {
   final String message;
   const ShowSuccessMessage(this.message);
+}
+
+class ShowLocalizedSuccessMessage extends ProjectsEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedSuccessMessage(this.messageBuilder);
 }
 
 /// 프로젝트 생성 완료 (화면 닫기)

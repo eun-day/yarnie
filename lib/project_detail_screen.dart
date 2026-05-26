@@ -43,6 +43,8 @@ import 'package:yarnie/modules/projects/application/projects_notifier.dart';
 import 'package:yarnie/modules/projects/application/projects_event.dart';
 import 'package:yarnie/modules/projects/application/part_counters_notifier.dart';
 import 'package:yarnie/modules/projects/application/part_counters_event.dart';
+import 'package:yarnie/modules/projects/application/part_manage_notifier.dart';
+import 'package:yarnie/modules/projects/application/part_manage_effect.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {
   final int projectId;
@@ -192,8 +194,24 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final projectAsync = appDb.watchProject(widget.projectId);
     final l10n = AppLocalizations.of(context)!;
+
+    // PartManage 효과 리스너
+    ref.listen<AsyncValue<PartManageEffect>>(partManageEffectsProvider,
+        (previous, next) {
+      next.whenData((effect) {
+        if (effect is ShowLocalizedErrorEffect) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(effect.messageBuilder(l10n)),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      });
+    });
+
+    final projectAsync = appDb.watchProject(widget.projectId);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,

@@ -183,8 +183,12 @@ class _AddShapingCounterSheetState
         'intervalRows': interval,
         'totalCount': totalCount,
         'amount': amount,
-        'targetInfo':
-            '매 ${interval}행마다 ${amount > 0 ? "+$amount" : amount}${AppLocalizations.of(context)!.stitch} × $totalCount회',
+        'targetInfo': AppLocalizations.of(context)!.shapingTargetInfoPattern(
+          interval,
+          amount > 0 ? '+$amount' : amount.toString(),
+          AppLocalizations.of(context)!.stitch,
+          totalCount,
+        ),
       };
     } else {
       // Direct mode
@@ -196,8 +200,11 @@ class _AddShapingCounterSheetState
         'rows': rows,
         'amount': amount,
         'totalCount': rows.length,
-        'targetInfo':
-            '${rows.join(", ")}행에서 ${amount > 0 ? "+$amount" : amount}${AppLocalizations.of(context)!.stitch}',
+        'targetInfo': AppLocalizations.of(context)!.shapingTargetInfoDirect(
+          rows.join(", "),
+          amount > 0 ? '+$amount' : amount.toString(),
+          AppLocalizations.of(context)!.stitch,
+        ),
       };
     }
 

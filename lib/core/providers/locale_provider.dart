@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum AppLanguage {
   auto,
   en,
-  ko;
+  ko,
+  ja;
 
   Locale? get locale {
     switch (this) {
@@ -13,6 +14,8 @@ enum AppLanguage {
         return const Locale('en');
       case AppLanguage.ko:
         return const Locale('ko');
+      case AppLanguage.ja:
+        return const Locale('ja');
       case AppLanguage.auto:
         return null;
     }
