@@ -6,11 +6,13 @@ import 'package:yarnie/theme/app_theme.dart';
 class MainCounterSettingsButton extends StatelessWidget {
   final VoidCallback onChangeTarget;
   final VoidCallback onRemoveTarget;
+  final VoidCallback onSetCountBy;
 
   const MainCounterSettingsButton({
     super.key,
     required this.onChangeTarget,
     required this.onRemoveTarget,
+    required this.onSetCountBy,
   });
 
   @override
@@ -20,11 +22,17 @@ class MainCounterSettingsButton extends StatelessWidget {
       data: Theme.of(context).copyWith(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
+        dividerTheme: DividerThemeData(
+          color: Theme.of(context).colorScheme.outline,
+          thickness: 0.5,
+          space: 8,
+        ),
       ),
       child: PopupMenuButton<String>(
         onSelected: (value) {
           if (value == 'change') onChangeTarget();
           if (value == 'remove') onRemoveTarget();
+          if (value == 'countBy') onSetCountBy();
         },
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(
@@ -49,6 +57,8 @@ class MainCounterSettingsButton extends StatelessWidget {
         itemBuilder: (context) => [
           _buildMenuItem(context, 'change', l10n.changeTargetRow),
           _buildMenuItem(context, 'remove', l10n.removeTargetRow),
+          const PopupMenuDivider(height: 8),
+          _buildMenuItem(context, 'countBy', l10n.setCountBy),
         ],
         
         // The Trigger Button

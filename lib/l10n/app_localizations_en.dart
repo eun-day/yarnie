@@ -1166,6 +1166,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetRow => 'Target Row';
 
   @override
+  String get setCountBy => 'Set Count By';
+
+  @override
+  String get countByValue => 'Count By';
+
+  @override
   String get manageParts => 'Manage Parts';
 
   @override

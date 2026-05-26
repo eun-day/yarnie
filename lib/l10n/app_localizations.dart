@@ -2180,6 +2180,18 @@ abstract class AppLocalizations {
   /// **'목표 단수'**
   String get targetRow;
 
+  /// No description provided for @setCountBy.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 단위 설정'**
+  String get setCountBy;
+
+  /// No description provided for @countByValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'증감 단위'**
+  String get countByValue;
+
   /// No description provided for @manageParts.
   ///
   /// In ko, this message translates to:

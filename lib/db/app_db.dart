@@ -152,6 +152,8 @@ class MainCounters extends Table {
   IntColumn get currentValue => integer().withDefault(const Constant(1))();
   IntColumn get targetValue =>
       integer().nullable()(); // Added targetValue column
+  IntColumn get countBy =>
+      integer().withDefault(const Constant(1))(); // Added countBy column
 
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
@@ -361,14 +363,19 @@ class AppDb extends _$AppDb {
   AppDb.forTesting(DatabaseConnection connection) : super(connection);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (Migrator m) async {
-      await m.createAll();
-    },
-  );
+        onCreate: (Migrator m) async {
+          await m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from < 2) {
+            await m.addColumn(mainCounters, mainCounters.countBy);
+          }
+        },
+      );
 
   // ────────────────────────────────────────────────────────────────────────────
   // 에러 처리 헬퍼 메서드들
@@ -553,6 +560,7 @@ class AppDb extends _$AppDb {
               partId: newPartId,
               currentValue: Value(mc.currentValue),
               targetValue: Value(mc.targetValue),
+              countBy: Value(mc.countBy),
             ),
           );
         }
@@ -1156,6 +1164,27 @@ class AppDb extends _$AppDb {
       rethrow;
     } catch (e) {
       throw _handleDatabaseException(e, 'Update MainCounter Target');
+    }
+  }
+
+  /// MainCounter 증감 단위 업데이트
+  Future<void> updateMainCounterCountBy({
+    required int partId,
+    required int newCountBy,
+  }) async {
+    try {
+      await _validatePartExists(partId);
+
+      await (update(mainCounters)..where((t) => t.partId.equals(partId))).write(
+        MainCountersCompanion(
+          countBy: Value(newCountBy),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+    } on DatabaseException {
+      rethrow;
+    } catch (e) {
+      throw _handleDatabaseException(e, 'Update MainCounter CountBy');
     }
   }
 

@@ -177,7 +177,11 @@ class BackupService {
       // MainCounters
       if (data['main_counters'] != null) {
         for (var e in (data['main_counters'] as List)) {
-          final item = MainCounter.fromJson(e);
+          final Map<String, dynamic> map = Map<String, dynamic>.from(e as Map);
+          if (map['countBy'] == null) {
+            map['countBy'] = 1;
+          }
+          final item = MainCounter.fromJson(map);
           await _db.into(_db.mainCounters).insert(item);
         }
       }
@@ -185,7 +189,11 @@ class BackupService {
       // StitchCounters
       if (data['stitch_counters'] != null) {
         for (var e in (data['stitch_counters'] as List)) {
-          final item = StitchCounter.fromJson(e);
+          final Map<String, dynamic> map = Map<String, dynamic>.from(e as Map);
+          if (map['countBy'] == null) {
+            map['countBy'] = 1;
+          }
+          final item = StitchCounter.fromJson(map);
           await _db.into(_db.stitchCounters).insert(item);
         }
       }
