@@ -39,7 +39,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get touchFeedback => 'Touch feedback';
 
   @override
-  String get languageCurrentKorean => 'Auto (Current: Korean)';
+  String get languageAutoCurrent => 'Auto (Current: English)';
 
   @override
   String get languageSub =>
@@ -924,7 +924,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter the pattern repeat unit and number of times.';
 
   @override
-  String get deleteConfirm => 'Do you want to delete this project?';
+  String deleteConfirm(String name) {
+    return 'Do you want to delete the project \'$name\'?';
+  }
 
   @override
   String get deleteDesc =>

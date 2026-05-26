@@ -10,7 +10,7 @@
   "dataManage": "データ管理",
   "sessionSetting": "作業中の設定",
   "touchFeedback": "タッチフィードバック",
-  "languageCurrentKorean": "自動 (現在: 日本語)",
+  "languageAutoCurrent": "自動 (現在: 日本語)",
   "languageSub": "自動を選択すると、端末の言語設定に従います",
   "lengthCm": "センチメートル (cm)",
   "lengthInch": "インチ (inch)",
@@ -131,7 +131,7 @@
   "knittingTip2": "必ずゲージをとってください。プロジェクト成功の秘訣です！",
   "knittingTip3": "一目一目ゆっくりと、焦らず編みましょう",
   "knittingTip4": "色の組み合わせに迷ったら、自然界からインスピレーションを得てみてください",
-  "knittingTip5": "編む時の力が強すぎると手首を痛めることがあります。リラックスして！",
+  "knittingTip5": "編み手がきつすぎると手首を痛めることがあります。リラックスして！",
   "knittingTip6": "Yarnieのセクションカウンターを使えば、複雑なパターンも簡単に記録できます",
   "knittingTip7": "パターンを読む時は、一行ずつチェックしながら進めましょう",
   "knittingTip8": "こまめに休憩をとりましょう。疲れると間違いが増えます",
@@ -185,7 +185,7 @@
   "bigCard": "大きいカード",
   "smallCard": "小さいカード",
   "list": "リスト",
-  "dateDisplay": "{year}年{month}月{day}일",
+  "dateDisplay": "{year}年{month}月{day}日",
   "noProjectsYet": "まだプロジェクトがありません。\nプロジェクトを作ってみましょうか？",
   "createProject": "プロジェクトを作る",
   "noMatchingProjects": "該当するプロジェクトがありません",
@@ -275,7 +275,14 @@
   "repeatUnitHint": "例：4",
   "repeatTimes": "繰り返し回数",
   "repeatHelper": "パターンの繰り返し単位と回数を入力してください。",
-  "deleteConfirm": " を削除しますか？",
+  "deleteConfirm": "プロジェクト「{name}」を削除しますか？",
+  "@deleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "deleteDesc": "プロジェクトはゴミ箱に移動され、\n30日後に自動的に永久削除されます。",
   "achieved": "達成済み ✓",
   "remainingLength": "残りの長さ",
@@ -328,7 +335,7 @@
   "rowHeightCm": "1段の高さ (cm)",
   "rowHeightInch": "1段の高さ (inch)",
   "rowHeightHint": "例：0.33",
-  "rowHeightDesc": "編み地の1段の高さを入力するか、保存されたゲージ情報から計算できます",
+  "rowHeightDesc": "編み地（サンプル）から1段の高さを測定するか、保存されたゲージ情報から計算できます",
   "gaugeInputComingSoon": "ゲージ入力機能準備中",
   "goToGaugeInput": "ゲージを入力しに行く",
   "expectedRows": "予想必要段数",

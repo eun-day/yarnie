@@ -61,28 +61,15 @@ class ProjectDeleteDialog extends StatelessWidget {
             // Content: Message
             Column(
               children: [
-                RichText(
+                Text(
+                  AppLocalizations.of(context)!.deleteConfirm(projectName),
                   textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface,
-                      letterSpacing: -0.15,
-                      height: 20 / 14,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '"$projectName"',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      TextSpan(
-                        text: AppLocalizations.of(context)!.deleteConfirm,
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    letterSpacing: -0.15,
+                    height: 20 / 14,
                   ),
                 ),
                 const SizedBox(height: 12),

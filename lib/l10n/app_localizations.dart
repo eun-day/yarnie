@@ -160,11 +160,11 @@ abstract class AppLocalizations {
   /// **'터치 피드백'**
   String get touchFeedback;
 
-  /// No description provided for @languageCurrentKorean.
+  /// No description provided for @languageAutoCurrent.
   ///
   /// In ko, this message translates to:
   /// **'자동 (현재: 한국어)'**
-  String get languageCurrentKorean;
+  String get languageAutoCurrent;
 
   /// No description provided for @languageSub.
   ///
@@ -1753,8 +1753,8 @@ abstract class AppLocalizations {
   /// No description provided for @deleteConfirm.
   ///
   /// In ko, this message translates to:
-  /// **'을 삭제하시겠습니까?'**
-  String get deleteConfirm;
+  /// **'\'{name}\' 프로젝트를 삭제하시겠습니까?'**
+  String deleteConfirm(String name);
 
   /// No description provided for @deleteDesc.
   ///

@@ -39,7 +39,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get touchFeedback => '터치 피드백';
 
   @override
-  String get languageCurrentKorean => '자동 (현재: 한국어)';
+  String get languageAutoCurrent => '자동 (현재: 한국어)';
 
   @override
   String get languageSub => '자동을 선택하면 휴대폰 언어 설정을 따릅니다';
@@ -880,7 +880,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repeatHelper => '패턴의 반복 단위와 횟수를 입력하세요.';
 
   @override
-  String get deleteConfirm => '을 삭제하시겠습니까?';
+  String deleteConfirm(String name) {
+    return '\'$name\' 프로젝트를 삭제하시겠습니까?';
+  }
 
   @override
   String get deleteDesc => '프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.';

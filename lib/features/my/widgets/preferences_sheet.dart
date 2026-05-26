@@ -138,7 +138,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         languageText = l10n.japanese;
         break;
       case AppLanguage.auto:
-        languageText = l10n.languageCurrentKorean;
+        languageText = l10n.languageAutoCurrent;
         break;
     }
 

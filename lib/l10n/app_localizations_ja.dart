@@ -39,7 +39,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get touchFeedback => 'タッチフィードバック';
 
   @override
-  String get languageCurrentKorean => '自動 (現在: 日本語)';
+  String get languageAutoCurrent => '自動 (現在: 日本語)';
 
   @override
   String get languageSub => '自動を選択すると、端末の言語設定に従います';
@@ -416,7 +416,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get knittingTip4 => '色の組み合わせに迷ったら、自然界からインスピレーションを得てみてください';
 
   @override
-  String get knittingTip5 => '編む時の力が強すぎると手首を痛めることがあります。リラックスして！';
+  String get knittingTip5 => '編み手がきつすぎると手首を痛めることがあります。リラックスして！';
 
   @override
   String get knittingTip6 => 'Yarnieのセクションカウンターを使えば、複雑なパターンも簡単に記録できます';
@@ -593,7 +593,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String dateDisplay(Object day, Object month, Object year) {
-    return '$year年$month月$day일';
+    return '$year年$month月$day日';
   }
 
   @override
@@ -876,7 +876,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get repeatHelper => 'パターンの繰り返し単位と回数を入力してください。';
 
   @override
-  String get deleteConfirm => ' を削除しますか？';
+  String deleteConfirm(String name) {
+    return 'プロジェクト「$name」を削除しますか？';
+  }
 
   @override
   String get deleteDesc => 'プロジェクトはゴミ箱に移動され、\n30日後に自動的に永久削除されます。';
@@ -1047,7 +1049,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rowHeightHint => '例：0.33';
 
   @override
-  String get rowHeightDesc => '編み地の1段の高さを入力するか、保存されたゲージ情報から計算できます';
+  String get rowHeightDesc => '編み地（サンプル）から1段の高さを測定するか、保存されたゲージ情報から計算できます';
 
   @override
   String get gaugeInputComingSoon => 'ゲージ入力機能準備中';

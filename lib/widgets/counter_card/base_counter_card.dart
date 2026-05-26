@@ -50,8 +50,11 @@ class BaseCounterCard extends StatelessWidget {
                     text: textSpan,
                     maxLines: 1,
                     textDirection: TextDirection.ltr,
-                  )..layout(maxWidth: constraints.maxWidth);
-                  final isOverflowing = textPainter.didExceedMaxLines;
+                    textScaler: MediaQuery.textScalerOf(context),
+                    locale: Localizations.localeOf(context), // 디바이스 언어(일본어 등)에 적합한 폰트 메트릭을 적용
+                  )..layout(maxWidth: double.infinity);
+                  // 폰트 자간 및 글리프 미세 오차(Tolerance)를 잡아내기 위해 4.0픽셀의 안전 마진을 적용합니다.
+                  final isOverflowing = textPainter.width > (constraints.maxWidth - 4.0);
 
                   final textWidget = Text(
                     label,
