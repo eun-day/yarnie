@@ -48,6 +48,22 @@ void main() {
         final mainCounter = await db.getMainCounter(partId);
         expect(mainCounter!.currentValue, 10);
       });
+
+      test('MainCounter의 countBy 값을 업데이트할 수 있다', () async {
+        // Given
+        final projectId = await createTestProject(db);
+        final partId = await db.createPart(
+          projectId: projectId,
+          name: 'Test Part',
+        );
+
+        // When
+        await db.updateMainCounterCountBy(partId: partId, newCountBy: 2);
+
+        // Then
+        final mainCounter = await db.getMainCounter(partId);
+        expect(mainCounter!.countBy, 2);
+      });
     });
 
     group('StitchCounter 작업', () {

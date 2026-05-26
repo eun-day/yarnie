@@ -1118,6 +1118,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get targetRow => '목표 단수';
 
   @override
+  String get setCountBy => '증감 단위 설정';
+
+  @override
+  String get countByValue => '증감 단위';
+
+  @override
   String get manageParts => 'Part 관리';
 
   @override

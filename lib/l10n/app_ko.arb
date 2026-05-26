@@ -347,6 +347,8 @@
   "setTargetRow": "목표 단수 설정",
   "setTargetRowDesc": "완료하고자 하는 총 단수를 입력하세요",
   "targetRow": "목표 단수",
+  "setCountBy": "증감 단위 설정",
+  "countByValue": "증감 단위",
   "manageParts": "Part 관리",
   "managePartsDesc": "Part 이름을 길게 눌러 수정하거나, 왼쪽 아이콘을 드래그하여 순서를 변경하세요.",
   "noParts": "등록된 Part가 없습니다.",

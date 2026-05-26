@@ -28,6 +28,7 @@ import 'package:yarnie/widgets/counter_card/shaping_counter_card.dart';
 import 'package:yarnie/widgets/counter_card/stitch_counter_card.dart';
 import 'package:yarnie/widgets/counter_edit_bottom_sheet.dart';
 import 'package:yarnie/widgets/main_counter_settings_button.dart';
+import 'package:yarnie/widgets/count_by_setting_dialog.dart';
 import 'package:yarnie/widgets/part_memo_sheet.dart';
 import 'package:yarnie/widgets/part_manage_sheet.dart';
 import 'package:yarnie/widgets/target_setting_dialog.dart';
@@ -1867,6 +1868,7 @@ class MainCounterWidget extends ConsumerWidget {
         final mainCounter = snapshot.data;
         final currentValue = mainCounter?.currentValue ?? 1;
         final targetValue = mainCounter?.targetValue;
+        final countBy = mainCounter?.countBy ?? 1;
         final hasTarget = targetValue != null;
 
         final remaining = hasTarget ? targetValue - currentValue : 0;
@@ -1899,7 +1901,7 @@ class MainCounterWidget extends ConsumerWidget {
                             HapticHelper.validateAndFeedback(settings.touchFeedback);
                             appDb.updateMainCounter(
                               partId: partId,
-                              newValue: currentValue - 1,
+                              newValue: (currentValue - countBy).clamp(1, currentValue),
                             );
                           }
                         },
@@ -1927,7 +1929,7 @@ class MainCounterWidget extends ConsumerWidget {
                           HapticHelper.validateAndFeedback(settings.touchFeedback);
                           appDb.updateMainCounter(
                             partId: partId,
-                            newValue: currentValue + 1,
+                            newValue: currentValue + countBy,
                           );
                         },
                         child: Center(
@@ -2013,6 +2015,16 @@ class MainCounterWidget extends ConsumerWidget {
                               height: 1.33,
                             ),
                           ),
+                        if (countBy > 1)
+                          Text(
+                            l10n.countByLabel(countBy),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w400,
+                              height: 1.3,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -2074,6 +2086,20 @@ class MainCounterWidget extends ConsumerWidget {
                     appDb.updateMainCounterTarget(
                       partId: partId,
                       newTargetValue: null,
+                    );
+                  },
+                  onSetCountBy: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => CountBySettingDialog(
+                        initialValue: countBy,
+                        onSave: (newValue) {
+                          appDb.updateMainCounterCountBy(
+                            partId: partId,
+                            newCountBy: newValue,
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

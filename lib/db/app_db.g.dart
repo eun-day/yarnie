@@ -1331,6 +1331,18 @@ class $MainCountersTable extends MainCounters
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _countByMeta = const VerificationMeta(
+    'countBy',
+  );
+  @override
+  late final GeneratedColumn<int> countBy = GeneratedColumn<int>(
+    'count_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1360,6 +1372,7 @@ class $MainCountersTable extends MainCounters
     partId,
     currentValue,
     targetValue,
+    countBy,
     createdAt,
     updatedAt,
   ];
@@ -1404,6 +1417,12 @@ class $MainCountersTable extends MainCounters
         ),
       );
     }
+    if (data.containsKey('count_by')) {
+      context.handle(
+        _countByMeta,
+        countBy.isAcceptableOrUnknown(data['count_by']!, _countByMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1441,6 +1460,10 @@ class $MainCountersTable extends MainCounters
         DriftSqlType.int,
         data['${effectivePrefix}target_value'],
       ),
+      countBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}count_by'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1463,6 +1486,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
   final int partId;
   final int currentValue;
   final int? targetValue;
+  final int countBy;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const MainCounter({
@@ -1470,6 +1494,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     required this.partId,
     required this.currentValue,
     this.targetValue,
+    required this.countBy,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1482,6 +1507,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     if (!nullToAbsent || targetValue != null) {
       map['target_value'] = Variable<int>(targetValue);
     }
+    map['count_by'] = Variable<int>(countBy);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1497,6 +1523,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       targetValue: targetValue == null && nullToAbsent
           ? const Value.absent()
           : Value(targetValue),
+      countBy: Value(countBy),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1514,6 +1541,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       partId: serializer.fromJson<int>(json['partId']),
       currentValue: serializer.fromJson<int>(json['currentValue']),
       targetValue: serializer.fromJson<int?>(json['targetValue']),
+      countBy: serializer.fromJson<int>(json['countBy']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1526,6 +1554,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       'partId': serializer.toJson<int>(partId),
       'currentValue': serializer.toJson<int>(currentValue),
       'targetValue': serializer.toJson<int?>(targetValue),
+      'countBy': serializer.toJson<int>(countBy),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -1536,6 +1565,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     int? partId,
     int? currentValue,
     Value<int?> targetValue = const Value.absent(),
+    int? countBy,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => MainCounter(
@@ -1543,6 +1573,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
     partId: partId ?? this.partId,
     currentValue: currentValue ?? this.currentValue,
     targetValue: targetValue.present ? targetValue.value : this.targetValue,
+    countBy: countBy ?? this.countBy,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -1556,6 +1587,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
       targetValue: data.targetValue.present
           ? data.targetValue.value
           : this.targetValue,
+      countBy: data.countBy.present ? data.countBy.value : this.countBy,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1568,6 +1600,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
           ..write('partId: $partId, ')
           ..write('currentValue: $currentValue, ')
           ..write('targetValue: $targetValue, ')
+          ..write('countBy: $countBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1575,8 +1608,15 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, partId, currentValue, targetValue, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    partId,
+    currentValue,
+    targetValue,
+    countBy,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1585,6 +1625,7 @@ class MainCounter extends DataClass implements Insertable<MainCounter> {
           other.partId == this.partId &&
           other.currentValue == this.currentValue &&
           other.targetValue == this.targetValue &&
+          other.countBy == this.countBy &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1594,6 +1635,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
   final Value<int> partId;
   final Value<int> currentValue;
   final Value<int?> targetValue;
+  final Value<int> countBy;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   const MainCountersCompanion({
@@ -1601,6 +1643,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     this.partId = const Value.absent(),
     this.currentValue = const Value.absent(),
     this.targetValue = const Value.absent(),
+    this.countBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -1609,6 +1652,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     required int partId,
     this.currentValue = const Value.absent(),
     this.targetValue = const Value.absent(),
+    this.countBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : partId = Value(partId);
@@ -1617,6 +1661,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     Expression<int>? partId,
     Expression<int>? currentValue,
     Expression<int>? targetValue,
+    Expression<int>? countBy,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -1625,6 +1670,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
       if (partId != null) 'part_id': partId,
       if (currentValue != null) 'current_value': currentValue,
       if (targetValue != null) 'target_value': targetValue,
+      if (countBy != null) 'count_by': countBy,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -1635,6 +1681,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     Value<int>? partId,
     Value<int>? currentValue,
     Value<int?>? targetValue,
+    Value<int>? countBy,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
   }) {
@@ -1643,6 +1690,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
       partId: partId ?? this.partId,
       currentValue: currentValue ?? this.currentValue,
       targetValue: targetValue ?? this.targetValue,
+      countBy: countBy ?? this.countBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -1663,6 +1711,9 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
     if (targetValue.present) {
       map['target_value'] = Variable<int>(targetValue.value);
     }
+    if (countBy.present) {
+      map['count_by'] = Variable<int>(countBy.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1679,6 +1730,7 @@ class MainCountersCompanion extends UpdateCompanion<MainCounter> {
           ..write('partId: $partId, ')
           ..write('currentValue: $currentValue, ')
           ..write('targetValue: $targetValue, ')
+          ..write('countBy: $countBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -7628,6 +7680,7 @@ typedef $$MainCountersTableCreateCompanionBuilder =
       required int partId,
       Value<int> currentValue,
       Value<int?> targetValue,
+      Value<int> countBy,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -7637,6 +7690,7 @@ typedef $$MainCountersTableUpdateCompanionBuilder =
       Value<int> partId,
       Value<int> currentValue,
       Value<int?> targetValue,
+      Value<int> countBy,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
     });
@@ -7685,6 +7739,11 @@ class $$MainCountersTableFilterComposer
 
   ColumnFilters<int> get targetValue => $composableBuilder(
     column: $table.targetValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get countBy => $composableBuilder(
+    column: $table.countBy,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7746,6 +7805,11 @@ class $$MainCountersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get countBy => $composableBuilder(
+    column: $table.countBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7801,6 +7865,9 @@ class $$MainCountersTableAnnotationComposer
     column: $table.targetValue,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get countBy =>
+      $composableBuilder(column: $table.countBy, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -7864,6 +7931,7 @@ class $$MainCountersTableTableManager
                 Value<int> partId = const Value.absent(),
                 Value<int> currentValue = const Value.absent(),
                 Value<int?> targetValue = const Value.absent(),
+                Value<int> countBy = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => MainCountersCompanion(
@@ -7871,6 +7939,7 @@ class $$MainCountersTableTableManager
                 partId: partId,
                 currentValue: currentValue,
                 targetValue: targetValue,
+                countBy: countBy,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -7880,6 +7949,7 @@ class $$MainCountersTableTableManager
                 required int partId,
                 Value<int> currentValue = const Value.absent(),
                 Value<int?> targetValue = const Value.absent(),
+                Value<int> countBy = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => MainCountersCompanion.insert(
@@ -7887,6 +7957,7 @@ class $$MainCountersTableTableManager
                 partId: partId,
                 currentValue: currentValue,
                 targetValue: targetValue,
+                countBy: countBy,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
