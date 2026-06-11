@@ -102,6 +102,12 @@ class NumberInputGroup extends StatelessWidget {
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.numberWithOptions(signed: true),
                   readOnly: isReadOnly,
+                  onTap: () {
+                    controller.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: controller.text.length,
+                    );
+                  },
                   style: textStyle ?? TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     border: InputBorder.none,

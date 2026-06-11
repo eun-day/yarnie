@@ -2124,7 +2124,7 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                     showDialog(
                       context: context,
                       builder: (context) => TargetSettingDialog(
-                        initialValue: targetValue ?? 100,
+                        initialValue: targetValue ?? currentValue,
                         onSave: (newValue) {
                           appDb.updateMainCounterTarget(
                             partId: widget.partId,
