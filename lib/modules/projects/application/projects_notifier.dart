@@ -82,8 +82,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       case OpenProject(:final projectId):
         _emit(NavigateToProjectDetail(projectId));
 
-      case DuplicateProject(:final projectId):
-        await _duplicateProject(projectId);
+      case DuplicateProject(:final projectId, :final copySuffix):
+        await _duplicateProject(projectId, copySuffix);
 
       case OpenAssignTagsDialog(:final projectId):
         _openAssignTagsDialog(projectId);
@@ -117,13 +117,14 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       await _projectsSubscription?.cancel();
       _projectsSubscription = appDb.watchAll().listen(
         (projects) => onEvent(ProjectsUpdated(projects)),
-        onError: (e, st) => onEvent(ShowError('프로젝트 로드 실패: $e')),
+        onError: (e, st) =>
+            _emit(ShowLocalizedErrorMessage((l10n) => l10n.loadProjectsFailed(e.toString()))),
       );
 
       state = state.copyWith(allTags: tags);
     } catch (e) {
       await _projectsSubscription?.cancel();
-      onEvent(ShowError('초기화 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }
 
@@ -158,21 +159,21 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
   }
 
   /// 프로젝트 복사
-  Future<void> _duplicateProject(int projectId) async {
+  Future<void> _duplicateProject(int projectId, String copySuffix) async {
     try {
       final original = _projectById(projectId);
       if (original == null) {
-        _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+        _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
         return;
       }
 
       // 새 프로젝트 생성 (깊은 복사)
-      final newName = '${original.name} (복사)';
+      final newName = '${original.name} $copySuffix';
       await appDb.duplicateProjectDeep(projectId, newName);
 
-      _emit(const ShowSuccessMessage('프로젝트가 복사되었습니다'));
+      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCopied));
     } catch (e) {
-      _emit(ShowErrorMessage('프로젝트 복사 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.copyProjectFailed(e.toString())));
     }
   }
 
@@ -180,7 +181,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
   void _openAssignTagsDialog(int projectId) {
     final project = _projectById(projectId);
     if (project == null) {
-      _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
       return;
     }
 
@@ -191,9 +192,9 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
   Future<void> _assignTags(int projectId, List<int> tagIds) async {
     try {
       await appDb.updateProjectTags(projectId: projectId, tagIds: tagIds);
-      _emit(const ShowSuccessMessage('태그가 지정되었습니다'));
+      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.tagsAssigned));
     } catch (e) {
-      _emit(ShowErrorMessage('태그 지정 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.assignTagsFailed(e.toString())));
     }
   }
 
@@ -246,9 +247,9 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       );
 
       _emit(ProjectCreated(projectId));
-      _emit(const ShowSuccessMessage('프로젝트가 생성되었습니다'));
+      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCreated));
     } catch (e) {
-      _emit(ShowErrorMessage('프로젝트 생성 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.createProjectFailed(e.toString())));
     }
   }
 
@@ -257,7 +258,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     try {
       final project = _projectById(event.projectId);
       if (project == null) {
-        _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+        _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
         return;
       }
 
@@ -288,9 +289,9 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       );
 
       _emit(ProjectUpdated(event.projectId));
-      _emit(const ShowSuccessMessage('프로젝트가 수정되었습니다'));
+      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
     } catch (e) {
-      _emit(ShowErrorMessage('프로젝트 수정 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(e.toString())));
     }
   }
 
@@ -299,7 +300,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     try {
       final project = _projectById(projectId);
       if (project == null) {
-        _emit(const ShowErrorMessage('프로젝트를 찾을 수 없습니다'));
+        _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
         return;
       }
 
@@ -307,9 +308,9 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       await appDb.softDeleteProject(projectId);
 
       _emit(const ProjectDeleted());
-      _emit(const ShowSuccessMessage('프로젝트가 삭제되었습니다'));
+      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectDeleted));
     } catch (e) {
-      _emit(ShowErrorMessage('프로젝트 삭제 실패: $e'));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.deleteProjectFailed(e.toString())));
     }
   }
 

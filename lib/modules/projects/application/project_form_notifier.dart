@@ -101,7 +101,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           appDb.projects,
         )..where((p) => p.id.equals(projectId))).getSingleOrNull();
         if (project == null) {
-          throw '프로젝트를 찾을 수 없습니다.';
+          _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.projectNotFound));
+          state = state.copyWith(isLoading: false);
+          return;
         }
 
         final needleTypeEnum = project.needleType != null
@@ -129,8 +131,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         );
       }
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: '데이터 로드 실패: $e');
-      _emit(ShowProjectFormErrorMessage('데이터 로드 실패: $e'));
+      state = state.copyWith(isLoading: false, error: e.toString());
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.loadDataFailed(e.toString())));
     }
   }
 
@@ -167,7 +169,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
 
   Future<void> _saveProject() async {
     if (!state.isValid) {
-      _emit(const ShowProjectFormErrorMessage('프로젝트 이름을 입력해주세요.'));
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.enterProjectName));
       return;
     }
 
@@ -214,8 +216,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         );
       }
     } catch (e) {
-      state = state.copyWith(isSaving: false, error: '프로젝트 저장 실패: $e');
-      _emit(ShowProjectFormErrorMessage('프로젝트 저장 실패: $e'));
+      state = state.copyWith(isSaving: false, error: e.toString());
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
     }
   }
 

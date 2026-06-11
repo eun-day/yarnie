@@ -36,8 +36,8 @@ class _CountBySettingDialogState extends State<CountBySettingDialog> {
   Widget _buildQuickChip(int value) {
     final isSelected = _currentValue == value;
     final colorScheme = Theme.of(context).colorScheme;
-    final isKorean = Localizations.localeOf(context).languageCode == 'ko';
-    final label = isKorean ? '$value단' : (value == 1 ? '$value row' : '$value rows');
+    final l10n = AppLocalizations.of(context)!;
+    final label = value == 1 ? l10n.row : l10n.estimatedRowsDisplay(value);
 
     return GestureDetector(
       onTap: () {

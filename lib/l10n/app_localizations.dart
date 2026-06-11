@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_ja.dart';
 import 'app_localizations_ko.dart';
 
 // ignore_for_file: type=lint
@@ -95,6 +96,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('ja'),
     Locale('ko'),
   ];
 
@@ -158,11 +160,11 @@ abstract class AppLocalizations {
   /// **'터치 피드백'**
   String get touchFeedback;
 
-  /// No description provided for @languageCurrentKorean.
+  /// No description provided for @languageAutoCurrent.
   ///
   /// In ko, this message translates to:
   /// **'자동 (현재: 한국어)'**
-  String get languageCurrentKorean;
+  String get languageAutoCurrent;
 
   /// No description provided for @languageSub.
   ///
@@ -1751,8 +1753,8 @@ abstract class AppLocalizations {
   /// No description provided for @deleteConfirm.
   ///
   /// In ko, this message translates to:
-  /// **'을 삭제하시겠습니까?'**
-  String get deleteConfirm;
+  /// **'\'{name}\' 프로젝트를 삭제하시겠습니까?'**
+  String deleteConfirm(String name);
 
   /// No description provided for @deleteDesc.
   ///
@@ -3097,6 +3099,275 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'\'{name}\' 태그를 삭제하시겠습니까?\n이 태그가 지정된 모든 프로젝트에서 제거됩니다.'**
   String deleteTagConfirm(Object name);
+
+  /// No description provided for @am.
+  ///
+  /// In ko, this message translates to:
+  /// **'오전'**
+  String get am;
+
+  /// No description provided for @pm.
+  ///
+  /// In ko, this message translates to:
+  /// **'오후'**
+  String get pm;
+
+  /// No description provided for @projectNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트를 찾을 수 없습니다'**
+  String get projectNotFound;
+
+  /// No description provided for @loadDataFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 로드 실패: {error}'**
+  String loadDataFailed(Object error);
+
+  /// No description provided for @enterProjectName.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 이름을 입력해주세요'**
+  String get enterProjectName;
+
+  /// No description provided for @saveProjectFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 저장 실패: {error}'**
+  String saveProjectFailed(Object error);
+
+  /// No description provided for @loadProjectsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 로드 실패: {error}'**
+  String loadProjectsFailed(Object error);
+
+  /// No description provided for @initFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'초기화 실패: {error}'**
+  String initFailed(Object error);
+
+  /// No description provided for @copySuffix.
+  ///
+  /// In ko, this message translates to:
+  /// **'(복사)'**
+  String get copySuffix;
+
+  /// No description provided for @projectCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트가 복사되었습니다'**
+  String get projectCopied;
+
+  /// No description provided for @copyProjectFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 복사 실패: {error}'**
+  String copyProjectFailed(Object error);
+
+  /// No description provided for @tagsAssigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그가 지정되었습니다'**
+  String get tagsAssigned;
+
+  /// No description provided for @assignTagsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 지정 실패: {error}'**
+  String assignTagsFailed(Object error);
+
+  /// No description provided for @projectCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트가 생성되었습니다'**
+  String get projectCreated;
+
+  /// No description provided for @createProjectFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 생성 실패: {error}'**
+  String createProjectFailed(Object error);
+
+  /// No description provided for @projectUpdated.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트가 수정되었습니다'**
+  String get projectUpdated;
+
+  /// No description provided for @updateProjectFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 수정 실패: {error}'**
+  String updateProjectFailed(Object error);
+
+  /// No description provided for @projectDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트가 삭제되었습니다'**
+  String get projectDeleted;
+
+  /// No description provided for @deleteProjectFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로젝트 삭제 실패: {error}'**
+  String deleteProjectFailed(Object error);
+
+  /// No description provided for @loadCounterCountFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터 수 로드 실패: {error}'**
+  String loadCounterCountFailed(Object error);
+
+  /// No description provided for @loadPartsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 로드 실패: {error}'**
+  String loadPartsFailed(Object error);
+
+  /// No description provided for @createPartFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 생성 실패: {error}'**
+  String createPartFailed(Object error);
+
+  /// No description provided for @updatePartFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 수정 실패: {error}'**
+  String updatePartFailed(Object error);
+
+  /// No description provided for @reorderPartsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 순서 변경 실패: {error}'**
+  String reorderPartsFailed(Object error);
+
+  /// No description provided for @deletePartFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 삭제 실패: {error}'**
+  String deletePartFailed(Object error);
+
+  /// No description provided for @loadTagsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 로드 실패: {error}'**
+  String loadTagsFailed(Object error);
+
+  /// No description provided for @enterTagName.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 이름을 입력해주세요'**
+  String get enterTagName;
+
+  /// No description provided for @tagCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그가 생성되었습니다'**
+  String get tagCreated;
+
+  /// No description provided for @createTagFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 생성 실패: {error}'**
+  String createTagFailed(Object error);
+
+  /// No description provided for @tagUpdated.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그가 수정되었습니다'**
+  String get tagUpdated;
+
+  /// No description provided for @updateTagFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 수정 실패: {error}'**
+  String updateTagFailed(Object error);
+
+  /// No description provided for @tagDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그가 삭제되었습니다'**
+  String get tagDeleted;
+
+  /// No description provided for @deleteTagFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'태그 삭제 실패: {error}'**
+  String deleteTagFailed(Object error);
+
+  /// No description provided for @shapingTargetInfoPattern.
+  ///
+  /// In ko, this message translates to:
+  /// **'매 {interval}행마다 {amount}{unit} × {totalCount}회'**
+  String shapingTargetInfoPattern(
+    Object amount,
+    Object interval,
+    Object totalCount,
+    Object unit,
+  );
+
+  /// No description provided for @shapingTargetInfoDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'{rows}행에서 {amount}{unit}'**
+  String shapingTargetInfoDirect(Object amount, Object rows, Object unit);
+
+  /// No description provided for @intervalTargetInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'매 {interval}행마다 × {totalCount}회'**
+  String intervalTargetInfo(Object interval, Object totalCount);
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 내보내기가 완료되었습니다!'**
+  String get exportSuccess;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'내보내기 실패: {error}'**
+  String exportFailed(Object error);
+
+  /// No description provided for @importWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?'**
+  String get importWarning;
+
+  /// No description provided for @continueProcess.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속하기'**
+  String get continueProcess;
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 복원이 완료되었습니다!'**
+  String get importSuccess;
+
+  /// No description provided for @copyRevenueCatIdSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'RevenueCat ID 복사 완료:\n{id}'**
+  String copyRevenueCatIdSuccess(Object id);
+
+  /// No description provided for @english.
+  ///
+  /// In ko, this message translates to:
+  /// **'영어'**
+  String get english;
+
+  /// No description provided for @japanese.
+  ///
+  /// In ko, this message translates to:
+  /// **'일본어'**
+  String get japanese;
 }
 
 class _AppLocalizationsDelegate
@@ -3110,7 +3381,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'ko'].contains(locale.languageCode);
+      <String>['en', 'ja', 'ko'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -3121,6 +3392,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'ja':
+      return AppLocalizationsJa();
     case 'ko':
       return AppLocalizationsKo();
   }

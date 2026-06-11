@@ -13,14 +13,23 @@ String ymdHm(DateTime dt) {
       '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 }
 
-String mdHm(DateTime dt) {
+String mdHm(DateTime dt, AppLocalizations l10n) {
   // 예: 2025년 11월 10일 오후 08:00
   final localDt = dt.toLocal();
-  final amPm = localDt.hour < 12 ? '오전' : '오후';
+  final amPm = localDt.hour < 12 ? l10n.am : l10n.pm;
   final hour = localDt.hour == 0
       ? 12
       : (localDt.hour > 12 ? localDt.hour - 12 : localDt.hour);
-  return '${localDt.year}년 ${localDt.month}월 ${localDt.day}일 $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
+
+  if (l10n.localeName == 'ko') {
+    return '${localDt.year}년 ${localDt.month}월 ${localDt.day}일 $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
+  }
+
+  if (l10n.localeName == 'ja') {
+    return '${localDt.year}年 ${localDt.month}月 ${localDt.day}日 $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
+  }
+
+  return '${l10n.dateDisplay(localDt.day, localDt.month, localDt.year)} $amPm ${hour.toString().padLeft(2, '0')}:${localDt.minute.toString().padLeft(2, '0')}';
 }
 
 String formatDateDisplay(DateTime date, AppLocalizations l10n) {
@@ -30,6 +39,12 @@ String formatDateDisplay(DateTime date, AppLocalizations l10n) {
     final m = local.month.toString().padLeft(2, '0');
     final d = local.day.toString().padLeft(2, '0');
     return '$y년 $m월 $d일';
+  }
+  if (l10n.localeName == 'ja') {
+    final y = local.year;
+    final m = local.month.toString().padLeft(2, '0');
+    final d = local.day.toString().padLeft(2, '0');
+    return '$y年$m月$d日';
   }
   return l10n.dateDisplay(local.day, local.month, local.year);
 }

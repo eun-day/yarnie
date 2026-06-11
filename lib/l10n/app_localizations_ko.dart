@@ -39,7 +39,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get touchFeedback => '터치 피드백';
 
   @override
-  String get languageCurrentKorean => '자동 (현재: 한국어)';
+  String get languageAutoCurrent => '자동 (현재: 한국어)';
 
   @override
   String get languageSub => '자동을 선택하면 휴대폰 언어 설정을 따릅니다';
@@ -880,7 +880,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repeatHelper => '패턴의 반복 단위와 횟수를 입력하세요.';
 
   @override
-  String get deleteConfirm => '을 삭제하시겠습니까?';
+  String deleteConfirm(String name) {
+    return '\'$name\' 프로젝트를 삭제하시겠습니까?';
+  }
 
   @override
   String get deleteDesc => '프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.';
@@ -1604,4 +1606,189 @@ class AppLocalizationsKo extends AppLocalizations {
   String deleteTagConfirm(Object name) {
     return '\'$name\' 태그를 삭제하시겠습니까?\n이 태그가 지정된 모든 프로젝트에서 제거됩니다.';
   }
+
+  @override
+  String get am => '오전';
+
+  @override
+  String get pm => '오후';
+
+  @override
+  String get projectNotFound => '프로젝트를 찾을 수 없습니다';
+
+  @override
+  String loadDataFailed(Object error) {
+    return '데이터 로드 실패: $error';
+  }
+
+  @override
+  String get enterProjectName => '프로젝트 이름을 입력해주세요';
+
+  @override
+  String saveProjectFailed(Object error) {
+    return '프로젝트 저장 실패: $error';
+  }
+
+  @override
+  String loadProjectsFailed(Object error) {
+    return '프로젝트 로드 실패: $error';
+  }
+
+  @override
+  String initFailed(Object error) {
+    return '초기화 실패: $error';
+  }
+
+  @override
+  String get copySuffix => '(복사)';
+
+  @override
+  String get projectCopied => '프로젝트가 복사되었습니다';
+
+  @override
+  String copyProjectFailed(Object error) {
+    return '프로젝트 복사 실패: $error';
+  }
+
+  @override
+  String get tagsAssigned => '태그가 지정되었습니다';
+
+  @override
+  String assignTagsFailed(Object error) {
+    return '태그 지정 실패: $error';
+  }
+
+  @override
+  String get projectCreated => '프로젝트가 생성되었습니다';
+
+  @override
+  String createProjectFailed(Object error) {
+    return '프로젝트 생성 실패: $error';
+  }
+
+  @override
+  String get projectUpdated => '프로젝트가 수정되었습니다';
+
+  @override
+  String updateProjectFailed(Object error) {
+    return '프로젝트 수정 실패: $error';
+  }
+
+  @override
+  String get projectDeleted => '프로젝트가 삭제되었습니다';
+
+  @override
+  String deleteProjectFailed(Object error) {
+    return '프로젝트 삭제 실패: $error';
+  }
+
+  @override
+  String loadCounterCountFailed(Object error) {
+    return '카운터 수 로드 실패: $error';
+  }
+
+  @override
+  String loadPartsFailed(Object error) {
+    return '파트 로드 실패: $error';
+  }
+
+  @override
+  String createPartFailed(Object error) {
+    return '파트 생성 실패: $error';
+  }
+
+  @override
+  String updatePartFailed(Object error) {
+    return '파트 수정 실패: $error';
+  }
+
+  @override
+  String reorderPartsFailed(Object error) {
+    return '파트 순서 변경 실패: $error';
+  }
+
+  @override
+  String deletePartFailed(Object error) {
+    return '파트 삭제 실패: $error';
+  }
+
+  @override
+  String loadTagsFailed(Object error) {
+    return '태그 로드 실패: $error';
+  }
+
+  @override
+  String get enterTagName => '태그 이름을 입력해주세요';
+
+  @override
+  String get tagCreated => '태그가 생성되었습니다';
+
+  @override
+  String createTagFailed(Object error) {
+    return '태그 생성 실패: $error';
+  }
+
+  @override
+  String get tagUpdated => '태그가 수정되었습니다';
+
+  @override
+  String updateTagFailed(Object error) {
+    return '태그 수정 실패: $error';
+  }
+
+  @override
+  String get tagDeleted => '태그가 삭제되었습니다';
+
+  @override
+  String deleteTagFailed(Object error) {
+    return '태그 삭제 실패: $error';
+  }
+
+  @override
+  String shapingTargetInfoPattern(
+    Object amount,
+    Object interval,
+    Object totalCount,
+    Object unit,
+  ) {
+    return '매 $interval행마다 $amount$unit × $totalCount회';
+  }
+
+  @override
+  String shapingTargetInfoDirect(Object amount, Object rows, Object unit) {
+    return '$rows행에서 $amount$unit';
+  }
+
+  @override
+  String intervalTargetInfo(Object interval, Object totalCount) {
+    return '매 $interval행마다 × $totalCount회';
+  }
+
+  @override
+  String get exportSuccess => '데이터 내보내기가 완료되었습니다!';
+
+  @override
+  String exportFailed(Object error) {
+    return '내보내기 실패: $error';
+  }
+
+  @override
+  String get importWarning => '기존 데이터가 모두 삭제되고 백업 데이터로 대체됩니다. 계속하시겠습니까?';
+
+  @override
+  String get continueProcess => '계속하기';
+
+  @override
+  String get importSuccess => '데이터 복원이 완료되었습니다!';
+
+  @override
+  String copyRevenueCatIdSuccess(Object id) {
+    return 'RevenueCat ID 복사 완료:\n$id';
+  }
+
+  @override
+  String get english => '영어';
+
+  @override
+  String get japanese => '일본어';
 }

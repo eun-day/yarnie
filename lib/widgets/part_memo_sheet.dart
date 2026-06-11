@@ -278,7 +278,7 @@ class _MemoCard extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Text(
-                mdHm(note.createdAt),
+                mdHm(note.createdAt, AppLocalizations.of(context)!),
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,

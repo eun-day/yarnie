@@ -57,7 +57,8 @@ class OpenProject extends ProjectsEvent {
 /// 프로젝트 복사
 class DuplicateProject extends ProjectsEvent {
   final int projectId;
-  const DuplicateProject(this.projectId);
+  final String copySuffix;
+  const DuplicateProject(this.projectId, this.copySuffix);
 }
 
 /// 프로젝트에 태그 지정

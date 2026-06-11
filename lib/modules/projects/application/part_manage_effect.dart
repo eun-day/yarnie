@@ -7,6 +7,11 @@ class ShowErrorEffect extends PartManageEffect {
   const ShowErrorEffect(this.message);
 }
 
+class ShowLocalizedErrorEffect extends PartManageEffect {
+  final String Function(dynamic l10n) messageBuilder;
+  const ShowLocalizedErrorEffect(this.messageBuilder);
+}
+
 class PartCreatedEffect extends PartManageEffect {
   final int partId;
   const PartCreatedEffect(this.partId);

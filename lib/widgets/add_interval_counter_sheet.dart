@@ -180,7 +180,7 @@ class _AddIntervalCounterSheetState
       'intervalRows': interval,
       'totalCount': totalCount,
       'palette': paletteHex,
-      'targetInfo': '매 ${interval}행마다 × $totalCount회',
+      'targetInfo': AppLocalizations.of(context)!.intervalTargetInfo(interval, totalCount),
     };
 
     try {

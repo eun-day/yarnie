@@ -66,7 +66,7 @@ class TagsNotifier extends Notifier<TagsState> {
       final tags = await appDb.getAllTags();
       onEvent(TagsUpdated(tags));
     } catch (e) {
-      onEvent(ShowTagError('태그 로드 실패: $e'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.loadTagsFailed(e.toString())));
     }
   }
 
@@ -101,24 +101,24 @@ class TagsNotifier extends Notifier<TagsState> {
   /// 태그 생성
   Future<void> _createTag(String name, int color) async {
     if (name.trim().isEmpty) {
-      _emit(const ShowTagErrorMessage('태그 이름을 입력해주세요'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.enterTagName));
       return;
     }
 
     try {
       await appDb.createTag(name: name.trim(), color: color);
-      _emit(const ShowTagSuccessMessage('태그가 생성되었습니다'));
+      _emit(ShowLocalizedTagSuccessMessage((l10n) => l10n.tagCreated));
       // 목록 새로고침
       await _loadTags();
     } catch (e) {
-      _emit(ShowTagErrorMessage('태그 생성 실패: $e'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.createTagFailed(e.toString())));
     }
   }
 
   /// 태그 수정
   Future<void> _updateTag(int tagId, String? newName, int? newColor) async {
     if (newName != null && newName.trim().isEmpty) {
-      _emit(const ShowTagErrorMessage('태그 이름을 입력해주세요'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.enterTagName));
       return;
     }
 
@@ -128,11 +128,11 @@ class TagsNotifier extends Notifier<TagsState> {
           name: newName?.trim(), // name이 null이면 전달 안함
           color: newColor // color가 null이면 전달 안함
       );
-      _emit(const ShowTagSuccessMessage('태그가 수정되었습니다'));
+      _emit(ShowLocalizedTagSuccessMessage((l10n) => l10n.tagUpdated));
       // 목록 새로고침
       await _loadTags();
     } catch (e) {
-      _emit(ShowTagErrorMessage('태그 수정 실패: $e'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.updateTagFailed(e.toString())));
     }
   }
 
@@ -140,11 +140,11 @@ class TagsNotifier extends Notifier<TagsState> {
   Future<void> _deleteTag(int tagId) async {
     try {
       await appDb.deleteTag(tagId);
-      _emit(const ShowTagSuccessMessage('태그가 삭제되었습니다'));
+      _emit(ShowLocalizedTagSuccessMessage((l10n) => l10n.tagDeleted));
       // 목록 새로고침
       await _loadTags();
     } catch (e) {
-      _emit(ShowTagErrorMessage('태그 삭제 실패: $e'));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.deleteTagFailed(e.toString())));
     }
   }
 

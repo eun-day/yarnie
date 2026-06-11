@@ -231,6 +231,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
   }
 
   void _handleEffect(BuildContext context, ProjectsEffect effect) {
+    final l10n = AppLocalizations.of(context)!;
     switch (effect) {
       case NavigateToProjectDetail(:final projectId):
         _openProject(projectId);
@@ -238,10 +239,20 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
+      case ShowLocalizedSuccessMessage(:final messageBuilder):
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(messageBuilder(l10n))));
       case ShowErrorMessage(:final message):
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      case ShowLocalizedErrorMessage(:final messageBuilder):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(messageBuilder(l10n)),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -986,7 +997,7 @@ class _ProjectMenuSheet extends ConsumerWidget {
                   }
                   ref
                       .read(projectsProvider.notifier)
-                      .onEvent(DuplicateProject(projectId));
+                        .onEvent(DuplicateProject(projectId, l10n.copySuffix));
                 },
               ),
               const SizedBox(height: 8),
