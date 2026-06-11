@@ -2227,6 +2227,7 @@ class _TargetReachedDialogState extends State<TargetReachedDialog>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -2278,7 +2279,7 @@ class _TargetReachedDialogState extends State<TargetReachedDialog>
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '목표 단수 완료!',
+                    l10n.targetReachedTitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,
@@ -2289,7 +2290,7 @@ class _TargetReachedDialogState extends State<TargetReachedDialog>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '목표인 ${widget.targetValue}단을 완료했습니다.\n정말 고생 많으셨어요! 🧶',
+                    l10n.targetReachedDesc(widget.targetValue),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -2315,7 +2316,7 @@ class _TargetReachedDialogState extends State<TargetReachedDialog>
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        '목표 단수 해제',
+                        l10n.removeTargetRow,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,

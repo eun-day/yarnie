@@ -571,5 +571,14 @@
   "importSuccess": "Data restoration completed!",
   "copyRevenueCatIdSuccess": "RevenueCat ID copied:\n{id}",
   "english": "English",
-  "japanese": "Japanese"
+  "japanese": "Japanese",
+  "targetReachedTitle": "Target Row Completed!",
+  "targetReachedDesc": "You completed your target of {targetValue} rows.\nGreat job! 🧶",
+  "@targetReachedDesc": {
+    "placeholders": {
+      "targetValue": {
+        "type": "int"
+      }
+    }
+  }
 }

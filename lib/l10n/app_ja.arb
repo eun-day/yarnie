@@ -550,5 +550,14 @@
   "importSuccess": "データの復元が完了しました！",
   "copyRevenueCatIdSuccess": "RevenueCat IDをコピーしました:\n{id}",
   "english": "英語",
-  "japanese": "日本語"
+  "japanese": "日本語",
+  "targetReachedTitle": "目標段数完了！",
+  "targetReachedDesc": "目標の{targetValue}段を完了しました。\n本当にお疲れ様でした！ 🧶",
+  "@targetReachedDesc": {
+    "placeholders": {
+      "targetValue": {
+        "type": "int"
+      }
+    }
+  }
 }
