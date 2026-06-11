@@ -1889,9 +1889,9 @@ class MainCounterWidget extends ConsumerWidget {
         final countBy = mainCounter?.countBy ?? 1;
         final hasTarget = targetValue != null;
 
-        final remaining = hasTarget ? targetValue - currentValue : 0;
+        final remaining = hasTarget ? (targetValue - currentValue + 1).clamp(0, targetValue) : 0;
         final progress = hasTarget
-            ? (currentValue / targetValue).clamp(0.0, 1.0)
+            ? ((currentValue - 1) / targetValue).clamp(0.0, 1.0)
             : 0.0;
 
         return Container(
