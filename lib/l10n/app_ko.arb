@@ -581,5 +581,14 @@
   "importSuccess": "데이터 복원이 완료되었습니다!",
   "copyRevenueCatIdSuccess": "RevenueCat ID 복사 완료:\n{id}",
   "english": "영어",
-  "japanese": "일본어"
+  "japanese": "일본어",
+  "targetReachedTitle": "목표 단수 완료!",
+  "targetReachedDesc": "목표인 {targetValue}단을 완료했습니다.\n정말 고생 많으셨어요! 🧶",
+  "@targetReachedDesc": {
+    "placeholders": {
+      "targetValue": {
+        "type": "int"
+      }
+    }
+  }
 }

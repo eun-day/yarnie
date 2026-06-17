@@ -1870,18 +1870,25 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   }
 }
 
-class MainCounterWidget extends ConsumerWidget {
+class MainCounterWidget extends ConsumerStatefulWidget {
   final int partId;
   const MainCounterWidget({super.key, required this.partId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainCounterWidget> createState() => _MainCounterWidgetState();
+}
+
+class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
+  int? _previousValue;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider);
     return StreamBuilder<MainCounter?>(
       stream: (appDb.select(
         appDb.mainCounters,
-      )..where((t) => t.partId.equals(partId))).watchSingleOrNull(),
+      )..where((t) => t.partId.equals(widget.partId))).watchSingleOrNull(),
       builder: (context, snapshot) {
         final mainCounter = snapshot.data;
         final currentValue = mainCounter?.currentValue ?? 1;
@@ -1889,10 +1896,38 @@ class MainCounterWidget extends ConsumerWidget {
         final countBy = mainCounter?.countBy ?? 1;
         final hasTarget = targetValue != null;
 
-        final remaining = hasTarget ? targetValue - currentValue : 0;
+        final remaining = hasTarget ? (targetValue - currentValue + 1).clamp(0, targetValue) : 0;
         final progress = hasTarget
-            ? (currentValue / targetValue).clamp(0.0, 1.0)
+            ? ((currentValue - 1) / targetValue).clamp(0.0, 1.0)
             : 0.0;
+
+        if (hasTarget && _previousValue != null && _previousValue != currentValue) {
+          final targetCompletedValue = targetValue + 1;
+          if (_previousValue! < targetCompletedValue && currentValue >= targetCompletedValue) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                HapticFeedback.heavyImpact();
+                Future.delayed(const Duration(milliseconds: 120), () {
+                  HapticFeedback.heavyImpact();
+                });
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => TargetReachedDialog(
+                    targetValue: targetValue,
+                    onRemoveTarget: () {
+                      appDb.updateMainCounterTarget(
+                        partId: widget.partId,
+                        newTargetValue: null,
+                      );
+                    },
+                  ),
+                );
+              }
+            });
+          }
+        }
+        _previousValue = currentValue;
 
         return Container(
           height: 160,
@@ -1900,7 +1935,6 @@ class MainCounterWidget extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
-            // border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5), // Removed border as per design screenshot usually full bleed or specific
           ),
           child: Stack(
             children: [
@@ -1918,7 +1952,7 @@ class MainCounterWidget extends ConsumerWidget {
                           if (currentValue > 1) {
                             HapticHelper.validateAndFeedback(settings.touchFeedback);
                             appDb.updateMainCounter(
-                              partId: partId,
+                              partId: widget.partId,
                               newValue: (currentValue - countBy).clamp(1, currentValue),
                             );
                           }
@@ -1946,7 +1980,7 @@ class MainCounterWidget extends ConsumerWidget {
                         onTap: () {
                           HapticHelper.validateAndFeedback(settings.touchFeedback);
                           appDb.updateMainCounter(
-                            partId: partId,
+                            partId: widget.partId,
                             newValue: currentValue + countBy,
                           );
                         },
@@ -1978,7 +2012,7 @@ class MainCounterWidget extends ConsumerWidget {
                         initialValue: currentValue,
                         onSave: (newValue) {
                           appDb.updateMainCounter(
-                            partId: partId,
+                            partId: widget.partId,
                             newValue: newValue,
                           );
                         },
@@ -2090,10 +2124,10 @@ class MainCounterWidget extends ConsumerWidget {
                     showDialog(
                       context: context,
                       builder: (context) => TargetSettingDialog(
-                        initialValue: targetValue ?? 100,
+                        initialValue: targetValue ?? currentValue,
                         onSave: (newValue) {
                           appDb.updateMainCounterTarget(
-                            partId: partId,
+                            partId: widget.partId,
                             newTargetValue: newValue,
                           );
                         },
@@ -2102,7 +2136,7 @@ class MainCounterWidget extends ConsumerWidget {
                   },
                   onRemoveTarget: () {
                     appDb.updateMainCounterTarget(
-                      partId: partId,
+                      partId: widget.partId,
                       newTargetValue: null,
                     );
                   },
@@ -2113,7 +2147,7 @@ class MainCounterWidget extends ConsumerWidget {
                         initialValue: countBy,
                         onSave: (newValue) {
                           appDb.updateMainCounterCountBy(
-                            partId: partId,
+                            partId: widget.partId,
                             newCountBy: newValue,
                           );
                         },
@@ -2145,6 +2179,159 @@ class MainCounterWidget extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class TargetReachedDialog extends StatefulWidget {
+  final int targetValue;
+  final VoidCallback onRemoveTarget;
+  const TargetReachedDialog({
+    super.key,
+    required this.targetValue,
+    required this.onRemoveTarget,
+  });
+
+  @override
+  State<TargetReachedDialog> createState() => _TargetReachedDialogState();
+}
+
+class _TargetReachedDialogState extends State<TargetReachedDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        width: 360,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              offset: Offset(0, 10),
+              blurRadius: 15,
+              spreadRadius: -3,
+            ),
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              offset: Offset(0, 4),
+              blurRadius: 6,
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 최상단 타이머 프로그레스바 (1.0 -> 0.0으로 감소)
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return LinearProgressIndicator(
+                  value: 1.0 - _controller.value,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6FB96F)),
+                  minHeight: 4,
+                );
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '🎉',
+                    style: TextStyle(fontSize: 40),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.targetReachedTitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      letterSpacing: -0.44,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.targetReachedDesc(widget.targetValue),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // 목표 단수 해제 버튼
+                  GestureDetector(
+                    onTap: () {
+                      _controller.stop();
+                      widget.onRemoveTarget();
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color.fromRGBO(0, 0, 0, 0.1), width: 0.5),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.removeTargetRow,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

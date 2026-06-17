@@ -1791,4 +1791,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get japanese => '일본어';
+
+  @override
+  String get targetReachedTitle => '목표 단수 완료!';
+
+  @override
+  String targetReachedDesc(int targetValue) {
+    return '목표인 $targetValue단을 완료했습니다.\n정말 고생 많으셨어요! 🧶';
+  }
 }

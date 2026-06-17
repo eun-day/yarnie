@@ -1786,4 +1786,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get japanese => '日本語';
+
+  @override
+  String get targetReachedTitle => '目標段数完了！';
+
+  @override
+  String targetReachedDesc(int targetValue) {
+    return '目標の$targetValue段を完了しました。\n本当にお疲れ様でした！ 🧶';
+  }
 }

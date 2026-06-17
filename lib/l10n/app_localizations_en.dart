@@ -1849,4 +1849,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get japanese => 'Japanese';
+
+  @override
+  String get targetReachedTitle => 'Target Row Completed!';
+
+  @override
+  String targetReachedDesc(int targetValue) {
+    return 'You completed your target of $targetValue rows.\nGreat job! 🧶';
+  }
 }

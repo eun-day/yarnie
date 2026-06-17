@@ -3368,6 +3368,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'일본어'**
   String get japanese;
+
+  /// No description provided for @targetReachedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 단수 완료!'**
+  String get targetReachedTitle;
+
+  /// No description provided for @targetReachedDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표인 {targetValue}단을 완료했습니다.\n정말 고생 많으셨어요! 🧶'**
+  String targetReachedDesc(int targetValue);
 }
 
 class _AppLocalizationsDelegate
