@@ -2117,8 +2117,8 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
 
               // Settings Button (Top Right)
               Positioned(
-                top: 12,
-                right: 12,
+                top: 2,
+                right: 2,
                 child: MainCounterSettingsButton(
                   onChangeTarget: () {
                     showDialog(
