@@ -644,7 +644,7 @@ class _KnittingTipSection extends StatelessWidget {
         const SizedBox(height: 12),
         // PageView
         SizedBox(
-          height: 97,
+          height: 112,
           child: PageView.builder(
             controller: pageController,
             itemCount: tips.length,
@@ -674,7 +674,7 @@ class _KnittingTipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFF0FDF4).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
