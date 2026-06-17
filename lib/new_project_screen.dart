@@ -24,6 +24,9 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
   late final FocusNode _imageFocusNode;
   late final FocusNode _needleTypeFocusNode;
   late final FocusNode _needleSizeFocusNode;
+  late final FocusNode _lotNumberFocusNode;
+  late final FocusNode _tagAddFocusNode;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
@@ -31,6 +34,11 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
     _imageFocusNode = FocusNode();
     _needleTypeFocusNode = FocusNode();
     _needleSizeFocusNode = FocusNode();
+    _lotNumberFocusNode = FocusNode();
+    _tagAddFocusNode = FocusNode();
+    _scrollController = ScrollController();
+
+
     // 초기 데이터 로드는 initState에서 한 번만 수행
     Future.microtask(
       () => ref
@@ -44,7 +52,30 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
     _imageFocusNode.dispose();
     _needleTypeFocusNode.dispose();
     _needleSizeFocusNode.dispose();
+    _lotNumberFocusNode.dispose();
+    _tagAddFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    int count = 0;
+    void scrollStep() {
+      if (!mounted) return;
+      if (_scrollController.hasClients) {
+        final maxExtent = _scrollController.position.maxScrollExtent;
+        _scrollController.animateTo(
+          maxExtent,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+      if (count < 15) {
+        count++;
+        Future.delayed(const Duration(milliseconds: 50), scrollStep);
+      }
+    }
+    scrollStep();
   }
 
   @override
@@ -132,6 +163,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,21 +200,29 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                     _needleSizeFocusNode.requestFocus();
                   }
                 },
-                onNeedleSizeChanged: (value) => ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(NeedleSizeChanged(value)),
+                onNeedleSizeChanged: (value) {
+                  ref
+                      .read(projectFormNotifierProvider.notifier)
+                      .onEvent(NeedleSizeChanged(value));
+                  if (value != null) {
+                    _lotNumberFocusNode.requestFocus();
+                  }
+                },
               ),
               const SizedBox(height: 24),
               _YarnInfoSection(
                 lotNumber: state.lotNumber,
+                focusNode: _lotNumberFocusNode,
                 onLotNumberChanged: (value) => ref
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(LotNumberChanged(value)),
+                onNextPressed: () => _tagAddFocusNode.requestFocus(),
               ),
               const SizedBox(height: 24),
               _TagInfoSection(
                 allTags: state.allAvailableTags,
                 selectedTagIds: state.selectedTagIds,
+                focusNode: _tagAddFocusNode,
                 onAddTagPressed: () async {
                   final result = await showModalBottomSheet<Set<int>>(
                     context: context,
@@ -196,6 +236,8 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                         .read(projectFormNotifierProvider.notifier)
                         .onEvent(UpdateSelectedTags(result));
                   }
+                  // 바텀 시트가 닫힌 후 태그 추가 버튼에 포커스를 그대로 유지합니다.
+                  _tagAddFocusNode.requestFocus();
                 },
                 onRemoveTag: (tagId) => ref
                     .read(projectFormNotifierProvider.notifier)
@@ -207,6 +249,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 onMemoChanged: (value) => ref
                     .read(projectFormNotifierProvider.notifier)
                     .onEvent(MemoChanged(value)),
+                onTap: _scrollToBottom,
               ),
               const SizedBox(height: 24),
               _GaugeSection(
@@ -887,8 +930,15 @@ class _NeedleInfoSection extends StatelessWidget {
 class _YarnInfoSection extends StatefulWidget {
   final String? lotNumber;
   final ValueChanged<String> onLotNumberChanged;
+  final FocusNode focusNode;
+  final VoidCallback onNextPressed;
 
-  const _YarnInfoSection({this.lotNumber, required this.onLotNumberChanged});
+  const _YarnInfoSection({
+    this.lotNumber,
+    required this.onLotNumberChanged,
+    required this.focusNode,
+    required this.onNextPressed,
+  });
 
   @override
   State<_YarnInfoSection> createState() => _YarnInfoSectionState();
@@ -943,7 +993,9 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
           alignment: Alignment.centerLeft,
           child: TextField(
             controller: _lotNumberController,
+            focusNode: widget.focusNode,
             onChanged: widget.onLotNumberChanged,
+            onSubmitted: (_) => widget.onNextPressed(),
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).colorScheme.onSurface,
@@ -976,8 +1028,13 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
 class _MemoSection extends StatefulWidget {
   final String? memo;
   final ValueChanged<String> onMemoChanged;
+  final VoidCallback? onTap;
 
-  const _MemoSection({this.memo, required this.onMemoChanged});
+  const _MemoSection({
+    this.memo,
+    required this.onMemoChanged,
+    this.onTap,
+  });
 
   @override
   State<_MemoSection> createState() => _MemoSectionState();
@@ -985,11 +1042,20 @@ class _MemoSection extends StatefulWidget {
 
 class _MemoSectionState extends State<_MemoSection> {
   late final TextEditingController _memoController;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _memoController = TextEditingController(text: widget.memo ?? '');
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      widget.onTap?.call();
+    }
   }
 
   @override
@@ -1003,6 +1069,8 @@ class _MemoSectionState extends State<_MemoSection> {
   @override
   void dispose() {
     _memoController.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -1031,7 +1099,9 @@ class _MemoSectionState extends State<_MemoSection> {
           padding: const EdgeInsets.all(12),
           child: TextField(
             controller: _memoController,
+            focusNode: _focusNode,
             onChanged: widget.onMemoChanged,
+            onTap: widget.onTap,
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).colorScheme.onSurface,
@@ -1064,12 +1134,14 @@ class _TagInfoSection extends StatelessWidget {
   final Set<int> selectedTagIds;
   final VoidCallback onAddTagPressed;
   final ValueChanged<int> onRemoveTag;
+  final FocusNode focusNode;
 
   const _TagInfoSection({
     required this.allTags,
     required this.selectedTagIds,
     required this.onAddTagPressed,
     required this.onRemoveTag,
+    required this.focusNode,
   });
 
   @override
@@ -1108,30 +1180,48 @@ class _TagInfoSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        GestureDetector(
-          onTap: onAddTagPressed,
-          child: Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.7),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  l10n.tagAdd,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    letterSpacing: -0.15,
+        Focus(
+          focusNode: focusNode,
+          child: ListenableBuilder(
+            listenable: focusNode,
+            builder: (context, child) {
+              final isFocused = focusNode.hasFocus;
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isFocused ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
+                    width: isFocused ? 2.0 : 0.7,
                   ),
                 ),
-              ],
+                child: child,
+              );
+            },
+            child: GestureDetector(
+              onTap: onAddTagPressed,
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.tagAdd,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        letterSpacing: -0.15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
