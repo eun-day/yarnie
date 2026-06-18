@@ -62,13 +62,16 @@ class MainCounterSettingsButton extends StatelessWidget {
         ],
         
         // The Trigger Button
-        child: SvgPicture.asset(
-          'assets/icons/settings.svg',
-          width: 28,
-          height: 28,
-          colorFilter: ColorFilter.mode(
-            context.counterSettingsIcon,
-            BlendMode.srcIn,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: SvgPicture.asset(
+            'assets/icons/settings.svg',
+            width: 28,
+            height: 28,
+            colorFilter: ColorFilter.mode(
+              context.counterSettingsIcon,
+              BlendMode.srcIn,
+            ),
           ),
         ),
       ),
