@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/project_image_utils.dart';
+import '../../../../core/utils/app_image_utils.dart';
 
 import '../../../../db/di.dart'; // appDb 인스턴스
 import 'projects_notifier.dart'; // ProjectsNotifier에 프로젝트 생성/업데이트 이벤트를 전달하기 위함
@@ -231,7 +231,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
   }) async {
     // 이미지 제거된 경우
     if (newPath == null) {
-      await ProjectImageUtils.deleteImage(oldPath);
+      await AppImageUtils.deleteImage(oldPath);
       return null;
     }
 
@@ -241,11 +241,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     }
 
     // 영구 저장소로 복사, 상대 경로 반환
-    final relativePath = await ProjectImageUtils.persistImage(newPath);
+    final relativePath = await AppImageUtils.persistImage(newPath);
 
     // 기존 이미지 파일 삭제 (수정 모드에서 이미지 교체된 경우)
     if (oldPath != null && oldPath != newPath) {
-      await ProjectImageUtils.deleteImage(oldPath);
+      await AppImageUtils.deleteImage(oldPath);
     }
 
     return relativePath;

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
-import 'package:yarnie/widgets/project_image.dart';
+import 'package:yarnie/widgets/app_image.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/common/time_helper.dart';
@@ -155,7 +155,7 @@ class ProjectInfoSheet extends ConsumerWidget {
                               width: 240,
                               height: 135,
                               child:
-                                  ProjectImage(
+                                  AppImage(
                                     imagePath: project.imagePath,
                                     fit: BoxFit.cover,
                                   ),

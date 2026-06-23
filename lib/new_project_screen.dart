@@ -6,7 +6,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/project_detail_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
-import 'package:yarnie/widgets/project_image.dart';
+import 'package:yarnie/widgets/app_image.dart';
 import 'package:yarnie/widgets/tag_selection_sheet.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
@@ -522,7 +522,7 @@ class _ProjectImageSection extends StatelessWidget {
                   if (imagePath != null) ...[
                     // Preview Image
                     Positioned.fill(
-                      child: ProjectImage(imagePath: imagePath, fit: BoxFit.cover),
+                      child: AppImage(imagePath: imagePath, fit: BoxFit.cover),
                     ),
                     // Button Area Gradient
                     Positioned(

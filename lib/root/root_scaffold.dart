@@ -7,6 +7,7 @@ import 'package:yarnie/widgets/exit_confirm_dialog.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
 import '../../features/home/home_root.dart';
 import '../../features/projects/projects_root.dart';
+import '../../features/stash/stash_root.dart';
 import '../../features/my/my_root.dart';
 
 class RootScaffold extends ConsumerStatefulWidget {
@@ -22,12 +23,14 @@ class _RootScaffoldState extends ConsumerState<RootScaffold> {
   // 탭 재탭 시 맨 위로 스크롤용 컨트롤러
   final _homeCtrl = ScrollController();
   final _projectsCtrl = ScrollController();
+  final _stashCtrl = ScrollController();
   final _myCtrl = ScrollController();
 
   @override
   void dispose() {
     _homeCtrl.dispose();
     _projectsCtrl.dispose();
+    _stashCtrl.dispose();
     _myCtrl.dispose();
     super.dispose();
   }
@@ -35,7 +38,7 @@ class _RootScaffoldState extends ConsumerState<RootScaffold> {
   void _onTap(int i) {
     if (i == _index) {
       // 같은 탭 다시 탭하면 해당 리스트 맨 위로
-      final ctrl = [_homeCtrl, _projectsCtrl, _myCtrl][i];
+      final ctrl = [_homeCtrl, _projectsCtrl, _stashCtrl, _myCtrl][i];
       if (ctrl.hasClients) {
         ctrl.animateTo(0, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
       }
@@ -85,6 +88,7 @@ Future<void> _handleBack(bool didPop, Object? result) async {
           children: [
             HomeRoot(controller: _homeCtrl, key: const PageStorageKey('home')),
             ProjectsRoot(controller: _projectsCtrl, key: const PageStorageKey('projects')),
+            StashRoot(controller: _stashCtrl, key: const PageStorageKey('stash')),
             MyRoot(controller: _myCtrl, key: const PageStorageKey('my')),
           ],
         ),
@@ -93,9 +97,10 @@ Future<void> _handleBack(bool didPop, Object? result) async {
         selectedIndex: _index,
         onDestinationSelected: _onTap,
         destinations: [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: AppLocalizations.of(context)!.home),
-          NavigationDestination(icon: Icon(Icons.folder_outlined), selectedIcon: Icon(Icons.folder), label: AppLocalizations.of(context)!.projects),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: AppLocalizations.of(context)!.my),
+          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: AppLocalizations.of(context)!.home),
+          NavigationDestination(icon: const Icon(Icons.folder_outlined), selectedIcon: const Icon(Icons.folder), label: AppLocalizations.of(context)!.projects),
+          NavigationDestination(icon: const Icon(Icons.inventory_2_outlined), selectedIcon: const Icon(Icons.inventory_2), label: AppLocalizations.of(context)!.stash),
+          NavigationDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: AppLocalizations.of(context)!.my),
         ],
       ),
       )

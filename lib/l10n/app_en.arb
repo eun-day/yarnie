@@ -580,5 +580,93 @@
         "type": "int"
       }
     }
+  },
+  "stash": "Stash",
+  "stashTabDesc": "Record and manage your yarn stash inventory and details.",
+  "noStashesYet": "No yarns in stash yet.\nShall we add a new yarn to your stash?",
+  "createStash": "Add to Stash",
+  "newStash": "New Yarn",
+  "editStash": "Edit Yarn Details",
+  "deleteStash": "Delete Yarn",
+  "stashInfo": "Yarn Info",
+  "copyStash": "Duplicate Yarn",
+  "stashName": "Yarn Nickname",
+  "stashNameHint": "e.g., Merino wool for my first cardigan",
+  "yarnName": "Yarn Name",
+  "yarnImage": "Yarn Image",
+  "yarnWeight": "Yarn Weight",
+  "selectYarnWeight": "Select yarn weight",
+  "quantityAndSpec": "Quantity & Specifications",
+  "yarnNameHint": "e.g., Cascade 220",
+  "brandName": "Brand / Company",
+  "brandNameHint": "Enter brand or company name",
+  "colorwayName": "Colorway",
+  "colorwayNameHint": "e.g., Sapphire or 123",
+  "dyeLot": "Dye Lot",
+  "dyeLotHint": "Enter dye lot number",
+  "skeins": "Skeins / Balls",
+  "skeinsHint": "e.g., 3.3",
+  "yarnLengthPerSkein": "Length per Skein",
+  "yarnWeightPerSkein": "Weight per Skein",
+  "totalLength": "Total Length",
+  "totalWeight": "Total Weight",
+  "location": "Storage Location",
+  "locationHint": "e.g., 2nd drawer in bedroom",
+  "notesHint": "Write details like fiber content here",
+  "stashDeleted": "Yarn deleted.",
+  "deleteStashConfirm": "Delete '{name}' from stash?",
+  "@deleteStashConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteStashDesc": "The yarn will be moved to the trash and permanently deleted after 30 days.",
+  "yards": "Yards (yd)",
+  "meters": "Meters (m)",
+  "grams": "Grams (g)",
+  "ounces": "Ounces (oz)",
+  "stashYarnsCount": "{count} yarns",
+  "@stashYarnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMatchingYarns": "No matching yarns found",
+  "yarns": "Yarns",
+  "weightThread": "Thread",
+  "weightCobweb": "Cobweb",
+  "weightLace": "Lace",
+  "weightLightFingering": "Light Fingering",
+  "weightFingering": "Fingering (14 wpi)",
+  "weightSport": "Sport (12 wpi)",
+  "weightDK": "DK (11 wpi)",
+  "weightWorsted": "Worsted (9 wpi)",
+  "weightAran": "Aran (8 wpi)",
+  "weightBulky": "Bulky (7 wpi)",
+  "weightSuperBulky": "Super Bulky (5-6 wpi)",
+  "weightJumbo": "Jumbo (0-4 wpi)",
+  "undo": "Undo",
+  "editSkeinsTitle": "Enter Quantity",
+  "skeinsAdjusted": "Quantity adjusted to {skeins} skein(s).",
+  "@skeinsAdjusted": {
+    "placeholders": {
+      "skeins": {
+        "type": "double"
+      }
+    }
+  },
+  "skeinsCount": "{count} skeins",
+  "@skeinsCount": {
+    "description": "Yarn quantity in skeins/balls",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "decimalPattern"
+      }
+    }
   }
 }
