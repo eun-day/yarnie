@@ -35,7 +35,6 @@ Future<int> createTestProject(AppDb db, {String name = 'Test Project'}) async {
     name: name,
     needleType: 'Test Needle',
     needleSize: '4.0mm',
-    lotNumber: 'TEST001',
     memo: 'Test project for testing',
   );
 }

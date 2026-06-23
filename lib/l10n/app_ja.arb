@@ -603,6 +603,7 @@
     }
   },
   "deleteStashDesc": "毛糸はゴミ箱に移動され、\n30日後に自動的に永久削除されます。",
+  "deleteStashProjectWarning": "紐づけられたプロジェクトとの連携が解除されます。",
   "yards": "ヤード (yd)",
   "meters": "メートル (m)",
   "grams": "グラム (g)",
@@ -648,5 +649,12 @@
         "format": "decimalPattern"
       }
     }
-  }
+  },
+  "linkStashYarn": "糸を連携",
+  "selectStashYarn": "保管箱から糸を選択",
+  "unlink": "連携解除",
+  "linkedYarn": "連携された糸",
+  "noLinkedYarn": "連携された糸なし",
+  "usingProjects": "この糸を使用するプロジェクト",
+  "addYarn": "糸を追加"
 }

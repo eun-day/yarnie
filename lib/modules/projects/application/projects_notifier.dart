@@ -214,7 +214,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         name: event.name,
         needleType: event.needleType,
         needleSize: event.needleSize,
-        lotNumber: event.lotNumber,
+        stashYarnIds: event.stashYarnIds,
         memo: event.memo,
         gaugeStitches: event.gaugeStitches,
         gaugeRows: event.gaugeRows,
@@ -269,12 +269,16 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
           name: Value(event.name),
           needleType: Value(event.needleType),
           needleSize: Value(event.needleSize),
-          lotNumber: Value(event.lotNumber),
           memo: Value(event.memo),
           gaugeStitches: Value(event.gaugeStitches),
           gaugeRows: Value(event.gaugeRows),
         ),
       );
+
+      // 실 연동 매핑 업데이트
+      if (event.stashYarnIds != null) {
+        await appDb.updateProjectStashYarns(event.projectId, event.stashYarnIds!);
+      }
 
       // 이미지 업데이트
       await appDb.updateProjectImage(

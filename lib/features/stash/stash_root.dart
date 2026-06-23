@@ -211,8 +211,10 @@ class _StashRootState extends ConsumerState<StashRoot> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(messageBuilder(l10n))),
         );
-      case StashYarnCreated(:final yarnId):
-        _openStashDetail(yarnId);
+      case StashYarnCreated(:final yarnId, :final isFromSelectionSheet):
+        if (!isFromSelectionSheet) {
+          _openStashDetail(yarnId);
+        }
       case StashYarnUpdated():
       case StashYarnDeleted():
         break;

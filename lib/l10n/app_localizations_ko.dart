@@ -1913,6 +1913,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deleteStashDesc => '실 정보는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.';
 
   @override
+  String get deleteStashProjectWarning => '연결된 프로젝트에서 실 연동이 해제됩니다.';
+
+  @override
   String get yards => '야드 (yd)';
 
   @override
@@ -1990,4 +1993,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
     return '$countString볼';
   }
+
+  @override
+  String get linkStashYarn => '실 연동하기';
+
+  @override
+  String get selectStashYarn => '보관함에서 실 선택';
+
+  @override
+  String get unlink => '연동 해제';
+
+  @override
+  String get linkedYarn => '연동된 실';
+
+  @override
+  String get noLinkedYarn => '연동된 실 없음';
+
+  @override
+  String get usingProjects => '이 실을 사용하는 프로젝트';
+
+  @override
+  String get addYarn => '실 추가';
 }

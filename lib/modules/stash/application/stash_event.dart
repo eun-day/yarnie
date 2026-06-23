@@ -36,7 +36,8 @@ class ChangeViewMode extends StashEvent {
 
 class CreateStashYarnEvent extends StashEvent {
   final StashYarnsCompanion companion;
-  const CreateStashYarnEvent(this.companion);
+  final bool isFromSelectionSheet;
+  const CreateStashYarnEvent(this.companion, {this.isFromSelectionSheet = false});
 }
 
 class UpdateStashYarnEvent extends StashEvent {

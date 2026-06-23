@@ -48,8 +48,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         _handleNeedleTypeChange(needleType);
       case NeedleSizeChanged(:final needleSize):
         state = state.copyWith(needleSize: needleSize);
-      case LotNumberChanged(:final lotNumber):
-        state = state.copyWith(lotNumber: lotNumber);
+      case StashYarnsChanged(:final stashYarnIds):
+        state = state.copyWith(stashYarnIds: stashYarnIds);
       case MemoChanged(:final memo):
         state = state.copyWith(memo: memo);
       case GaugeStitchesChanged(:final gaugeStitches):
@@ -89,7 +89,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           imagePath: null,
           needleType: null,
           needleSize: null,
-          lotNumber: null,
+          stashYarnIds: const [],
           memo: null,
           selectedTagIds: {},
           allAvailableTags: allTags, // Set the tags
@@ -106,6 +106,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           return;
         }
 
+        final linkedYarns = await appDb.getStashYarnsForProject(projectId);
+        final stashYarnIds = linkedYarns.map((y) => y.id).toList();
+
         final needleTypeEnum = project.needleType != null
             ? NeedleType.values.firstWhere(
                 (e) => e.toString().split('.').last == project.needleType,
@@ -121,7 +124,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           needleType: needleTypeEnum,
           needleSize: project.needleSize,
           availableNeedleSizes: getNeedleSizesForType(needleTypeEnum),
-          lotNumber: project.lotNumber,
+          stashYarnIds: stashYarnIds,
           memo: project.memo,
           gaugeStitches: project.gaugeStitches,
           gaugeRows: project.gaugeRows,
@@ -191,7 +194,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             name: state.name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
-            lotNumber: state.lotNumber,
+            stashYarnIds: state.stashYarnIds,
             memo: state.memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
@@ -206,7 +209,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             name: state.name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
-            lotNumber: state.lotNumber,
+            stashYarnIds: state.stashYarnIds,
             memo: state.memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,

@@ -15,7 +15,8 @@ import 'package:yarnie/core/utils/app_image_utils.dart';
 
 class NewStashScreen extends ConsumerStatefulWidget {
   final int? stashYarnId;
-  const NewStashScreen({super.key, this.stashYarnId});
+  final bool isFromSelectionSheet;
+  const NewStashScreen({super.key, this.stashYarnId, this.isFromSelectionSheet = false});
 
   @override
   ConsumerState<NewStashScreen> createState() => _NewStashScreenState();
@@ -321,7 +322,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
     );
 
     if (widget.stashYarnId == null) {
-      ref.read(stashProvider.notifier).onEvent(CreateStashYarnEvent(companion));
+      ref.read(stashProvider.notifier).onEvent(CreateStashYarnEvent(companion, isFromSelectionSheet: widget.isFromSelectionSheet));
     } else {
       ref.read(stashProvider.notifier).onEvent(UpdateStashYarnEvent(companion));
     }

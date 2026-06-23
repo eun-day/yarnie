@@ -3597,6 +3597,12 @@ abstract class AppLocalizations {
   /// **'실 정보는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.'**
   String get deleteStashDesc;
 
+  /// No description provided for @deleteStashProjectWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결된 프로젝트에서 실 연동이 해제됩니다.'**
+  String get deleteStashProjectWarning;
+
   /// No description provided for @yards.
   ///
   /// In ko, this message translates to:
@@ -3734,6 +3740,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{count}볼'**
   String skeinsCount(num count);
+
+  /// No description provided for @linkStashYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 연동하기'**
+  String get linkStashYarn;
+
+  /// No description provided for @selectStashYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관함에서 실 선택'**
+  String get selectStashYarn;
+
+  /// No description provided for @unlink.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동 해제'**
+  String get unlink;
+
+  /// No description provided for @linkedYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동된 실'**
+  String get linkedYarn;
+
+  /// No description provided for @noLinkedYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동된 실 없음'**
+  String get noLinkedYarn;
+
+  /// No description provided for @usingProjects.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 사용하는 프로젝트'**
+  String get usingProjects;
+
+  /// No description provided for @addYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 추가'**
+  String get addYarn;
 }
 
 class _AppLocalizationsDelegate

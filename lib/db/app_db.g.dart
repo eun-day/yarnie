@@ -52,17 +52,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _lotNumberMeta = const VerificationMeta(
-    'lotNumber',
-  );
-  @override
-  late final GeneratedColumn<String> lotNumber = GeneratedColumn<String>(
-    'lot_number',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _memoMeta = const VerificationMeta('memo');
   @override
   late final GeneratedColumn<String> memo = GeneratedColumn<String>(
@@ -165,7 +154,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     name,
     needleType,
     needleSize,
-    lotNumber,
     memo,
     gaugeStitches,
     gaugeRows,
@@ -209,12 +197,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       context.handle(
         _needleSizeMeta,
         needleSize.isAcceptableOrUnknown(data['needle_size']!, _needleSizeMeta),
-      );
-    }
-    if (data.containsKey('lot_number')) {
-      context.handle(
-        _lotNumberMeta,
-        lotNumber.isAcceptableOrUnknown(data['lot_number']!, _lotNumberMeta),
       );
     }
     if (data.containsKey('memo')) {
@@ -302,10 +284,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         DriftSqlType.string,
         data['${effectivePrefix}needle_size'],
       ),
-      lotNumber: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}lot_number'],
-      ),
       memo: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}memo'],
@@ -356,7 +334,6 @@ class Project extends DataClass implements Insertable<Project> {
   final String name;
   final String? needleType;
   final String? needleSize;
-  final String? lotNumber;
   final String? memo;
   final String? gaugeStitches;
   final String? gaugeRows;
@@ -371,7 +348,6 @@ class Project extends DataClass implements Insertable<Project> {
     required this.name,
     this.needleType,
     this.needleSize,
-    this.lotNumber,
     this.memo,
     this.gaugeStitches,
     this.gaugeRows,
@@ -392,9 +368,6 @@ class Project extends DataClass implements Insertable<Project> {
     }
     if (!nullToAbsent || needleSize != null) {
       map['needle_size'] = Variable<String>(needleSize);
-    }
-    if (!nullToAbsent || lotNumber != null) {
-      map['lot_number'] = Variable<String>(lotNumber);
     }
     if (!nullToAbsent || memo != null) {
       map['memo'] = Variable<String>(memo);
@@ -434,9 +407,6 @@ class Project extends DataClass implements Insertable<Project> {
       needleSize: needleSize == null && nullToAbsent
           ? const Value.absent()
           : Value(needleSize),
-      lotNumber: lotNumber == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lotNumber),
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
       gaugeStitches: gaugeStitches == null && nullToAbsent
           ? const Value.absent()
@@ -473,7 +443,6 @@ class Project extends DataClass implements Insertable<Project> {
       name: serializer.fromJson<String>(json['name']),
       needleType: serializer.fromJson<String?>(json['needleType']),
       needleSize: serializer.fromJson<String?>(json['needleSize']),
-      lotNumber: serializer.fromJson<String?>(json['lotNumber']),
       memo: serializer.fromJson<String?>(json['memo']),
       gaugeStitches: serializer.fromJson<String?>(json['gaugeStitches']),
       gaugeRows: serializer.fromJson<String?>(json['gaugeRows']),
@@ -493,7 +462,6 @@ class Project extends DataClass implements Insertable<Project> {
       'name': serializer.toJson<String>(name),
       'needleType': serializer.toJson<String?>(needleType),
       'needleSize': serializer.toJson<String?>(needleSize),
-      'lotNumber': serializer.toJson<String?>(lotNumber),
       'memo': serializer.toJson<String?>(memo),
       'gaugeStitches': serializer.toJson<String?>(gaugeStitches),
       'gaugeRows': serializer.toJson<String?>(gaugeRows),
@@ -511,7 +479,6 @@ class Project extends DataClass implements Insertable<Project> {
     String? name,
     Value<String?> needleType = const Value.absent(),
     Value<String?> needleSize = const Value.absent(),
-    Value<String?> lotNumber = const Value.absent(),
     Value<String?> memo = const Value.absent(),
     Value<String?> gaugeStitches = const Value.absent(),
     Value<String?> gaugeRows = const Value.absent(),
@@ -526,7 +493,6 @@ class Project extends DataClass implements Insertable<Project> {
     name: name ?? this.name,
     needleType: needleType.present ? needleType.value : this.needleType,
     needleSize: needleSize.present ? needleSize.value : this.needleSize,
-    lotNumber: lotNumber.present ? lotNumber.value : this.lotNumber,
     memo: memo.present ? memo.value : this.memo,
     gaugeStitches: gaugeStitches.present
         ? gaugeStitches.value
@@ -551,7 +517,6 @@ class Project extends DataClass implements Insertable<Project> {
       needleSize: data.needleSize.present
           ? data.needleSize.value
           : this.needleSize,
-      lotNumber: data.lotNumber.present ? data.lotNumber.value : this.lotNumber,
       memo: data.memo.present ? data.memo.value : this.memo,
       gaugeStitches: data.gaugeStitches.present
           ? data.gaugeStitches.value
@@ -575,7 +540,6 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('name: $name, ')
           ..write('needleType: $needleType, ')
           ..write('needleSize: $needleSize, ')
-          ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
           ..write('gaugeStitches: $gaugeStitches, ')
           ..write('gaugeRows: $gaugeRows, ')
@@ -595,7 +559,6 @@ class Project extends DataClass implements Insertable<Project> {
     name,
     needleType,
     needleSize,
-    lotNumber,
     memo,
     gaugeStitches,
     gaugeRows,
@@ -614,7 +577,6 @@ class Project extends DataClass implements Insertable<Project> {
           other.name == this.name &&
           other.needleType == this.needleType &&
           other.needleSize == this.needleSize &&
-          other.lotNumber == this.lotNumber &&
           other.memo == this.memo &&
           other.gaugeStitches == this.gaugeStitches &&
           other.gaugeRows == this.gaugeRows &&
@@ -631,7 +593,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<String> name;
   final Value<String?> needleType;
   final Value<String?> needleSize;
-  final Value<String?> lotNumber;
   final Value<String?> memo;
   final Value<String?> gaugeStitches;
   final Value<String?> gaugeRows;
@@ -646,7 +607,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.name = const Value.absent(),
     this.needleType = const Value.absent(),
     this.needleSize = const Value.absent(),
-    this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
     this.gaugeStitches = const Value.absent(),
     this.gaugeRows = const Value.absent(),
@@ -662,7 +622,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     required String name,
     this.needleType = const Value.absent(),
     this.needleSize = const Value.absent(),
-    this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
     this.gaugeStitches = const Value.absent(),
     this.gaugeRows = const Value.absent(),
@@ -678,7 +637,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<String>? name,
     Expression<String>? needleType,
     Expression<String>? needleSize,
-    Expression<String>? lotNumber,
     Expression<String>? memo,
     Expression<String>? gaugeStitches,
     Expression<String>? gaugeRows,
@@ -694,7 +652,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (name != null) 'name': name,
       if (needleType != null) 'needle_type': needleType,
       if (needleSize != null) 'needle_size': needleSize,
-      if (lotNumber != null) 'lot_number': lotNumber,
       if (memo != null) 'memo': memo,
       if (gaugeStitches != null) 'gauge_stitches': gaugeStitches,
       if (gaugeRows != null) 'gauge_rows': gaugeRows,
@@ -712,7 +669,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<String>? name,
     Value<String?>? needleType,
     Value<String?>? needleSize,
-    Value<String?>? lotNumber,
     Value<String?>? memo,
     Value<String?>? gaugeStitches,
     Value<String?>? gaugeRows,
@@ -728,7 +684,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       name: name ?? this.name,
       needleType: needleType ?? this.needleType,
       needleSize: needleSize ?? this.needleSize,
-      lotNumber: lotNumber ?? this.lotNumber,
       memo: memo ?? this.memo,
       gaugeStitches: gaugeStitches ?? this.gaugeStitches,
       gaugeRows: gaugeRows ?? this.gaugeRows,
@@ -755,9 +710,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     }
     if (needleSize.present) {
       map['needle_size'] = Variable<String>(needleSize.value);
-    }
-    if (lotNumber.present) {
-      map['lot_number'] = Variable<String>(lotNumber.value);
     }
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
@@ -796,7 +748,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('name: $name, ')
           ..write('needleType: $needleType, ')
           ..write('needleSize: $needleSize, ')
-          ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
           ..write('gaugeStitches: $gaugeStitches, ')
           ..write('gaugeRows: $gaugeRows, ')
@@ -6657,6 +6608,236 @@ class StashTagsCompanion extends UpdateCompanion<StashTag> {
   }
 }
 
+class $ProjectStashYarnsTable extends ProjectStashYarns
+    with TableInfo<$ProjectStashYarnsTable, ProjectStashYarn> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProjectStashYarnsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES projects (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _stashYarnIdMeta = const VerificationMeta(
+    'stashYarnId',
+  );
+  @override
+  late final GeneratedColumn<int> stashYarnId = GeneratedColumn<int>(
+    'stash_yarn_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stash_yarns (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [projectId, stashYarnId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'project_stash_yarns';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProjectStashYarn> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('stash_yarn_id')) {
+      context.handle(
+        _stashYarnIdMeta,
+        stashYarnId.isAcceptableOrUnknown(
+          data['stash_yarn_id']!,
+          _stashYarnIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_stashYarnIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {projectId, stashYarnId};
+  @override
+  ProjectStashYarn map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProjectStashYarn(
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      )!,
+      stashYarnId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stash_yarn_id'],
+      )!,
+    );
+  }
+
+  @override
+  $ProjectStashYarnsTable createAlias(String alias) {
+    return $ProjectStashYarnsTable(attachedDatabase, alias);
+  }
+}
+
+class ProjectStashYarn extends DataClass
+    implements Insertable<ProjectStashYarn> {
+  final int projectId;
+  final int stashYarnId;
+  const ProjectStashYarn({required this.projectId, required this.stashYarnId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['project_id'] = Variable<int>(projectId);
+    map['stash_yarn_id'] = Variable<int>(stashYarnId);
+    return map;
+  }
+
+  ProjectStashYarnsCompanion toCompanion(bool nullToAbsent) {
+    return ProjectStashYarnsCompanion(
+      projectId: Value(projectId),
+      stashYarnId: Value(stashYarnId),
+    );
+  }
+
+  factory ProjectStashYarn.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProjectStashYarn(
+      projectId: serializer.fromJson<int>(json['projectId']),
+      stashYarnId: serializer.fromJson<int>(json['stashYarnId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'projectId': serializer.toJson<int>(projectId),
+      'stashYarnId': serializer.toJson<int>(stashYarnId),
+    };
+  }
+
+  ProjectStashYarn copyWith({int? projectId, int? stashYarnId}) =>
+      ProjectStashYarn(
+        projectId: projectId ?? this.projectId,
+        stashYarnId: stashYarnId ?? this.stashYarnId,
+      );
+  ProjectStashYarn copyWithCompanion(ProjectStashYarnsCompanion data) {
+    return ProjectStashYarn(
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      stashYarnId: data.stashYarnId.present
+          ? data.stashYarnId.value
+          : this.stashYarnId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectStashYarn(')
+          ..write('projectId: $projectId, ')
+          ..write('stashYarnId: $stashYarnId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(projectId, stashYarnId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProjectStashYarn &&
+          other.projectId == this.projectId &&
+          other.stashYarnId == this.stashYarnId);
+}
+
+class ProjectStashYarnsCompanion extends UpdateCompanion<ProjectStashYarn> {
+  final Value<int> projectId;
+  final Value<int> stashYarnId;
+  final Value<int> rowid;
+  const ProjectStashYarnsCompanion({
+    this.projectId = const Value.absent(),
+    this.stashYarnId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProjectStashYarnsCompanion.insert({
+    required int projectId,
+    required int stashYarnId,
+    this.rowid = const Value.absent(),
+  }) : projectId = Value(projectId),
+       stashYarnId = Value(stashYarnId);
+  static Insertable<ProjectStashYarn> custom({
+    Expression<int>? projectId,
+    Expression<int>? stashYarnId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (projectId != null) 'project_id': projectId,
+      if (stashYarnId != null) 'stash_yarn_id': stashYarnId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProjectStashYarnsCompanion copyWith({
+    Value<int>? projectId,
+    Value<int>? stashYarnId,
+    Value<int>? rowid,
+  }) {
+    return ProjectStashYarnsCompanion(
+      projectId: projectId ?? this.projectId,
+      stashYarnId: stashYarnId ?? this.stashYarnId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
+    if (stashYarnId.present) {
+      map['stash_yarn_id'] = Variable<int>(stashYarnId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectStashYarnsCompanion(')
+          ..write('projectId: $projectId, ')
+          ..write('stashYarnId: $stashYarnId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $WorkSessionsTable extends WorkSessions
     with TableInfo<$WorkSessionsTable, WorkSession> {
   @override
@@ -7757,6 +7938,8 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final $TagsTable tags = $TagsTable(this);
   late final $StashYarnsTable stashYarns = $StashYarnsTable(this);
   late final $StashTagsTable stashTags = $StashTagsTable(this);
+  late final $ProjectStashYarnsTable projectStashYarns =
+      $ProjectStashYarnsTable(this);
   late final $WorkSessionsTable workSessions = $WorkSessionsTable(this);
   late final $ProjectCountersTable projectCounters = $ProjectCountersTable(
     this,
@@ -7838,6 +8021,7 @@ abstract class _$AppDb extends GeneratedDatabase {
     tags,
     stashYarns,
     stashTags,
+    projectStashYarns,
     workSessions,
     projectCounters,
     partsProjectOrder,
@@ -7921,6 +8105,20 @@ abstract class _$AppDb extends GeneratedDatabase {
       ),
       result: [TableUpdate('part_notes', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'projects',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('project_stash_yarns', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'stash_yarns',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('project_stash_yarns', kind: UpdateKind.delete)],
+    ),
   ]);
 }
 
@@ -7930,7 +8128,6 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       required String name,
       Value<String?> needleType,
       Value<String?> needleSize,
-      Value<String?> lotNumber,
       Value<String?> memo,
       Value<String?> gaugeStitches,
       Value<String?> gaugeRows,
@@ -7947,7 +8144,6 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String?> needleType,
       Value<String?> needleSize,
-      Value<String?> lotNumber,
       Value<String?> memo,
       Value<String?> gaugeStitches,
       Value<String?> gaugeRows,
@@ -7981,6 +8177,29 @@ final class $$ProjectsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ProjectStashYarnsTable, List<ProjectStashYarn>>
+  _projectStashYarnsRefsTable(_$AppDb db) => MultiTypedResultKey.fromTable(
+    db.projectStashYarns,
+    aliasName: $_aliasNameGenerator(
+      db.projects.id,
+      db.projectStashYarns.projectId,
+    ),
+  );
+
+  $$ProjectStashYarnsTableProcessedTableManager get projectStashYarnsRefs {
+    final manager = $$ProjectStashYarnsTableTableManager(
+      $_db,
+      $_db.projectStashYarns,
+    ).filter((f) => f.projectId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _projectStashYarnsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
@@ -8008,11 +8227,6 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
 
   ColumnFilters<String> get needleSize => $composableBuilder(
     column: $table.needleSize,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lotNumber => $composableBuilder(
-    column: $table.lotNumber,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8085,6 +8299,31 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
     );
     return f(composer);
   }
+
+  Expression<bool> projectStashYarnsRefs(
+    Expression<bool> Function($$ProjectStashYarnsTableFilterComposer f) f,
+  ) {
+    final $$ProjectStashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.projectStashYarns,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectStashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.projectStashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProjectsTableOrderingComposer
@@ -8113,11 +8352,6 @@ class $$ProjectsTableOrderingComposer
 
   ColumnOrderings<String> get needleSize => $composableBuilder(
     column: $table.needleSize,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lotNumber => $composableBuilder(
-    column: $table.lotNumber,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8192,9 +8426,6 @@ class $$ProjectsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get lotNumber =>
-      $composableBuilder(column: $table.lotNumber, builder: (column) => column);
-
   GeneratedColumn<String> get memo =>
       $composableBuilder(column: $table.memo, builder: (column) => column);
 
@@ -8250,6 +8481,32 @@ class $$ProjectsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> projectStashYarnsRefs<T extends Object>(
+    Expression<T> Function($$ProjectStashYarnsTableAnnotationComposer a) f,
+  ) {
+    final $$ProjectStashYarnsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.projectStashYarns,
+          getReferencedColumn: (t) => t.projectId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProjectStashYarnsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.projectStashYarns,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$ProjectsTableTableManager
@@ -8265,7 +8522,7 @@ class $$ProjectsTableTableManager
           $$ProjectsTableUpdateCompanionBuilder,
           (Project, $$ProjectsTableReferences),
           Project,
-          PrefetchHooks Function({bool partsRefs})
+          PrefetchHooks Function({bool partsRefs, bool projectStashYarnsRefs})
         > {
   $$ProjectsTableTableManager(_$AppDb db, $ProjectsTable table)
     : super(
@@ -8284,7 +8541,6 @@ class $$ProjectsTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String?> needleType = const Value.absent(),
                 Value<String?> needleSize = const Value.absent(),
-                Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
                 Value<String?> gaugeStitches = const Value.absent(),
                 Value<String?> gaugeRows = const Value.absent(),
@@ -8299,7 +8555,6 @@ class $$ProjectsTableTableManager
                 name: name,
                 needleType: needleType,
                 needleSize: needleSize,
-                lotNumber: lotNumber,
                 memo: memo,
                 gaugeStitches: gaugeStitches,
                 gaugeRows: gaugeRows,
@@ -8316,7 +8571,6 @@ class $$ProjectsTableTableManager
                 required String name,
                 Value<String?> needleType = const Value.absent(),
                 Value<String?> needleSize = const Value.absent(),
-                Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
                 Value<String?> gaugeStitches = const Value.absent(),
                 Value<String?> gaugeRows = const Value.absent(),
@@ -8331,7 +8585,6 @@ class $$ProjectsTableTableManager
                 name: name,
                 needleType: needleType,
                 needleSize: needleSize,
-                lotNumber: lotNumber,
                 memo: memo,
                 gaugeStitches: gaugeStitches,
                 gaugeRows: gaugeRows,
@@ -8350,28 +8603,63 @@ class $$ProjectsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({partsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (partsRefs) db.parts],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (partsRefs)
-                    await $_getPrefetchedData<Project, $ProjectsTable, Part>(
-                      currentTable: table,
-                      referencedTable: $$ProjectsTableReferences
-                          ._partsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$ProjectsTableReferences(db, table, p0).partsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.projectId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({partsRefs = false, projectStashYarnsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (partsRefs) db.parts,
+                    if (projectStashYarnsRefs) db.projectStashYarns,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (partsRefs)
+                        await $_getPrefetchedData<
+                          Project,
+                          $ProjectsTable,
+                          Part
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProjectsTableReferences
+                              ._partsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).partsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.projectId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (projectStashYarnsRefs)
+                        await $_getPrefetchedData<
+                          Project,
+                          $ProjectsTable,
+                          ProjectStashYarn
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProjectsTableReferences
+                              ._projectStashYarnsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).projectStashYarnsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.projectId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -8388,7 +8676,7 @@ typedef $$ProjectsTableProcessedTableManager =
       $$ProjectsTableUpdateCompanionBuilder,
       (Project, $$ProjectsTableReferences),
       Project,
-      PrefetchHooks Function({bool partsRefs})
+      PrefetchHooks Function({bool partsRefs, bool projectStashYarnsRefs})
     >;
 typedef $$PartsTableCreateCompanionBuilder =
     PartsCompanion Function({
@@ -12385,6 +12673,34 @@ typedef $$StashYarnsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
     });
 
+final class $$StashYarnsTableReferences
+    extends BaseReferences<_$AppDb, $StashYarnsTable, StashYarn> {
+  $$StashYarnsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ProjectStashYarnsTable, List<ProjectStashYarn>>
+  _projectStashYarnsRefsTable(_$AppDb db) => MultiTypedResultKey.fromTable(
+    db.projectStashYarns,
+    aliasName: $_aliasNameGenerator(
+      db.stashYarns.id,
+      db.projectStashYarns.stashYarnId,
+    ),
+  );
+
+  $$ProjectStashYarnsTableProcessedTableManager get projectStashYarnsRefs {
+    final manager = $$ProjectStashYarnsTableTableManager(
+      $_db,
+      $_db.projectStashYarns,
+    ).filter((f) => f.stashYarnId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _projectStashYarnsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$StashYarnsTableFilterComposer
     extends Composer<_$AppDb, $StashYarnsTable> {
   $$StashYarnsTableFilterComposer({
@@ -12508,6 +12824,31 @@ class $$StashYarnsTableFilterComposer
     column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> projectStashYarnsRefs(
+    Expression<bool> Function($$ProjectStashYarnsTableFilterComposer f) f,
+  ) {
+    final $$ProjectStashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.projectStashYarns,
+      getReferencedColumn: (t) => t.stashYarnId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectStashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.projectStashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$StashYarnsTableOrderingComposer
@@ -12732,6 +13073,32 @@ class $$StashYarnsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> projectStashYarnsRefs<T extends Object>(
+    Expression<T> Function($$ProjectStashYarnsTableAnnotationComposer a) f,
+  ) {
+    final $$ProjectStashYarnsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.projectStashYarns,
+          getReferencedColumn: (t) => t.stashYarnId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProjectStashYarnsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.projectStashYarns,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$StashYarnsTableTableManager
@@ -12745,9 +13112,9 @@ class $$StashYarnsTableTableManager
           $$StashYarnsTableAnnotationComposer,
           $$StashYarnsTableCreateCompanionBuilder,
           $$StashYarnsTableUpdateCompanionBuilder,
-          (StashYarn, BaseReferences<_$AppDb, $StashYarnsTable, StashYarn>),
+          (StashYarn, $$StashYarnsTableReferences),
           StashYarn,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool projectStashYarnsRefs})
         > {
   $$StashYarnsTableTableManager(_$AppDb db, $StashYarnsTable table)
     : super(
@@ -12861,9 +13228,47 @@ class $$StashYarnsTableTableManager
                 deletedAt: deletedAt,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$StashYarnsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({projectStashYarnsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (projectStashYarnsRefs) db.projectStashYarns,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (projectStashYarnsRefs)
+                    await $_getPrefetchedData<
+                      StashYarn,
+                      $StashYarnsTable,
+                      ProjectStashYarn
+                    >(
+                      currentTable: table,
+                      referencedTable: $$StashYarnsTableReferences
+                          ._projectStashYarnsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$StashYarnsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).projectStashYarnsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.stashYarnId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -12878,9 +13283,9 @@ typedef $$StashYarnsTableProcessedTableManager =
       $$StashYarnsTableAnnotationComposer,
       $$StashYarnsTableCreateCompanionBuilder,
       $$StashYarnsTableUpdateCompanionBuilder,
-      (StashYarn, BaseReferences<_$AppDb, $StashYarnsTable, StashYarn>),
+      (StashYarn, $$StashYarnsTableReferences),
       StashYarn,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool projectStashYarnsRefs})
     >;
 typedef $$StashTagsTableCreateCompanionBuilder =
     StashTagsCompanion Function({
@@ -13069,6 +13474,371 @@ typedef $$StashTagsTableProcessedTableManager =
       (StashTag, BaseReferences<_$AppDb, $StashTagsTable, StashTag>),
       StashTag,
       PrefetchHooks Function()
+    >;
+typedef $$ProjectStashYarnsTableCreateCompanionBuilder =
+    ProjectStashYarnsCompanion Function({
+      required int projectId,
+      required int stashYarnId,
+      Value<int> rowid,
+    });
+typedef $$ProjectStashYarnsTableUpdateCompanionBuilder =
+    ProjectStashYarnsCompanion Function({
+      Value<int> projectId,
+      Value<int> stashYarnId,
+      Value<int> rowid,
+    });
+
+final class $$ProjectStashYarnsTableReferences
+    extends BaseReferences<_$AppDb, $ProjectStashYarnsTable, ProjectStashYarn> {
+  $$ProjectStashYarnsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ProjectsTable _projectIdTable(_$AppDb db) => db.projects.createAlias(
+    $_aliasNameGenerator(db.projectStashYarns.projectId, db.projects.id),
+  );
+
+  $$ProjectsTableProcessedTableManager get projectId {
+    final $_column = $_itemColumn<int>('project_id')!;
+
+    final manager = $$ProjectsTableTableManager(
+      $_db,
+      $_db.projects,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $StashYarnsTable _stashYarnIdTable(_$AppDb db) =>
+      db.stashYarns.createAlias(
+        $_aliasNameGenerator(
+          db.projectStashYarns.stashYarnId,
+          db.stashYarns.id,
+        ),
+      );
+
+  $$StashYarnsTableProcessedTableManager get stashYarnId {
+    final $_column = $_itemColumn<int>('stash_yarn_id')!;
+
+    final manager = $$StashYarnsTableTableManager(
+      $_db,
+      $_db.stashYarns,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_stashYarnIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ProjectStashYarnsTableFilterComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableFilterComposer get projectId {
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableFilterComposer get stashYarnId {
+    final $$StashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableOrderingComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableOrderingComposer get projectId {
+    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableOrderingComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableOrderingComposer get stashYarnId {
+    final $$StashYarnsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableOrderingComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableAnnotationComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableAnnotationComposer get projectId {
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableAnnotationComposer get stashYarnId {
+    final $$StashYarnsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $ProjectStashYarnsTable,
+          ProjectStashYarn,
+          $$ProjectStashYarnsTableFilterComposer,
+          $$ProjectStashYarnsTableOrderingComposer,
+          $$ProjectStashYarnsTableAnnotationComposer,
+          $$ProjectStashYarnsTableCreateCompanionBuilder,
+          $$ProjectStashYarnsTableUpdateCompanionBuilder,
+          (ProjectStashYarn, $$ProjectStashYarnsTableReferences),
+          ProjectStashYarn,
+          PrefetchHooks Function({bool projectId, bool stashYarnId})
+        > {
+  $$ProjectStashYarnsTableTableManager(
+    _$AppDb db,
+    $ProjectStashYarnsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProjectStashYarnsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProjectStashYarnsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProjectStashYarnsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> projectId = const Value.absent(),
+                Value<int> stashYarnId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectStashYarnsCompanion(
+                projectId: projectId,
+                stashYarnId: stashYarnId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int projectId,
+                required int stashYarnId,
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectStashYarnsCompanion.insert(
+                projectId: projectId,
+                stashYarnId: stashYarnId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ProjectStashYarnsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({projectId = false, stashYarnId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (projectId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.projectId,
+                                referencedTable:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._projectIdTable(db),
+                                referencedColumn:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._projectIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (stashYarnId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.stashYarnId,
+                                referencedTable:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._stashYarnIdTable(db),
+                                referencedColumn:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._stashYarnIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ProjectStashYarnsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $ProjectStashYarnsTable,
+      ProjectStashYarn,
+      $$ProjectStashYarnsTableFilterComposer,
+      $$ProjectStashYarnsTableOrderingComposer,
+      $$ProjectStashYarnsTableAnnotationComposer,
+      $$ProjectStashYarnsTableCreateCompanionBuilder,
+      $$ProjectStashYarnsTableUpdateCompanionBuilder,
+      (ProjectStashYarn, $$ProjectStashYarnsTableReferences),
+      ProjectStashYarn,
+      PrefetchHooks Function({bool projectId, bool stashYarnId})
     >;
 typedef $$WorkSessionsTableCreateCompanionBuilder =
     WorkSessionsCompanion Function({
@@ -13628,6 +14398,8 @@ class $AppDbManager {
       $$StashYarnsTableTableManager(_db, _db.stashYarns);
   $$StashTagsTableTableManager get stashTags =>
       $$StashTagsTableTableManager(_db, _db.stashTags);
+  $$ProjectStashYarnsTableTableManager get projectStashYarns =>
+      $$ProjectStashYarnsTableTableManager(_db, _db.projectStashYarns);
   $$WorkSessionsTableTableManager get workSessions =>
       $$WorkSessionsTableTableManager(_db, _db.workSessions);
   $$ProjectCountersTableTableManager get projectCounters =>

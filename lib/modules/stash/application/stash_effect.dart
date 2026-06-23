@@ -21,7 +21,8 @@ class ShowStashLocalizedSuccessMessage extends StashEffect {
 
 class StashYarnCreated extends StashEffect {
   final int yarnId;
-  const StashYarnCreated(this.yarnId);
+  final bool isFromSelectionSheet;
+  const StashYarnCreated(this.yarnId, {this.isFromSelectionSheet = false});
 }
 
 class StashYarnUpdated extends StashEffect {

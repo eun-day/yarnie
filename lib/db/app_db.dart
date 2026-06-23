@@ -105,7 +105,6 @@ class Projects extends Table {
 
   TextColumn get needleType => text().nullable()();
   TextColumn get needleSize => text().nullable()();
-  TextColumn get lotNumber => text().nullable()();
   TextColumn get memo => text().nullable()();
   TextColumn get gaugeStitches => text().nullable()(); // 게이지 코 수
   TextColumn get gaugeRows => text().nullable()(); // 게이지 단 수
@@ -351,6 +350,15 @@ class StashTags extends Table {
   DateTimeColumn get updatedAt => dateTime().nullable()();
 }
 
+/// ProjectStashYarns: 프로젝트와 보관함 실의 N:N 매핑 테이블 (교차 테이블)
+class ProjectStashYarns extends Table {
+  IntColumn get projectId => integer().references(Projects, #id, onDelete: KeyAction.cascade)();
+  IntColumn get stashYarnId => integer().references(StashYarns, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column> get primaryKey => {projectId, stashYarnId};
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // 기존 테이블 (마이그레이션 후 삭제 예정)
 // ────────────────────────────────────────────────────────────────────────────
@@ -400,6 +408,7 @@ class ProjectCounters extends Table {
     Tags,
     StashYarns,
     StashTags,
+    ProjectStashYarns, // 추가
     // 기존 테이블 (마이그레이션 후 삭제 예정)
     WorkSessions,
     ProjectCounters,
@@ -426,6 +435,47 @@ class AppDb extends _$AppDb {
           if (from < 3) {
             await m.createTable(stashYarns);
             await m.createTable(stashTags);
+            await m.createTable(projectStashYarns);
+
+            // 기존 lotNumber 데이터 이관 처리 (버전 충돌 방지 및 데이터 보존)
+            try {
+              final rows = await customSelect(
+                "SELECT id, lot_number FROM projects WHERE lot_number IS NOT NULL AND lot_number != ''",
+              ).get();
+
+              final now = DateTime.now().toUtc();
+
+              for (final row in rows) {
+                final projectId = row.read<int>('id');
+                final lotNumber = row.read<String>('lot_number');
+
+                // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
+                final stashYarnId = await customInsert(
+                  "INSERT INTO stash_yarns (yarn_name, brand_name, dye_lot, skeins, length_unit, weight_unit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                  variables: [
+                    Variable.withString('기존 프로젝트 실 (자동 생성)'),
+                    Variable.withString('이전 로트 번호 실'),
+                    Variable.withString(lotNumber),
+                    Variable.withReal(0.0),
+                    Variable.withString('yards'),
+                    Variable.withString('grams'),
+                    Variable.withDateTime(now),
+                  ],
+                );
+
+                // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
+                await customInsert(
+                  "INSERT INTO project_stash_yarns (project_id, stash_yarn_id) VALUES (?, ?)",
+                  variables: [
+                    Variable.withInt(projectId),
+                    Variable.withInt(stashYarnId),
+                  ],
+                );
+              }
+            } catch (e) {
+              // 마이그레이션 쿼리 실패 시 앱 크래시 방지 및 재시도 지원을 위한 예외 전달
+              rethrow;
+            }
           }
         },
       );
@@ -543,22 +593,36 @@ class AppDb extends _$AppDb {
     required String name,
     String? needleType,
     String? needleSize,
-    String? lotNumber,
+    List<int>? stashYarnIds,
     String? memo,
     String? gaugeStitches,
     String? gaugeRows,
   }) {
-    return into(projects).insert(
-      ProjectsCompanion.insert(
-        name: name,
-        needleType: Value(needleType),
-        needleSize: Value(needleSize),
-        lotNumber: Value(lotNumber),
-        memo: Value(memo),
-        gaugeStitches: Value(gaugeStitches),
-        gaugeRows: Value(gaugeRows),
-      ),
-    );
+    return transaction(() async {
+      final projectId = await into(projects).insert(
+        ProjectsCompanion.insert(
+          name: name,
+          needleType: Value(needleType),
+          needleSize: Value(needleSize),
+          memo: Value(memo),
+          gaugeStitches: Value(gaugeStitches),
+          gaugeRows: Value(gaugeRows),
+        ),
+      );
+
+      if (stashYarnIds != null && stashYarnIds.isNotEmpty) {
+        for (final yarnId in stashYarnIds) {
+          await into(projectStashYarns).insert(
+            ProjectStashYarnsCompanion.insert(
+              projectId: projectId,
+              stashYarnId: yarnId,
+            ),
+          );
+        }
+      }
+
+      return projectId;
+    });
   }
 
   /// 프로젝트 깊은 복사 (파트, 카운터(값 포함), 메모 포함. 세션 제외)
@@ -576,7 +640,6 @@ class AppDb extends _$AppDb {
           name: newName,
           needleType: Value(originalProject.needleType),
           needleSize: Value(originalProject.needleSize),
-          lotNumber: Value(originalProject.lotNumber),
           memo: Value(originalProject.memo),
           gaugeStitches: Value(originalProject.gaugeStitches),
           gaugeRows: Value(originalProject.gaugeRows),
@@ -584,6 +647,17 @@ class AppDb extends _$AppDb {
           tagIds: Value(originalProject.tagIds),
         ),
       );
+
+      // 교차 테이블 연동 실 복제
+      final originalLinkedYarns = await getStashYarnsForProject(originalProjectId);
+      for (final yarn in originalLinkedYarns) {
+        await into(projectStashYarns).insert(
+          ProjectStashYarnsCompanion.insert(
+            projectId: newProjectId,
+            stashYarnId: yarn.id,
+          ),
+        );
+      }
 
       // 3. 원본 파트 목록 가져오기
       final originalParts = await (select(parts)..where((t) => t.projectId.equals(originalProjectId))).get();
@@ -768,6 +842,58 @@ class AppDb extends _$AppDb {
   /// 프로젝트 영구 삭제 (사용자가 직접 휴지통에서 삭제)
   Future<void> permanentlyDeleteProject(int projectId) async {
     await (delete(projects)..where((t) => t.id.equals(projectId))).go();
+  }
+
+  /// 특정 보관함 실을 사용하는 프로젝트 목록 조회 (N:N 조인)
+  Stream<List<Project>> watchProjectsUsingStashYarn(int stashYarnId) {
+    final query = select(projectStashYarns).join([
+      innerJoin(projects, projects.id.equalsExp(projectStashYarns.projectId)),
+    ])
+      ..where(projectStashYarns.stashYarnId.equals(stashYarnId) & projects.deletedAt.isNull())
+      ..orderBy([OrderingTerm.desc(projects.createdAt)]);
+
+    return query.watch().map((rows) {
+      return rows.map((row) => row.readTable(projects)).toList();
+    });
+  }
+
+  /// 특정 프로젝트에 연동된 실 목록 조회 (Stream)
+  Stream<List<StashYarn>> watchStashYarnsForProject(int projectId) {
+    final query = select(projectStashYarns).join([
+      innerJoin(stashYarns, stashYarns.id.equalsExp(projectStashYarns.stashYarnId)),
+    ])..where(projectStashYarns.projectId.equals(projectId) & stashYarns.deletedAt.isNull());
+
+    return query.watch().map((rows) {
+      return rows.map((row) => row.readTable(stashYarns)).toList();
+    });
+  }
+
+  /// 특정 프로젝트에 연동된 실 목록 조회 (Future)
+  Future<List<StashYarn>> getStashYarnsForProject(int projectId) async {
+    final query = select(projectStashYarns).join([
+      innerJoin(stashYarns, stashYarns.id.equalsExp(projectStashYarns.stashYarnId)),
+    ])..where(projectStashYarns.projectId.equals(projectId) & stashYarns.deletedAt.isNull());
+
+    final rows = await query.get();
+    return rows.map((row) => row.readTable(stashYarns)).toList();
+  }
+
+  /// 프로젝트 실 연동 매핑 업데이트
+  Future<void> updateProjectStashYarns(int projectId, List<int> stashYarnIds) async {
+    await transaction(() async {
+      // 1. 기존 매핑 제거
+      await (delete(projectStashYarns)..where((t) => t.projectId.equals(projectId))).go();
+      
+      // 2. 새 매핑 추가
+      for (final yarnId in stashYarnIds) {
+        await into(projectStashYarns).insert(
+          ProjectStashYarnsCompanion.insert(
+            projectId: projectId,
+            stashYarnId: yarnId,
+          ),
+        );
+      }
+    });
   }
 
   // 공통: 활성 세션 조회 (RUNNING/PAUSED)
@@ -2512,11 +2638,17 @@ class AppDb extends _$AppDb {
   /// 보관함 실 삭제 (소프트 딜리트)
   Future<void> deleteStashYarn(int id) async {
     try {
-      await (update(stashYarns)..where((t) => t.id.equals(id))).write(
-        StashYarnsCompanion(
-          deletedAt: Value(DateTime.now().toUtc()),
-        ),
-      );
+      await transaction(() async {
+        // 1. 실 소프트 딜리트
+        await (update(stashYarns)..where((t) => t.id.equals(id))).write(
+          StashYarnsCompanion(
+            deletedAt: Value(DateTime.now().toUtc()),
+          ),
+        );
+
+        // 2. 교차 테이블에서 해당 실과의 매핑 레코드 제거 (프로젝트에서 연동 해제)
+        await (delete(projectStashYarns)..where((t) => t.stashYarnId.equals(id))).go();
+      });
     } catch (e) {
       throw _handleDatabaseException(e, 'Delete StashYarn');
     }

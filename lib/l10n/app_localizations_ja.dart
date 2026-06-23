@@ -1908,6 +1908,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteStashDesc => '毛糸はゴミ箱に移動され、\n30日後に自動的に永久削除されます。';
 
   @override
+  String get deleteStashProjectWarning => '紐づけられたプロジェクトとの連携が解除されます。';
+
+  @override
   String get yards => 'ヤード (yd)';
 
   @override
@@ -1985,4 +1988,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
     return '$countString玉';
   }
+
+  @override
+  String get linkStashYarn => '糸を連携';
+
+  @override
+  String get selectStashYarn => '保管箱から糸を選択';
+
+  @override
+  String get unlink => '連携解除';
+
+  @override
+  String get linkedYarn => '連携された糸';
+
+  @override
+  String get noLinkedYarn => '連携された糸なし';
+
+  @override
+  String get usingProjects => 'この糸を使用するプロジェクト';
+
+  @override
+  String get addYarn => '糸を追加';
 }

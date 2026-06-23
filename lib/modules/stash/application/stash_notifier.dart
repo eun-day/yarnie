@@ -58,8 +58,8 @@ class StashNotifier extends Notifier<StashState> {
       case ChangeViewMode(:final viewMode):
         state = state.copyWith(viewMode: viewMode);
 
-      case CreateStashYarnEvent(:final companion):
-        await _createStashYarn(companion);
+      case CreateStashYarnEvent(:final companion, :final isFromSelectionSheet):
+        await _createStashYarn(companion, isFromSelectionSheet: isFromSelectionSheet);
 
       case UpdateStashYarnEvent(:final companion):
         await _updateStashYarn(companion);
@@ -123,10 +123,10 @@ class StashNotifier extends Notifier<StashState> {
     state = state.copyWith(filteredYarns: list);
   }
 
-  Future<void> _createStashYarn(StashYarnsCompanion companion) async {
+  Future<void> _createStashYarn(StashYarnsCompanion companion, {bool isFromSelectionSheet = false}) async {
     try {
       final id = await appDb.createStashYarn(companion);
-      _emit(StashYarnCreated(id));
+      _emit(StashYarnCreated(id, isFromSelectionSheet: isFromSelectionSheet));
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.addComplete));
     } catch (e) {
       _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString()))); // 기존 번역 키 재활용

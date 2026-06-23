@@ -26,10 +26,10 @@ class NeedleSizeChanged extends ProjectFormEvent {
   const NeedleSizeChanged(this.needleSize);
 }
 
-/// 로트 번호 변경
-class LotNumberChanged extends ProjectFormEvent {
-  final String? lotNumber;
-  const LotNumberChanged(this.lotNumber);
+/// 보관함 실 목록 변경
+class StashYarnsChanged extends ProjectFormEvent {
+  final List<int> stashYarnIds;
+  const StashYarnsChanged(this.stashYarnIds);
 }
 
 /// 메모 변경

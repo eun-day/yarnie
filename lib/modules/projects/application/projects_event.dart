@@ -79,7 +79,7 @@ class CreateProject extends ProjectsEvent {
   final String name;
   final String? needleType;
   final String? needleSize;
-  final String? lotNumber;
+  final List<int>? stashYarnIds;
   final String? memo;
   final String? gaugeStitches;
   final String? gaugeRows;
@@ -90,7 +90,7 @@ class CreateProject extends ProjectsEvent {
     required this.name,
     this.needleType,
     this.needleSize,
-    this.lotNumber,
+    this.stashYarnIds,
     this.memo,
     this.gaugeStitches,
     this.gaugeRows,
@@ -105,7 +105,7 @@ class UpdateProject extends ProjectsEvent {
   final String name;
   final String? needleType;
   final String? needleSize;
-  final String? lotNumber;
+  final List<int>? stashYarnIds;
   final String? memo;
   final String? gaugeStitches;
   final String? gaugeRows;
@@ -117,7 +117,7 @@ class UpdateProject extends ProjectsEvent {
     required this.name,
     this.needleType,
     this.needleSize,
-    this.lotNumber,
+    this.stashYarnIds,
     this.memo,
     this.gaugeStitches,
     this.gaugeRows,

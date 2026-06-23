@@ -437,22 +437,12 @@ class _StashDetailScreenState extends ConsumerState<StashDetailScreen> {
   // 사용 중인 프로젝트 목록 연계 표시
   // ============================================================
   Widget _buildLinkedProjects(StashYarn yarn, AppLocalizations l10n, ThemeData theme) {
-    // 1단계 MVP 연계: 프로젝트의 lotNumber(실 로트 번호)가 StashYarn의 dyeLot과 일치하는 프로젝트 필터링
     return StreamBuilder<List<Project>>(
-      stream: appDb.watchAll(),
+      stream: appDb.watchProjectsUsingStashYarn(yarn.id),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox.shrink();
 
-        final allProjects = snapshot.data!;
-        final matchedProjects = allProjects.where((p) {
-          // 실 로트 번호 또는 별명/제품명이 매치되는 프로젝트 필터
-          final lotMatch = yarn.dyeLot != null &&
-              yarn.dyeLot!.isNotEmpty &&
-              p.lotNumber != null &&
-              p.lotNumber!.trim().toLowerCase() == yarn.dyeLot!.trim().toLowerCase();
-          return lotMatch;
-        }).toList();
-
+        final matchedProjects = snapshot.data!;
         if (matchedProjects.isEmpty) return const SizedBox.shrink();
 
         return Column(
@@ -460,7 +450,7 @@ class _StashDetailScreenState extends ConsumerState<StashDetailScreen> {
           children: [
             const SizedBox(height: 16),
             Text(
-              l10n.recentProjects, // "이 실을 사용 중인 프로젝트" 번역 키 대용
+              l10n.usingProjects,
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -482,7 +472,9 @@ class _StashDetailScreenState extends ConsumerState<StashDetailScreen> {
                       project.name,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: Text('${l10n.lotNumberLabel}: ${project.lotNumber ?? "-"}'),
+                    subtitle: Text(yarn.dyeLot != null && yarn.dyeLot!.isNotEmpty
+                        ? '${l10n.dyeLot}: ${yarn.dyeLot}'
+                        : yarn.yarnName),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(

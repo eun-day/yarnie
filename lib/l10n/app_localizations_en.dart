@@ -1974,6 +1974,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The yarn will be moved to the trash and permanently deleted after 30 days.';
 
   @override
+  String get deleteStashProjectWarning =>
+      'Linked projects will be unlinked from this yarn.';
+
+  @override
   String get yards => 'Yards (yd)';
 
   @override
@@ -2051,4 +2055,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return '$countString skeins';
   }
+
+  @override
+  String get linkStashYarn => 'Link Yarn';
+
+  @override
+  String get selectStashYarn => 'Select Yarn';
+
+  @override
+  String get unlink => 'Unlink';
+
+  @override
+  String get linkedYarn => 'Linked Yarn';
+
+  @override
+  String get noLinkedYarn => 'No linked yarn';
+
+  @override
+  String get usingProjects => 'Projects using this yarn';
+
+  @override
+  String get addYarn => 'Add Yarn';
 }

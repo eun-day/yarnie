@@ -268,6 +268,14 @@ class BackupService {
         }
       }
 
+      // ProjectStashYarns (프로젝트-실 연동)
+      if (data['project_stash_yarns'] != null) {
+        for (var e in (data['project_stash_yarns'] as List)) {
+          final item = ProjectStashYarn.fromJson(e);
+          await _db.into(_db.projectStashYarns).insert(item);
+        }
+      }
+
       // (마이그레이션용 기존 테이블)
       if (data['work_sessions'] != null) {
         for (var e in (data['work_sessions'] as List)) {
@@ -286,6 +294,7 @@ class BackupService {
 
   Future<void> _deleteAllData() async {
     // 외래키 제약 때문에 하위 테이블부터 삭제
+    await _db.delete(_db.projectStashYarns).go();
     await _db.delete(_db.sessionSegments).go();
     await _db.delete(_db.sessions).go();
     await _db.delete(_db.sectionRuns).go();
@@ -318,6 +327,7 @@ class BackupService {
     allData['tags'] = (await _db.select(_db.tags).get()).map((e) => e.toJson()).toList();
     allData['stash_yarns'] = (await _db.select(_db.stashYarns).get()).map((e) => e.toJson()).toList();
     allData['stash_tags'] = (await _db.select(_db.stashTags).get()).map((e) => e.toJson()).toList();
+    allData['project_stash_yarns'] = (await _db.select(_db.projectStashYarns).get()).map((e) => e.toJson()).toList();
 
     allData['work_sessions'] = (await _db.select(_db.workSessions).get()).map((e) => e.toJson()).toList();
     allData['project_counters'] = (await _db.select(_db.projectCounters).get()).map((e) => e.toJson()).toList();

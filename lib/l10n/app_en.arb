@@ -624,6 +624,7 @@
     }
   },
   "deleteStashDesc": "The yarn will be moved to the trash and permanently deleted after 30 days.",
+  "deleteStashProjectWarning": "Linked projects will be unlinked from this yarn.",
   "yards": "Yards (yd)",
   "meters": "Meters (m)",
   "grams": "Grams (g)",
@@ -669,5 +670,12 @@
         "format": "decimalPattern"
       }
     }
-  }
+  },
+  "linkStashYarn": "Link Yarn",
+  "selectStashYarn": "Select Yarn",
+  "unlink": "Unlink",
+  "linkedYarn": "Linked Yarn",
+  "noLinkedYarn": "No linked yarn",
+  "usingProjects": "Projects using this yarn",
+  "addYarn": "Add Yarn"
 }

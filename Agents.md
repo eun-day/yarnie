@@ -40,7 +40,11 @@
 - 앱 내에 이미지를 저장해야 하는 로직이 있을 때 독자적인 저장 기능을 새로 구현하지 않는다.
 - 프로젝트 내에 정의된 이미지 유틸리티인 `AppImageUtils` 클래스를 우선 사용하여 파일 격리 저장 및 경로 복원 방식을 통일한다.
 
-## 10. Ponytail (Lazy Senior Dev Mode)
+## 10. 데이터 백업/복원 (Backup & Restore)
+- DB에 새로운 테이블을 추가하면, 반드시 `lib/core/services/backup_service.dart`의 백업/복원 로직도 함께 업데이트한다.
+- 확인해야 할 메서드: `_fetchAllTableData`(내보내기), `_restoreDatabase`(복원), `_deleteAllData`(초기화).
+
+## 11. Ponytail (Lazy Senior Dev Mode)
 - **핵심 철학**: "가장 좋은 코드는 작성하지 않은 코드이다" (The best code is the code you never wrote). 게으르되 부주의하지 않게 효율적으로 행동한다.
 - **의사결정 사다리 (Laziness Ladder)**: 코드를 작성하기 전에 다음 단계를 순서대로 검토하여 처음으로 성립하는 단계에서 멈춘다.
   1. **YAGNI (You Ain't Gonna Need It)**: 이 기능이 정말 필요한가? (불필요하면 스킵)

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
+import 'package:yarnie/db/di.dart';
 import 'package:yarnie/new_project_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
 import 'package:yarnie/widgets/app_image.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/common/time_helper.dart';
+import 'package:yarnie/features/stash/stash_detail_screen.dart';
 
 class ProjectInfoSheet extends ConsumerWidget {
   final Project project;
@@ -200,11 +202,130 @@ class ProjectInfoSheet extends ConsumerWidget {
                         ),
                         const SizedBox(height: 24),
 
-                        // Lot Number
-                        _InfoRow(
-                          label: l10n.lotNumberLabel,
-                          value: project.lotNumber ?? '-',
-                          valueColor: Theme.of(context).colorScheme.onSurface,
+                        // Linked Yarns Info
+                        StreamBuilder<List<StashYarn>>(
+                          stream: appDb.watchStashYarnsForProject(project.id),
+                          builder: (context, snapshot) {
+                            final yarns = snapshot.data ?? const [];
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.linkedYarn,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    letterSpacing: -0.15,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                if (yarns.isNotEmpty)
+                                  ...yarns.map((yarn) {
+                                    return Card(
+                                      key: ValueKey(yarn.id),
+                                      margin: const EdgeInsets.only(bottom: 8),
+                                      elevation: 0,
+                                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: BorderSide(
+                                          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                                          width: 0.7,
+                                        ),
+                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => StashDetailScreen(stashYarnId: yarn.id),
+                                            ),
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 48,
+                                                height: 48,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  child: AppImage(
+                                                    imagePath: yarn.imagePath,
+                                                    fallbackPadding: 6,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    if (yarn.brandName != null && yarn.brandName!.isNotEmpty)
+                                                      Text(
+                                                        yarn.brandName!,
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Theme.of(context).colorScheme.primary,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    Text(
+                                                      yarn.yarnName,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    const SizedBox(height: 2),
+                                                    Builder(
+                                                      builder: (context) {
+                                                        final specParts = <String>[];
+                                                        if (yarn.colorwayName != null && yarn.colorwayName!.isNotEmpty) {
+                                                          specParts.add(yarn.colorwayName!);
+                                                        }
+                                                        specParts.add(l10n.skeinsCount(yarn.skeins ?? 0));
+                                                        return Text(
+                                                          specParts.join('  •  '),
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.chevron_right,
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  })
+                                else
+                                  Text(
+                                    l10n.noLinkedYarn,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                         const SizedBox(height: 24),
 

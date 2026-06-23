@@ -84,6 +84,18 @@ class StashDeleteDialog extends StatelessWidget {
                     height: 20 / 14,
                   ),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  AppLocalizations.of(context)!.deleteStashProjectWarning,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    letterSpacing: -0.15,
+                    height: 20 / 14,
+                  ),
+                ),
               ],
             ),
 
