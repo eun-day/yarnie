@@ -131,7 +131,7 @@ class _StashRootState extends ConsumerState<StashRoot> {
           ? null
           : AdVisibilityWrapper(
               child: CommonBannerAdWidget(
-                adUnitId: AdHelper.projectListBannerId, // 광고 에셋 키 재활용
+                adUnitId: AdHelper.stashListBannerId,
               ),
             ),
     );

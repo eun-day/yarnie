@@ -12,6 +12,10 @@ import 'new_stash_screen.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
 import 'package:yarnie/widgets/app_image.dart';
 import 'package:yarnie/widgets/stash_delete_dialog.dart';
+import '../../core/providers/premium_provider.dart';
+import '../../widgets/ad_visibility_wrapper.dart';
+import '../../widgets/common_banner_ad.dart';
+import '../../common/ad_helper.dart';
 
 class StashDetailScreen extends ConsumerStatefulWidget {
   final int stashYarnId;
@@ -228,7 +232,7 @@ class _StashDetailScreenState extends ConsumerState<StashDetailScreen> {
   
                     // 5. 사용 중인 프로젝트 목록 연계
                     _buildLinkedProjects(yarn, l10n, theme),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 48),
                   ],
                 ),
               ),
@@ -236,6 +240,13 @@ class _StashDetailScreenState extends ConsumerState<StashDetailScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: ref.watch(premiumProvider)
+          ? null
+          : AdVisibilityWrapper(
+              child: CommonBannerAdWidget(
+                adUnitId: AdHelper.stashDetailBannerId,
+              ),
+            ),
     );
   }
 
