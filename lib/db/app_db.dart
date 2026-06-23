@@ -2522,6 +2522,54 @@ class AppDb extends _$AppDb {
     }
   }
 
+  /// 삭제된 지 30일이 지난 실 정보 영구 삭제 (배치용)
+  Future<void> cleanupDeletedStashYarns() async {
+    final thresholdDate = DateTime.now().toUtc().subtract(
+      const Duration(days: 30),
+    );
+    await (delete(stashYarns)..where(
+          (t) =>
+              t.deletedAt.isNotNull() &
+              t.deletedAt.isSmallerThanValue(thresholdDate),
+        ))
+        .go();
+  }
+
+  /// 휴지통에 있는 실 목록 스트림
+  Stream<List<StashYarn>> watchDeletedStashYarns() {
+    return (select(stashYarns)
+          ..where((t) => t.deletedAt.isNotNull())
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.deletedAt), // 가장 최근에 삭제된 순
+            (t) => OrderingTerm.desc(t.createdAt),
+          ]))
+        .watch();
+  }
+
+  /// 실 복원 (휴지통에서 해제)
+  Future<void> restoreStashYarn(int id) async {
+    try {
+      final now = DateTime.now().toUtc();
+      await (update(stashYarns)..where((t) => t.id.equals(id))).write(
+        StashYarnsCompanion(
+          deletedAt: const Value(null),
+          updatedAt: Value(now),
+        ),
+      );
+    } catch (e) {
+      throw _handleDatabaseException(e, 'Restore StashYarn');
+    }
+  }
+
+  /// 실 영구 삭제 (사용자가 직접 휴지통에서 삭제)
+  Future<void> permanentlyDeleteStashYarn(int id) async {
+    try {
+      await (delete(stashYarns)..where((t) => t.id.equals(id))).go();
+    } catch (e) {
+      throw _handleDatabaseException(e, 'Permanently Delete StashYarn');
+    }
+  }
+
   /// 특정 실 상세 조회
   Future<StashYarn?> getStashYarn(int id) {
     return (select(stashYarns)..where((t) => t.id.equals(id))).getSingleOrNull();

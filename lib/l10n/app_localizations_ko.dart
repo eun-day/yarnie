@@ -536,7 +536,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get trash => '휴지통';
 
   @override
-  String get trashSub => '삭제된 프로젝트 관리';
+  String get trashSub => '삭제된 데이터 관리';
 
   @override
   String get userGuide => '사용 가이드';
@@ -1396,6 +1396,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String trashProjectCountInfo(Object count) {
     return '$count개의 프로젝트 · 30일 후 자동 삭제';
+  }
+
+  @override
+  String trashStashCountInfo(Object count) {
+    return '$count개의 실 · 30일 후 자동 삭제';
   }
 
   @override

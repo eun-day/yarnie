@@ -532,7 +532,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trash => 'ゴミ箱';
 
   @override
-  String get trashSub => '削除されたプロジェクトの管理';
+  String get trashSub => '削除されたデータの管理';
 
   @override
   String get userGuide => 'ユーザーガイド';
@@ -1391,6 +1391,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String trashProjectCountInfo(Object count) {
     return '$count個のプロジェクト · 30日後に自動削除';
+  }
+
+  @override
+  String trashStashCountInfo(Object count) {
+    return '$count個の毛糸 · 30日後に自動削除';
   }
 
   @override

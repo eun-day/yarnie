@@ -391,9 +391,9 @@ class _ViewModeIconButton extends StatelessWidget {
 // ============================================================
 // Stash 용 Colored Tag Chip
 // ============================================================
-class _ColoredStashTagChip extends StatelessWidget {
+class ColoredStashTagChip extends StatelessWidget {
   final StashTag tag;
-  const _ColoredStashTagChip({super.key, required this.tag});
+  const ColoredStashTagChip({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -506,7 +506,7 @@ class _SmallStashCard extends StatelessWidget {
                 child: Wrap(
                   spacing: 4,
                   runSpacing: 4,
-                  children: yarnTags.take(2).map((t) => _ColoredStashTagChip(key: ValueKey(t.id), tag: t)).toList(),
+                  children: yarnTags.take(2).map((t) => ColoredStashTagChip(key: ValueKey(t.id), tag: t)).toList(),
                 ),
               ),
 
@@ -632,7 +632,7 @@ class _ListView extends StatelessWidget {
       itemCount: yarns.length,
       itemBuilder: (context, index) {
         final yarn = yarns[index];
-        return _StashListTile(
+        return StashListTile(
           yarn: yarn,
           tags: tags,
           onTap: () => onYarnTap(yarn.id),
@@ -643,13 +643,13 @@ class _ListView extends StatelessWidget {
   }
 }
 
-class _StashListTile extends StatelessWidget {
+class StashListTile extends StatelessWidget {
   final StashYarn yarn;
   final List<StashTag> tags;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
 
-  const _StashListTile({
+  const StashListTile({
     required this.yarn,
     required this.tags,
     required this.onTap,
@@ -720,7 +720,7 @@ class _StashListTile extends StatelessWidget {
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Theme.of(context).colorScheme.outline,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 height: 1.42,
                                 letterSpacing: -0.15,
                               ),
@@ -768,7 +768,7 @@ class _StashListTile extends StatelessWidget {
                                 children: yarnTags.map((t) {
                                   return Padding(
                                     padding: const EdgeInsets.only(right: 4.0),
-                                    child: _ColoredStashTagChip(key: ValueKey(t.id), tag: t),
+                                    child: ColoredStashTagChip(key: ValueKey(t.id), tag: t),
                                   );
                                 }).toList(),
                               ),

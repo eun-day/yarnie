@@ -571,7 +571,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trash => 'Trash';
 
   @override
-  String get trashSub => 'Manage deleted projects';
+  String get trashSub => 'Manage deleted data';
 
   @override
   String get userGuide => 'User Guide';
@@ -1446,6 +1446,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String trashProjectCountInfo(Object count) {
     return '$count projects · Auto-deleted after 30 days';
+  }
+
+  @override
+  String trashStashCountInfo(Object count) {
+    return '$count yarns · Auto-deleted after 30 days';
   }
 
   @override

@@ -338,3 +338,8 @@ final projectsEffectsProvider = StreamProvider.autoDispose<ProjectsEffect>((
 final deletedProjectsProvider = StreamProvider.autoDispose<List<Project>>((ref) {
   return appDb.watchDeletedProjects();
 });
+
+/// 삭제된 실 목록 Stream Provider (휴지통 기능용)
+final deletedStashYarnsProvider = StreamProvider.autoDispose<List<StashYarn>>((ref) {
+  return appDb.watchDeletedStashYarns();
+});

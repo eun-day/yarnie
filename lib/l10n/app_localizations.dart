@@ -1099,7 +1099,7 @@ abstract class AppLocalizations {
   /// No description provided for @trashSub.
   ///
   /// In ko, this message translates to:
-  /// **'삭제된 프로젝트 관리'**
+  /// **'삭제된 데이터 관리'**
   String get trashSub;
 
   /// No description provided for @userGuide.
@@ -2721,6 +2721,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{count}개의 프로젝트 · 30일 후 자동 삭제'**
   String trashProjectCountInfo(Object count);
+
+  /// No description provided for @trashStashCountInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개의 실 · 30일 후 자동 삭제'**
+  String trashStashCountInfo(Object count);
 
   /// No description provided for @restoreProjectTitle.
   ///
