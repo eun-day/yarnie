@@ -13,7 +13,7 @@ class BackupService {
 
   BackupService(this._db);
 
-  /// 모든 DB 데이터 + 프로젝트 이미지를 ZIP으로 묶어 내보냅니다.
+  /// 모든 DB 데이터 + 앱 이미지를 ZIP으로 묶어 내보냅니다.
   /// 반환: 임시 디렉토리에 생성된 .zip 파일 경로
   Future<String> exportBackup() async {
     final Map<String, dynamic> backupData = {
@@ -39,24 +39,27 @@ class BackupService {
       jsonBytes,
     ));
 
-    // 2) 프로젝트 이미지 파일 수집 및 추가
+    // 2) 앱 이미지 파일 수집 및 추가
     final docDir = await getApplicationDocumentsDirectory();
-    final imageDir = Directory(p.join(docDir.path, 'project_images'));
+    final imageSubDirs = ['project_images', 'stash_images'];
 
-    if (await imageDir.exists()) {
-      final imageFiles = imageDir
-          .listSync(recursive: true)
-          .whereType<File>();
-      for (final imageFile in imageFiles) {
-        // 상대 경로 유지 (예: project_images/123456.jpg)
-        final relativePath =
-            p.relative(imageFile.path, from: docDir.path);
-        final bytes = await imageFile.readAsBytes();
-        archive.addFile(ArchiveFile(
-          relativePath,
-          bytes.length,
-          bytes,
-        ));
+    for (final subDir in imageSubDirs) {
+      final imageDir = Directory(p.join(docDir.path, subDir));
+      if (await imageDir.exists()) {
+        final imageFiles = imageDir
+            .listSync(recursive: true)
+            .whereType<File>();
+        for (final imageFile in imageFiles) {
+          // 상대 경로 유지 (예: project_images/123456.jpg)
+          final relativePath =
+              p.relative(imageFile.path, from: docDir.path);
+          final bytes = await imageFile.readAsBytes();
+          archive.addFile(ArchiveFile(
+            relativePath,
+            bytes.length,
+            bytes,
+          ));
+        }
       }
     }
 
@@ -125,9 +128,11 @@ class BackupService {
 
     // 2) 기존 이미지 디렉토리 정리
     final docDir = await getApplicationDocumentsDirectory();
-    final imageDir = Directory(p.join(docDir.path, 'project_images'));
-    if (await imageDir.exists()) {
-      await imageDir.delete(recursive: true);
+    for (final subDir in ['project_images', 'stash_images']) {
+      final imageDir = Directory(p.join(docDir.path, subDir));
+      if (await imageDir.exists()) {
+        await imageDir.delete(recursive: true);
+      }
     }
 
     // 3) 아카이브에서 이미지 파일 복원
@@ -135,8 +140,9 @@ class BackupService {
       if (entry.name == 'data.json') continue;
       if (!entry.isFile) continue;
 
-      // project_images/ 로 시작하는 파일만 복원
-      if (entry.name.startsWith('project_images/')) {
+      // project_images/ 또는 stash_images/ 로 시작하는 파일만 복원
+      if (entry.name.startsWith('project_images/') ||
+          entry.name.startsWith('stash_images/')) {
         final destPath = p.join(docDir.path, entry.name);
         final destFile = File(destPath);
 
@@ -246,6 +252,22 @@ class BackupService {
         }
       }
 
+      // StashTags
+      if (data['stash_tags'] != null) {
+        for (var e in (data['stash_tags'] as List)) {
+          final item = StashTag.fromJson(e);
+          await _db.into(_db.stashTags).insert(item);
+        }
+      }
+
+      // StashYarns
+      if (data['stash_yarns'] != null) {
+        for (var e in (data['stash_yarns'] as List)) {
+          final item = StashYarn.fromJson(e);
+          await _db.into(_db.stashYarns).insert(item);
+        }
+      }
+
       // (마이그레이션용 기존 테이블)
       if (data['work_sessions'] != null) {
         for (var e in (data['work_sessions'] as List)) {
@@ -274,6 +296,8 @@ class BackupService {
     await _db.delete(_db.parts).go();
     await _db.delete(_db.tags).go();
     await _db.delete(_db.projects).go();
+    await _db.delete(_db.stashYarns).go();
+    await _db.delete(_db.stashTags).go();
     await _db.delete(_db.workSessions).go();
     await _db.delete(_db.projectCounters).go();
   }
@@ -292,6 +316,8 @@ class BackupService {
     allData['session_segments'] = (await _db.select(_db.sessionSegments).get()).map((e) => e.toJson()).toList();
     allData['part_notes'] = (await _db.select(_db.partNotes).get()).map((e) => e.toJson()).toList();
     allData['tags'] = (await _db.select(_db.tags).get()).map((e) => e.toJson()).toList();
+    allData['stash_yarns'] = (await _db.select(_db.stashYarns).get()).map((e) => e.toJson()).toList();
+    allData['stash_tags'] = (await _db.select(_db.stashTags).get()).map((e) => e.toJson()).toList();
 
     allData['work_sessions'] = (await _db.select(_db.workSessions).get()).map((e) => e.toJson()).toList();
     allData['project_counters'] = (await _db.select(_db.projectCounters).get()).map((e) => e.toJson()).toList();

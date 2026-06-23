@@ -18,7 +18,7 @@
   "autoBackup": "自動バックアップ",
   "autoBackupSub": "毎日自動でデータをバックアップ",
   "exportData": "データを書き出す",
-  "exportDataSub": "プロジェクトデータと画像をファイルとして保存",
+  "exportDataSub": "アプリのデータと画像をファイルとして保存",
   "importData": "データを取り込む",
   "importDataSub": "バックアップファイルから復元",
   "screenAwake": "スリープ防止",

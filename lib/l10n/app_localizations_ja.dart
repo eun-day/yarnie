@@ -63,7 +63,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get exportData => 'データを書き出す';
 
   @override
-  String get exportDataSub => 'プロジェクトデータと画像をファイルとして保存';
+  String get exportDataSub => 'アプリのデータと画像をファイルとして保存';
 
   @override
   String get importData => 'データを取り込む';
