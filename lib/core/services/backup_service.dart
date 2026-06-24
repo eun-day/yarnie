@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive.dart';
+import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -273,6 +274,37 @@ class BackupService {
         for (var e in (data['project_stash_yarns'] as List)) {
           final item = ProjectStashYarn.fromJson(e);
           await _db.into(_db.projectStashYarns).insert(item);
+        }
+      }
+
+      // v2 이전 백업 복원 시: lot_number → 실 자동 생성 및 프로젝트 연동
+      if (data['stash_yarns'] == null && data['projects'] != null) {
+        final now = DateTime.now().toUtc();
+        for (var e in (data['projects'] as List)) {
+          final map = e as Map<String, dynamic>;
+          final lotNumber = map['lot_number'] as String?;
+          if (lotNumber == null || lotNumber.isEmpty) continue;
+
+          final projectId = map['id'] as int;
+          final stashYarnId = await _db.customInsert(
+            "INSERT INTO stash_yarns (yarn_name, brand_name, dye_lot, skeins, length_unit, weight_unit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            variables: [
+              Variable.withString('기존 프로젝트 실 (자동 생성)'),
+              Variable.withString('이전 로트 번호 실'),
+              Variable.withString(lotNumber),
+              Variable.withReal(0.0),
+              Variable.withString('yards'),
+              Variable.withString('grams'),
+              Variable.withDateTime(now),
+            ],
+          );
+          await _db.customInsert(
+            "INSERT INTO project_stash_yarns (project_id, stash_yarn_id) VALUES (?, ?)",
+            variables: [
+              Variable.withInt(projectId),
+              Variable.withInt(stashYarnId),
+            ],
+          );
         }
       }
 
