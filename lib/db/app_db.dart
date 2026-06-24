@@ -476,6 +476,11 @@ class AppDb extends _$AppDb {
               // 마이그레이션 쿼리 실패 시 앱 크래시 방지 및 재시도 지원을 위한 예외 전달
               rethrow;
             }
+
+            // 더 이상 사용하지 않는 lot_number 컬럼 제거
+            await customStatement(
+              'ALTER TABLE projects DROP COLUMN lot_number',
+            );
           }
         },
       );
