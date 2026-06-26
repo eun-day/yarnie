@@ -450,26 +450,24 @@ class AppDb extends _$AppDb {
                 final lotNumber = row.read<String>('lot_number');
 
                 // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
-                final stashYarnId = await customInsert(
-                  "INSERT INTO stash_yarns (yarn_name, brand_name, dye_lot, skeins, length_unit, weight_unit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                  variables: [
-                    Variable.withString('기존 프로젝트 실 (자동 생성)'),
-                    Variable.withString('이전 로트 번호 실'),
-                    Variable.withString(lotNumber),
-                    Variable.withReal(0.0),
-                    Variable.withString('yards'),
-                    Variable.withString('grams'),
-                    Variable.withDateTime(now),
-                  ],
+                final stashYarnId = await into(stashYarns).insert(
+                  StashYarnsCompanion.insert(
+                    yarnName: '기존 프로젝트 실 (자동 생성)',
+                    brandName: const Value('이전 로트 번호 실'),
+                    dyeLot: Value(lotNumber),
+                    skeins: const Value(0.0),
+                    lengthUnit: const Value('yards'),
+                    weightUnit: const Value('grams'),
+                    createdAt: Value(now),
+                  ),
                 );
 
                 // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
-                await customInsert(
-                  "INSERT INTO project_stash_yarns (project_id, stash_yarn_id) VALUES (?, ?)",
-                  variables: [
-                    Variable.withInt(projectId),
-                    Variable.withInt(stashYarnId),
-                  ],
+                await into(projectStashYarns).insert(
+                  ProjectStashYarnsCompanion.insert(
+                    projectId: projectId,
+                    stashYarnId: stashYarnId,
+                  ),
                 );
               }
             } catch (e) {

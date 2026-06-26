@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter/services.dart';
@@ -116,5 +117,71 @@ void main() {
     expect(restoredImageContent, 'test-image-content');
 
     await cleanDb.close();
+  });
+
+  test('레거시 snake_case 백업 데이터 복원 테스트', () async {
+    // 1. 레거시 형식의 JSON 데이터 모의 생성 (snake_case 메타데이터, 테이블명, lot_number 포함)
+    final Map<String, dynamic> legacyBackup = {
+      'metadata': {
+        'version': 2,
+        'exported_at': '2026-05-26T10:27:18.800202Z',
+        'app_identifier': 'com.yes.yarnie'
+      },
+      'data': {
+        'projects': [
+          {
+            'id': 1,
+            'name': '레거시 스웨터',
+            'needleType': 'knitting',
+            'needleSize': '4.0mm',
+            'lot_number': 'L123', // 구버전 lot_number
+            'createdAt': DateTime.now().millisecondsSinceEpoch,
+          }
+        ],
+        'parts': [
+          {
+            'id': 1,
+            'projectId': 1,
+            'name': 'Part 1',
+            'orderIndex': 0,
+            'createdAt': DateTime.now().millisecondsSinceEpoch,
+          }
+        ],
+        'main_counters': [ // 구버전 snake_case 테이블명
+          {
+            'id': 1,
+            'partId': 1,
+            'currentValue': 1,
+            'countBy': 1,
+            'createdAt': DateTime.now().millisecondsSinceEpoch,
+          }
+        ],
+      }
+    };
+
+    // 임시 JSON 파일로 저장
+    final tempBackupFile = File(p.join(tempDir.path, 'legacy_data.json'));
+    await tempBackupFile.writeAsString(jsonEncode(legacyBackup));
+
+    // 2. 복원 실행
+    await backupService.importBackup(tempBackupFile.path);
+
+    // 3. 복원 검증
+    final restoredProjects = await db.select(db.projects).get();
+    expect(restoredProjects.length, 1);
+    expect(restoredProjects.first.name, '레거시 스웨터');
+
+    // lot_number 마이그레이션 확인 (실 자동 생성 및 연결되었는지 확인)
+    final restoredYarns = await db.select(db.stashYarns).get();
+    expect(restoredYarns.length, 1);
+    expect(restoredYarns.first.dyeLot, 'L123');
+
+    final restoredMainCounters = await db.select(db.mainCounters).get();
+    expect(restoredMainCounters.length, 1);
+    expect(restoredMainCounters.first.id, 1);
+
+    if (tempBackupFile.existsSync()) {
+      tempBackupFile.deleteSync();
+    }
   });
 }
