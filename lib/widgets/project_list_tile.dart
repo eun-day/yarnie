@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import '../db/app_db.dart';
 import 'colored_tag_chip.dart';
-import 'project_image.dart';
+import 'app_image.dart';
 import '../common/time_helper.dart';
 
 class ProjectListTile extends StatelessWidget {
@@ -50,7 +50,7 @@ class ProjectListTile extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
-                  child: ProjectImage(
+                  child: AppImage(
                     imagePath: project.imagePath,
                     fit: BoxFit.cover,
                     fallbackPadding: 0,

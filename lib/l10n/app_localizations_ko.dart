@@ -63,7 +63,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exportData => '데이터 내보내기';
 
   @override
-  String get exportDataSub => '프로젝트 데이터와 이미지를 파일로 저장';
+  String get exportDataSub => '앱 데이터와 이미지를 파일로 저장';
 
   @override
   String get importData => '데이터 가져오기';
@@ -536,7 +536,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get trash => '휴지통';
 
   @override
-  String get trashSub => '삭제된 프로젝트 관리';
+  String get trashSub => '삭제된 데이터 관리';
 
   @override
   String get userGuide => '사용 가이드';
@@ -1399,6 +1399,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String trashStashCountInfo(Object count) {
+    return '$count개의 실 · 30일 후 자동 삭제';
+  }
+
+  @override
   String get restoreProjectTitle => '프로젝트 복원';
 
   @override
@@ -1799,4 +1804,214 @@ class AppLocalizationsKo extends AppLocalizations {
   String targetReachedDesc(int targetValue) {
     return '목표인 $targetValue단을 완료했습니다.\n정말 고생 많으셨어요! 🧶';
   }
+
+  @override
+  String get stash => '보관함';
+
+  @override
+  String get stashTabDesc => '보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.';
+
+  @override
+  String get noStashesYet => '아직 등록한 실이 없어요.\n보관함에 새 실을 등록해볼까요?';
+
+  @override
+  String get createStash => '실 등록하기';
+
+  @override
+  String get newStash => '새 실 등록';
+
+  @override
+  String get editStash => '실 정보 수정';
+
+  @override
+  String get deleteStash => '실 삭제';
+
+  @override
+  String get stashInfo => '실 정보';
+
+  @override
+  String get copyStash => '실 정보 복제';
+
+  @override
+  String get stashName => '실 별칭';
+
+  @override
+  String get stashNameHint => '예: 내 첫 가디건용 메리노울';
+
+  @override
+  String get yarnName => '실 이름 (제품명)';
+
+  @override
+  String get yarnImage => '실 이미지';
+
+  @override
+  String get yarnWeight => '실 굵기';
+
+  @override
+  String get selectYarnWeight => '실 굵기를 선택하세요';
+
+  @override
+  String get quantityAndSpec => '수량 및 규격';
+
+  @override
+  String get yarnNameHint => '예: 메리노울 100%';
+
+  @override
+  String get brandName => '브랜드 / 제조사';
+
+  @override
+  String get brandNameHint => '제조사 이름을 입력하세요';
+
+  @override
+  String get colorwayName => '색상명 (색상번호)';
+
+  @override
+  String get colorwayNameHint => '예: 인디핑크 또는 05';
+
+  @override
+  String get dyeLot => '로트 번호 (Lot)';
+
+  @override
+  String get dyeLotHint => '실 띠지의 로트 번호(Lot)를 입력하세요';
+
+  @override
+  String get skeins => '보유 수량 (볼/타래)';
+
+  @override
+  String get skeinsHint => '예: 3.3';
+
+  @override
+  String get yarnLengthPerSkein => '1볼당 길이';
+
+  @override
+  String get yarnWeightPerSkein => '1볼당 무게';
+
+  @override
+  String get totalLength => '총 보유 길이';
+
+  @override
+  String get totalWeight => '총 보유 무게';
+
+  @override
+  String get location => '보관 위치';
+
+  @override
+  String get locationHint => '예: 안방 서랍장 2층';
+
+  @override
+  String get notesHint => '소재, 혼용률 등 상세 정보를 자유롭게 적어보세요';
+
+  @override
+  String get stashDeleted => '실이 삭제되었습니다.';
+
+  @override
+  String deleteStashConfirm(String name) {
+    return '\'$name\' 실을 보관함에서 삭제하시겠습니까?';
+  }
+
+  @override
+  String get deleteStashDesc => '실 정보는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.';
+
+  @override
+  String get deleteStashProjectWarning => '연결된 프로젝트에서 실 연동이 해제됩니다.';
+
+  @override
+  String get yards => '야드 (yd)';
+
+  @override
+  String get meters => '미터 (m)';
+
+  @override
+  String get grams => '그램 (g)';
+
+  @override
+  String get ounces => '온스 (oz)';
+
+  @override
+  String stashYarnsCount(int count) {
+    return '$count개의 실';
+  }
+
+  @override
+  String get noMatchingYarns => '해당하는 실이 없습니다';
+
+  @override
+  String get yarns => '실';
+
+  @override
+  String get weightThread => 'Thread';
+
+  @override
+  String get weightCobweb => 'Cobweb';
+
+  @override
+  String get weightLace => 'Lace';
+
+  @override
+  String get weightLightFingering => 'Light Fingering';
+
+  @override
+  String get weightFingering => 'Fingering (14 wpi)';
+
+  @override
+  String get weightSport => 'Sport (12 wpi)';
+
+  @override
+  String get weightDK => 'DK (11 wpi)';
+
+  @override
+  String get weightWorsted => 'Worsted (9 wpi)';
+
+  @override
+  String get weightAran => 'Aran (8 wpi)';
+
+  @override
+  String get weightBulky => 'Bulky (7 wpi)';
+
+  @override
+  String get weightSuperBulky => 'Super Bulky (5-6 wpi)';
+
+  @override
+  String get weightJumbo => 'Jumbo (0-4 wpi)';
+
+  @override
+  String get undo => '실행 취소';
+
+  @override
+  String get editSkeinsTitle => '수량 직접 입력';
+
+  @override
+  String skeinsAdjusted(double skeins) {
+    return '수량이 $skeins볼로 변경되었습니다.';
+  }
+
+  @override
+  String skeinsCount(num count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString볼';
+  }
+
+  @override
+  String get linkStashYarn => '실 연동하기';
+
+  @override
+  String get selectStashYarn => '보관함에서 실 선택';
+
+  @override
+  String get unlink => '연동 해제';
+
+  @override
+  String get linkedYarn => '연동된 실';
+
+  @override
+  String get noLinkedYarn => '연동된 실 없음';
+
+  @override
+  String get usingProjects => '이 실을 사용하는 프로젝트';
+
+  @override
+  String get addYarn => '실 추가';
 }

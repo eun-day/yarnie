@@ -17,7 +17,7 @@ class ProjectFormState {
   final NeedleType? needleType;
   final String? needleSize;
   final List<String> availableNeedleSizes; // 선택된 바늘 종류에 따른 사이즈 목록
-  final String? lotNumber;
+  final List<int> stashYarnIds;
   final String? memo;
   final String? gaugeStitches; // 게이지 코 수
   final String? gaugeRows; // 게이지 단 수
@@ -37,7 +37,7 @@ class ProjectFormState {
     this.needleType,
     this.needleSize,
     this.availableNeedleSizes = const [],
-    this.lotNumber,
+    this.stashYarnIds = const [],
     this.memo,
     this.gaugeStitches,
     this.gaugeRows,
@@ -61,7 +61,7 @@ class ProjectFormState {
     NeedleType? needleType,
     String? needleSize,
     List<String>? availableNeedleSizes,
-    String? lotNumber,
+    List<int>? stashYarnIds,
     String? memo,
     String? gaugeStitches,
     String? gaugeRows,
@@ -80,7 +80,7 @@ class ProjectFormState {
       needleType: needleType ?? this.needleType,
       needleSize: needleSize ?? this.needleSize,
       availableNeedleSizes: availableNeedleSizes ?? this.availableNeedleSizes,
-      lotNumber: lotNumber ?? this.lotNumber,
+      stashYarnIds: stashYarnIds ?? this.stashYarnIds,
       memo: memo ?? this.memo,
       gaugeStitches: gaugeStitches ?? this.gaugeStitches,
       gaugeRows: gaugeRows ?? this.gaugeRows,

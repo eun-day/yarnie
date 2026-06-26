@@ -6,8 +6,10 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/project_detail_screen.dart';
 import 'package:yarnie/widgets/colored_tag_chip.dart';
-import 'package:yarnie/widgets/project_image.dart';
+import 'package:yarnie/widgets/app_image.dart';
 import 'package:yarnie/widgets/tag_selection_sheet.dart';
+import 'package:yarnie/widgets/stash_yarn_selection_sheet.dart';
+import 'package:yarnie/modules/stash/stash_api.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 
@@ -210,12 +212,9 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              _YarnInfoSection(
-                lotNumber: state.lotNumber,
+              _YarnLinkSection(
+                stashYarnIds: state.stashYarnIds,
                 focusNode: _lotNumberFocusNode,
-                onLotNumberChanged: (value) => ref
-                    .read(projectFormNotifierProvider.notifier)
-                    .onEvent(LotNumberChanged(value)),
                 onNextPressed: () => _tagAddFocusNode.requestFocus(),
               ),
               const SizedBox(height: 24),
@@ -522,7 +521,7 @@ class _ProjectImageSection extends StatelessWidget {
                   if (imagePath != null) ...[
                     // Preview Image
                     Positioned.fill(
-                      child: ProjectImage(imagePath: imagePath, fit: BoxFit.cover),
+                      child: AppImage(imagePath: imagePath, fit: BoxFit.cover),
                     ),
                     // Button Area Gradient
                     Positioned(
@@ -927,54 +926,37 @@ class _NeedleInfoSection extends StatelessWidget {
   }
 }
 
-class _YarnInfoSection extends StatefulWidget {
-  final String? lotNumber;
-  final ValueChanged<String> onLotNumberChanged;
+class _YarnLinkSection extends ConsumerWidget {
+  final List<int> stashYarnIds;
   final FocusNode focusNode;
   final VoidCallback onNextPressed;
 
-  const _YarnInfoSection({
-    this.lotNumber,
-    required this.onLotNumberChanged,
+  const _YarnLinkSection({
+    required this.stashYarnIds,
     required this.focusNode,
     required this.onNextPressed,
   });
 
   @override
-  State<_YarnInfoSection> createState() => _YarnInfoSectionState();
-}
-
-class _YarnInfoSectionState extends State<_YarnInfoSection> {
-  late final TextEditingController _lotNumberController;
-
-  @override
-  void initState() {
-    super.initState();
-    _lotNumberController = TextEditingController(text: widget.lotNumber ?? '');
-  }
-
-  @override
-  void didUpdateWidget(_YarnInfoSection oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.lotNumber != _lotNumberController.text) {
-      _lotNumberController.text = widget.lotNumber ?? '';
-    }
-  }
-
-  @override
-  void dispose() {
-    _lotNumberController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final stashState = ref.watch(stashProvider);
+
+    final List<StashYarn> linkedYarns = [];
+    for (final id in stashYarnIds) {
+      for (final y in stashState.allYarns) {
+        if (y.id == id) {
+          linkedYarns.add(y);
+          break;
+        }
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.lotNumberLabel,
+          l10n.yarns,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -983,45 +965,197 @@ class _YarnInfoSectionState extends State<_YarnInfoSection> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          height: 36,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
-            borderRadius: BorderRadius.circular(8),
+        Focus(
+          focusNode: focusNode,
+          child: ListenableBuilder(
+            listenable: focusNode,
+            builder: (context, child) {
+              final isFocused = focusNode.hasFocus;
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isFocused ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
+                    width: isFocused ? 2.0 : 0.7,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _buildLinkContent(context, ref, linkedYarns, l10n),
+                ),
+              );
+            },
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          alignment: Alignment.centerLeft,
-          child: TextField(
-            controller: _lotNumberController,
-            focusNode: widget.focusNode,
-            onChanged: widget.onLotNumberChanged,
-            onSubmitted: (_) => widget.onNextPressed(),
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface,
-              letterSpacing: -0.31,
-            ),
-            decoration: InputDecoration(
-              hintText: l10n.lotNumberHint,
-              hintStyle: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                letterSpacing: -0.31,
-              ),
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-            textInputAction: TextInputAction.next,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          l10n.lotNumberDesc,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
+  }
+
+  Widget _buildLinkContent(BuildContext context, WidgetRef ref, List<StashYarn> yarns, AppLocalizations l10n) {
+    if (yarns.isEmpty) {
+      return InkWell(
+        onTap: () => _selectStashYarn(context, ref),
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.link_outlined,
+                size: 32,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.linkStashYarn,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.noLinkedYarn,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        ...yarns.map((yarn) {
+          final specText = _buildSpecText(yarn, l10n);
+          return Card(
+            key: ValueKey(yarn.id),
+            margin: const EdgeInsets.only(bottom: 8),
+            elevation: 0,
+            color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: AppImage(
+                        imagePath: yarn.imagePath,
+                        fallbackPadding: 6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (yarn.brandName != null && yarn.brandName!.isNotEmpty)
+                          Text(
+                            yarn.brandName!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        Text(
+                          yarn.yarnName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (specText.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            specText,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      final updatedIds = List<int>.from(stashYarnIds)..remove(yarn.id);
+                      ref.read(projectFormNotifierProvider.notifier).onEvent(StashYarnsChanged(updatedIds));
+                    },
+                    icon: Icon(
+                      Icons.link_off,
+                      color: Theme.of(context).colorScheme.error,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 4),
+        OutlinedButton.icon(
+          onPressed: () => _selectStashYarn(context, ref),
+          icon: const Icon(Icons.add, size: 16),
+          label: Text(
+            l10n.linkStashYarn,
+            style: const TextStyle(fontSize: 12),
+          ),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 36),
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _buildSpecText(StashYarn yarn, AppLocalizations l10n) {
+    final List<String> parts = [];
+    if (yarn.colorwayName != null && yarn.colorwayName!.isNotEmpty) {
+      parts.add(yarn.colorwayName!);
+    }
+    if (yarn.skeins != null) {
+      parts.add(l10n.skeinsCount(yarn.skeins!));
+    }
+    return parts.join('  •  ');
+  }
+
+  void _selectStashYarn(BuildContext context, WidgetRef ref) async {
+    final result = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const StashYarnSelectionSheet(),
+    );
+    if (result != null) {
+      if (!stashYarnIds.contains(result)) {
+        final updatedIds = List<int>.from(stashYarnIds)..add(result);
+        ref.read(projectFormNotifierProvider.notifier).onEvent(StashYarnsChanged(updatedIds));
+      }
+    }
   }
 }
 

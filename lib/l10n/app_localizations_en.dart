@@ -64,7 +64,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportData => 'Export data';
 
   @override
-  String get exportDataSub => 'Save project data and images as a file';
+  String get exportDataSub => 'Save app data and images as a file';
 
   @override
   String get importData => 'Import data';
@@ -571,7 +571,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trash => 'Trash';
 
   @override
-  String get trashSub => 'Manage deleted projects';
+  String get trashSub => 'Manage deleted data';
 
   @override
   String get userGuide => 'User Guide';
@@ -1449,6 +1449,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String trashStashCountInfo(Object count) {
+    return '$count yarns · Auto-deleted after 30 days';
+  }
+
+  @override
   String get restoreProjectTitle => 'Restore Project';
 
   @override
@@ -1857,4 +1862,218 @@ class AppLocalizationsEn extends AppLocalizations {
   String targetReachedDesc(int targetValue) {
     return 'You completed your target of $targetValue rows.\nGreat job! 🧶';
   }
+
+  @override
+  String get stash => 'Stash';
+
+  @override
+  String get stashTabDesc =>
+      'Record and manage your yarn stash inventory and details.';
+
+  @override
+  String get noStashesYet =>
+      'No yarns in stash yet.\nShall we add a new yarn to your stash?';
+
+  @override
+  String get createStash => 'Add to Stash';
+
+  @override
+  String get newStash => 'New Yarn';
+
+  @override
+  String get editStash => 'Edit Yarn Details';
+
+  @override
+  String get deleteStash => 'Delete Yarn';
+
+  @override
+  String get stashInfo => 'Yarn Info';
+
+  @override
+  String get copyStash => 'Duplicate Yarn';
+
+  @override
+  String get stashName => 'Yarn Nickname';
+
+  @override
+  String get stashNameHint => 'e.g., Merino wool for my first cardigan';
+
+  @override
+  String get yarnName => 'Yarn Name';
+
+  @override
+  String get yarnImage => 'Yarn Image';
+
+  @override
+  String get yarnWeight => 'Yarn Weight';
+
+  @override
+  String get selectYarnWeight => 'Select yarn weight';
+
+  @override
+  String get quantityAndSpec => 'Quantity & Specifications';
+
+  @override
+  String get yarnNameHint => 'e.g., Cascade 220';
+
+  @override
+  String get brandName => 'Brand / Company';
+
+  @override
+  String get brandNameHint => 'Enter brand or company name';
+
+  @override
+  String get colorwayName => 'Colorway';
+
+  @override
+  String get colorwayNameHint => 'e.g., Sapphire or 123';
+
+  @override
+  String get dyeLot => 'Dye Lot';
+
+  @override
+  String get dyeLotHint => 'Enter dye lot number';
+
+  @override
+  String get skeins => 'Skeins / Balls';
+
+  @override
+  String get skeinsHint => 'e.g., 3.3';
+
+  @override
+  String get yarnLengthPerSkein => 'Length per Skein';
+
+  @override
+  String get yarnWeightPerSkein => 'Weight per Skein';
+
+  @override
+  String get totalLength => 'Total Length';
+
+  @override
+  String get totalWeight => 'Total Weight';
+
+  @override
+  String get location => 'Storage Location';
+
+  @override
+  String get locationHint => 'e.g., 2nd drawer in bedroom';
+
+  @override
+  String get notesHint => 'Write details like fiber content here';
+
+  @override
+  String get stashDeleted => 'Yarn deleted.';
+
+  @override
+  String deleteStashConfirm(String name) {
+    return 'Delete \'$name\' from stash?';
+  }
+
+  @override
+  String get deleteStashDesc =>
+      'The yarn will be moved to the trash and permanently deleted after 30 days.';
+
+  @override
+  String get deleteStashProjectWarning =>
+      'Linked projects will be unlinked from this yarn.';
+
+  @override
+  String get yards => 'Yards (yd)';
+
+  @override
+  String get meters => 'Meters (m)';
+
+  @override
+  String get grams => 'Grams (g)';
+
+  @override
+  String get ounces => 'Ounces (oz)';
+
+  @override
+  String stashYarnsCount(int count) {
+    return '$count yarns';
+  }
+
+  @override
+  String get noMatchingYarns => 'No matching yarns found';
+
+  @override
+  String get yarns => 'Yarns';
+
+  @override
+  String get weightThread => 'Thread';
+
+  @override
+  String get weightCobweb => 'Cobweb';
+
+  @override
+  String get weightLace => 'Lace';
+
+  @override
+  String get weightLightFingering => 'Light Fingering';
+
+  @override
+  String get weightFingering => 'Fingering (14 wpi)';
+
+  @override
+  String get weightSport => 'Sport (12 wpi)';
+
+  @override
+  String get weightDK => 'DK (11 wpi)';
+
+  @override
+  String get weightWorsted => 'Worsted (9 wpi)';
+
+  @override
+  String get weightAran => 'Aran (8 wpi)';
+
+  @override
+  String get weightBulky => 'Bulky (7 wpi)';
+
+  @override
+  String get weightSuperBulky => 'Super Bulky (5-6 wpi)';
+
+  @override
+  String get weightJumbo => 'Jumbo (0-4 wpi)';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get editSkeinsTitle => 'Enter Quantity';
+
+  @override
+  String skeinsAdjusted(double skeins) {
+    return 'Quantity adjusted to $skeins skein(s).';
+  }
+
+  @override
+  String skeinsCount(num count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString skeins';
+  }
+
+  @override
+  String get linkStashYarn => 'Link Yarn';
+
+  @override
+  String get selectStashYarn => 'Select Yarn';
+
+  @override
+  String get unlink => 'Unlink';
+
+  @override
+  String get linkedYarn => 'Linked Yarn';
+
+  @override
+  String get noLinkedYarn => 'No linked yarn';
+
+  @override
+  String get usingProjects => 'Projects using this yarn';
+
+  @override
+  String get addYarn => 'Add Yarn';
 }

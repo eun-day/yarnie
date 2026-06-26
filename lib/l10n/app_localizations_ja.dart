@@ -63,7 +63,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get exportData => 'データを書き出す';
 
   @override
-  String get exportDataSub => 'プロジェクトデータと画像をファイルとして保存';
+  String get exportDataSub => 'アプリのデータと画像をファイルとして保存';
 
   @override
   String get importData => 'データを取り込む';
@@ -532,7 +532,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trash => 'ゴミ箱';
 
   @override
-  String get trashSub => '削除されたプロジェクトの管理';
+  String get trashSub => '削除されたデータの管理';
 
   @override
   String get userGuide => 'ユーザーガイド';
@@ -1394,6 +1394,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String trashStashCountInfo(Object count) {
+    return '$count個の毛糸 · 30日後に自動削除';
+  }
+
+  @override
   String get restoreProjectTitle => 'プロジェクトを復元';
 
   @override
@@ -1794,4 +1799,214 @@ class AppLocalizationsJa extends AppLocalizations {
   String targetReachedDesc(int targetValue) {
     return '目標の$targetValue段を完了しました。\n本当にお疲れ様でした！ 🧶';
   }
+
+  @override
+  String get stash => 'ストック';
+
+  @override
+  String get stashTabDesc => '所持している毛糸の在庫とスペックを記録・管理します。';
+
+  @override
+  String get noStashesYet => 'まだ登録された毛糸がありません。\n新しい毛糸を登録してみましょう。';
+
+  @override
+  String get createStash => '毛糸を登録する';
+
+  @override
+  String get newStash => '新しい毛糸の登録';
+
+  @override
+  String get editStash => '毛糸情報の編集';
+
+  @override
+  String get deleteStash => '毛糸の削除';
+
+  @override
+  String get stashInfo => '糸の情報';
+
+  @override
+  String get copyStash => '毛糸の複製';
+
+  @override
+  String get stashName => 'ニックネーム';
+
+  @override
+  String get stashNameHint => '例：カーディガン用メリノウール';
+
+  @override
+  String get yarnName => '糸の名前 (製品名)';
+
+  @override
+  String get yarnImage => '糸の画像';
+
+  @override
+  String get yarnWeight => '糸の太さ (Weight)';
+
+  @override
+  String get selectYarnWeight => '糸の太さを選択';
+
+  @override
+  String get quantityAndSpec => '数量・スペック';
+
+  @override
+  String get yarnNameHint => '例：メリノウール 100%';
+
+  @override
+  String get brandName => 'ブランド / メーカー';
+
+  @override
+  String get brandNameHint => 'メーカー名を入力してください';
+
+  @override
+  String get colorwayName => 'カラー名 (色番号)';
+
+  @override
+  String get colorwayNameHint => '例：サクラピンク または 05';
+
+  @override
+  String get dyeLot => 'ロット番号 (Lot)';
+
+  @override
+  String get dyeLotHint => '帯紙のロット番号(Lot)を入力してください';
+
+  @override
+  String get skeins => '所持数量 (玉/かせ)';
+
+  @override
+  String get skeinsHint => '例：3.3';
+
+  @override
+  String get yarnLengthPerSkein => '1玉あたりの長さ';
+
+  @override
+  String get yarnWeightPerSkein => '1玉あたりの重さ';
+
+  @override
+  String get totalLength => '合計の長さ';
+
+  @override
+  String get totalWeight => '合計の重さ';
+
+  @override
+  String get location => '保管場所';
+
+  @override
+  String get locationHint => '例：寝室の引き出し2段目';
+
+  @override
+  String get notesHint => '素材・混率などの詳細を自由に記入してください';
+
+  @override
+  String get stashDeleted => '毛糸が削除されました。';
+
+  @override
+  String deleteStashConfirm(String name) {
+    return '「$name」を削除しますか？';
+  }
+
+  @override
+  String get deleteStashDesc => '毛糸はゴミ箱に移動され、\n30日後に自動的に永久削除されます。';
+
+  @override
+  String get deleteStashProjectWarning => '紐づけられたプロジェクトとの連携が解除されます。';
+
+  @override
+  String get yards => 'ヤード (yd)';
+
+  @override
+  String get meters => 'メートル (m)';
+
+  @override
+  String get grams => 'グラム (g)';
+
+  @override
+  String get ounces => 'オンス (oz)';
+
+  @override
+  String stashYarnsCount(int count) {
+    return '$count個の毛糸';
+  }
+
+  @override
+  String get noMatchingYarns => '該当する毛糸がありません';
+
+  @override
+  String get yarns => '毛糸';
+
+  @override
+  String get weightThread => 'Thread';
+
+  @override
+  String get weightCobweb => 'Cobweb';
+
+  @override
+  String get weightLace => 'Lace';
+
+  @override
+  String get weightLightFingering => 'Light Fingering';
+
+  @override
+  String get weightFingering => 'Fingering (14 wpi)';
+
+  @override
+  String get weightSport => 'Sport (12 wpi)';
+
+  @override
+  String get weightDK => 'DK (11 wpi)';
+
+  @override
+  String get weightWorsted => 'Worsted (9 wpi)';
+
+  @override
+  String get weightAran => 'Aran (8 wpi)';
+
+  @override
+  String get weightBulky => 'Bulky (7 wpi)';
+
+  @override
+  String get weightSuperBulky => 'Super Bulky (5-6 wpi)';
+
+  @override
+  String get weightJumbo => 'Jumbo (0-4 wpi)';
+
+  @override
+  String get undo => '元に戻す';
+
+  @override
+  String get editSkeinsTitle => '数量を直接入力';
+
+  @override
+  String skeinsAdjusted(double skeins) {
+    return '数量が$skeins玉に変更されました。';
+  }
+
+  @override
+  String skeinsCount(num count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString玉';
+  }
+
+  @override
+  String get linkStashYarn => '糸を連携';
+
+  @override
+  String get selectStashYarn => '保管箱から糸を選択';
+
+  @override
+  String get unlink => '連携解除';
+
+  @override
+  String get linkedYarn => '連携された糸';
+
+  @override
+  String get noLinkedYarn => '連携された糸なし';
+
+  @override
+  String get usingProjects => 'この糸を使用するプロジェクト';
+
+  @override
+  String get addYarn => '糸を追加';
 }

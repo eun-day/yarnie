@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive.dart';
+import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,14 +14,14 @@ class BackupService {
 
   BackupService(this._db);
 
-  /// 모든 DB 데이터 + 프로젝트 이미지를 ZIP으로 묶어 내보냅니다.
+  /// 모든 DB 데이터 + 앱 이미지를 ZIP으로 묶어 내보냅니다.
   /// 반환: 임시 디렉토리에 생성된 .zip 파일 경로
   Future<String> exportBackup() async {
     final Map<String, dynamic> backupData = {
       'metadata': {
         'version': 2,
-        'exported_at': DateTime.now().toUtc().toIso8601String(),
-        'app_identifier': 'com.yes.yarnie',
+        'exportedAt': DateTime.now().toUtc().toIso8601String(),
+        'appIdentifier': 'com.yes.yarnie',
       },
       'data': await _fetchAllTableData(),
     };
@@ -39,24 +40,27 @@ class BackupService {
       jsonBytes,
     ));
 
-    // 2) 프로젝트 이미지 파일 수집 및 추가
+    // 2) 앱 이미지 파일 수집 및 추가
     final docDir = await getApplicationDocumentsDirectory();
-    final imageDir = Directory(p.join(docDir.path, 'project_images'));
+    final imageSubDirs = ['project_images', 'stash_images'];
 
-    if (await imageDir.exists()) {
-      final imageFiles = imageDir
-          .listSync(recursive: true)
-          .whereType<File>();
-      for (final imageFile in imageFiles) {
-        // 상대 경로 유지 (예: project_images/123456.jpg)
-        final relativePath =
-            p.relative(imageFile.path, from: docDir.path);
-        final bytes = await imageFile.readAsBytes();
-        archive.addFile(ArchiveFile(
-          relativePath,
-          bytes.length,
-          bytes,
-        ));
+    for (final subDir in imageSubDirs) {
+      final imageDir = Directory(p.join(docDir.path, subDir));
+      if (await imageDir.exists()) {
+        final imageFiles = imageDir
+            .listSync(recursive: true)
+            .whereType<File>();
+        for (final imageFile in imageFiles) {
+          // 상대 경로 유지 (예: project_images/123456.jpg)
+          final relativePath =
+              p.relative(imageFile.path, from: docDir.path);
+          final bytes = await imageFile.readAsBytes();
+          archive.addFile(ArchiveFile(
+            relativePath,
+            bytes.length,
+            bytes,
+          ));
+        }
       }
     }
 
@@ -125,9 +129,11 @@ class BackupService {
 
     // 2) 기존 이미지 디렉토리 정리
     final docDir = await getApplicationDocumentsDirectory();
-    final imageDir = Directory(p.join(docDir.path, 'project_images'));
-    if (await imageDir.exists()) {
-      await imageDir.delete(recursive: true);
+    for (final subDir in ['project_images', 'stash_images']) {
+      final imageDir = Directory(p.join(docDir.path, subDir));
+      if (await imageDir.exists()) {
+        await imageDir.delete(recursive: true);
+      }
     }
 
     // 3) 아카이브에서 이미지 파일 복원
@@ -135,8 +141,9 @@ class BackupService {
       if (entry.name == 'data.json') continue;
       if (!entry.isFile) continue;
 
-      // project_images/ 로 시작하는 파일만 복원
-      if (entry.name.startsWith('project_images/')) {
+      // project_images/ 또는 stash_images/ 로 시작하는 파일만 복원
+      if (entry.name.startsWith('project_images/') ||
+          entry.name.startsWith('stash_images/')) {
         final destPath = p.join(docDir.path, entry.name);
         final destFile = File(destPath);
 
@@ -159,24 +166,27 @@ class BackupService {
       // 2. 데이터 삽입 (순서 주의: 참조 무결성을 위해 Projects부터 삽입)
       
       // Projects
-      if (data['projects'] != null) {
-        for (var e in (data['projects'] as List)) {
+      final projectsData = data['projects'];
+      if (projectsData != null) {
+        for (var e in (projectsData as List)) {
           final item = Project.fromJson(e);
           await _db.into(_db.projects).insert(item);
         }
       }
 
       // Parts
-      if (data['parts'] != null) {
-        for (var e in (data['parts'] as List)) {
+      final partsData = data['parts'];
+      if (partsData != null) {
+        for (var e in (partsData as List)) {
           final item = Part.fromJson(e);
           await _db.into(_db.parts).insert(item);
         }
       }
 
       // MainCounters
-      if (data['main_counters'] != null) {
-        for (var e in (data['main_counters'] as List)) {
+      final mainCountersData = data['mainCounters'] ?? data['main_counters'];
+      if (mainCountersData != null) {
+        for (var e in (mainCountersData as List)) {
           final Map<String, dynamic> map = Map<String, dynamic>.from(e as Map);
           if (map['countBy'] == null) {
             map['countBy'] = 1;
@@ -187,8 +197,9 @@ class BackupService {
       }
 
       // StitchCounters
-      if (data['stitch_counters'] != null) {
-        for (var e in (data['stitch_counters'] as List)) {
+      final stitchCountersData = data['stitchCounters'] ?? data['stitch_counters'];
+      if (stitchCountersData != null) {
+        for (var e in (stitchCountersData as List)) {
           final Map<String, dynamic> map = Map<String, dynamic>.from(e as Map);
           if (map['countBy'] == null) {
             map['countBy'] = 1;
@@ -199,62 +210,126 @@ class BackupService {
       }
 
       // SectionCounters
-      if (data['section_counters'] != null) {
-        for (var e in (data['section_counters'] as List)) {
+      final sectionCountersData = data['sectionCounters'] ?? data['section_counters'];
+      if (sectionCountersData != null) {
+        for (var e in (sectionCountersData as List)) {
           final item = SectionCounter.fromJson(e);
           await _db.into(_db.sectionCounters).insert(item);
         }
       }
 
       // SectionRuns
-      if (data['section_runs'] != null) {
-        for (var e in (data['section_runs'] as List)) {
+      final sectionRunsData = data['sectionRuns'] ?? data['section_runs'];
+      if (sectionRunsData != null) {
+        for (var e in (sectionRunsData as List)) {
           final item = SectionRun.fromJson(e);
           await _db.into(_db.sectionRuns).insert(item);
         }
       }
 
       // Sessions
-      if (data['sessions'] != null) {
-        for (var e in (data['sessions'] as List)) {
+      final sessionsData = data['sessions'];
+      if (sessionsData != null) {
+        for (var e in (sessionsData as List)) {
           final item = Session.fromJson(e);
           await _db.into(_db.sessions).insert(item);
         }
       }
 
       // SessionSegments
-      if (data['session_segments'] != null) {
-        for (var e in (data['session_segments'] as List)) {
+      final sessionSegmentsData = data['sessionSegments'] ?? data['session_segments'];
+      if (sessionSegmentsData != null) {
+        for (var e in (sessionSegmentsData as List)) {
           final item = SessionSegment.fromJson(e);
           await _db.into(_db.sessionSegments).insert(item);
         }
       }
 
       // PartNotes
-      if (data['part_notes'] != null) {
-        for (var e in (data['part_notes'] as List)) {
+      final partNotesData = data['partNotes'] ?? data['part_notes'];
+      if (partNotesData != null) {
+        for (var e in (partNotesData as List)) {
           final item = PartNote.fromJson(e);
           await _db.into(_db.partNotes).insert(item);
         }
       }
 
       // Tags
-      if (data['tags'] != null) {
-        for (var e in (data['tags'] as List)) {
+      final tagsData = data['tags'];
+      if (tagsData != null) {
+        for (var e in (tagsData as List)) {
           final item = Tag.fromJson(e);
           await _db.into(_db.tags).insert(item);
         }
       }
 
+      // StashTags
+      final stashTagsData = data['stashTags'] ?? data['stash_tags'];
+      if (stashTagsData != null) {
+        for (var e in (stashTagsData as List)) {
+          final item = StashTag.fromJson(e);
+          await _db.into(_db.stashTags).insert(item);
+        }
+      }
+
+      // StashYarns
+      final stashYarnsData = data['stashYarns'] ?? data['stash_yarns'];
+      if (stashYarnsData != null) {
+        for (var e in (stashYarnsData as List)) {
+          final item = StashYarn.fromJson(e);
+          await _db.into(_db.stashYarns).insert(item);
+        }
+      }
+
+      // ProjectStashYarns (프로젝트-실 연동)
+      final projectStashYarnsData = data['projectStashYarns'] ?? data['project_stash_yarns'];
+      if (projectStashYarnsData != null) {
+        for (var e in (projectStashYarnsData as List)) {
+          final item = ProjectStashYarn.fromJson(e);
+          await _db.into(_db.projectStashYarns).insert(item);
+        }
+      }
+
+      // v2 이전 백업 복원 시: lotNumber / lot_number → 실 자동 생성 및 프로젝트 연동
+      if (stashYarnsData == null && projectsData != null) {
+        final now = DateTime.now().toUtc();
+        for (var e in (projectsData as List)) {
+          final map = e as Map<String, dynamic>;
+          final lotNumber = (map['lotNumber'] ?? map['lot_number']) as String?;
+          if (lotNumber == null || lotNumber.isEmpty) continue;
+
+          final projectId = map['id'] as int;
+          final stashYarnId = await _db.into(_db.stashYarns).insert(
+            StashYarnsCompanion.insert(
+              yarnName: '기존 프로젝트 실 (자동 생성)',
+              brandName: const Value('이전 로트 번호 실'),
+              dyeLot: Value(lotNumber),
+              skeins: const Value(0.0),
+              lengthUnit: const Value('yards'),
+              weightUnit: const Value('grams'),
+              createdAt: Value(now),
+            ),
+          );
+          await _db.into(_db.projectStashYarns).insert(
+            ProjectStashYarnsCompanion.insert(
+              projectId: projectId,
+              stashYarnId: stashYarnId,
+            ),
+          );
+        }
+      }
+
       // (마이그레이션용 기존 테이블)
-      if (data['work_sessions'] != null) {
-        for (var e in (data['work_sessions'] as List)) {
+      final workSessionsData = data['workSessions'] ?? data['work_sessions'];
+      if (workSessionsData != null) {
+        for (var e in (workSessionsData as List)) {
           final item = WorkSession.fromJson(e);
           await _db.into(_db.workSessions).insert(item);
         }
       }
-      if (data['project_counters'] != null) {
-        for (var e in (data['project_counters'] as List)) {
+      final projectCountersData = data['projectCounters'] ?? data['project_counters'];
+      if (projectCountersData != null) {
+        for (var e in (projectCountersData as List)) {
           final item = ProjectCounter.fromJson(e);
           await _db.into(_db.projectCounters).insert(item);
         }
@@ -264,6 +339,7 @@ class BackupService {
 
   Future<void> _deleteAllData() async {
     // 외래키 제약 때문에 하위 테이블부터 삭제
+    await _db.delete(_db.projectStashYarns).go();
     await _db.delete(_db.sessionSegments).go();
     await _db.delete(_db.sessions).go();
     await _db.delete(_db.sectionRuns).go();
@@ -274,6 +350,8 @@ class BackupService {
     await _db.delete(_db.parts).go();
     await _db.delete(_db.tags).go();
     await _db.delete(_db.projects).go();
+    await _db.delete(_db.stashYarns).go();
+    await _db.delete(_db.stashTags).go();
     await _db.delete(_db.workSessions).go();
     await _db.delete(_db.projectCounters).go();
   }
@@ -284,17 +362,20 @@ class BackupService {
 
     allData['projects'] = (await _db.select(_db.projects).get()).map((e) => e.toJson()).toList();
     allData['parts'] = (await _db.select(_db.parts).get()).map((e) => e.toJson()).toList();
-    allData['main_counters'] = (await _db.select(_db.mainCounters).get()).map((e) => e.toJson()).toList();
-    allData['stitch_counters'] = (await _db.select(_db.stitchCounters).get()).map((e) => e.toJson()).toList();
-    allData['section_counters'] = (await _db.select(_db.sectionCounters).get()).map((e) => e.toJson()).toList();
-    allData['section_runs'] = (await _db.select(_db.sectionRuns).get()).map((e) => e.toJson()).toList();
+    allData['mainCounters'] = (await _db.select(_db.mainCounters).get()).map((e) => e.toJson()).toList();
+    allData['stitchCounters'] = (await _db.select(_db.stitchCounters).get()).map((e) => e.toJson()).toList();
+    allData['sectionCounters'] = (await _db.select(_db.sectionCounters).get()).map((e) => e.toJson()).toList();
+    allData['sectionRuns'] = (await _db.select(_db.sectionRuns).get()).map((e) => e.toJson()).toList();
     allData['sessions'] = (await _db.select(_db.sessions).get()).map((e) => e.toJson()).toList();
-    allData['session_segments'] = (await _db.select(_db.sessionSegments).get()).map((e) => e.toJson()).toList();
-    allData['part_notes'] = (await _db.select(_db.partNotes).get()).map((e) => e.toJson()).toList();
+    allData['sessionSegments'] = (await _db.select(_db.sessionSegments).get()).map((e) => e.toJson()).toList();
+    allData['partNotes'] = (await _db.select(_db.partNotes).get()).map((e) => e.toJson()).toList();
     allData['tags'] = (await _db.select(_db.tags).get()).map((e) => e.toJson()).toList();
+    allData['stashYarns'] = (await _db.select(_db.stashYarns).get()).map((e) => e.toJson()).toList();
+    allData['stashTags'] = (await _db.select(_db.stashTags).get()).map((e) => e.toJson()).toList();
+    allData['projectStashYarns'] = (await _db.select(_db.projectStashYarns).get()).map((e) => e.toJson()).toList();
 
-    allData['work_sessions'] = (await _db.select(_db.workSessions).get()).map((e) => e.toJson()).toList();
-    allData['project_counters'] = (await _db.select(_db.projectCounters).get()).map((e) => e.toJson()).toList();
+    allData['workSessions'] = (await _db.select(_db.workSessions).get()).map((e) => e.toJson()).toList();
+    allData['projectCounters'] = (await _db.select(_db.projectCounters).get()).map((e) => e.toJson()).toList();
 
     return allData;
   }

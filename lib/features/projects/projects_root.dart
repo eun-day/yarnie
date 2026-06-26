@@ -12,7 +12,7 @@ import '../../widgets/tag_chip.dart';
 import '../../widgets/tag_selection_sheet.dart';
 import '../../widgets/colored_tag_chip.dart';
 import '../../widgets/project_list_tile.dart';
-import '../../widgets/project_image.dart';
+import '../../widgets/app_image.dart';
 import '../../widgets/common_banner_ad.dart';
 import '../../widgets/ad_visibility_wrapper.dart';
 import '../../core/providers/premium_provider.dart';
@@ -518,7 +518,7 @@ class _LargeProjectCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               // 배경 이미지
-              ProjectImage(
+              AppImage(
                 imagePath: project.imagePath,
                 fit: BoxFit.cover,
                 fallbackPadding: 48,
@@ -725,7 +725,7 @@ class _SmallProjectCard extends StatelessWidget {
             // 이미지 영역
             Container(
               color: Colors.white,
-              child: ProjectImage(
+              child: AppImage(
                 imagePath: project.imagePath,
                 fit: BoxFit.cover,
               ),

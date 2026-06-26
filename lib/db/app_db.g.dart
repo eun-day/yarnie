@@ -52,17 +52,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _lotNumberMeta = const VerificationMeta(
-    'lotNumber',
-  );
-  @override
-  late final GeneratedColumn<String> lotNumber = GeneratedColumn<String>(
-    'lot_number',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _memoMeta = const VerificationMeta('memo');
   @override
   late final GeneratedColumn<String> memo = GeneratedColumn<String>(
@@ -165,7 +154,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     name,
     needleType,
     needleSize,
-    lotNumber,
     memo,
     gaugeStitches,
     gaugeRows,
@@ -209,12 +197,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       context.handle(
         _needleSizeMeta,
         needleSize.isAcceptableOrUnknown(data['needle_size']!, _needleSizeMeta),
-      );
-    }
-    if (data.containsKey('lot_number')) {
-      context.handle(
-        _lotNumberMeta,
-        lotNumber.isAcceptableOrUnknown(data['lot_number']!, _lotNumberMeta),
       );
     }
     if (data.containsKey('memo')) {
@@ -302,10 +284,6 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         DriftSqlType.string,
         data['${effectivePrefix}needle_size'],
       ),
-      lotNumber: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}lot_number'],
-      ),
       memo: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}memo'],
@@ -356,7 +334,6 @@ class Project extends DataClass implements Insertable<Project> {
   final String name;
   final String? needleType;
   final String? needleSize;
-  final String? lotNumber;
   final String? memo;
   final String? gaugeStitches;
   final String? gaugeRows;
@@ -371,7 +348,6 @@ class Project extends DataClass implements Insertable<Project> {
     required this.name,
     this.needleType,
     this.needleSize,
-    this.lotNumber,
     this.memo,
     this.gaugeStitches,
     this.gaugeRows,
@@ -392,9 +368,6 @@ class Project extends DataClass implements Insertable<Project> {
     }
     if (!nullToAbsent || needleSize != null) {
       map['needle_size'] = Variable<String>(needleSize);
-    }
-    if (!nullToAbsent || lotNumber != null) {
-      map['lot_number'] = Variable<String>(lotNumber);
     }
     if (!nullToAbsent || memo != null) {
       map['memo'] = Variable<String>(memo);
@@ -434,9 +407,6 @@ class Project extends DataClass implements Insertable<Project> {
       needleSize: needleSize == null && nullToAbsent
           ? const Value.absent()
           : Value(needleSize),
-      lotNumber: lotNumber == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lotNumber),
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
       gaugeStitches: gaugeStitches == null && nullToAbsent
           ? const Value.absent()
@@ -473,7 +443,6 @@ class Project extends DataClass implements Insertable<Project> {
       name: serializer.fromJson<String>(json['name']),
       needleType: serializer.fromJson<String?>(json['needleType']),
       needleSize: serializer.fromJson<String?>(json['needleSize']),
-      lotNumber: serializer.fromJson<String?>(json['lotNumber']),
       memo: serializer.fromJson<String?>(json['memo']),
       gaugeStitches: serializer.fromJson<String?>(json['gaugeStitches']),
       gaugeRows: serializer.fromJson<String?>(json['gaugeRows']),
@@ -493,7 +462,6 @@ class Project extends DataClass implements Insertable<Project> {
       'name': serializer.toJson<String>(name),
       'needleType': serializer.toJson<String?>(needleType),
       'needleSize': serializer.toJson<String?>(needleSize),
-      'lotNumber': serializer.toJson<String?>(lotNumber),
       'memo': serializer.toJson<String?>(memo),
       'gaugeStitches': serializer.toJson<String?>(gaugeStitches),
       'gaugeRows': serializer.toJson<String?>(gaugeRows),
@@ -511,7 +479,6 @@ class Project extends DataClass implements Insertable<Project> {
     String? name,
     Value<String?> needleType = const Value.absent(),
     Value<String?> needleSize = const Value.absent(),
-    Value<String?> lotNumber = const Value.absent(),
     Value<String?> memo = const Value.absent(),
     Value<String?> gaugeStitches = const Value.absent(),
     Value<String?> gaugeRows = const Value.absent(),
@@ -526,7 +493,6 @@ class Project extends DataClass implements Insertable<Project> {
     name: name ?? this.name,
     needleType: needleType.present ? needleType.value : this.needleType,
     needleSize: needleSize.present ? needleSize.value : this.needleSize,
-    lotNumber: lotNumber.present ? lotNumber.value : this.lotNumber,
     memo: memo.present ? memo.value : this.memo,
     gaugeStitches: gaugeStitches.present
         ? gaugeStitches.value
@@ -551,7 +517,6 @@ class Project extends DataClass implements Insertable<Project> {
       needleSize: data.needleSize.present
           ? data.needleSize.value
           : this.needleSize,
-      lotNumber: data.lotNumber.present ? data.lotNumber.value : this.lotNumber,
       memo: data.memo.present ? data.memo.value : this.memo,
       gaugeStitches: data.gaugeStitches.present
           ? data.gaugeStitches.value
@@ -575,7 +540,6 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('name: $name, ')
           ..write('needleType: $needleType, ')
           ..write('needleSize: $needleSize, ')
-          ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
           ..write('gaugeStitches: $gaugeStitches, ')
           ..write('gaugeRows: $gaugeRows, ')
@@ -595,7 +559,6 @@ class Project extends DataClass implements Insertable<Project> {
     name,
     needleType,
     needleSize,
-    lotNumber,
     memo,
     gaugeStitches,
     gaugeRows,
@@ -614,7 +577,6 @@ class Project extends DataClass implements Insertable<Project> {
           other.name == this.name &&
           other.needleType == this.needleType &&
           other.needleSize == this.needleSize &&
-          other.lotNumber == this.lotNumber &&
           other.memo == this.memo &&
           other.gaugeStitches == this.gaugeStitches &&
           other.gaugeRows == this.gaugeRows &&
@@ -631,7 +593,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<String> name;
   final Value<String?> needleType;
   final Value<String?> needleSize;
-  final Value<String?> lotNumber;
   final Value<String?> memo;
   final Value<String?> gaugeStitches;
   final Value<String?> gaugeRows;
@@ -646,7 +607,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.name = const Value.absent(),
     this.needleType = const Value.absent(),
     this.needleSize = const Value.absent(),
-    this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
     this.gaugeStitches = const Value.absent(),
     this.gaugeRows = const Value.absent(),
@@ -662,7 +622,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     required String name,
     this.needleType = const Value.absent(),
     this.needleSize = const Value.absent(),
-    this.lotNumber = const Value.absent(),
     this.memo = const Value.absent(),
     this.gaugeStitches = const Value.absent(),
     this.gaugeRows = const Value.absent(),
@@ -678,7 +637,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<String>? name,
     Expression<String>? needleType,
     Expression<String>? needleSize,
-    Expression<String>? lotNumber,
     Expression<String>? memo,
     Expression<String>? gaugeStitches,
     Expression<String>? gaugeRows,
@@ -694,7 +652,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (name != null) 'name': name,
       if (needleType != null) 'needle_type': needleType,
       if (needleSize != null) 'needle_size': needleSize,
-      if (lotNumber != null) 'lot_number': lotNumber,
       if (memo != null) 'memo': memo,
       if (gaugeStitches != null) 'gauge_stitches': gaugeStitches,
       if (gaugeRows != null) 'gauge_rows': gaugeRows,
@@ -712,7 +669,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<String>? name,
     Value<String?>? needleType,
     Value<String?>? needleSize,
-    Value<String?>? lotNumber,
     Value<String?>? memo,
     Value<String?>? gaugeStitches,
     Value<String?>? gaugeRows,
@@ -728,7 +684,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       name: name ?? this.name,
       needleType: needleType ?? this.needleType,
       needleSize: needleSize ?? this.needleSize,
-      lotNumber: lotNumber ?? this.lotNumber,
       memo: memo ?? this.memo,
       gaugeStitches: gaugeStitches ?? this.gaugeStitches,
       gaugeRows: gaugeRows ?? this.gaugeRows,
@@ -755,9 +710,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     }
     if (needleSize.present) {
       map['needle_size'] = Variable<String>(needleSize.value);
-    }
-    if (lotNumber.present) {
-      map['lot_number'] = Variable<String>(lotNumber.value);
     }
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
@@ -796,7 +748,6 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('name: $name, ')
           ..write('needleType: $needleType, ')
           ..write('needleSize: $needleSize, ')
-          ..write('lotNumber: $lotNumber, ')
           ..write('memo: $memo, ')
           ..write('gaugeStitches: $gaugeStitches, ')
           ..write('gaugeRows: $gaugeRows, ')
@@ -5037,6 +4988,1856 @@ class TagsCompanion extends UpdateCompanion<Tag> {
   }
 }
 
+class $StashYarnsTable extends StashYarns
+    with TableInfo<$StashYarnsTable, StashYarn> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StashYarnsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _remoteStashIdMeta = const VerificationMeta(
+    'remoteStashId',
+  );
+  @override
+  late final GeneratedColumn<int> remoteStashId = GeneratedColumn<int>(
+    'remote_stash_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _remoteYarnIdMeta = const VerificationMeta(
+    'remoteYarnId',
+  );
+  @override
+  late final GeneratedColumn<int> remoteYarnId = GeneratedColumn<int>(
+    'remote_yarn_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nicknameMeta = const VerificationMeta(
+    'nickname',
+  );
+  @override
+  late final GeneratedColumn<String> nickname = GeneratedColumn<String>(
+    'nickname',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _yarnNameMeta = const VerificationMeta(
+    'yarnName',
+  );
+  @override
+  late final GeneratedColumn<String> yarnName = GeneratedColumn<String>(
+    'yarn_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _brandNameMeta = const VerificationMeta(
+    'brandName',
+  );
+  @override
+  late final GeneratedColumn<String> brandName = GeneratedColumn<String>(
+    'brand_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _colorwayNameMeta = const VerificationMeta(
+    'colorwayName',
+  );
+  @override
+  late final GeneratedColumn<String> colorwayName = GeneratedColumn<String>(
+    'colorway_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dyeLotMeta = const VerificationMeta('dyeLot');
+  @override
+  late final GeneratedColumn<String> dyeLot = GeneratedColumn<String>(
+    'dye_lot',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _skeinsMeta = const VerificationMeta('skeins');
+  @override
+  late final GeneratedColumn<double> skeins = GeneratedColumn<double>(
+    'skeins',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _yarnLengthPerSkeinMeta =
+      const VerificationMeta('yarnLengthPerSkein');
+  @override
+  late final GeneratedColumn<double> yarnLengthPerSkein =
+      GeneratedColumn<double>(
+        'yarn_length_per_skein',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _yarnWeightPerSkeinMeta =
+      const VerificationMeta('yarnWeightPerSkein');
+  @override
+  late final GeneratedColumn<double> yarnWeightPerSkein =
+      GeneratedColumn<double>(
+        'yarn_weight_per_skein',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _totalLengthMeta = const VerificationMeta(
+    'totalLength',
+  );
+  @override
+  late final GeneratedColumn<double> totalLength = GeneratedColumn<double>(
+    'total_length',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _totalWeightMeta = const VerificationMeta(
+    'totalWeight',
+  );
+  @override
+  late final GeneratedColumn<double> totalWeight = GeneratedColumn<double>(
+    'total_weight',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lengthUnitMeta = const VerificationMeta(
+    'lengthUnit',
+  );
+  @override
+  late final GeneratedColumn<String> lengthUnit = GeneratedColumn<String>(
+    'length_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('yards'),
+  );
+  static const VerificationMeta _weightUnitMeta = const VerificationMeta(
+    'weightUnit',
+  );
+  @override
+  late final GeneratedColumn<String> weightUnit = GeneratedColumn<String>(
+    'weight_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('grams'),
+  );
+  static const VerificationMeta _yarnWeightMeta = const VerificationMeta(
+    'yarnWeight',
+  );
+  @override
+  late final GeneratedColumn<String> yarnWeight = GeneratedColumn<String>(
+    'yarn_weight',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tagIdsMeta = const VerificationMeta('tagIds');
+  @override
+  late final GeneratedColumn<String> tagIds = GeneratedColumn<String>(
+    'tag_ids',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now().toUtc(),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    remoteStashId,
+    remoteYarnId,
+    imagePath,
+    nickname,
+    yarnName,
+    brandName,
+    colorwayName,
+    dyeLot,
+    skeins,
+    yarnLengthPerSkein,
+    yarnWeightPerSkein,
+    totalLength,
+    totalWeight,
+    lengthUnit,
+    weightUnit,
+    yarnWeight,
+    location,
+    notes,
+    tagIds,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stash_yarns';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StashYarn> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('remote_stash_id')) {
+      context.handle(
+        _remoteStashIdMeta,
+        remoteStashId.isAcceptableOrUnknown(
+          data['remote_stash_id']!,
+          _remoteStashIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('remote_yarn_id')) {
+      context.handle(
+        _remoteYarnIdMeta,
+        remoteYarnId.isAcceptableOrUnknown(
+          data['remote_yarn_id']!,
+          _remoteYarnIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('nickname')) {
+      context.handle(
+        _nicknameMeta,
+        nickname.isAcceptableOrUnknown(data['nickname']!, _nicknameMeta),
+      );
+    }
+    if (data.containsKey('yarn_name')) {
+      context.handle(
+        _yarnNameMeta,
+        yarnName.isAcceptableOrUnknown(data['yarn_name']!, _yarnNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_yarnNameMeta);
+    }
+    if (data.containsKey('brand_name')) {
+      context.handle(
+        _brandNameMeta,
+        brandName.isAcceptableOrUnknown(data['brand_name']!, _brandNameMeta),
+      );
+    }
+    if (data.containsKey('colorway_name')) {
+      context.handle(
+        _colorwayNameMeta,
+        colorwayName.isAcceptableOrUnknown(
+          data['colorway_name']!,
+          _colorwayNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('dye_lot')) {
+      context.handle(
+        _dyeLotMeta,
+        dyeLot.isAcceptableOrUnknown(data['dye_lot']!, _dyeLotMeta),
+      );
+    }
+    if (data.containsKey('skeins')) {
+      context.handle(
+        _skeinsMeta,
+        skeins.isAcceptableOrUnknown(data['skeins']!, _skeinsMeta),
+      );
+    }
+    if (data.containsKey('yarn_length_per_skein')) {
+      context.handle(
+        _yarnLengthPerSkeinMeta,
+        yarnLengthPerSkein.isAcceptableOrUnknown(
+          data['yarn_length_per_skein']!,
+          _yarnLengthPerSkeinMeta,
+        ),
+      );
+    }
+    if (data.containsKey('yarn_weight_per_skein')) {
+      context.handle(
+        _yarnWeightPerSkeinMeta,
+        yarnWeightPerSkein.isAcceptableOrUnknown(
+          data['yarn_weight_per_skein']!,
+          _yarnWeightPerSkeinMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total_length')) {
+      context.handle(
+        _totalLengthMeta,
+        totalLength.isAcceptableOrUnknown(
+          data['total_length']!,
+          _totalLengthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total_weight')) {
+      context.handle(
+        _totalWeightMeta,
+        totalWeight.isAcceptableOrUnknown(
+          data['total_weight']!,
+          _totalWeightMeta,
+        ),
+      );
+    }
+    if (data.containsKey('length_unit')) {
+      context.handle(
+        _lengthUnitMeta,
+        lengthUnit.isAcceptableOrUnknown(data['length_unit']!, _lengthUnitMeta),
+      );
+    }
+    if (data.containsKey('weight_unit')) {
+      context.handle(
+        _weightUnitMeta,
+        weightUnit.isAcceptableOrUnknown(data['weight_unit']!, _weightUnitMeta),
+      );
+    }
+    if (data.containsKey('yarn_weight')) {
+      context.handle(
+        _yarnWeightMeta,
+        yarnWeight.isAcceptableOrUnknown(data['yarn_weight']!, _yarnWeightMeta),
+      );
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('tag_ids')) {
+      context.handle(
+        _tagIdsMeta,
+        tagIds.isAcceptableOrUnknown(data['tag_ids']!, _tagIdsMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StashYarn map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StashYarn(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      remoteStashId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remote_stash_id'],
+      ),
+      remoteYarnId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remote_yarn_id'],
+      ),
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      nickname: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nickname'],
+      ),
+      yarnName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}yarn_name'],
+      )!,
+      brandName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}brand_name'],
+      ),
+      colorwayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}colorway_name'],
+      ),
+      dyeLot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dye_lot'],
+      ),
+      skeins: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}skeins'],
+      ),
+      yarnLengthPerSkein: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}yarn_length_per_skein'],
+      ),
+      yarnWeightPerSkein: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}yarn_weight_per_skein'],
+      ),
+      totalLength: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_length'],
+      ),
+      totalWeight: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_weight'],
+      ),
+      lengthUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}length_unit'],
+      )!,
+      weightUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weight_unit'],
+      )!,
+      yarnWeight: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}yarn_weight'],
+      ),
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      tagIds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag_ids'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $StashYarnsTable createAlias(String alias) {
+    return $StashYarnsTable(attachedDatabase, alias);
+  }
+}
+
+class StashYarn extends DataClass implements Insertable<StashYarn> {
+  final int id;
+  final int? remoteStashId;
+  final int? remoteYarnId;
+  final String? imagePath;
+  final String? nickname;
+  final String yarnName;
+  final String? brandName;
+  final String? colorwayName;
+  final String? dyeLot;
+  final double? skeins;
+  final double? yarnLengthPerSkein;
+  final double? yarnWeightPerSkein;
+  final double? totalLength;
+  final double? totalWeight;
+  final String lengthUnit;
+  final String weightUnit;
+  final String? yarnWeight;
+  final String? location;
+  final String? notes;
+  final String? tagIds;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final DateTime? deletedAt;
+  const StashYarn({
+    required this.id,
+    this.remoteStashId,
+    this.remoteYarnId,
+    this.imagePath,
+    this.nickname,
+    required this.yarnName,
+    this.brandName,
+    this.colorwayName,
+    this.dyeLot,
+    this.skeins,
+    this.yarnLengthPerSkein,
+    this.yarnWeightPerSkein,
+    this.totalLength,
+    this.totalWeight,
+    required this.lengthUnit,
+    required this.weightUnit,
+    this.yarnWeight,
+    this.location,
+    this.notes,
+    this.tagIds,
+    required this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || remoteStashId != null) {
+      map['remote_stash_id'] = Variable<int>(remoteStashId);
+    }
+    if (!nullToAbsent || remoteYarnId != null) {
+      map['remote_yarn_id'] = Variable<int>(remoteYarnId);
+    }
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    if (!nullToAbsent || nickname != null) {
+      map['nickname'] = Variable<String>(nickname);
+    }
+    map['yarn_name'] = Variable<String>(yarnName);
+    if (!nullToAbsent || brandName != null) {
+      map['brand_name'] = Variable<String>(brandName);
+    }
+    if (!nullToAbsent || colorwayName != null) {
+      map['colorway_name'] = Variable<String>(colorwayName);
+    }
+    if (!nullToAbsent || dyeLot != null) {
+      map['dye_lot'] = Variable<String>(dyeLot);
+    }
+    if (!nullToAbsent || skeins != null) {
+      map['skeins'] = Variable<double>(skeins);
+    }
+    if (!nullToAbsent || yarnLengthPerSkein != null) {
+      map['yarn_length_per_skein'] = Variable<double>(yarnLengthPerSkein);
+    }
+    if (!nullToAbsent || yarnWeightPerSkein != null) {
+      map['yarn_weight_per_skein'] = Variable<double>(yarnWeightPerSkein);
+    }
+    if (!nullToAbsent || totalLength != null) {
+      map['total_length'] = Variable<double>(totalLength);
+    }
+    if (!nullToAbsent || totalWeight != null) {
+      map['total_weight'] = Variable<double>(totalWeight);
+    }
+    map['length_unit'] = Variable<String>(lengthUnit);
+    map['weight_unit'] = Variable<String>(weightUnit);
+    if (!nullToAbsent || yarnWeight != null) {
+      map['yarn_weight'] = Variable<String>(yarnWeight);
+    }
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || tagIds != null) {
+      map['tag_ids'] = Variable<String>(tagIds);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  StashYarnsCompanion toCompanion(bool nullToAbsent) {
+    return StashYarnsCompanion(
+      id: Value(id),
+      remoteStashId: remoteStashId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteStashId),
+      remoteYarnId: remoteYarnId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteYarnId),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      nickname: nickname == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nickname),
+      yarnName: Value(yarnName),
+      brandName: brandName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(brandName),
+      colorwayName: colorwayName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(colorwayName),
+      dyeLot: dyeLot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dyeLot),
+      skeins: skeins == null && nullToAbsent
+          ? const Value.absent()
+          : Value(skeins),
+      yarnLengthPerSkein: yarnLengthPerSkein == null && nullToAbsent
+          ? const Value.absent()
+          : Value(yarnLengthPerSkein),
+      yarnWeightPerSkein: yarnWeightPerSkein == null && nullToAbsent
+          ? const Value.absent()
+          : Value(yarnWeightPerSkein),
+      totalLength: totalLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(totalLength),
+      totalWeight: totalWeight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(totalWeight),
+      lengthUnit: Value(lengthUnit),
+      weightUnit: Value(weightUnit),
+      yarnWeight: yarnWeight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(yarnWeight),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      tagIds: tagIds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tagIds),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory StashYarn.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StashYarn(
+      id: serializer.fromJson<int>(json['id']),
+      remoteStashId: serializer.fromJson<int?>(json['remoteStashId']),
+      remoteYarnId: serializer.fromJson<int?>(json['remoteYarnId']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      nickname: serializer.fromJson<String?>(json['nickname']),
+      yarnName: serializer.fromJson<String>(json['yarnName']),
+      brandName: serializer.fromJson<String?>(json['brandName']),
+      colorwayName: serializer.fromJson<String?>(json['colorwayName']),
+      dyeLot: serializer.fromJson<String?>(json['dyeLot']),
+      skeins: serializer.fromJson<double?>(json['skeins']),
+      yarnLengthPerSkein: serializer.fromJson<double?>(
+        json['yarnLengthPerSkein'],
+      ),
+      yarnWeightPerSkein: serializer.fromJson<double?>(
+        json['yarnWeightPerSkein'],
+      ),
+      totalLength: serializer.fromJson<double?>(json['totalLength']),
+      totalWeight: serializer.fromJson<double?>(json['totalWeight']),
+      lengthUnit: serializer.fromJson<String>(json['lengthUnit']),
+      weightUnit: serializer.fromJson<String>(json['weightUnit']),
+      yarnWeight: serializer.fromJson<String?>(json['yarnWeight']),
+      location: serializer.fromJson<String?>(json['location']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      tagIds: serializer.fromJson<String?>(json['tagIds']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'remoteStashId': serializer.toJson<int?>(remoteStashId),
+      'remoteYarnId': serializer.toJson<int?>(remoteYarnId),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'nickname': serializer.toJson<String?>(nickname),
+      'yarnName': serializer.toJson<String>(yarnName),
+      'brandName': serializer.toJson<String?>(brandName),
+      'colorwayName': serializer.toJson<String?>(colorwayName),
+      'dyeLot': serializer.toJson<String?>(dyeLot),
+      'skeins': serializer.toJson<double?>(skeins),
+      'yarnLengthPerSkein': serializer.toJson<double?>(yarnLengthPerSkein),
+      'yarnWeightPerSkein': serializer.toJson<double?>(yarnWeightPerSkein),
+      'totalLength': serializer.toJson<double?>(totalLength),
+      'totalWeight': serializer.toJson<double?>(totalWeight),
+      'lengthUnit': serializer.toJson<String>(lengthUnit),
+      'weightUnit': serializer.toJson<String>(weightUnit),
+      'yarnWeight': serializer.toJson<String?>(yarnWeight),
+      'location': serializer.toJson<String?>(location),
+      'notes': serializer.toJson<String?>(notes),
+      'tagIds': serializer.toJson<String?>(tagIds),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  StashYarn copyWith({
+    int? id,
+    Value<int?> remoteStashId = const Value.absent(),
+    Value<int?> remoteYarnId = const Value.absent(),
+    Value<String?> imagePath = const Value.absent(),
+    Value<String?> nickname = const Value.absent(),
+    String? yarnName,
+    Value<String?> brandName = const Value.absent(),
+    Value<String?> colorwayName = const Value.absent(),
+    Value<String?> dyeLot = const Value.absent(),
+    Value<double?> skeins = const Value.absent(),
+    Value<double?> yarnLengthPerSkein = const Value.absent(),
+    Value<double?> yarnWeightPerSkein = const Value.absent(),
+    Value<double?> totalLength = const Value.absent(),
+    Value<double?> totalWeight = const Value.absent(),
+    String? lengthUnit,
+    String? weightUnit,
+    Value<String?> yarnWeight = const Value.absent(),
+    Value<String?> location = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    Value<String?> tagIds = const Value.absent(),
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => StashYarn(
+    id: id ?? this.id,
+    remoteStashId: remoteStashId.present
+        ? remoteStashId.value
+        : this.remoteStashId,
+    remoteYarnId: remoteYarnId.present ? remoteYarnId.value : this.remoteYarnId,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    nickname: nickname.present ? nickname.value : this.nickname,
+    yarnName: yarnName ?? this.yarnName,
+    brandName: brandName.present ? brandName.value : this.brandName,
+    colorwayName: colorwayName.present ? colorwayName.value : this.colorwayName,
+    dyeLot: dyeLot.present ? dyeLot.value : this.dyeLot,
+    skeins: skeins.present ? skeins.value : this.skeins,
+    yarnLengthPerSkein: yarnLengthPerSkein.present
+        ? yarnLengthPerSkein.value
+        : this.yarnLengthPerSkein,
+    yarnWeightPerSkein: yarnWeightPerSkein.present
+        ? yarnWeightPerSkein.value
+        : this.yarnWeightPerSkein,
+    totalLength: totalLength.present ? totalLength.value : this.totalLength,
+    totalWeight: totalWeight.present ? totalWeight.value : this.totalWeight,
+    lengthUnit: lengthUnit ?? this.lengthUnit,
+    weightUnit: weightUnit ?? this.weightUnit,
+    yarnWeight: yarnWeight.present ? yarnWeight.value : this.yarnWeight,
+    location: location.present ? location.value : this.location,
+    notes: notes.present ? notes.value : this.notes,
+    tagIds: tagIds.present ? tagIds.value : this.tagIds,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  StashYarn copyWithCompanion(StashYarnsCompanion data) {
+    return StashYarn(
+      id: data.id.present ? data.id.value : this.id,
+      remoteStashId: data.remoteStashId.present
+          ? data.remoteStashId.value
+          : this.remoteStashId,
+      remoteYarnId: data.remoteYarnId.present
+          ? data.remoteYarnId.value
+          : this.remoteYarnId,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      nickname: data.nickname.present ? data.nickname.value : this.nickname,
+      yarnName: data.yarnName.present ? data.yarnName.value : this.yarnName,
+      brandName: data.brandName.present ? data.brandName.value : this.brandName,
+      colorwayName: data.colorwayName.present
+          ? data.colorwayName.value
+          : this.colorwayName,
+      dyeLot: data.dyeLot.present ? data.dyeLot.value : this.dyeLot,
+      skeins: data.skeins.present ? data.skeins.value : this.skeins,
+      yarnLengthPerSkein: data.yarnLengthPerSkein.present
+          ? data.yarnLengthPerSkein.value
+          : this.yarnLengthPerSkein,
+      yarnWeightPerSkein: data.yarnWeightPerSkein.present
+          ? data.yarnWeightPerSkein.value
+          : this.yarnWeightPerSkein,
+      totalLength: data.totalLength.present
+          ? data.totalLength.value
+          : this.totalLength,
+      totalWeight: data.totalWeight.present
+          ? data.totalWeight.value
+          : this.totalWeight,
+      lengthUnit: data.lengthUnit.present
+          ? data.lengthUnit.value
+          : this.lengthUnit,
+      weightUnit: data.weightUnit.present
+          ? data.weightUnit.value
+          : this.weightUnit,
+      yarnWeight: data.yarnWeight.present
+          ? data.yarnWeight.value
+          : this.yarnWeight,
+      location: data.location.present ? data.location.value : this.location,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      tagIds: data.tagIds.present ? data.tagIds.value : this.tagIds,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StashYarn(')
+          ..write('id: $id, ')
+          ..write('remoteStashId: $remoteStashId, ')
+          ..write('remoteYarnId: $remoteYarnId, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('nickname: $nickname, ')
+          ..write('yarnName: $yarnName, ')
+          ..write('brandName: $brandName, ')
+          ..write('colorwayName: $colorwayName, ')
+          ..write('dyeLot: $dyeLot, ')
+          ..write('skeins: $skeins, ')
+          ..write('yarnLengthPerSkein: $yarnLengthPerSkein, ')
+          ..write('yarnWeightPerSkein: $yarnWeightPerSkein, ')
+          ..write('totalLength: $totalLength, ')
+          ..write('totalWeight: $totalWeight, ')
+          ..write('lengthUnit: $lengthUnit, ')
+          ..write('weightUnit: $weightUnit, ')
+          ..write('yarnWeight: $yarnWeight, ')
+          ..write('location: $location, ')
+          ..write('notes: $notes, ')
+          ..write('tagIds: $tagIds, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    remoteStashId,
+    remoteYarnId,
+    imagePath,
+    nickname,
+    yarnName,
+    brandName,
+    colorwayName,
+    dyeLot,
+    skeins,
+    yarnLengthPerSkein,
+    yarnWeightPerSkein,
+    totalLength,
+    totalWeight,
+    lengthUnit,
+    weightUnit,
+    yarnWeight,
+    location,
+    notes,
+    tagIds,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StashYarn &&
+          other.id == this.id &&
+          other.remoteStashId == this.remoteStashId &&
+          other.remoteYarnId == this.remoteYarnId &&
+          other.imagePath == this.imagePath &&
+          other.nickname == this.nickname &&
+          other.yarnName == this.yarnName &&
+          other.brandName == this.brandName &&
+          other.colorwayName == this.colorwayName &&
+          other.dyeLot == this.dyeLot &&
+          other.skeins == this.skeins &&
+          other.yarnLengthPerSkein == this.yarnLengthPerSkein &&
+          other.yarnWeightPerSkein == this.yarnWeightPerSkein &&
+          other.totalLength == this.totalLength &&
+          other.totalWeight == this.totalWeight &&
+          other.lengthUnit == this.lengthUnit &&
+          other.weightUnit == this.weightUnit &&
+          other.yarnWeight == this.yarnWeight &&
+          other.location == this.location &&
+          other.notes == this.notes &&
+          other.tagIds == this.tagIds &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class StashYarnsCompanion extends UpdateCompanion<StashYarn> {
+  final Value<int> id;
+  final Value<int?> remoteStashId;
+  final Value<int?> remoteYarnId;
+  final Value<String?> imagePath;
+  final Value<String?> nickname;
+  final Value<String> yarnName;
+  final Value<String?> brandName;
+  final Value<String?> colorwayName;
+  final Value<String?> dyeLot;
+  final Value<double?> skeins;
+  final Value<double?> yarnLengthPerSkein;
+  final Value<double?> yarnWeightPerSkein;
+  final Value<double?> totalLength;
+  final Value<double?> totalWeight;
+  final Value<String> lengthUnit;
+  final Value<String> weightUnit;
+  final Value<String?> yarnWeight;
+  final Value<String?> location;
+  final Value<String?> notes;
+  final Value<String?> tagIds;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<DateTime?> deletedAt;
+  const StashYarnsCompanion({
+    this.id = const Value.absent(),
+    this.remoteStashId = const Value.absent(),
+    this.remoteYarnId = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.nickname = const Value.absent(),
+    this.yarnName = const Value.absent(),
+    this.brandName = const Value.absent(),
+    this.colorwayName = const Value.absent(),
+    this.dyeLot = const Value.absent(),
+    this.skeins = const Value.absent(),
+    this.yarnLengthPerSkein = const Value.absent(),
+    this.yarnWeightPerSkein = const Value.absent(),
+    this.totalLength = const Value.absent(),
+    this.totalWeight = const Value.absent(),
+    this.lengthUnit = const Value.absent(),
+    this.weightUnit = const Value.absent(),
+    this.yarnWeight = const Value.absent(),
+    this.location = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tagIds = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  });
+  StashYarnsCompanion.insert({
+    this.id = const Value.absent(),
+    this.remoteStashId = const Value.absent(),
+    this.remoteYarnId = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.nickname = const Value.absent(),
+    required String yarnName,
+    this.brandName = const Value.absent(),
+    this.colorwayName = const Value.absent(),
+    this.dyeLot = const Value.absent(),
+    this.skeins = const Value.absent(),
+    this.yarnLengthPerSkein = const Value.absent(),
+    this.yarnWeightPerSkein = const Value.absent(),
+    this.totalLength = const Value.absent(),
+    this.totalWeight = const Value.absent(),
+    this.lengthUnit = const Value.absent(),
+    this.weightUnit = const Value.absent(),
+    this.yarnWeight = const Value.absent(),
+    this.location = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tagIds = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  }) : yarnName = Value(yarnName);
+  static Insertable<StashYarn> custom({
+    Expression<int>? id,
+    Expression<int>? remoteStashId,
+    Expression<int>? remoteYarnId,
+    Expression<String>? imagePath,
+    Expression<String>? nickname,
+    Expression<String>? yarnName,
+    Expression<String>? brandName,
+    Expression<String>? colorwayName,
+    Expression<String>? dyeLot,
+    Expression<double>? skeins,
+    Expression<double>? yarnLengthPerSkein,
+    Expression<double>? yarnWeightPerSkein,
+    Expression<double>? totalLength,
+    Expression<double>? totalWeight,
+    Expression<String>? lengthUnit,
+    Expression<String>? weightUnit,
+    Expression<String>? yarnWeight,
+    Expression<String>? location,
+    Expression<String>? notes,
+    Expression<String>? tagIds,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (remoteStashId != null) 'remote_stash_id': remoteStashId,
+      if (remoteYarnId != null) 'remote_yarn_id': remoteYarnId,
+      if (imagePath != null) 'image_path': imagePath,
+      if (nickname != null) 'nickname': nickname,
+      if (yarnName != null) 'yarn_name': yarnName,
+      if (brandName != null) 'brand_name': brandName,
+      if (colorwayName != null) 'colorway_name': colorwayName,
+      if (dyeLot != null) 'dye_lot': dyeLot,
+      if (skeins != null) 'skeins': skeins,
+      if (yarnLengthPerSkein != null)
+        'yarn_length_per_skein': yarnLengthPerSkein,
+      if (yarnWeightPerSkein != null)
+        'yarn_weight_per_skein': yarnWeightPerSkein,
+      if (totalLength != null) 'total_length': totalLength,
+      if (totalWeight != null) 'total_weight': totalWeight,
+      if (lengthUnit != null) 'length_unit': lengthUnit,
+      if (weightUnit != null) 'weight_unit': weightUnit,
+      if (yarnWeight != null) 'yarn_weight': yarnWeight,
+      if (location != null) 'location': location,
+      if (notes != null) 'notes': notes,
+      if (tagIds != null) 'tag_ids': tagIds,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+    });
+  }
+
+  StashYarnsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? remoteStashId,
+    Value<int?>? remoteYarnId,
+    Value<String?>? imagePath,
+    Value<String?>? nickname,
+    Value<String>? yarnName,
+    Value<String?>? brandName,
+    Value<String?>? colorwayName,
+    Value<String?>? dyeLot,
+    Value<double?>? skeins,
+    Value<double?>? yarnLengthPerSkein,
+    Value<double?>? yarnWeightPerSkein,
+    Value<double?>? totalLength,
+    Value<double?>? totalWeight,
+    Value<String>? lengthUnit,
+    Value<String>? weightUnit,
+    Value<String?>? yarnWeight,
+    Value<String?>? location,
+    Value<String?>? notes,
+    Value<String?>? tagIds,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<DateTime?>? deletedAt,
+  }) {
+    return StashYarnsCompanion(
+      id: id ?? this.id,
+      remoteStashId: remoteStashId ?? this.remoteStashId,
+      remoteYarnId: remoteYarnId ?? this.remoteYarnId,
+      imagePath: imagePath ?? this.imagePath,
+      nickname: nickname ?? this.nickname,
+      yarnName: yarnName ?? this.yarnName,
+      brandName: brandName ?? this.brandName,
+      colorwayName: colorwayName ?? this.colorwayName,
+      dyeLot: dyeLot ?? this.dyeLot,
+      skeins: skeins ?? this.skeins,
+      yarnLengthPerSkein: yarnLengthPerSkein ?? this.yarnLengthPerSkein,
+      yarnWeightPerSkein: yarnWeightPerSkein ?? this.yarnWeightPerSkein,
+      totalLength: totalLength ?? this.totalLength,
+      totalWeight: totalWeight ?? this.totalWeight,
+      lengthUnit: lengthUnit ?? this.lengthUnit,
+      weightUnit: weightUnit ?? this.weightUnit,
+      yarnWeight: yarnWeight ?? this.yarnWeight,
+      location: location ?? this.location,
+      notes: notes ?? this.notes,
+      tagIds: tagIds ?? this.tagIds,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (remoteStashId.present) {
+      map['remote_stash_id'] = Variable<int>(remoteStashId.value);
+    }
+    if (remoteYarnId.present) {
+      map['remote_yarn_id'] = Variable<int>(remoteYarnId.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (nickname.present) {
+      map['nickname'] = Variable<String>(nickname.value);
+    }
+    if (yarnName.present) {
+      map['yarn_name'] = Variable<String>(yarnName.value);
+    }
+    if (brandName.present) {
+      map['brand_name'] = Variable<String>(brandName.value);
+    }
+    if (colorwayName.present) {
+      map['colorway_name'] = Variable<String>(colorwayName.value);
+    }
+    if (dyeLot.present) {
+      map['dye_lot'] = Variable<String>(dyeLot.value);
+    }
+    if (skeins.present) {
+      map['skeins'] = Variable<double>(skeins.value);
+    }
+    if (yarnLengthPerSkein.present) {
+      map['yarn_length_per_skein'] = Variable<double>(yarnLengthPerSkein.value);
+    }
+    if (yarnWeightPerSkein.present) {
+      map['yarn_weight_per_skein'] = Variable<double>(yarnWeightPerSkein.value);
+    }
+    if (totalLength.present) {
+      map['total_length'] = Variable<double>(totalLength.value);
+    }
+    if (totalWeight.present) {
+      map['total_weight'] = Variable<double>(totalWeight.value);
+    }
+    if (lengthUnit.present) {
+      map['length_unit'] = Variable<String>(lengthUnit.value);
+    }
+    if (weightUnit.present) {
+      map['weight_unit'] = Variable<String>(weightUnit.value);
+    }
+    if (yarnWeight.present) {
+      map['yarn_weight'] = Variable<String>(yarnWeight.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (tagIds.present) {
+      map['tag_ids'] = Variable<String>(tagIds.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StashYarnsCompanion(')
+          ..write('id: $id, ')
+          ..write('remoteStashId: $remoteStashId, ')
+          ..write('remoteYarnId: $remoteYarnId, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('nickname: $nickname, ')
+          ..write('yarnName: $yarnName, ')
+          ..write('brandName: $brandName, ')
+          ..write('colorwayName: $colorwayName, ')
+          ..write('dyeLot: $dyeLot, ')
+          ..write('skeins: $skeins, ')
+          ..write('yarnLengthPerSkein: $yarnLengthPerSkein, ')
+          ..write('yarnWeightPerSkein: $yarnWeightPerSkein, ')
+          ..write('totalLength: $totalLength, ')
+          ..write('totalWeight: $totalWeight, ')
+          ..write('lengthUnit: $lengthUnit, ')
+          ..write('weightUnit: $weightUnit, ')
+          ..write('yarnWeight: $yarnWeight, ')
+          ..write('location: $location, ')
+          ..write('notes: $notes, ')
+          ..write('tagIds: $tagIds, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StashTagsTable extends StashTags
+    with TableInfo<$StashTagsTable, StashTag> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StashTagsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<int> color = GeneratedColumn<int>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now().toUtc(),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, color, createdAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stash_tags';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StashTag> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StashTag map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StashTag(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $StashTagsTable createAlias(String alias) {
+    return $StashTagsTable(attachedDatabase, alias);
+  }
+}
+
+class StashTag extends DataClass implements Insertable<StashTag> {
+  final int id;
+  final String name;
+  final int color;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  const StashTag({
+    required this.id,
+    required this.name,
+    required this.color,
+    required this.createdAt,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['color'] = Variable<int>(color);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  StashTagsCompanion toCompanion(bool nullToAbsent) {
+    return StashTagsCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory StashTag.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StashTag(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<int>(json['color']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<int>(color),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  StashTag copyWith({
+    int? id,
+    String? name,
+    int? color,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => StashTag(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    color: color ?? this.color,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  StashTag copyWithCompanion(StashTagsCompanion data) {
+    return StashTag(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StashTag(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, color, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StashTag &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.color == this.color &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class StashTagsCompanion extends UpdateCompanion<StashTag> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> color;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  const StashTagsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  StashTagsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int color,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : name = Value(name),
+       color = Value(color);
+  static Insertable<StashTag> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? color,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  StashTagsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? color,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+  }) {
+    return StashTagsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<int>(color.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StashTagsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProjectStashYarnsTable extends ProjectStashYarns
+    with TableInfo<$ProjectStashYarnsTable, ProjectStashYarn> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProjectStashYarnsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES projects (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _stashYarnIdMeta = const VerificationMeta(
+    'stashYarnId',
+  );
+  @override
+  late final GeneratedColumn<int> stashYarnId = GeneratedColumn<int>(
+    'stash_yarn_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stash_yarns (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [projectId, stashYarnId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'project_stash_yarns';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProjectStashYarn> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('stash_yarn_id')) {
+      context.handle(
+        _stashYarnIdMeta,
+        stashYarnId.isAcceptableOrUnknown(
+          data['stash_yarn_id']!,
+          _stashYarnIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_stashYarnIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {projectId, stashYarnId};
+  @override
+  ProjectStashYarn map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProjectStashYarn(
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      )!,
+      stashYarnId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stash_yarn_id'],
+      )!,
+    );
+  }
+
+  @override
+  $ProjectStashYarnsTable createAlias(String alias) {
+    return $ProjectStashYarnsTable(attachedDatabase, alias);
+  }
+}
+
+class ProjectStashYarn extends DataClass
+    implements Insertable<ProjectStashYarn> {
+  final int projectId;
+  final int stashYarnId;
+  const ProjectStashYarn({required this.projectId, required this.stashYarnId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['project_id'] = Variable<int>(projectId);
+    map['stash_yarn_id'] = Variable<int>(stashYarnId);
+    return map;
+  }
+
+  ProjectStashYarnsCompanion toCompanion(bool nullToAbsent) {
+    return ProjectStashYarnsCompanion(
+      projectId: Value(projectId),
+      stashYarnId: Value(stashYarnId),
+    );
+  }
+
+  factory ProjectStashYarn.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProjectStashYarn(
+      projectId: serializer.fromJson<int>(json['projectId']),
+      stashYarnId: serializer.fromJson<int>(json['stashYarnId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'projectId': serializer.toJson<int>(projectId),
+      'stashYarnId': serializer.toJson<int>(stashYarnId),
+    };
+  }
+
+  ProjectStashYarn copyWith({int? projectId, int? stashYarnId}) =>
+      ProjectStashYarn(
+        projectId: projectId ?? this.projectId,
+        stashYarnId: stashYarnId ?? this.stashYarnId,
+      );
+  ProjectStashYarn copyWithCompanion(ProjectStashYarnsCompanion data) {
+    return ProjectStashYarn(
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      stashYarnId: data.stashYarnId.present
+          ? data.stashYarnId.value
+          : this.stashYarnId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectStashYarn(')
+          ..write('projectId: $projectId, ')
+          ..write('stashYarnId: $stashYarnId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(projectId, stashYarnId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProjectStashYarn &&
+          other.projectId == this.projectId &&
+          other.stashYarnId == this.stashYarnId);
+}
+
+class ProjectStashYarnsCompanion extends UpdateCompanion<ProjectStashYarn> {
+  final Value<int> projectId;
+  final Value<int> stashYarnId;
+  final Value<int> rowid;
+  const ProjectStashYarnsCompanion({
+    this.projectId = const Value.absent(),
+    this.stashYarnId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProjectStashYarnsCompanion.insert({
+    required int projectId,
+    required int stashYarnId,
+    this.rowid = const Value.absent(),
+  }) : projectId = Value(projectId),
+       stashYarnId = Value(stashYarnId);
+  static Insertable<ProjectStashYarn> custom({
+    Expression<int>? projectId,
+    Expression<int>? stashYarnId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (projectId != null) 'project_id': projectId,
+      if (stashYarnId != null) 'stash_yarn_id': stashYarnId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProjectStashYarnsCompanion copyWith({
+    Value<int>? projectId,
+    Value<int>? stashYarnId,
+    Value<int>? rowid,
+  }) {
+    return ProjectStashYarnsCompanion(
+      projectId: projectId ?? this.projectId,
+      stashYarnId: stashYarnId ?? this.stashYarnId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
+    if (stashYarnId.present) {
+      map['stash_yarn_id'] = Variable<int>(stashYarnId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectStashYarnsCompanion(')
+          ..write('projectId: $projectId, ')
+          ..write('stashYarnId: $stashYarnId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $WorkSessionsTable extends WorkSessions
     with TableInfo<$WorkSessionsTable, WorkSession> {
   @override
@@ -6135,6 +7936,10 @@ abstract class _$AppDb extends GeneratedDatabase {
   );
   late final $PartNotesTable partNotes = $PartNotesTable(this);
   late final $TagsTable tags = $TagsTable(this);
+  late final $StashYarnsTable stashYarns = $StashYarnsTable(this);
+  late final $StashTagsTable stashTags = $StashTagsTable(this);
+  late final $ProjectStashYarnsTable projectStashYarns =
+      $ProjectStashYarnsTable(this);
   late final $WorkSessionsTable workSessions = $WorkSessionsTable(this);
   late final $ProjectCountersTable projectCounters = $ProjectCountersTable(
     this,
@@ -6195,6 +8000,10 @@ abstract class _$AppDb extends GeneratedDatabase {
     'tags_name',
     'CREATE UNIQUE INDEX tags_name ON tags (name)',
   );
+  late final Index stashTagsName = Index(
+    'stash_tags_name',
+    'CREATE UNIQUE INDEX stash_tags_name ON stash_tags (name)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6210,6 +8019,9 @@ abstract class _$AppDb extends GeneratedDatabase {
     sessionSegments,
     partNotes,
     tags,
+    stashYarns,
+    stashTags,
+    projectStashYarns,
     workSessions,
     projectCounters,
     partsProjectOrder,
@@ -6226,6 +8038,7 @@ abstract class _$AppDb extends GeneratedDatabase {
     sessionSegmentsStartedAt,
     partNotesPartPinnedCreated,
     tagsName,
+    stashTagsName,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -6292,6 +8105,20 @@ abstract class _$AppDb extends GeneratedDatabase {
       ),
       result: [TableUpdate('part_notes', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'projects',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('project_stash_yarns', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'stash_yarns',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('project_stash_yarns', kind: UpdateKind.delete)],
+    ),
   ]);
 }
 
@@ -6301,7 +8128,6 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       required String name,
       Value<String?> needleType,
       Value<String?> needleSize,
-      Value<String?> lotNumber,
       Value<String?> memo,
       Value<String?> gaugeStitches,
       Value<String?> gaugeRows,
@@ -6318,7 +8144,6 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String?> needleType,
       Value<String?> needleSize,
-      Value<String?> lotNumber,
       Value<String?> memo,
       Value<String?> gaugeStitches,
       Value<String?> gaugeRows,
@@ -6352,6 +8177,29 @@ final class $$ProjectsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ProjectStashYarnsTable, List<ProjectStashYarn>>
+  _projectStashYarnsRefsTable(_$AppDb db) => MultiTypedResultKey.fromTable(
+    db.projectStashYarns,
+    aliasName: $_aliasNameGenerator(
+      db.projects.id,
+      db.projectStashYarns.projectId,
+    ),
+  );
+
+  $$ProjectStashYarnsTableProcessedTableManager get projectStashYarnsRefs {
+    final manager = $$ProjectStashYarnsTableTableManager(
+      $_db,
+      $_db.projectStashYarns,
+    ).filter((f) => f.projectId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _projectStashYarnsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
@@ -6379,11 +8227,6 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
 
   ColumnFilters<String> get needleSize => $composableBuilder(
     column: $table.needleSize,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lotNumber => $composableBuilder(
-    column: $table.lotNumber,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6456,6 +8299,31 @@ class $$ProjectsTableFilterComposer extends Composer<_$AppDb, $ProjectsTable> {
     );
     return f(composer);
   }
+
+  Expression<bool> projectStashYarnsRefs(
+    Expression<bool> Function($$ProjectStashYarnsTableFilterComposer f) f,
+  ) {
+    final $$ProjectStashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.projectStashYarns,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectStashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.projectStashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProjectsTableOrderingComposer
@@ -6484,11 +8352,6 @@ class $$ProjectsTableOrderingComposer
 
   ColumnOrderings<String> get needleSize => $composableBuilder(
     column: $table.needleSize,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lotNumber => $composableBuilder(
-    column: $table.lotNumber,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6563,9 +8426,6 @@ class $$ProjectsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get lotNumber =>
-      $composableBuilder(column: $table.lotNumber, builder: (column) => column);
-
   GeneratedColumn<String> get memo =>
       $composableBuilder(column: $table.memo, builder: (column) => column);
 
@@ -6621,6 +8481,32 @@ class $$ProjectsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> projectStashYarnsRefs<T extends Object>(
+    Expression<T> Function($$ProjectStashYarnsTableAnnotationComposer a) f,
+  ) {
+    final $$ProjectStashYarnsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.projectStashYarns,
+          getReferencedColumn: (t) => t.projectId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProjectStashYarnsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.projectStashYarns,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$ProjectsTableTableManager
@@ -6636,7 +8522,7 @@ class $$ProjectsTableTableManager
           $$ProjectsTableUpdateCompanionBuilder,
           (Project, $$ProjectsTableReferences),
           Project,
-          PrefetchHooks Function({bool partsRefs})
+          PrefetchHooks Function({bool partsRefs, bool projectStashYarnsRefs})
         > {
   $$ProjectsTableTableManager(_$AppDb db, $ProjectsTable table)
     : super(
@@ -6655,7 +8541,6 @@ class $$ProjectsTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String?> needleType = const Value.absent(),
                 Value<String?> needleSize = const Value.absent(),
-                Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
                 Value<String?> gaugeStitches = const Value.absent(),
                 Value<String?> gaugeRows = const Value.absent(),
@@ -6670,7 +8555,6 @@ class $$ProjectsTableTableManager
                 name: name,
                 needleType: needleType,
                 needleSize: needleSize,
-                lotNumber: lotNumber,
                 memo: memo,
                 gaugeStitches: gaugeStitches,
                 gaugeRows: gaugeRows,
@@ -6687,7 +8571,6 @@ class $$ProjectsTableTableManager
                 required String name,
                 Value<String?> needleType = const Value.absent(),
                 Value<String?> needleSize = const Value.absent(),
-                Value<String?> lotNumber = const Value.absent(),
                 Value<String?> memo = const Value.absent(),
                 Value<String?> gaugeStitches = const Value.absent(),
                 Value<String?> gaugeRows = const Value.absent(),
@@ -6702,7 +8585,6 @@ class $$ProjectsTableTableManager
                 name: name,
                 needleType: needleType,
                 needleSize: needleSize,
-                lotNumber: lotNumber,
                 memo: memo,
                 gaugeStitches: gaugeStitches,
                 gaugeRows: gaugeRows,
@@ -6721,28 +8603,63 @@ class $$ProjectsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({partsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (partsRefs) db.parts],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (partsRefs)
-                    await $_getPrefetchedData<Project, $ProjectsTable, Part>(
-                      currentTable: table,
-                      referencedTable: $$ProjectsTableReferences
-                          ._partsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$ProjectsTableReferences(db, table, p0).partsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.projectId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({partsRefs = false, projectStashYarnsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (partsRefs) db.parts,
+                    if (projectStashYarnsRefs) db.projectStashYarns,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (partsRefs)
+                        await $_getPrefetchedData<
+                          Project,
+                          $ProjectsTable,
+                          Part
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProjectsTableReferences
+                              ._partsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).partsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.projectId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (projectStashYarnsRefs)
+                        await $_getPrefetchedData<
+                          Project,
+                          $ProjectsTable,
+                          ProjectStashYarn
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProjectsTableReferences
+                              ._projectStashYarnsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).projectStashYarnsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.projectId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -6759,7 +8676,7 @@ typedef $$ProjectsTableProcessedTableManager =
       $$ProjectsTableUpdateCompanionBuilder,
       (Project, $$ProjectsTableReferences),
       Project,
-      PrefetchHooks Function({bool partsRefs})
+      PrefetchHooks Function({bool partsRefs, bool projectStashYarnsRefs})
     >;
 typedef $$PartsTableCreateCompanionBuilder =
     PartsCompanion Function({
@@ -10703,6 +12620,1226 @@ typedef $$TagsTableProcessedTableManager =
       Tag,
       PrefetchHooks Function()
     >;
+typedef $$StashYarnsTableCreateCompanionBuilder =
+    StashYarnsCompanion Function({
+      Value<int> id,
+      Value<int?> remoteStashId,
+      Value<int?> remoteYarnId,
+      Value<String?> imagePath,
+      Value<String?> nickname,
+      required String yarnName,
+      Value<String?> brandName,
+      Value<String?> colorwayName,
+      Value<String?> dyeLot,
+      Value<double?> skeins,
+      Value<double?> yarnLengthPerSkein,
+      Value<double?> yarnWeightPerSkein,
+      Value<double?> totalLength,
+      Value<double?> totalWeight,
+      Value<String> lengthUnit,
+      Value<String> weightUnit,
+      Value<String?> yarnWeight,
+      Value<String?> location,
+      Value<String?> notes,
+      Value<String?> tagIds,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+typedef $$StashYarnsTableUpdateCompanionBuilder =
+    StashYarnsCompanion Function({
+      Value<int> id,
+      Value<int?> remoteStashId,
+      Value<int?> remoteYarnId,
+      Value<String?> imagePath,
+      Value<String?> nickname,
+      Value<String> yarnName,
+      Value<String?> brandName,
+      Value<String?> colorwayName,
+      Value<String?> dyeLot,
+      Value<double?> skeins,
+      Value<double?> yarnLengthPerSkein,
+      Value<double?> yarnWeightPerSkein,
+      Value<double?> totalLength,
+      Value<double?> totalWeight,
+      Value<String> lengthUnit,
+      Value<String> weightUnit,
+      Value<String?> yarnWeight,
+      Value<String?> location,
+      Value<String?> notes,
+      Value<String?> tagIds,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+
+final class $$StashYarnsTableReferences
+    extends BaseReferences<_$AppDb, $StashYarnsTable, StashYarn> {
+  $$StashYarnsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ProjectStashYarnsTable, List<ProjectStashYarn>>
+  _projectStashYarnsRefsTable(_$AppDb db) => MultiTypedResultKey.fromTable(
+    db.projectStashYarns,
+    aliasName: $_aliasNameGenerator(
+      db.stashYarns.id,
+      db.projectStashYarns.stashYarnId,
+    ),
+  );
+
+  $$ProjectStashYarnsTableProcessedTableManager get projectStashYarnsRefs {
+    final manager = $$ProjectStashYarnsTableTableManager(
+      $_db,
+      $_db.projectStashYarns,
+    ).filter((f) => f.stashYarnId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _projectStashYarnsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$StashYarnsTableFilterComposer
+    extends Composer<_$AppDb, $StashYarnsTable> {
+  $$StashYarnsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remoteStashId => $composableBuilder(
+    column: $table.remoteStashId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remoteYarnId => $composableBuilder(
+    column: $table.remoteYarnId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get yarnName => $composableBuilder(
+    column: $table.yarnName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get brandName => $composableBuilder(
+    column: $table.brandName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get colorwayName => $composableBuilder(
+    column: $table.colorwayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dyeLot => $composableBuilder(
+    column: $table.dyeLot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get skeins => $composableBuilder(
+    column: $table.skeins,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get yarnLengthPerSkein => $composableBuilder(
+    column: $table.yarnLengthPerSkein,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get yarnWeightPerSkein => $composableBuilder(
+    column: $table.yarnWeightPerSkein,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalLength => $composableBuilder(
+    column: $table.totalLength,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalWeight => $composableBuilder(
+    column: $table.totalWeight,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lengthUnit => $composableBuilder(
+    column: $table.lengthUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get yarnWeight => $composableBuilder(
+    column: $table.yarnWeight,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tagIds => $composableBuilder(
+    column: $table.tagIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> projectStashYarnsRefs(
+    Expression<bool> Function($$ProjectStashYarnsTableFilterComposer f) f,
+  ) {
+    final $$ProjectStashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.projectStashYarns,
+      getReferencedColumn: (t) => t.stashYarnId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectStashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.projectStashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$StashYarnsTableOrderingComposer
+    extends Composer<_$AppDb, $StashYarnsTable> {
+  $$StashYarnsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get remoteStashId => $composableBuilder(
+    column: $table.remoteStashId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get remoteYarnId => $composableBuilder(
+    column: $table.remoteYarnId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get yarnName => $composableBuilder(
+    column: $table.yarnName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get brandName => $composableBuilder(
+    column: $table.brandName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get colorwayName => $composableBuilder(
+    column: $table.colorwayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dyeLot => $composableBuilder(
+    column: $table.dyeLot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get skeins => $composableBuilder(
+    column: $table.skeins,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get yarnLengthPerSkein => $composableBuilder(
+    column: $table.yarnLengthPerSkein,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get yarnWeightPerSkein => $composableBuilder(
+    column: $table.yarnWeightPerSkein,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalLength => $composableBuilder(
+    column: $table.totalLength,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalWeight => $composableBuilder(
+    column: $table.totalWeight,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lengthUnit => $composableBuilder(
+    column: $table.lengthUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get yarnWeight => $composableBuilder(
+    column: $table.yarnWeight,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tagIds => $composableBuilder(
+    column: $table.tagIds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StashYarnsTableAnnotationComposer
+    extends Composer<_$AppDb, $StashYarnsTable> {
+  $$StashYarnsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get remoteStashId => $composableBuilder(
+    column: $table.remoteStashId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get remoteYarnId => $composableBuilder(
+    column: $table.remoteYarnId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get nickname =>
+      $composableBuilder(column: $table.nickname, builder: (column) => column);
+
+  GeneratedColumn<String> get yarnName =>
+      $composableBuilder(column: $table.yarnName, builder: (column) => column);
+
+  GeneratedColumn<String> get brandName =>
+      $composableBuilder(column: $table.brandName, builder: (column) => column);
+
+  GeneratedColumn<String> get colorwayName => $composableBuilder(
+    column: $table.colorwayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dyeLot =>
+      $composableBuilder(column: $table.dyeLot, builder: (column) => column);
+
+  GeneratedColumn<double> get skeins =>
+      $composableBuilder(column: $table.skeins, builder: (column) => column);
+
+  GeneratedColumn<double> get yarnLengthPerSkein => $composableBuilder(
+    column: $table.yarnLengthPerSkein,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get yarnWeightPerSkein => $composableBuilder(
+    column: $table.yarnWeightPerSkein,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalLength => $composableBuilder(
+    column: $table.totalLength,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalWeight => $composableBuilder(
+    column: $table.totalWeight,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lengthUnit => $composableBuilder(
+    column: $table.lengthUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get yarnWeight => $composableBuilder(
+    column: $table.yarnWeight,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get tagIds =>
+      $composableBuilder(column: $table.tagIds, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> projectStashYarnsRefs<T extends Object>(
+    Expression<T> Function($$ProjectStashYarnsTableAnnotationComposer a) f,
+  ) {
+    final $$ProjectStashYarnsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.projectStashYarns,
+          getReferencedColumn: (t) => t.stashYarnId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProjectStashYarnsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.projectStashYarns,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$StashYarnsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $StashYarnsTable,
+          StashYarn,
+          $$StashYarnsTableFilterComposer,
+          $$StashYarnsTableOrderingComposer,
+          $$StashYarnsTableAnnotationComposer,
+          $$StashYarnsTableCreateCompanionBuilder,
+          $$StashYarnsTableUpdateCompanionBuilder,
+          (StashYarn, $$StashYarnsTableReferences),
+          StashYarn,
+          PrefetchHooks Function({bool projectStashYarnsRefs})
+        > {
+  $$StashYarnsTableTableManager(_$AppDb db, $StashYarnsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StashYarnsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StashYarnsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StashYarnsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> remoteStashId = const Value.absent(),
+                Value<int?> remoteYarnId = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String?> nickname = const Value.absent(),
+                Value<String> yarnName = const Value.absent(),
+                Value<String?> brandName = const Value.absent(),
+                Value<String?> colorwayName = const Value.absent(),
+                Value<String?> dyeLot = const Value.absent(),
+                Value<double?> skeins = const Value.absent(),
+                Value<double?> yarnLengthPerSkein = const Value.absent(),
+                Value<double?> yarnWeightPerSkein = const Value.absent(),
+                Value<double?> totalLength = const Value.absent(),
+                Value<double?> totalWeight = const Value.absent(),
+                Value<String> lengthUnit = const Value.absent(),
+                Value<String> weightUnit = const Value.absent(),
+                Value<String?> yarnWeight = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> tagIds = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => StashYarnsCompanion(
+                id: id,
+                remoteStashId: remoteStashId,
+                remoteYarnId: remoteYarnId,
+                imagePath: imagePath,
+                nickname: nickname,
+                yarnName: yarnName,
+                brandName: brandName,
+                colorwayName: colorwayName,
+                dyeLot: dyeLot,
+                skeins: skeins,
+                yarnLengthPerSkein: yarnLengthPerSkein,
+                yarnWeightPerSkein: yarnWeightPerSkein,
+                totalLength: totalLength,
+                totalWeight: totalWeight,
+                lengthUnit: lengthUnit,
+                weightUnit: weightUnit,
+                yarnWeight: yarnWeight,
+                location: location,
+                notes: notes,
+                tagIds: tagIds,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> remoteStashId = const Value.absent(),
+                Value<int?> remoteYarnId = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String?> nickname = const Value.absent(),
+                required String yarnName,
+                Value<String?> brandName = const Value.absent(),
+                Value<String?> colorwayName = const Value.absent(),
+                Value<String?> dyeLot = const Value.absent(),
+                Value<double?> skeins = const Value.absent(),
+                Value<double?> yarnLengthPerSkein = const Value.absent(),
+                Value<double?> yarnWeightPerSkein = const Value.absent(),
+                Value<double?> totalLength = const Value.absent(),
+                Value<double?> totalWeight = const Value.absent(),
+                Value<String> lengthUnit = const Value.absent(),
+                Value<String> weightUnit = const Value.absent(),
+                Value<String?> yarnWeight = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> tagIds = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => StashYarnsCompanion.insert(
+                id: id,
+                remoteStashId: remoteStashId,
+                remoteYarnId: remoteYarnId,
+                imagePath: imagePath,
+                nickname: nickname,
+                yarnName: yarnName,
+                brandName: brandName,
+                colorwayName: colorwayName,
+                dyeLot: dyeLot,
+                skeins: skeins,
+                yarnLengthPerSkein: yarnLengthPerSkein,
+                yarnWeightPerSkein: yarnWeightPerSkein,
+                totalLength: totalLength,
+                totalWeight: totalWeight,
+                lengthUnit: lengthUnit,
+                weightUnit: weightUnit,
+                yarnWeight: yarnWeight,
+                location: location,
+                notes: notes,
+                tagIds: tagIds,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$StashYarnsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({projectStashYarnsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (projectStashYarnsRefs) db.projectStashYarns,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (projectStashYarnsRefs)
+                    await $_getPrefetchedData<
+                      StashYarn,
+                      $StashYarnsTable,
+                      ProjectStashYarn
+                    >(
+                      currentTable: table,
+                      referencedTable: $$StashYarnsTableReferences
+                          ._projectStashYarnsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$StashYarnsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).projectStashYarnsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.stashYarnId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$StashYarnsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $StashYarnsTable,
+      StashYarn,
+      $$StashYarnsTableFilterComposer,
+      $$StashYarnsTableOrderingComposer,
+      $$StashYarnsTableAnnotationComposer,
+      $$StashYarnsTableCreateCompanionBuilder,
+      $$StashYarnsTableUpdateCompanionBuilder,
+      (StashYarn, $$StashYarnsTableReferences),
+      StashYarn,
+      PrefetchHooks Function({bool projectStashYarnsRefs})
+    >;
+typedef $$StashTagsTableCreateCompanionBuilder =
+    StashTagsCompanion Function({
+      Value<int> id,
+      required String name,
+      required int color,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
+typedef $$StashTagsTableUpdateCompanionBuilder =
+    StashTagsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> color,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
+
+class $$StashTagsTableFilterComposer
+    extends Composer<_$AppDb, $StashTagsTable> {
+  $$StashTagsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StashTagsTableOrderingComposer
+    extends Composer<_$AppDb, $StashTagsTable> {
+  $$StashTagsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StashTagsTableAnnotationComposer
+    extends Composer<_$AppDb, $StashTagsTable> {
+  $$StashTagsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$StashTagsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $StashTagsTable,
+          StashTag,
+          $$StashTagsTableFilterComposer,
+          $$StashTagsTableOrderingComposer,
+          $$StashTagsTableAnnotationComposer,
+          $$StashTagsTableCreateCompanionBuilder,
+          $$StashTagsTableUpdateCompanionBuilder,
+          (StashTag, BaseReferences<_$AppDb, $StashTagsTable, StashTag>),
+          StashTag,
+          PrefetchHooks Function()
+        > {
+  $$StashTagsTableTableManager(_$AppDb db, $StashTagsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StashTagsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StashTagsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StashTagsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> color = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => StashTagsCompanion(
+                id: id,
+                name: name,
+                color: color,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int color,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => StashTagsCompanion.insert(
+                id: id,
+                name: name,
+                color: color,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StashTagsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $StashTagsTable,
+      StashTag,
+      $$StashTagsTableFilterComposer,
+      $$StashTagsTableOrderingComposer,
+      $$StashTagsTableAnnotationComposer,
+      $$StashTagsTableCreateCompanionBuilder,
+      $$StashTagsTableUpdateCompanionBuilder,
+      (StashTag, BaseReferences<_$AppDb, $StashTagsTable, StashTag>),
+      StashTag,
+      PrefetchHooks Function()
+    >;
+typedef $$ProjectStashYarnsTableCreateCompanionBuilder =
+    ProjectStashYarnsCompanion Function({
+      required int projectId,
+      required int stashYarnId,
+      Value<int> rowid,
+    });
+typedef $$ProjectStashYarnsTableUpdateCompanionBuilder =
+    ProjectStashYarnsCompanion Function({
+      Value<int> projectId,
+      Value<int> stashYarnId,
+      Value<int> rowid,
+    });
+
+final class $$ProjectStashYarnsTableReferences
+    extends BaseReferences<_$AppDb, $ProjectStashYarnsTable, ProjectStashYarn> {
+  $$ProjectStashYarnsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ProjectsTable _projectIdTable(_$AppDb db) => db.projects.createAlias(
+    $_aliasNameGenerator(db.projectStashYarns.projectId, db.projects.id),
+  );
+
+  $$ProjectsTableProcessedTableManager get projectId {
+    final $_column = $_itemColumn<int>('project_id')!;
+
+    final manager = $$ProjectsTableTableManager(
+      $_db,
+      $_db.projects,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $StashYarnsTable _stashYarnIdTable(_$AppDb db) =>
+      db.stashYarns.createAlias(
+        $_aliasNameGenerator(
+          db.projectStashYarns.stashYarnId,
+          db.stashYarns.id,
+        ),
+      );
+
+  $$StashYarnsTableProcessedTableManager get stashYarnId {
+    final $_column = $_itemColumn<int>('stash_yarn_id')!;
+
+    final manager = $$StashYarnsTableTableManager(
+      $_db,
+      $_db.stashYarns,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_stashYarnIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ProjectStashYarnsTableFilterComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableFilterComposer get projectId {
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableFilterComposer get stashYarnId {
+    final $$StashYarnsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableFilterComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableOrderingComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableOrderingComposer get projectId {
+    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableOrderingComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableOrderingComposer get stashYarnId {
+    final $$StashYarnsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableOrderingComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableAnnotationComposer
+    extends Composer<_$AppDb, $ProjectStashYarnsTable> {
+  $$ProjectStashYarnsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$ProjectsTableAnnotationComposer get projectId {
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StashYarnsTableAnnotationComposer get stashYarnId {
+    final $$StashYarnsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stashYarnId,
+      referencedTable: $db.stashYarns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StashYarnsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.stashYarns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProjectStashYarnsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $ProjectStashYarnsTable,
+          ProjectStashYarn,
+          $$ProjectStashYarnsTableFilterComposer,
+          $$ProjectStashYarnsTableOrderingComposer,
+          $$ProjectStashYarnsTableAnnotationComposer,
+          $$ProjectStashYarnsTableCreateCompanionBuilder,
+          $$ProjectStashYarnsTableUpdateCompanionBuilder,
+          (ProjectStashYarn, $$ProjectStashYarnsTableReferences),
+          ProjectStashYarn,
+          PrefetchHooks Function({bool projectId, bool stashYarnId})
+        > {
+  $$ProjectStashYarnsTableTableManager(
+    _$AppDb db,
+    $ProjectStashYarnsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProjectStashYarnsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProjectStashYarnsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProjectStashYarnsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> projectId = const Value.absent(),
+                Value<int> stashYarnId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectStashYarnsCompanion(
+                projectId: projectId,
+                stashYarnId: stashYarnId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int projectId,
+                required int stashYarnId,
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectStashYarnsCompanion.insert(
+                projectId: projectId,
+                stashYarnId: stashYarnId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ProjectStashYarnsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({projectId = false, stashYarnId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (projectId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.projectId,
+                                referencedTable:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._projectIdTable(db),
+                                referencedColumn:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._projectIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (stashYarnId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.stashYarnId,
+                                referencedTable:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._stashYarnIdTable(db),
+                                referencedColumn:
+                                    $$ProjectStashYarnsTableReferences
+                                        ._stashYarnIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ProjectStashYarnsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $ProjectStashYarnsTable,
+      ProjectStashYarn,
+      $$ProjectStashYarnsTableFilterComposer,
+      $$ProjectStashYarnsTableOrderingComposer,
+      $$ProjectStashYarnsTableAnnotationComposer,
+      $$ProjectStashYarnsTableCreateCompanionBuilder,
+      $$ProjectStashYarnsTableUpdateCompanionBuilder,
+      (ProjectStashYarn, $$ProjectStashYarnsTableReferences),
+      ProjectStashYarn,
+      PrefetchHooks Function({bool projectId, bool stashYarnId})
+    >;
 typedef $$WorkSessionsTableCreateCompanionBuilder =
     WorkSessionsCompanion Function({
       Value<int> id,
@@ -11257,6 +14394,12 @@ class $AppDbManager {
   $$PartNotesTableTableManager get partNotes =>
       $$PartNotesTableTableManager(_db, _db.partNotes);
   $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
+  $$StashYarnsTableTableManager get stashYarns =>
+      $$StashYarnsTableTableManager(_db, _db.stashYarns);
+  $$StashTagsTableTableManager get stashTags =>
+      $$StashTagsTableTableManager(_db, _db.stashTags);
+  $$ProjectStashYarnsTableTableManager get projectStashYarns =>
+      $$ProjectStashYarnsTableTableManager(_db, _db.projectStashYarns);
   $$WorkSessionsTableTableManager get workSessions =>
       $$WorkSessionsTableTableManager(_db, _db.workSessions);
   $$ProjectCountersTableTableManager get projectCounters =>

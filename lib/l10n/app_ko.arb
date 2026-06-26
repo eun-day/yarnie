@@ -18,7 +18,7 @@
   "autoBackup": "자동 백업",
   "autoBackupSub": "매일 자동으로 데이터 백업",
   "exportData": "데이터 내보내기",
-  "exportDataSub": "프로젝트 데이터와 이미지를 파일로 저장",
+  "exportDataSub": "앱 데이터와 이미지를 파일로 저장",
   "importData": "데이터 가져오기",
   "importDataSub": "백업 파일에서 복원하기",
   "screenAwake": "화면 꺼짐 방지",
@@ -166,7 +166,7 @@
   "off": "꺼짐",
   "customerSupport": "고객 지원",
   "trash": "휴지통",
-  "trashSub": "삭제된 프로젝트 관리",
+  "trashSub": "삭제된 데이터 관리",
   "userGuide": "사용 가이드",
   "userGuideSub": "Yarnie 사용법 배우기",
   "appInfo": "앱 정보",
@@ -444,6 +444,7 @@
   "userGuideJourney": "Yarnie와 함께하는 뜨개질 여정",
   "trashHeader": "휴지통",
   "trashProjectCountInfo": "{count}개의 프로젝트 · 30일 후 자동 삭제",
+  "trashStashCountInfo": "{count}개의 실 · 30일 후 자동 삭제",
   "restoreProjectTitle": "프로젝트 복원",
   "restoreConfirmMessage": "이 프로젝트를 복원하시겠습니까?",
   "projectRestoredMessage": "프로젝트가 복원되었습니다.",
@@ -590,5 +591,101 @@
         "type": "int"
       }
     }
-  }
+  },
+  "stash": "보관함",
+  "stashTabDesc": "보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.",
+  "noStashesYet": "아직 등록한 실이 없어요.\n보관함에 새 실을 등록해볼까요?",
+  "createStash": "실 등록하기",
+  "newStash": "새 실 등록",
+  "editStash": "실 정보 수정",
+  "deleteStash": "실 삭제",
+  "stashInfo": "실 정보",
+  "copyStash": "실 정보 복제",
+  "stashName": "실 별칭",
+  "stashNameHint": "예: 내 첫 가디건용 메리노울",
+  "yarnName": "실 이름 (제품명)",
+  "yarnImage": "실 이미지",
+  "yarnWeight": "실 굵기",
+  "selectYarnWeight": "실 굵기를 선택하세요",
+  "quantityAndSpec": "수량 및 규격",
+  "yarnNameHint": "예: 메리노울 100%",
+  "brandName": "브랜드 / 제조사",
+  "brandNameHint": "제조사 이름을 입력하세요",
+  "colorwayName": "색상명 (색상번호)",
+  "colorwayNameHint": "예: 인디핑크 또는 05",
+  "dyeLot": "로트 번호 (Lot)",
+  "dyeLotHint": "실 띠지의 로트 번호(Lot)를 입력하세요",
+  "skeins": "보유 수량 (볼/타래)",
+  "skeinsHint": "예: 3.3",
+  "yarnLengthPerSkein": "1볼당 길이",
+  "yarnWeightPerSkein": "1볼당 무게",
+  "totalLength": "총 보유 길이",
+  "totalWeight": "총 보유 무게",
+  "location": "보관 위치",
+  "locationHint": "예: 안방 서랍장 2층",
+  "notesHint": "소재, 혼용률 등 상세 정보를 자유롭게 적어보세요",
+  "stashDeleted": "실이 삭제되었습니다.",
+  "deleteStashConfirm": "'{name}' 실을 보관함에서 삭제하시겠습니까?",
+  "@deleteStashConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteStashDesc": "실 정보는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.",
+  "deleteStashProjectWarning": "연결된 프로젝트에서 실 연동이 해제됩니다.",
+  "yards": "야드 (yd)",
+  "meters": "미터 (m)",
+  "grams": "그램 (g)",
+  "ounces": "온스 (oz)",
+  "stashYarnsCount": "{count}개의 실",
+  "@stashYarnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMatchingYarns": "해당하는 실이 없습니다",
+  "yarns": "실",
+  "weightThread": "Thread",
+  "weightCobweb": "Cobweb",
+  "weightLace": "Lace",
+  "weightLightFingering": "Light Fingering",
+  "weightFingering": "Fingering (14 wpi)",
+  "weightSport": "Sport (12 wpi)",
+  "weightDK": "DK (11 wpi)",
+  "weightWorsted": "Worsted (9 wpi)",
+  "weightAran": "Aran (8 wpi)",
+  "weightBulky": "Bulky (7 wpi)",
+  "weightSuperBulky": "Super Bulky (5-6 wpi)",
+  "weightJumbo": "Jumbo (0-4 wpi)",
+  "undo": "실행 취소",
+  "editSkeinsTitle": "수량 직접 입력",
+  "skeinsAdjusted": "수량이 {skeins}볼로 변경되었습니다.",
+  "@skeinsAdjusted": {
+    "placeholders": {
+      "skeins": {
+        "type": "double"
+      }
+    }
+  },
+  "skeinsCount": "{count}볼",
+  "@skeinsCount": {
+    "description": "실 보유 수량 표시 단위 (볼/타래)",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "linkStashYarn": "실 연동하기",
+  "selectStashYarn": "보관함에서 실 선택",
+  "unlink": "연동 해제",
+  "linkedYarn": "연동된 실",
+  "noLinkedYarn": "연동된 실 없음",
+  "usingProjects": "이 실을 사용하는 프로젝트",
+  "addYarn": "실 추가"
 }

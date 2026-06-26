@@ -211,7 +211,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportDataSub.
   ///
   /// In ko, this message translates to:
-  /// **'프로젝트 데이터와 이미지를 파일로 저장'**
+  /// **'앱 데이터와 이미지를 파일로 저장'**
   String get exportDataSub;
 
   /// No description provided for @importData.
@@ -1099,7 +1099,7 @@ abstract class AppLocalizations {
   /// No description provided for @trashSub.
   ///
   /// In ko, this message translates to:
-  /// **'삭제된 프로젝트 관리'**
+  /// **'삭제된 데이터 관리'**
   String get trashSub;
 
   /// No description provided for @userGuide.
@@ -2722,6 +2722,12 @@ abstract class AppLocalizations {
   /// **'{count}개의 프로젝트 · 30일 후 자동 삭제'**
   String trashProjectCountInfo(Object count);
 
+  /// No description provided for @trashStashCountInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개의 실 · 30일 후 자동 삭제'**
+  String trashStashCountInfo(Object count);
+
   /// No description provided for @restoreProjectTitle.
   ///
   /// In ko, this message translates to:
@@ -3380,6 +3386,402 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'목표인 {targetValue}단을 완료했습니다.\n정말 고생 많으셨어요! 🧶'**
   String targetReachedDesc(int targetValue);
+
+  /// No description provided for @stash.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관함'**
+  String get stash;
+
+  /// No description provided for @stashTabDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.'**
+  String get stashTabDesc;
+
+  /// No description provided for @noStashesYet.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 등록한 실이 없어요.\n보관함에 새 실을 등록해볼까요?'**
+  String get noStashesYet;
+
+  /// No description provided for @createStash.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 등록하기'**
+  String get createStash;
+
+  /// No description provided for @newStash.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 실 등록'**
+  String get newStash;
+
+  /// No description provided for @editStash.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 정보 수정'**
+  String get editStash;
+
+  /// No description provided for @deleteStash.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 삭제'**
+  String get deleteStash;
+
+  /// No description provided for @stashInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 정보'**
+  String get stashInfo;
+
+  /// No description provided for @copyStash.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 정보 복제'**
+  String get copyStash;
+
+  /// No description provided for @stashName.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 별칭'**
+  String get stashName;
+
+  /// No description provided for @stashNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 내 첫 가디건용 메리노울'**
+  String get stashNameHint;
+
+  /// No description provided for @yarnName.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이름 (제품명)'**
+  String get yarnName;
+
+  /// No description provided for @yarnImage.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이미지'**
+  String get yarnImage;
+
+  /// No description provided for @yarnWeight.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 굵기'**
+  String get yarnWeight;
+
+  /// No description provided for @selectYarnWeight.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 굵기를 선택하세요'**
+  String get selectYarnWeight;
+
+  /// No description provided for @quantityAndSpec.
+  ///
+  /// In ko, this message translates to:
+  /// **'수량 및 규격'**
+  String get quantityAndSpec;
+
+  /// No description provided for @yarnNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 메리노울 100%'**
+  String get yarnNameHint;
+
+  /// No description provided for @brandName.
+  ///
+  /// In ko, this message translates to:
+  /// **'브랜드 / 제조사'**
+  String get brandName;
+
+  /// No description provided for @brandNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'제조사 이름을 입력하세요'**
+  String get brandNameHint;
+
+  /// No description provided for @colorwayName.
+  ///
+  /// In ko, this message translates to:
+  /// **'색상명 (색상번호)'**
+  String get colorwayName;
+
+  /// No description provided for @colorwayNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 인디핑크 또는 05'**
+  String get colorwayNameHint;
+
+  /// No description provided for @dyeLot.
+  ///
+  /// In ko, this message translates to:
+  /// **'로트 번호 (Lot)'**
+  String get dyeLot;
+
+  /// No description provided for @dyeLotHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 띠지의 로트 번호(Lot)를 입력하세요'**
+  String get dyeLotHint;
+
+  /// No description provided for @skeins.
+  ///
+  /// In ko, this message translates to:
+  /// **'보유 수량 (볼/타래)'**
+  String get skeins;
+
+  /// No description provided for @skeinsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 3.3'**
+  String get skeinsHint;
+
+  /// No description provided for @yarnLengthPerSkein.
+  ///
+  /// In ko, this message translates to:
+  /// **'1볼당 길이'**
+  String get yarnLengthPerSkein;
+
+  /// No description provided for @yarnWeightPerSkein.
+  ///
+  /// In ko, this message translates to:
+  /// **'1볼당 무게'**
+  String get yarnWeightPerSkein;
+
+  /// No description provided for @totalLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 보유 길이'**
+  String get totalLength;
+
+  /// No description provided for @totalWeight.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 보유 무게'**
+  String get totalWeight;
+
+  /// No description provided for @location.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관 위치'**
+  String get location;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 안방 서랍장 2층'**
+  String get locationHint;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'소재, 혼용률 등 상세 정보를 자유롭게 적어보세요'**
+  String get notesHint;
+
+  /// No description provided for @stashDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'실이 삭제되었습니다.'**
+  String get stashDeleted;
+
+  /// No description provided for @deleteStashConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'\'{name}\' 실을 보관함에서 삭제하시겠습니까?'**
+  String deleteStashConfirm(String name);
+
+  /// No description provided for @deleteStashDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 정보는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.'**
+  String get deleteStashDesc;
+
+  /// No description provided for @deleteStashProjectWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결된 프로젝트에서 실 연동이 해제됩니다.'**
+  String get deleteStashProjectWarning;
+
+  /// No description provided for @yards.
+  ///
+  /// In ko, this message translates to:
+  /// **'야드 (yd)'**
+  String get yards;
+
+  /// No description provided for @meters.
+  ///
+  /// In ko, this message translates to:
+  /// **'미터 (m)'**
+  String get meters;
+
+  /// No description provided for @grams.
+  ///
+  /// In ko, this message translates to:
+  /// **'그램 (g)'**
+  String get grams;
+
+  /// No description provided for @ounces.
+  ///
+  /// In ko, this message translates to:
+  /// **'온스 (oz)'**
+  String get ounces;
+
+  /// No description provided for @stashYarnsCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개의 실'**
+  String stashYarnsCount(int count);
+
+  /// No description provided for @noMatchingYarns.
+  ///
+  /// In ko, this message translates to:
+  /// **'해당하는 실이 없습니다'**
+  String get noMatchingYarns;
+
+  /// No description provided for @yarns.
+  ///
+  /// In ko, this message translates to:
+  /// **'실'**
+  String get yarns;
+
+  /// No description provided for @weightThread.
+  ///
+  /// In ko, this message translates to:
+  /// **'Thread'**
+  String get weightThread;
+
+  /// No description provided for @weightCobweb.
+  ///
+  /// In ko, this message translates to:
+  /// **'Cobweb'**
+  String get weightCobweb;
+
+  /// No description provided for @weightLace.
+  ///
+  /// In ko, this message translates to:
+  /// **'Lace'**
+  String get weightLace;
+
+  /// No description provided for @weightLightFingering.
+  ///
+  /// In ko, this message translates to:
+  /// **'Light Fingering'**
+  String get weightLightFingering;
+
+  /// No description provided for @weightFingering.
+  ///
+  /// In ko, this message translates to:
+  /// **'Fingering (14 wpi)'**
+  String get weightFingering;
+
+  /// No description provided for @weightSport.
+  ///
+  /// In ko, this message translates to:
+  /// **'Sport (12 wpi)'**
+  String get weightSport;
+
+  /// No description provided for @weightDK.
+  ///
+  /// In ko, this message translates to:
+  /// **'DK (11 wpi)'**
+  String get weightDK;
+
+  /// No description provided for @weightWorsted.
+  ///
+  /// In ko, this message translates to:
+  /// **'Worsted (9 wpi)'**
+  String get weightWorsted;
+
+  /// No description provided for @weightAran.
+  ///
+  /// In ko, this message translates to:
+  /// **'Aran (8 wpi)'**
+  String get weightAran;
+
+  /// No description provided for @weightBulky.
+  ///
+  /// In ko, this message translates to:
+  /// **'Bulky (7 wpi)'**
+  String get weightBulky;
+
+  /// No description provided for @weightSuperBulky.
+  ///
+  /// In ko, this message translates to:
+  /// **'Super Bulky (5-6 wpi)'**
+  String get weightSuperBulky;
+
+  /// No description provided for @weightJumbo.
+  ///
+  /// In ko, this message translates to:
+  /// **'Jumbo (0-4 wpi)'**
+  String get weightJumbo;
+
+  /// No description provided for @undo.
+  ///
+  /// In ko, this message translates to:
+  /// **'실행 취소'**
+  String get undo;
+
+  /// No description provided for @editSkeinsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수량 직접 입력'**
+  String get editSkeinsTitle;
+
+  /// No description provided for @skeinsAdjusted.
+  ///
+  /// In ko, this message translates to:
+  /// **'수량이 {skeins}볼로 변경되었습니다.'**
+  String skeinsAdjusted(double skeins);
+
+  /// 실 보유 수량 표시 단위 (볼/타래)
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}볼'**
+  String skeinsCount(num count);
+
+  /// No description provided for @linkStashYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 연동하기'**
+  String get linkStashYarn;
+
+  /// No description provided for @selectStashYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관함에서 실 선택'**
+  String get selectStashYarn;
+
+  /// No description provided for @unlink.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동 해제'**
+  String get unlink;
+
+  /// No description provided for @linkedYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동된 실'**
+  String get linkedYarn;
+
+  /// No description provided for @noLinkedYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동된 실 없음'**
+  String get noLinkedYarn;
+
+  /// No description provided for @usingProjects.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 사용하는 프로젝트'**
+  String get usingProjects;
+
+  /// No description provided for @addYarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 추가'**
+  String get addYarn;
 }
 
 class _AppLocalizationsDelegate

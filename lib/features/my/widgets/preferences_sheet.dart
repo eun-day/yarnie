@@ -599,11 +599,16 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
       if (await file.exists()) {
         await file.delete();
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Data export failed: $e\n$stackTrace');
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        if (Navigator.canPop(context)) Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        if (Navigator.canPop(context)) Navigator.pop(context); // 로딩 다이얼로그 닫기
+        if (Navigator.canPop(context)) Navigator.pop(context); // PreferencesSheet 닫기
+        
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
           SnackBar(content: Text(l10n.exportFailed(e.toString()))),
         );
       }
@@ -731,10 +736,15 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Data import failed: $e\n$stackTrace');
       if (mounted) {
-        if (Navigator.canPop(context)) Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        if (Navigator.canPop(context)) Navigator.pop(context); // 로딩 다이얼로그 닫기
+        if (Navigator.canPop(context)) Navigator.pop(context); // PreferencesSheet 닫기
+        
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
           SnackBar(content: Text(l10n.restoreFailed(e.toString()))),
         );
       }

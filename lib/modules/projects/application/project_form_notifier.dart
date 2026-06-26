@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/project_image_utils.dart';
+import '../../../../core/utils/app_image_utils.dart';
 
 import '../../../../db/di.dart'; // appDb 인스턴스
 import 'projects_notifier.dart'; // ProjectsNotifier에 프로젝트 생성/업데이트 이벤트를 전달하기 위함
@@ -48,8 +48,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         _handleNeedleTypeChange(needleType);
       case NeedleSizeChanged(:final needleSize):
         state = state.copyWith(needleSize: needleSize);
-      case LotNumberChanged(:final lotNumber):
-        state = state.copyWith(lotNumber: lotNumber);
+      case StashYarnsChanged(:final stashYarnIds):
+        state = state.copyWith(stashYarnIds: stashYarnIds);
       case MemoChanged(:final memo):
         state = state.copyWith(memo: memo);
       case GaugeStitchesChanged(:final gaugeStitches):
@@ -89,7 +89,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           imagePath: null,
           needleType: null,
           needleSize: null,
-          lotNumber: null,
+          stashYarnIds: const [],
           memo: null,
           selectedTagIds: {},
           allAvailableTags: allTags, // Set the tags
@@ -106,6 +106,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           return;
         }
 
+        final linkedYarns = await appDb.getStashYarnsForProject(projectId);
+        final stashYarnIds = linkedYarns.map((y) => y.id).toList();
+
         final needleTypeEnum = project.needleType != null
             ? NeedleType.values.firstWhere(
                 (e) => e.toString().split('.').last == project.needleType,
@@ -121,7 +124,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           needleType: needleTypeEnum,
           needleSize: project.needleSize,
           availableNeedleSizes: getNeedleSizesForType(needleTypeEnum),
-          lotNumber: project.lotNumber,
+          stashYarnIds: stashYarnIds,
           memo: project.memo,
           gaugeStitches: project.gaugeStitches,
           gaugeRows: project.gaugeRows,
@@ -191,7 +194,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             name: state.name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
-            lotNumber: state.lotNumber,
+            stashYarnIds: state.stashYarnIds,
             memo: state.memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
@@ -206,7 +209,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             name: state.name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
-            lotNumber: state.lotNumber,
+            stashYarnIds: state.stashYarnIds,
             memo: state.memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
@@ -231,7 +234,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
   }) async {
     // 이미지 제거된 경우
     if (newPath == null) {
-      await ProjectImageUtils.deleteImage(oldPath);
+      await AppImageUtils.deleteImage(oldPath);
       return null;
     }
 
@@ -241,11 +244,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     }
 
     // 영구 저장소로 복사, 상대 경로 반환
-    final relativePath = await ProjectImageUtils.persistImage(newPath);
+    final relativePath = await AppImageUtils.persistImage(newPath);
 
     // 기존 이미지 파일 삭제 (수정 모드에서 이미지 교체된 경우)
     if (oldPath != null && oldPath != newPath) {
-      await ProjectImageUtils.deleteImage(oldPath);
+      await AppImageUtils.deleteImage(oldPath);
     }
 
     return relativePath;

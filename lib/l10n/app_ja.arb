@@ -18,7 +18,7 @@
   "autoBackup": "自動バックアップ",
   "autoBackupSub": "毎日自動でデータをバックアップ",
   "exportData": "データを書き出す",
-  "exportDataSub": "プロジェクトデータと画像をファイルとして保存",
+  "exportDataSub": "アプリのデータと画像をファイルとして保存",
   "importData": "データを取り込む",
   "importDataSub": "バックアップファイルから復元",
   "screenAwake": "スリープ防止",
@@ -166,7 +166,7 @@
   "off": "オフ",
   "customerSupport": "カスタマーサポート",
   "trash": "ゴミ箱",
-  "trashSub": "削除されたプロジェクトの管理",
+  "trashSub": "削除されたデータの管理",
   "userGuide": "ユーザーガイド",
   "userGuideSub": "Yarnieの使い方を学ぶ",
   "appInfo": "アプリ情報",
@@ -444,6 +444,7 @@
   "userGuideJourney": "Yarnieと楽しむ編み物の旅",
   "trashHeader": "ゴミ箱",
   "trashProjectCountInfo": "{count}個のプロジェクト · 30日後に自動削除",
+  "trashStashCountInfo": "{count}個の毛糸 · 30日後に自動削除",
   "restoreProjectTitle": "プロジェクトを復元",
   "restoreConfirmMessage": "このプロジェクトを復元しますか？",
   "projectRestoredMessage": "プロジェクトを復元しました。",
@@ -559,5 +560,101 @@
         "type": "int"
       }
     }
-  }
+  },
+  "stash": "ストック",
+  "stashTabDesc": "所持している毛糸の在庫とスペックを記録・管理します。",
+  "noStashesYet": "まだ登録された毛糸がありません。\n新しい毛糸を登録してみましょう。",
+  "createStash": "毛糸を登録する",
+  "newStash": "新しい毛糸の登録",
+  "editStash": "毛糸情報の編集",
+  "deleteStash": "毛糸の削除",
+  "stashInfo": "糸の情報",
+  "copyStash": "毛糸の複製",
+  "stashName": "ニックネーム",
+  "stashNameHint": "例：カーディガン用メリノウール",
+  "yarnName": "糸の名前 (製品名)",
+  "yarnImage": "糸の画像",
+  "yarnWeight": "糸の太さ (Weight)",
+  "selectYarnWeight": "糸の太さを選択",
+  "quantityAndSpec": "数量・スペック",
+  "yarnNameHint": "例：メリノウール 100%",
+  "brandName": "ブランド / メーカー",
+  "brandNameHint": "メーカー名を入力してください",
+  "colorwayName": "カラー名 (色番号)",
+  "colorwayNameHint": "例：サクラピンク または 05",
+  "dyeLot": "ロット番号 (Lot)",
+  "dyeLotHint": "帯紙のロット番号(Lot)を入力してください",
+  "skeins": "所持数量 (玉/かせ)",
+  "skeinsHint": "例：3.3",
+  "yarnLengthPerSkein": "1玉あたりの長さ",
+  "yarnWeightPerSkein": "1玉あたりの重さ",
+  "totalLength": "合計の長さ",
+  "totalWeight": "合計の重さ",
+  "location": "保管場所",
+  "locationHint": "例：寝室の引き出し2段目",
+  "notesHint": "素材・混率などの詳細を自由に記入してください",
+  "stashDeleted": "毛糸が削除されました。",
+  "deleteStashConfirm": "「{name}」を削除しますか？",
+  "@deleteStashConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteStashDesc": "毛糸はゴミ箱に移動され、\n30日後に自動的に永久削除されます。",
+  "deleteStashProjectWarning": "紐づけられたプロジェクトとの連携が解除されます。",
+  "yards": "ヤード (yd)",
+  "meters": "メートル (m)",
+  "grams": "グラム (g)",
+  "ounces": "オンス (oz)",
+  "stashYarnsCount": "{count}個の毛糸",
+  "@stashYarnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMatchingYarns": "該当する毛糸がありません",
+  "yarns": "毛糸",
+  "weightThread": "Thread",
+  "weightCobweb": "Cobweb",
+  "weightLace": "Lace",
+  "weightLightFingering": "Light Fingering",
+  "weightFingering": "Fingering (14 wpi)",
+  "weightSport": "Sport (12 wpi)",
+  "weightDK": "DK (11 wpi)",
+  "weightWorsted": "Worsted (9 wpi)",
+  "weightAran": "Aran (8 wpi)",
+  "weightBulky": "Bulky (7 wpi)",
+  "weightSuperBulky": "Super Bulky (5-6 wpi)",
+  "weightJumbo": "Jumbo (0-4 wpi)",
+  "undo": "元に戻す",
+  "editSkeinsTitle": "数量を直接入力",
+  "skeinsAdjusted": "数量が{skeins}玉に変更されました。",
+  "@skeinsAdjusted": {
+    "placeholders": {
+      "skeins": {
+        "type": "double"
+      }
+    }
+  },
+  "skeinsCount": "{count}玉",
+  "@skeinsCount": {
+    "description": "毛糸の所持数量の表示単位 (玉)",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "linkStashYarn": "糸を連携",
+  "selectStashYarn": "保管箱から糸を選択",
+  "unlink": "連携解除",
+  "linkedYarn": "連携された糸",
+  "noLinkedYarn": "連携された糸なし",
+  "usingProjects": "この糸を使用するプロジェクト",
+  "addYarn": "糸を追加"
 }

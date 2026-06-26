@@ -31,18 +31,18 @@ void main() async {
     await Purchases.configure(configuration);
   }
 
-  final projects = await appDb.watchAll().first;
-  for (final project in projects) {
-    debugPrint(
-      '📌Project: id=${project.id}, name=${project.name}, needleType=${project.needleType}, needleSize=${project.needleSize}, lotNumber=${project.lotNumber}, memo=${project.memo}, createdAt=${project.createdAt}, updatedAt=${project.updatedAt}',
-    );
-  }
-
   // 삭제된지 30일이 지난 프로젝트 영구 삭제
   try {
     await appDb.cleanupDeletedProjects();
   } catch (e) {
     debugPrint('Failed to cleanup deleted projects: $e');
+  }
+
+  // 삭제된지 30일이 지난 실 정보 영구 삭제
+  try {
+    await appDb.cleanupDeletedStashYarns();
+  } catch (e) {
+    debugPrint('Failed to cleanup deleted stash yarns: $e');
   }
 
   final prefs = await SharedPreferences.getInstance();

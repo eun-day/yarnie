@@ -49,4 +49,28 @@ class AdHelper {
           : 'ca-app-pub-3940256099942544/2934735716';
     }
   }
+
+  static String get stashListBannerId {
+    if (kReleaseMode) {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3766691232792823/1585991519'
+          : 'ca-app-pub-3766691232792823/6555247165';
+    } else {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716';
+    }
+  }
+
+  static String get stashDetailBannerId {
+    if (kReleaseMode) {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3766691232792823/2943682519'
+          : 'ca-app-pub-3766691232792823/5883073560';
+    } else {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716';
+    }
+  }
 }

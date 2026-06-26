@@ -10,9 +10,12 @@ class NumberInputGroup extends StatelessWidget {
   final bool isReadOnly;
   final VoidCallback? onChanged;
   final TextStyle? textStyle;
-  final int min;
-  final int? max;
+  final num min;
+  final num? max;
   final bool skipZero;
+  final bool isDecimal;
+  final double step;
+  final FocusNode? focusNode;
 
   const NumberInputGroup({
     super.key,
@@ -26,41 +29,59 @@ class NumberInputGroup extends StatelessWidget {
     this.min = 1,
     this.max,
     this.skipZero = false,
+    this.isDecimal = false,
+    this.step = 1.0,
+    this.focusNode,
   });
 
   void _increment() {
-    final current = int.tryParse(controller.text);
-    int next;
-    if (current == null) {
-      next = 1;
-      if (next < min) next = min;
+    if (isDecimal) {
+      final current = double.tryParse(controller.text) ?? 0.0;
+      double next = double.parse((current + step).toStringAsFixed(2));
+      if (next < min.toDouble()) next = min.toDouble();
+      if (max != null && next > max!.toDouble()) return;
+      controller.text = next.toString();
     } else {
-      next = current + 1;
-      if (skipZero && next == 0) {
+      final current = int.tryParse(controller.text);
+      int next;
+      if (current == null) {
         next = 1;
+        if (next < min.toInt()) next = min.toInt();
+      } else {
+        next = current + 1;
+        if (skipZero && next == 0) {
+          next = 1;
+        }
       }
-    }
 
-    if (max != null && next > max!) return;
-    controller.text = next.toString();
+      if (max != null && next > max!) return;
+      controller.text = next.toString();
+    }
     onChanged?.call();
   }
 
   void _decrement() {
-    final current = int.tryParse(controller.text);
-    int next;
-    if (current == null) {
-      next = -1;
-      if (next < min) next = min;
+    if (isDecimal) {
+      final current = double.tryParse(controller.text) ?? 0.0;
+      double next = double.parse((current - step).toStringAsFixed(2));
+      if (next < min.toDouble()) return;
+      controller.text = next.toString();
     } else {
-      next = current - 1;
-      if (skipZero && next == 0) {
+      final current = int.tryParse(controller.text);
+      int next;
+      if (current == null) {
         next = -1;
+        if (next < min.toInt()) next = min.toInt();
+      } else {
+        next = current - 1;
+        if (skipZero && next == 0) {
+          next = -1;
+        }
       }
-    }
 
-    if (next < min) return;
-    controller.text = next.toString();
+      if (next < min.toInt()) return;
+      controller.text = next.toString();
+    }
     onChanged?.call();
   }
 
@@ -99,8 +120,9 @@ class NumberInputGroup extends StatelessWidget {
                 alignment: Alignment.center,
                 child: TextField(
                   controller: controller,
+                  focusNode: focusNode,
                   textAlign: TextAlign.center,
-                  keyboardType: TextInputType.numberWithOptions(signed: true),
+                  keyboardType: TextInputType.numberWithOptions(signed: true, decimal: isDecimal),
                   readOnly: isReadOnly,
                   onTap: () {
                     controller.selection = TextSelection(
@@ -117,7 +139,10 @@ class NumberInputGroup extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                    if (isDecimal)
+                      FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*'))
+                    else
+                      FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
                   ],
                   onChanged: (_) {
                     onChanged?.call();
