@@ -219,13 +219,14 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                             projectId: widget.projectId,
                             initialText: part.name,
                             onSave: (newName) {
+                              // 이름만 바꾼다. 탭 이름은 파트 스트림으로 갱신되며,
+                              // 현재 파트를 바꾸면 진행 중인 세션까지 일시정지되므로 전환하지 않는다.
                               ref
                                   .read(partManageProvider.notifier)
                                   .onEvent(UpdatePart(part.id, newName));
                               setState(() {
                                 _renamingPartId = null;
                               });
-                              widget.onPartChanged?.call(part.id);
                             },
                             onCancel: () {
                               setState(() {
