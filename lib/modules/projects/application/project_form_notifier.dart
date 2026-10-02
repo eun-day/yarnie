@@ -179,11 +179,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     state = state.copyWith(isSaving: true, error: null);
 
     try {
-      // 이미지를 영구 저장소로 복사
-      final persistedImagePath = await _persistImage(
-        newPath: state.imagePath,
-        oldPath: state.initialProject?.imagePath,
-      );
+      // 새로 고른 이미지만 영구 저장소로 복사
+      // (교체된 기존 이미지는 DB 저장이 성공한 뒤 ProjectsNotifier가 정리)
+      final persistedImagePath = await _persistImage(state.imagePath);
 
       final projectsNotifier = ref.read(projectsProvider.notifier);
       if (state.isEditMode && state.initialProjectId != null) {
@@ -224,34 +222,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     }
   }
 
-  /// 이미지를 앱 영구 저장소로 복사하고 상대 경로를 반환
-  /// - 이미지가 없으면 null 반환
-  /// - 이미 상대 경로(영구 저장소)이면 그대로 반환
-  /// - 새 이미지면 복사하고, 기존 이미지(oldPath)가 있으면 삭제
-  Future<String?> _persistImage({
-    required String? newPath,
-    required String? oldPath,
-  }) async {
-    // 이미지 제거된 경우
-    if (newPath == null) {
-      await AppImageUtils.deleteImage(oldPath);
-      return null;
-    }
-
-    // 이미 상대 경로(영구 저장소)이면 그대로 사용 (수정 모드에서 변경 안 한 경우)
-    if (!newPath.startsWith('/')) {
-      return newPath;
-    }
-
-    // 영구 저장소로 복사, 상대 경로 반환
-    final relativePath = await AppImageUtils.persistImage(newPath);
-
-    // 기존 이미지 파일 삭제 (수정 모드에서 이미지 교체된 경우)
-    if (oldPath != null && oldPath != newPath) {
-      await AppImageUtils.deleteImage(oldPath);
-    }
-
-    return relativePath;
+  /// 새로 고른 이미지(절대 경로)를 앱 영구 저장소로 복사하고 상대 경로를 반환
+  /// - 이미지가 없거나 이미 저장소에 있는 이미지(상대 경로)면 그대로 반환
+  Future<String?> _persistImage(String? path) async {
+    if (path == null || !path.startsWith('/')) return path;
+    return AppImageUtils.persistImage(path);
   }
 
   // 헬퍼: DB에서 불러온 JSON 문자열 태그 ID 파싱

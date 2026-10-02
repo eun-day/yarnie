@@ -2557,6 +2557,18 @@ class AppDb extends _$AppDb {
     );
   }
 
+  /// 이미지 경로를 참조하는 프로젝트·실이 있는지 확인
+  /// (복사한 프로젝트·실은 원본과 같은 이미지 파일을 공유한다)
+  Future<bool> isImagePathReferenced(String imagePath) async {
+    final row = await customSelect(
+      'SELECT EXISTS(SELECT 1 FROM projects WHERE image_path = ?1) '
+      'OR EXISTS(SELECT 1 FROM stash_yarns WHERE image_path = ?1) AS used',
+      variables: [Variable.withString(imagePath)],
+      readsFrom: {projects, stashYarns},
+    ).getSingle();
+    return row.read<int>('used') != 0;
+  }
+
   /// 프로젝트의 현재 선택된 파트 ID 업데이트
   Future<void> updateProjectCurrentPart({
     required int projectId,

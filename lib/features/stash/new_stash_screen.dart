@@ -275,25 +275,12 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
 
     setState(() => _isSaving = true);
 
-    String? oldImagePath;
-    if (widget.stashYarnId != null) {
-      final existing = await appDb.getStashYarn(widget.stashYarnId!);
-      oldImagePath = existing?.imagePath;
-    }
-
-    String? persistedImagePath;
-    if (_imagePath == null) {
-      if (oldImagePath != null) {
-        await AppImageUtils.deleteImage(oldImagePath);
-      }
-    } else if (!_imagePath!.startsWith('/')) {
-      persistedImagePath = _imagePath;
-    } else {
-      persistedImagePath = await AppImageUtils.persistImage(_imagePath!, subDir: 'stash_images');
-      if (oldImagePath != null && oldImagePath != persistedImagePath) {
-        await AppImageUtils.deleteImage(oldImagePath);
-      }
-    }
+    // 새로 고른 이미지만 영구 저장소로 복사한다.
+    // (교체·제거된 기존 이미지는 DB 저장이 성공한 뒤 StashNotifier가 정리)
+    final persistedImagePath = (_imagePath != null && _imagePath!.startsWith('/'))
+        ? await AppImageUtils.persistImage(_imagePath!, subDir: 'stash_images')
+        : _imagePath;
+    if (!mounted) return;
 
     final tagsJson = _selectedTagIds.isEmpty ? null : jsonEncode(_selectedTagIds.toList());
 

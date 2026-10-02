@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/app_image_utils.dart';
 import '../../../db/app_db.dart';
 import '../../../db/di.dart';
 import 'projects_state.dart';
@@ -292,6 +293,8 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         tagIds: event.tagIds,
       );
 
+      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+      await AppImageUtils.deleteImageIfUnused(project.imagePath, keep: event.imagePath);
       _emit(ProjectUpdated(event.projectId));
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
     } catch (e) {
