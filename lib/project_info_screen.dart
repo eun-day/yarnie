@@ -9,6 +9,7 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/common/time_helper.dart';
 import 'package:yarnie/features/stash/stash_detail_screen.dart';
+import 'package:yarnie/modules/stash/application/stash_state.dart' show parseTagIds;
 
 class ProjectInfoSheet extends ConsumerWidget {
   final Project project;
@@ -26,11 +27,9 @@ class ProjectInfoSheet extends ConsumerWidget {
     final lengthUnit = ref.watch(lengthUnitProvider);
 
     // 태그 ID로 실제 태그 객체 찾기
-    final selectedTags = project.tagIds != null
-        ? allTags
-              .where((tag) => project.tagIds!.contains(tag.id.toString()))
-              .toList()
-        : <Tag>[];
+    // (JSON 문자열에 contains로 찾으면 "[12]"에 태그 1·2도 걸리므로 파싱해서 비교)
+    final tagIds = parseTagIds(project.tagIds).toSet();
+    final selectedTags = allTags.where((tag) => tagIds.contains(tag.id)).toList();
 
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
