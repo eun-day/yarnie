@@ -285,10 +285,19 @@ class BackupService {
       }
 
       // StashTags
+      // v3 업그레이드 사용자의 백업에는 이름이 같은 태그가 있을 수 있다(stash_tags_name 인덱스 누락).
+      // 같은 이름은 먼저 나온 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
+      final stashTagIdRemap = <int, int>{};
+      final stashTagIdByName = <String, int>{};
       final stashTagsData = data['stashTags'] ?? data['stash_tags'];
       if (stashTagsData != null) {
         for (var e in (stashTagsData as List)) {
           final item = StashTag.fromJson(e);
+          final keepId = stashTagIdByName.putIfAbsent(item.name, () => item.id);
+          if (keepId != item.id) {
+            stashTagIdRemap[item.id] = keepId;
+            continue;
+          }
           await _db.into(_db.stashTags).insert(item);
         }
       }
@@ -297,7 +306,12 @@ class BackupService {
       final stashYarnsData = data['stashYarns'] ?? data['stash_yarns'];
       if (stashYarnsData != null) {
         for (var e in (stashYarnsData as List)) {
-          final item = StashYarn.fromJson(e);
+          var item = StashYarn.fromJson(e);
+          if (stashTagIdRemap.isNotEmpty) {
+            item = item.copyWith(
+              tagIds: Value(AppDb.remapTagIdsJson(item.tagIds, stashTagIdRemap)),
+            );
+          }
           await _db.into(_db.stashYarns).insert(item);
         }
       }
