@@ -857,11 +857,16 @@ class AppDb extends _$AppDb {
   }
 
   /// 프로젝트 휴지통 이동 (소프트 딜리트)
+  /// 휴지통에 있는 동안 시간이 쌓이지 않도록 진행 중인 세션은 일시정지한다.
   Future<void> softDeleteProject(int projectId) async {
-    final now = DateTime.now().toUtc();
-    await (update(projects)..where((t) => t.id.equals(projectId))).write(
-      ProjectsCompanion(deletedAt: Value(now)),
-    );
+    await transaction(() async {
+      for (final part in await getProjectParts(projectId)) {
+        await pauseRunningSession(part.id);
+      }
+      await (update(projects)..where((t) => t.id.equals(projectId))).write(
+        ProjectsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+      );
+    });
   }
 
   /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
@@ -1975,7 +1980,7 @@ class AppDb extends _$AppDb {
 
   /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
   ///
-  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)에 사용한다.
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지), 프로젝트 휴지통 이동에 사용한다.
   Future<void> pauseRunningSession(
     int partId, {
     SegmentReason reason = SegmentReason.pause,
