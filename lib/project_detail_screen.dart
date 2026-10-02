@@ -1894,7 +1894,8 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
         final currentValue = mainCounter?.currentValue ?? 1;
         final targetValue = mainCounter?.targetValue;
         final countBy = mainCounter?.countBy ?? 1;
-        final hasTarget = targetValue != null;
+        // 0 이하 목표(이전 버전에서 저장될 수 있었음)는 목표 없음으로 취급해 clamp 예외를 막는다.
+        final hasTarget = targetValue != null && targetValue > 0;
 
         final remaining = hasTarget ? (targetValue - currentValue + 1).clamp(0, targetValue) : 0;
         final progress = hasTarget
@@ -2124,7 +2125,7 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                     showDialog(
                       context: context,
                       builder: (context) => TargetSettingDialog(
-                        initialValue: targetValue ?? currentValue,
+                        initialValue: hasTarget ? targetValue : currentValue,
                         onSave: (newValue) {
                           appDb.updateMainCounterTarget(
                             partId: widget.partId,
