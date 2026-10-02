@@ -2030,6 +2030,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionAbsenceExclude => '반영 안 함';
 
   @override
+  String get pauseSession => '일시정지';
+
+  @override
   String get deleteMemoTitle => '메모 삭제';
 
   @override

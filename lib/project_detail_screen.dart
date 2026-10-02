@@ -1688,11 +1688,12 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   String _formatDuration(Duration d) {
     final hours = d.inHours;
     final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60); // Optional seconds
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    // 1시간 이상은 시:분:초 ("1:05"만 쓰면 1시간 5분인지 1분 5초인지 구분되지 않음)
     if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}';
+      return '$hours:${minutes.toString().padLeft(2, '0')}:$seconds';
     }
-    return '$minutes:${seconds.toString().padLeft(2, '0')}'; // 분:초
+    return '$minutes:$seconds'; // 분:초
   }
 
   @override
@@ -1797,7 +1798,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    isRunning ? l10n.paused : (session == null ? l10n.start : l10n.resume),
+                    isRunning ? l10n.pauseSession : (session == null ? l10n.start : l10n.resume),
                     style: TextStyle(
                       color: isRunning
                           ? context.sessionPausedText

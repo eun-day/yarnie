@@ -2092,6 +2092,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionAbsenceExclude => 'Don\'t add';
 
   @override
+  String get pauseSession => 'Pause';
+
+  @override
   String get deleteMemoTitle => 'Delete Note';
 
   @override

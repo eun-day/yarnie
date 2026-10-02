@@ -3807,6 +3807,12 @@ abstract class AppLocalizations {
   /// **'반영 안 함'**
   String get sessionAbsenceExclude;
 
+  /// No description provided for @pauseSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시정지'**
+  String get pauseSession;
+
   /// No description provided for @deleteMemoTitle.
   ///
   /// In ko, this message translates to:
