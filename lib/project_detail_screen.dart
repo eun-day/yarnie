@@ -1098,18 +1098,18 @@ class _BuddyCounterListWidgetState extends ConsumerState<BuddyCounterListWidget>
             label: counter.name,
             currentValue: counter.currentValue,
             countBy: counter.countBy,
+            // 화면 값이 아니라 DB 값에 더해 연타해도 증가분이 사라지지 않게 한다
             onIncrement: () {
-              appDb.updateStitchCounter(
+              appDb.incrementStitchCounter(
                 counterId: counter.id,
-                currentValue: counter.currentValue + counter.countBy,
+                delta: counter.countBy,
               );
             },
             onDecrement: () {
               if (counter.currentValue > 0) {
-                final newValue = counter.currentValue - counter.countBy;
-                appDb.updateStitchCounter(
+                appDb.incrementStitchCounter(
                   counterId: counter.id,
-                  currentValue: newValue < 0 ? 0 : newValue,
+                  delta: -counter.countBy,
                 );
               }
             },
@@ -1934,9 +1934,10 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                         onTap: () {
                           if (currentValue > 1) {
                             HapticHelper.validateAndFeedback(settings.touchFeedback);
-                            appDb.updateMainCounter(
+                            // DB 값 기준으로 빼고 1단 아래로는 내려가지 않는다
+                            appDb.incrementMainCounter(
                               partId: widget.partId,
-                              newValue: (currentValue - countBy).clamp(1, currentValue),
+                              delta: -countBy,
                             );
                           }
                         },
@@ -1962,9 +1963,10 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                         highlightColor: context.counterIncHighlight,
                         onTap: () {
                           HapticHelper.validateAndFeedback(settings.touchFeedback);
-                          appDb.updateMainCounter(
+                          // 화면 값이 아니라 DB 값에 더해 연타해도 증가분이 사라지지 않게 한다
+                          appDb.incrementMainCounter(
                             partId: widget.partId,
-                            newValue: currentValue + countBy,
+                            delta: countBy,
                           );
                         },
                         child: Center(
