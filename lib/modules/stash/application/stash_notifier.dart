@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'dart:io';
 import 'dart:convert';
 import '../../../db/app_db.dart';
 import '../../../db/di.dart';
@@ -196,20 +195,12 @@ class StashNotifier extends Notifier<StashState> {
     try {
       final origin = state.allYarns.firstWhere((y) => y.id == yarnId);
 
-      // 이미지 복사 처리
-      String? copiedImagePath;
-      if (origin.imagePath != null) {
-        final absPath = await AppImageUtils.toAbsolutePath(origin.imagePath);
-        if (absPath != null && await File(absPath).exists()) {
-          copiedImagePath = await AppImageUtils.persistImage(absPath, subDir: 'stash_images');
-        }
-      }
-
       final newNickname = origin.nickname;
       final newYarnName = '${origin.yarnName}$suffix';
 
+      // 이미지는 원본과 같은 파일을 공유한다 (삭제는 AppImageUtils.deleteImageIfUnused가 참조를 확인)
       final companion = StashYarnsCompanion(
-        imagePath: Value(copiedImagePath),
+        imagePath: Value(origin.imagePath),
         nickname: Value(newNickname),
         yarnName: Value(newYarnName),
         brandName: Value(origin.brandName),
