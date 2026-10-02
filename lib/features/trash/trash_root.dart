@@ -220,7 +220,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                   : deletedStashYarnsAsync.when(
                       data: (yarns) {
                         if (yarns.isEmpty) {
-                          return const Center(child: EmptyTrashView());
+                          return const Center(child: EmptyTrashView(isStash: true));
                         }
 
                         return ListView.builder(
@@ -508,7 +508,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.restoreProjectTitle, // 공용 타이틀 재사용
+                  AppLocalizations.of(context)!.restoreYarnTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -520,7 +520,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.restoreConfirmMessage,
+                  AppLocalizations.of(context)!.restoreYarnConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -737,7 +737,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.deleteForeverConfirmMessage,
+                  AppLocalizations.of(context)!.deleteYarnForeverConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -806,7 +806,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
         await AppImageUtils.deleteImageIfUnused(yarn.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)), // 공용 메시지 재사용
+            SnackBar(content: Text(AppLocalizations.of(context)!.yarnDeletedForever)),
           );
         }
       } catch (e) {

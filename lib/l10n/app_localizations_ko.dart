@@ -2039,6 +2039,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get duplicateTagName => '이미 존재하는 태그 이름입니다.';
 
   @override
+  String saveYarnFailed(Object error) {
+    return '실 저장 실패: $error';
+  }
+
+  @override
+  String get enterYarnName => '실 이름을 입력해주세요';
+
+  @override
+  String get restoreYarnTitle => '실 복원';
+
+  @override
+  String get restoreYarnConfirmMessage => '이 실을 복원하시겠습니까?';
+
+  @override
+  String get deleteYarnForeverConfirmMessage =>
+      '이 실을 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+
+  @override
+  String get yarnDeletedForever => '실이 완전히 삭제되었습니다.';
+
+  @override
+  String get noDeletedYarns => '삭제된 실이 없습니다';
+
+  @override
   String get searchStashHint => '실 이름, 브랜드, 색상 검색';
 
   @override

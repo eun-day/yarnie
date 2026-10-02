@@ -2101,6 +2101,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateTagName => 'This tag name already exists.';
 
   @override
+  String saveYarnFailed(Object error) {
+    return 'Failed to save yarn: $error';
+  }
+
+  @override
+  String get enterYarnName => 'Please enter yarn name';
+
+  @override
+  String get restoreYarnTitle => 'Restore Yarn';
+
+  @override
+  String get restoreYarnConfirmMessage => 'Do you want to restore this yarn?';
+
+  @override
+  String get deleteYarnForeverConfirmMessage =>
+      'Permanently delete this yarn?\nThis cannot be undone.';
+
+  @override
+  String get yarnDeletedForever => 'Yarn permanently deleted.';
+
+  @override
+  String get noDeletedYarns => 'No deleted yarns';
+
+  @override
   String get searchStashHint => 'Search name, brand, colorway';
 
   @override

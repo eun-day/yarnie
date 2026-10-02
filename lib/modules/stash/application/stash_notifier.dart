@@ -191,7 +191,7 @@ class StashNotifier extends Notifier<StashState> {
       // 저장되지 못한 실용으로 복사해 둔 이미지 정리
       await AppImageUtils.deleteImageIfUnused(companion.imagePath.value);
       _emit(const StashYarnSaveFailed());
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString()))); // 기존 번역 키 재활용
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveYarnFailed(e.toString())));
     }
   }
 
@@ -206,7 +206,7 @@ class StashNotifier extends Notifier<StashState> {
       // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
       await AppImageUtils.deleteImageIfUnused(newImagePath, keep: previousImagePath);
       _emit(const StashYarnSaveFailed());
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveYarnFailed(e.toString())));
       return;
     }
 

@@ -3,7 +3,10 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyTrashView extends StatelessWidget {
-  const EmptyTrashView({super.key});
+  /// 실 휴지통 탭이면 true (안내 문구만 다름)
+  final bool isStash;
+
+  const EmptyTrashView({super.key, this.isStash = false});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,9 @@ class EmptyTrashView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          AppLocalizations.of(context)!.noDeletedProjects,
+          isStash
+              ? AppLocalizations.of(context)!.noDeletedYarns
+              : AppLocalizations.of(context)!.noDeletedProjects,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.normal,
