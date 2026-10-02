@@ -295,7 +295,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             context: context,
             barrierColor:
                 Colors.transparent, // or Colors.black54 if dimming desired
-            builder: (context) {
+            // 메뉴 다이얼로그는 닫히면 곧 사라지므로, 닫은 뒤에는 화면 쪽 context로 시트·스낵바를 띄운다
+            builder: (dialogContext) {
               return Stack(
                 children: [
                   Positioned(
@@ -303,7 +304,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     right: 16,
                     child: AddBuddyCounterMenu(
                       onStitchSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         try {
@@ -320,7 +321,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onRangeSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -339,7 +340,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onRepeatSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -358,7 +359,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onIntervalSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -377,7 +378,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onShapingSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -396,7 +397,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onLengthSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
