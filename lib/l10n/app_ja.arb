@@ -669,5 +669,9 @@
   "sortOrder": "並び替え",
   "sortNewest": "登録が新しい順",
   "sortByName": "名前順",
-  "sortByBrand": "ブランド順"
+  "sortByBrand": "ブランド順",
+  "premiumProductUnavailable": "商品情報を読み込めませんでした。しばらくしてからもう一度お試しください。",
+  "premiumPaymentPending": "決済の承認待ちです。承認されるとプレミアムが自動的に適用されます。",
+  "premiumAlreadyPurchased": "すでに購入済みです。「購入情報の復元」でプレミアムを再適用してください。",
+  "premiumRestoreFailed": "購入情報の復元に失敗しました。もう一度お試しください。"
 }
