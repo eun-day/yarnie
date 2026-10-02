@@ -341,7 +341,10 @@ class _TagSelectionSheetState extends ConsumerState<TagSelectionSheet> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(_selectedIds);
+                        // 시트에서 삭제한 태그가 선택된 채 남아 다시 저장되지 않도록 존재하는 태그만 돌려준다
+                        final existingIds =
+                            ref.read(tagsProvider).allTags.map((t) => t.id).toSet();
+                        Navigator.of(context).pop(_selectedIds.intersection(existingIds));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5C6B5D),
