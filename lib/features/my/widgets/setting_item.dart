@@ -60,7 +60,10 @@ class SettingItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.titleH3.copyWith(height: 1.0),
+                    style: AppTextStyles.titleH3.copyWith(
+                      height: 1.0,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(

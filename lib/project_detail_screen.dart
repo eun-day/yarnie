@@ -2449,7 +2449,7 @@ class _AddPartSheetState extends State<_AddPartSheet> {
                   Container(
                     height: _errorText != null ? null : 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF3F3F5),
+                      color: context.inputFieldBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 12),

@@ -109,7 +109,7 @@ class ProjectDeleteDialog extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.surface,
+                        color: Colors.white, // 빨간 삭제 버튼 글자 (다크모드에서도 흰색)
                         letterSpacing: -0.15,
                       ),
                     ),

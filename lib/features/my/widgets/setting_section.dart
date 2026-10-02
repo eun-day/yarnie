@@ -20,7 +20,10 @@ class SettingSection extends StatelessWidget {
           padding: EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             title,
-            style: AppTextStyles.titleH3.copyWith(height: 1.0),
+            style: AppTextStyles.titleH3.copyWith(
+              height: 1.0,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ),
         Material(

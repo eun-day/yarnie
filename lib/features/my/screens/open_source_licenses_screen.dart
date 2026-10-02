@@ -53,6 +53,7 @@ class _OpenSourceLicensesScreenState extends State<OpenSourceLicensesScreen> {
           style: AppTextStyles.titleH1.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
@@ -151,6 +152,7 @@ class _LicenseDetailScreen extends StatelessWidget {
           style: AppTextStyles.titleH1.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,

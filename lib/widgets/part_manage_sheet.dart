@@ -7,6 +7,7 @@ import 'package:yarnie/modules/projects/application/part_manage_effect.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/core/premium/premium_policy.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
 
@@ -544,7 +545,7 @@ class _PartActionSheet extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Colors.white, // 빨간 삭제 버튼 글자 (다크모드에서도 흰색)
                             letterSpacing: -0.15,
                           ),
                         ),
@@ -669,7 +670,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
             Container(
               height: _errorText != null ? null : 36,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F5),
+                color: context.inputFieldBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12),

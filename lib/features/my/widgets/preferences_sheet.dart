@@ -1,4 +1,5 @@
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -155,7 +156,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F3F5),
+              color: context.inputFieldBg,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -211,7 +212,10 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     l10n.language,
-                    style: AppTextStyles.titleH3.copyWith(fontWeight: FontWeight.w600),
+                    style: AppTextStyles.titleH3.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
               ),
@@ -677,7 +681,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.surface,
+                          color: Colors.white, // 빨간 삭제 버튼 글자 (다크모드에서도 흰색)
                           letterSpacing: -0.15,
                         ),
                       ),
