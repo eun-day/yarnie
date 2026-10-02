@@ -726,15 +726,16 @@ class AppDb extends _$AppDb {
       int? newCurrentPartId;
 
       for (final originalPart in originalParts) {
-        // 새 파트 생성
+        // 새 파트 생성 (buddyCounterOrder는 카운터를 복사한 뒤 새 ID로 바꿔 저장)
         final newPartId = await into(parts).insert(
           PartsCompanion.insert(
             projectId: newProjectId,
             name: originalPart.name,
             orderIndex: originalPart.orderIndex,
-            buddyCounterOrder: Value(originalPart.buddyCounterOrder),
           ),
         );
+        final stitchIdMap = <int, int>{};
+        final sectionIdMap = <int, int>{};
 
         if (firstNewPartId == null) firstNewPartId = newPartId;
         if (originalProject.currentPartId == originalPart.id) newCurrentPartId = newPartId;
@@ -755,7 +756,7 @@ class AppDb extends _$AppDb {
         // 5. StitchCounters 복사
         final originalStitchCounters = await (select(stitchCounters)..where((t) => t.partId.equals(originalPart.id))).get();
         for (final sc in originalStitchCounters) {
-          await into(stitchCounters).insert(
+          stitchIdMap[sc.id] = await into(stitchCounters).insert(
             StitchCountersCompanion.insert(
               partId: newPartId,
               name: sc.name,
@@ -777,6 +778,7 @@ class AppDb extends _$AppDb {
               frozenMainAt: Value(secC.frozenMainAt),
             ),
           );
+          sectionIdMap[secC.id] = newSecCId;
 
           // SectionRuns 복사
           final originalRuns = await (select(sectionRuns)..where((t) => t.sectionCounterId.equals(secC.id))).get();
@@ -792,6 +794,21 @@ class AppDb extends _$AppDb {
               ),
             );
           }
+        }
+
+        // 버디 카운터 순서: 원본 카운터 ID를 새 ID로 바꿔 저장 (원본 ID를 두면 복사본 순서가 무너짐)
+        if (originalPart.buddyCounterOrder != null) {
+          await (update(parts)..where((t) => t.id.equals(newPartId))).write(
+            PartsCompanion(
+              buddyCounterOrder: Value(
+                _remapBuddyCounterOrder(
+                  originalPart.buddyCounterOrder!,
+                  stitchIdMap: stitchIdMap,
+                  sectionIdMap: sectionIdMap,
+                ),
+              ),
+            ),
+          );
         }
 
         // 7. PartNotes 복사
@@ -817,6 +834,25 @@ class AppDb extends _$AppDb {
 
       return newProjectId;
     });
+  }
+
+  /// buddyCounterOrder JSON의 카운터 ID를 복사본의 새 ID로 바꾼다. 매핑이 없는 항목(이미 삭제된 카운터)은 뺀다.
+  String? _remapBuddyCounterOrder(
+    String orderJson, {
+    required Map<int, int> stitchIdMap,
+    required Map<int, int> sectionIdMap,
+  }) {
+    try {
+      final remapped = <Map<String, Object?>>[];
+      for (final item in (jsonDecode(orderJson) as List).cast<Map<String, dynamic>>()) {
+        final idMap = item['type'] == 'stitch' ? stitchIdMap : sectionIdMap;
+        final newId = idMap[item['id']];
+        if (newId != null) remapped.add({'type': item['type'], 'id': newId});
+      }
+      return jsonEncode(remapped);
+    } catch (_) {
+      return null; // 깨진 JSON이면 기본 순서로 표시
+    }
   }
 
   Future<bool> updateProject(ProjectsCompanion entity) async {
