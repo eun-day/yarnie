@@ -60,8 +60,27 @@ class StashNotifier extends Notifier<StashState> {
         state = state.copyWith(searchQuery: query);
         _applyFilters();
 
+      case FilterYarnWeight(:final yarnWeight):
+        state = state.copyWith(
+          yarnWeightFilter: yarnWeight,
+          clearYarnWeightFilter: yarnWeight == null,
+        );
+        _applyFilters();
+
+      case ChangeSortOrder(:final sortOrder):
+        state = state.copyWith(sortOrder: sortOrder);
+        _applyFilters();
+
       case ClearFilters():
-        state = state.copyWith(selectedTagIds: const {}, searchQuery: '');
+        state = state.copyWith(
+          selectedTagIds: const {},
+          searchQuery: '',
+          clearYarnWeightFilter: true,
+        );
+        _applyFilters();
+
+      case ClearTagFilters():
+        state = state.copyWith(selectedTagIds: const {});
         _applyFilters();
 
       case ChangeViewMode(:final viewMode):
@@ -116,6 +135,7 @@ class StashNotifier extends Notifier<StashState> {
   void _applyFilters() {
     final ids = state.selectedTagIds;
     final query = state.searchQuery.trim().toLowerCase();
+    final yarnWeight = state.yarnWeightFilter;
     var list = state.allYarns;
 
     // 1. 태그 필터링
@@ -123,7 +143,12 @@ class StashNotifier extends Notifier<StashState> {
       list = list.where((y) => ids.every(parseTagIds(y.tagIds).contains)).toList();
     }
 
-    // 2. 검색어 필터링 (별명, 제품명, 브랜드명, 색상명 등 검색)
+    // 2. 굵기 필터링
+    if (yarnWeight != null) {
+      list = list.where((y) => y.yarnWeight == yarnWeight).toList();
+    }
+
+    // 3. 검색어 필터링 (별명, 제품명, 브랜드명, 색상명 등 검색)
     if (query.isNotEmpty) {
       list = list.where((y) {
         final nameMatch = y.nickname?.toLowerCase().contains(query) ?? false;
@@ -132,6 +157,26 @@ class StashNotifier extends Notifier<StashState> {
         final colorMatch = y.colorwayName?.toLowerCase().contains(query) ?? false;
         return nameMatch || yarnNameMatch || brandNameMatch || colorMatch;
       }).toList();
+    }
+
+    // 4. 정렬 (DB 스트림이 최신 등록순이므로 newest는 그대로)
+    switch (state.sortOrder) {
+      case StashSortOrder.newest:
+        break;
+      case StashSortOrder.name:
+        list = [...list]..sort(
+            (a, b) => a.yarnName.toLowerCase().compareTo(b.yarnName.toLowerCase()),
+          );
+      case StashSortOrder.brand:
+        // 브랜드가 없는 실은 뒤로
+        list = [...list]..sort((a, b) {
+            final brandA = (a.brandName ?? '').toLowerCase();
+            final brandB = (b.brandName ?? '').toLowerCase();
+            if (brandA.isEmpty || brandB.isEmpty) {
+              return (brandA.isEmpty ? 1 : 0) - (brandB.isEmpty ? 1 : 0);
+            }
+            return brandA.compareTo(brandB);
+          });
     }
 
     state = state.copyWith(filteredYarns: list);

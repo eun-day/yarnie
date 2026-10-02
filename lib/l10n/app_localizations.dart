@@ -3824,6 +3824,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이미 존재하는 태그 이름입니다.'**
   String get duplicateTagName;
+
+  /// No description provided for @searchStashHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이름, 브랜드, 색상 검색'**
+  String get searchStashHint;
+
+  /// No description provided for @allYarnWeights.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 굵기'**
+  String get allYarnWeights;
+
+  /// No description provided for @sortOrder.
+  ///
+  /// In ko, this message translates to:
+  /// **'정렬'**
+  String get sortOrder;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 등록순'**
+  String get sortNewest;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름순'**
+  String get sortByName;
+
+  /// No description provided for @sortByBrand.
+  ///
+  /// In ko, this message translates to:
+  /// **'브랜드순'**
+  String get sortByBrand;
 }
 
 class _AppLocalizationsDelegate

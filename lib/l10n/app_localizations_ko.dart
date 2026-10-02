@@ -2037,4 +2037,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get duplicateTagName => '이미 존재하는 태그 이름입니다.';
+
+  @override
+  String get searchStashHint => '실 이름, 브랜드, 색상 검색';
+
+  @override
+  String get allYarnWeights => '모든 굵기';
+
+  @override
+  String get sortOrder => '정렬';
+
+  @override
+  String get sortNewest => '최신 등록순';
+
+  @override
+  String get sortByName => '이름순';
+
+  @override
+  String get sortByBrand => '브랜드순';
 }
