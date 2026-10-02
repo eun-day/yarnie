@@ -289,6 +289,9 @@ class ProjectInfoSheet extends ConsumerWidget {
                                                         if (yarn.colorwayName != null && yarn.colorwayName!.isNotEmpty) {
                                                           specParts.add(yarn.colorwayName!);
                                                         }
+                                                        if (yarn.dyeLot != null && yarn.dyeLot!.isNotEmpty) {
+                                                          specParts.add('${l10n.dyeLot}: ${yarn.dyeLot}'); // 같은 로트끼리 써야 색이 맞으므로 표시
+                                                        }
                                                         specParts.add(l10n.skeinsCount(yarn.skeins ?? 0));
                                                         return Text(
                                                           specParts.join('  •  '),
