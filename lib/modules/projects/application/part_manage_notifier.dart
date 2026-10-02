@@ -47,7 +47,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
   }
 
   void _loadParts(int projectId) {
-    if (state.isLoading) return;
+    // 로딩 중이어도 새 요청은 받는다 (기존 구독은 아래에서 교체, 실패 후 재시도도 가능)
     state = state.copyWith(isLoading: true, clearError: true);
 
     _partsSubscription?.cancel();
@@ -55,7 +55,10 @@ class PartManageNotifier extends Notifier<PartManageState> {
         .watchProjectParts(projectId)
         .listen(
           (parts) => onEvent(PartsUpdated(parts)),
-          onError: (e, st) => _emit(ShowLocalizedErrorEffect((l10n) => l10n.loadPartsFailed(e.toString()))),
+          onError: (e, st) {
+            state = state.copyWith(isLoading: false);
+            _emit(ShowLocalizedErrorEffect((l10n) => l10n.loadPartsFailed(e.toString())));
+          },
         );
   }
 

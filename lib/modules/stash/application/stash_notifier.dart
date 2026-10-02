@@ -128,6 +128,7 @@ class StashNotifier extends Notifier<StashState> {
     } catch (e) {
       await _stashSubscription?.cancel();
       await _tagsSubscription?.cancel();
+      state = state.copyWith(isLoading: false); // 실패 후에도 다시 불러올 수 있게
       _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }

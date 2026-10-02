@@ -135,6 +135,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     } catch (e) {
       await _projectsSubscription?.cancel();
       await _tagsSubscription?.cancel();
+      state = state.copyWith(isLoading: false);
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }

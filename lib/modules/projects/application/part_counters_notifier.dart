@@ -29,7 +29,7 @@ class PartCountersNotifier extends Notifier<PartCountersState> {
   }
 
   void _loadCount(int partId) {
-    if (state.isLoading) return;
+    // 로딩 중이어도 다른 파트 요청은 받아야 하므로 막지 않는다 (기존 구독은 아래에서 교체)
     state = state.copyWith(isLoading: true, clearError: true);
 
     _countSubscription?.cancel();
