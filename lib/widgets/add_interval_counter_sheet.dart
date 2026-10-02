@@ -67,7 +67,7 @@ class _AddIntervalCounterSheetState
     final startRow = int.tryParse(_startRowController.text);
     final interval = int.tryParse(_intervalController.text);
     final totalCount = int.tryParse(_totalCountController.text);
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         interval != null &&

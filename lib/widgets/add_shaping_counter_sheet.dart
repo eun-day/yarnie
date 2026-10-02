@@ -41,7 +41,7 @@ class _AddShapingCounterSheetState
   bool get _isEditing => widget.existingCounter != null;
 
   bool get _isValid {
-    if (_labelController.text.isEmpty) return false;
+    if (_labelController.text.trim().isEmpty) return false;
 
     final amount = int.tryParse(_amountController.text);
     if (amount == null || amount == 0) return false;

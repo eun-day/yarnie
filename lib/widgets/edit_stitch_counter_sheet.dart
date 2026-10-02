@@ -26,7 +26,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
   bool get _isValid {
     final value = int.tryParse(_valueController.text);
     final countBy = int.tryParse(_countByController.text);
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
            value != null && value >= 0 &&
            countBy != null && countBy > 0;
   }

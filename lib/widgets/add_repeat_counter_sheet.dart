@@ -36,7 +36,7 @@ class _AddRepeatCounterSheetState extends ConsumerState<AddRepeatCounterSheet> {
     final startRow = int.tryParse(_startRowController.text);
     final repeatUnit = int.tryParse(_repeatUnitController.text);
     final repeatCount = int.tryParse(_repeatCountController.text);
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         repeatUnit != null &&

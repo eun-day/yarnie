@@ -34,7 +34,7 @@ class _AddRangeCounterSheetState extends ConsumerState<AddRangeCounterSheet> {
   bool get _isValid {
     final startRow = int.tryParse(_startRowController.text);
     final totalRows = int.tryParse(_totalRowsController.text);
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         totalRows != null &&
