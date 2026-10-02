@@ -1,3 +1,5 @@
+import '../../../l10n/app_localizations.dart';
+
 sealed class PartManageEffect {
   const PartManageEffect();
 }
@@ -8,7 +10,7 @@ class ShowErrorEffect extends PartManageEffect {
 }
 
 class ShowLocalizedErrorEffect extends PartManageEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedErrorEffect(this.messageBuilder);
 }
 

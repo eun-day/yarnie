@@ -1,3 +1,5 @@
+import '../../../l10n/app_localizations.dart';
+
 /// 태그 관리 Side Effect
 sealed class TagsEffect {
   const TagsEffect();
@@ -10,7 +12,7 @@ class ShowTagSuccessMessage extends TagsEffect {
 }
 
 class ShowLocalizedTagSuccessMessage extends TagsEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedTagSuccessMessage(this.messageBuilder);
 }
 
@@ -21,7 +23,7 @@ class ShowTagErrorMessage extends TagsEffect {
 }
 
 class ShowLocalizedTagErrorMessage extends TagsEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedTagErrorMessage(this.messageBuilder);
 }
 
