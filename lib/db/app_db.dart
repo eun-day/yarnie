@@ -1980,10 +1980,13 @@ class AppDb extends _$AppDb {
 
   /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
   ///
-  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지), 프로젝트 휴지통 이동에 사용한다.
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지), 프로젝트 휴지통 이동,
+  /// 앱을 떠난 시간을 반영하지 않기로 한 경우에 사용한다.
+  /// [at]: 세그먼트를 끝낼 시각 (기본값: 지금)
   Future<void> pauseRunningSession(
     int partId, {
     SegmentReason reason = SegmentReason.pause,
+    DateTime? at,
   }) {
     return transaction(() async {
       final session = await getSession(partId);
@@ -1997,9 +2000,16 @@ class AppDb extends _$AppDb {
         segmentStartedAt: segment?.startedAt,
         endCount: mainCounter?.currentValue ?? 0,
         reason: reason,
-        end: DateTime.now().toUtc(),
+        end: (at ?? DateTime.now()).toUtc(),
       );
     });
+  }
+
+  /// 진행 중인 세션들 (앱 복귀 시 정산용)
+  Future<List<Session>> getRunningSessions() {
+    return (select(sessions)
+          ..where((t) => t.status.equalsValue(SessionStatus2.running)))
+        .get();
   }
 
   /// 현재 Segment를 [end]에 종료하고 세션을 일시정지 상태로 바꾼다 (트랜잭션 안에서 호출)
@@ -2013,10 +2023,12 @@ class AppDb extends _$AppDb {
   }) async {
     var duration = 0;
     if (segmentId != null && segmentStartedAt != null) {
-      duration = end.difference(segmentStartedAt).inSeconds;
+      // 세그먼트 시작 이전 시각으로는 끝내지 않는다
+      final segmentEnd = end.isBefore(segmentStartedAt) ? segmentStartedAt : end;
+      duration = segmentEnd.difference(segmentStartedAt).inSeconds;
       await (update(sessionSegments)..where((t) => t.id.equals(segmentId))).write(
         SessionSegmentsCompanion(
-          endedAt: Value(end),
+          endedAt: Value(segmentEnd),
           durationSeconds: Value(duration),
           endCount: Value(endCount),
           reason: Value(reason),

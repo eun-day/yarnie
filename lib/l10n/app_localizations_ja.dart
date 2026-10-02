@@ -2009,4 +2009,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get addYarn => '糸を追加';
+
+  @override
+  String get sessionAbsenceTitle => 'おかえりなさい';
+
+  @override
+  String sessionAbsenceMessage(int minutes) {
+    return 'アプリを離れてから$minutes分が経ちました。この時間を進行中のセッションに含めますか？\n含めない場合、アプリを離れた時点でセッションを一時停止します。';
+  }
+
+  @override
+  String get sessionAbsenceInclude => '含める';
+
+  @override
+  String get sessionAbsenceExclude => '含めない';
 }

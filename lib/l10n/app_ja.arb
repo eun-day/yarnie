@@ -656,5 +656,9 @@
   "linkedYarn": "連携された糸",
   "noLinkedYarn": "連携された糸なし",
   "usingProjects": "この糸を使用するプロジェクト",
-  "addYarn": "糸を追加"
+  "addYarn": "糸を追加",
+  "sessionAbsenceTitle": "おかえりなさい",
+  "sessionAbsenceMessage": "アプリを離れてから{minutes}分が経ちました。この時間を進行中のセッションに含めますか？\n含めない場合、アプリを離れた時点でセッションを一時停止します。",
+  "sessionAbsenceInclude": "含める",
+  "sessionAbsenceExclude": "含めない"
 }
