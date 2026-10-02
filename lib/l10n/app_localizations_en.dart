@@ -2096,4 +2096,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteMemoConfirm => 'Delete this note?\nThis cannot be undone.';
+
+  @override
+  String get duplicateTagName => 'This tag name already exists.';
 }

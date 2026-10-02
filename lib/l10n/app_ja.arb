@@ -662,5 +662,6 @@
   "sessionAbsenceInclude": "含める",
   "sessionAbsenceExclude": "含めない",
   "deleteMemoTitle": "メモを削除",
-  "deleteMemoConfirm": "このメモを削除しますか？\nこの操作は取り消せません。"
+  "deleteMemoConfirm": "このメモを削除しますか？\nこの操作は取り消せません。",
+  "duplicateTagName": "既に存在するタグ名です。"
 }

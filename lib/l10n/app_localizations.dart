@@ -3818,6 +3818,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
   String get deleteMemoConfirm;
+
+  /// No description provided for @duplicateTagName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 존재하는 태그 이름입니다.'**
+  String get duplicateTagName;
 }
 
 class _AppLocalizationsDelegate

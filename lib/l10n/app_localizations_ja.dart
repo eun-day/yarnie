@@ -2029,4 +2029,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deleteMemoConfirm => 'このメモを削除しますか？\nこの操作は取り消せません。';
+
+  @override
+  String get duplicateTagName => '既に存在するタグ名です。';
 }

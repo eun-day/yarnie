@@ -2034,4 +2034,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get deleteMemoConfirm => '이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+
+  @override
+  String get duplicateTagName => '이미 존재하는 태그 이름입니다.';
 }
