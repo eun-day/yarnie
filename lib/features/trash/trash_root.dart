@@ -131,7 +131,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                     child: _selectedTab == TrashTab.project
                         ? deletedProjectsAsync.when(
                             data: (projects) => Text(
-                              l10n.trashProjectCountInfo(projects.length.toString()),
+                              l10n.trashProjectCountInfo(projects.length),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,
@@ -157,7 +157,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                           )
                         : deletedStashYarnsAsync.when(
                             data: (yarns) => Text(
-                              l10n.trashStashCountInfo(yarns.length.toString()),
+                              l10n.trashStashCountInfo(yarns.length),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,

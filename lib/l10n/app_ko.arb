@@ -181,6 +181,13 @@
   "openSourceLicense": "오픈소스 라이선스",
   "projects": "프로젝트",
   "projectsCount": "{count}개의 프로젝트",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "all": "전체",
   "bigCard": "큰 카드",
   "smallCard": "작은 카드",
@@ -197,7 +204,6 @@
   "sessionMemo": "작업 메모",
   "enterMemo": "메모를 입력하세요...",
   "saveSessionConfirm": "작업 시간 {time}을 저장하시겠습니까?",
-  "trashProjectCount": "{count}개의 프로젝트 · 30일 후 자동 삭제",
   "loading": "로딩 중...",
   "errorLoadingData": "데이터를 불러올 수 없습니다",
   "availableAfterRestore": "복원 후 이용할 수 있습니다.",
@@ -205,11 +211,7 @@
   "restore": "복원하기",
   "deleteForeverNow": "지금 완전 삭제하기",
   "restoreProject": "프로젝트 복원",
-  "restoreConfirm": "이 프로젝트를 복원하시겠습니까?",
-  "projectRestored": "프로젝트가 복원되었습니다.",
   "restoreFailed": "복원 실패: {error}",
-  "deleteForever": "완전 삭제",
-  "deleteForeverConfirm": "이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
   "delete": "삭제",
   "projectDeletedForever": "프로젝트가 완전히 삭제되었습니다.",
   "deleteFailed": "삭제 실패: {error}",
@@ -242,7 +244,6 @@
   "tagSelection": "태그 선택",
   "complete": "완료",
   "searchTags": "태그 검색...",
-  "addNewTag": "새 태그 추가",
   "tagName": "태그 이름",
   "editTag": "태그 수정",
   "shapingCounterLabel": "증감 카운터",
@@ -286,9 +287,6 @@
   "deleteDesc": "프로젝트는 휴지통으로 이동되며,\n30일 후 자동으로 영구 삭제됩니다.",
   "achieved": "달성 완료 ✓",
   "remainingLength": "남은 길이",
-  "stitchIncrease": "코 늘림",
-  "stitchDecrease": "코 줄임",
-  "nextRow": "다음:{row}행",
   "patternRows": "{current}/{total}행",
   "fromRow": "{row}행부터",
   "stitch": "코",
@@ -299,7 +297,6 @@
   "increaseValue": "증가값",
   "increaseValueHint": "예: 6",
   "confirm": "확인",
-  "exitConfirm": "한 번 더 누르면 종료됩니다.",
   "exitAppTitle": "앱을 종료하시겠습니까?",
   "exitAppMessage": "종료하시려면 아래 버튼을 눌러주세요.",
   "exit": "종료",
@@ -313,16 +310,9 @@
   "interval": "간격 (Interval)",
   "shaping": "증감 (Shaping)",
   "length": "길이 (Length)",
-  "addLengthCounter": "길이 카운터 추가",
-  "editLengthCounter": "길이 카운터 수정",
-  "lengthCounterDescSimple": "특정 길이에 도달할 때까지 추적하는 카운터입니다.",
-  "targetLength": "목표 길이",
-  "lengthHint": "예: 30.0",
-  "lengthHelper": "목표로 하는 길이를 입력하세요.",
   "unit": "단위",
   "cm": "cm",
   "inch": "inch",
-  "countBySetting": "Count By 설정",
   "lengthMeasurement": "길이 카운터",
   "targetInfoLength": "목표 {length}cm",
   "targetInfoLengthInch": "목표 {length}inch",
@@ -340,6 +330,13 @@
   "goToGaugeInput": "게이지 입력하러 가기",
   "expectedRows": "예상 필요 단수",
   "estimatedRowsDisplay": "{rows}단",
+  "@estimatedRowsDisplay": {
+    "placeholders": {
+      "rows": {
+        "type": "int"
+      }
+    }
+  },
   "changeTargetRow": "목표 단수 변경",
   "removeTargetRow": "목표 단수 해제",
   "editLogMemo": "log {no} 메모 편집",
@@ -373,6 +370,13 @@
   "partNameHint": "파트 이름 (예: 앞판, 소매)",
   "session": "세션",
   "rowsRemaining": "{count}줄 남음",
+  "@rowsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "editProject": "프로젝트 수정",
   "newProject": "새 프로젝트",
   "editProjectDesc": "프로젝트 정보를 수정해주세요",
@@ -385,8 +389,6 @@
   "needleTypeHint": "바늘 종류를 선택하세요",
   "needleSize": "바늘 사이즈",
   "needleSizeHint": "먼저 바늘 종류를 선택하세요",
-  "lotNumberHint": "예: A12345",
-  "lotNumberDesc": "실의 로트 번호를 입력하세요",
   "memoHint": "프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등",
   "tagAdd": "태그 추가",
   "gauge": "게이지",
@@ -410,7 +412,6 @@
   "paused": "일시정지",
   "start": "시작",
   "projectInfoDesc": "프로젝트의 상세 정보를 확인하세요",
-  "lotNumberLabel": "실 로트 번호",
   "noTagsAssigned": "지정된 태그가 없습니다.",
   "noGaugeInfo": "게이지 정보 없음",
   "noMemoInfo": "메모 없음",
@@ -433,9 +434,7 @@
   "activeSessionQuestion": "진행 중인 세션이 있습니다. 이어서 하시겠습니까?",
   "dbDuplicateError": "중복된 값이 존재합니다",
   "dbForeignKeyError": "참조하는 레코드가 존재하지 않습니다",
-  "dbRequiredError": "필수 값이 누락되었습니다",
   "dbIntegrityError": "데이터 무결성 위반",
-  "dbConstraintError": "데이터 제약 조건을 위반했습니다",
   "dbGeneralError": "데이터베이스 오류가 발생했습니다",
   "dbRecordNotFoundError": "기록을 찾을 수 없습니다",
   "defaultLabelSleeves": "소매",
@@ -444,13 +443,26 @@
   "userGuideJourney": "Yarnie와 함께하는 뜨개질 여정",
   "trashHeader": "휴지통",
   "trashProjectCountInfo": "{count}개의 프로젝트 · 30일 후 자동 삭제",
+  "@trashProjectCountInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "trashStashCountInfo": "{count}개의 실 · 30일 후 자동 삭제",
+  "@trashStashCountInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "restoreProjectTitle": "프로젝트 복원",
   "restoreConfirmMessage": "이 프로젝트를 복원하시겠습니까?",
   "projectRestoredMessage": "프로젝트가 복원되었습니다.",
   "deleteForeverTitle": "완전 삭제",
   "deleteForeverConfirmMessage": "이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
-  "mainCounterTitleAlt": "메인 카운터 (MainCounter)",
   "countByLabel": "count by {value}",
   "yarniePremium": "Yarnie 프리미엄",
   "yarniePremiumSub": "더 많은 기능을 무제한으로",
@@ -531,7 +543,6 @@
   "shapingRowsLabel": "증감 단수",
   "shapingRowsHint": "예: 2, 5, 9, 11",
   "shapingRowsHelper": "코를 증감할 단수를 쉼표로 구분하여 입력하세요",
-  "shapingDirectSubInfo": "{current}/{total}회",
   "preview": "미리보기",
   "tagSelectionDesc": "태그를 길게 눌러 수정하거나 삭제할 수 있어요.",
   "tagSelectionSubtitle": "프로젝트에 태그를 추가하거나 기존 태그를 선택하세요.",
@@ -558,7 +569,6 @@
   "updateProjectFailed": "프로젝트 수정 실패: {error}",
   "projectDeleted": "프로젝트가 삭제되었습니다",
   "deleteProjectFailed": "프로젝트 삭제 실패: {error}",
-  "loadCounterCountFailed": "카운터 수 로드 실패: {error}",
   "loadPartsFailed": "파트 로드 실패: {error}",
   "createPartFailed": "파트 생성 실패: {error}",
   "updatePartFailed": "파트 수정 실패: {error}",
@@ -593,7 +603,6 @@
     }
   },
   "stash": "보관함",
-  "stashTabDesc": "보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.",
   "noStashesYet": "아직 등록한 실이 없어요.\n보관함에 새 실을 등록해볼까요?",
   "createStash": "실 등록하기",
   "newStash": "새 실 등록",
@@ -661,16 +670,6 @@
   "weightBulky": "Bulky (7 wpi)",
   "weightSuperBulky": "Super Bulky (5-6 wpi)",
   "weightJumbo": "Jumbo (0-4 wpi)",
-  "undo": "실행 취소",
-  "editSkeinsTitle": "수량 직접 입력",
-  "skeinsAdjusted": "수량이 {skeins}볼로 변경되었습니다.",
-  "@skeinsAdjusted": {
-    "placeholders": {
-      "skeins": {
-        "type": "double"
-      }
-    }
-  },
   "skeinsCount": "{count}볼",
   "@skeinsCount": {
     "description": "실 보유 수량 표시 단위 (볼/타래)",
@@ -683,7 +682,6 @@
   },
   "linkStashYarn": "실 연동하기",
   "selectStashYarn": "보관함에서 실 선택",
-  "unlink": "연동 해제",
   "linkedYarn": "연동된 실",
   "noLinkedYarn": "연동된 실 없음",
   "usingProjects": "이 실을 사용하는 프로젝트",

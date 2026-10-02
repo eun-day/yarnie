@@ -579,7 +579,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get projects => '프로젝트';
 
   @override
-  String projectsCount(Object count) {
+  String projectsCount(int count) {
     return '$count개의 프로젝트';
   }
 
@@ -636,11 +636,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String trashProjectCount(Object count) {
-    return '$count개의 프로젝트 · 30일 후 자동 삭제';
-  }
-
-  @override
   String get loading => '로딩 중...';
 
   @override
@@ -664,21 +659,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get restoreProject => '프로젝트 복원';
 
   @override
-  String get restoreConfirm => '이 프로젝트를 복원하시겠습니까?';
-
-  @override
-  String get projectRestored => '프로젝트가 복원되었습니다.';
-
-  @override
   String restoreFailed(Object error) {
     return '복원 실패: $error';
   }
-
-  @override
-  String get deleteForever => '완전 삭제';
-
-  @override
-  String get deleteForeverConfirm => '이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
 
   @override
   String get delete => '삭제';
@@ -779,9 +762,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get searchTags => '태그 검색...';
-
-  @override
-  String get addNewTag => '새 태그 추가';
 
   @override
   String get tagName => '태그 이름';
@@ -894,17 +874,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get remainingLength => '남은 길이';
 
   @override
-  String get stitchIncrease => '코 늘림';
-
-  @override
-  String get stitchDecrease => '코 줄임';
-
-  @override
-  String nextRow(Object row) {
-    return '다음:$row행';
-  }
-
-  @override
   String patternRows(Object current, Object total) {
     return '$current/$total행';
   }
@@ -939,9 +908,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get confirm => '확인';
-
-  @override
-  String get exitConfirm => '한 번 더 누르면 종료됩니다.';
 
   @override
   String get exitAppTitle => '앱을 종료하시겠습니까?';
@@ -983,24 +949,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get length => '길이 (Length)';
 
   @override
-  String get addLengthCounter => '길이 카운터 추가';
-
-  @override
-  String get editLengthCounter => '길이 카운터 수정';
-
-  @override
-  String get lengthCounterDescSimple => '특정 길이에 도달할 때까지 추적하는 카운터입니다.';
-
-  @override
-  String get targetLength => '목표 길이';
-
-  @override
-  String get lengthHint => '예: 30.0';
-
-  @override
-  String get lengthHelper => '목표로 하는 길이를 입력하세요.';
-
-  @override
   String get unit => '단위';
 
   @override
@@ -1008,9 +956,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get inch => 'inch';
-
-  @override
-  String get countBySetting => 'Count By 설정';
 
   @override
   String get lengthMeasurement => '길이 카운터';
@@ -1065,7 +1010,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get expectedRows => '예상 필요 단수';
 
   @override
-  String estimatedRowsDisplay(Object rows) {
+  String estimatedRowsDisplay(int rows) {
     return '$rows단';
   }
 
@@ -1177,7 +1122,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get session => '세션';
 
   @override
-  String rowsRemaining(Object count) {
+  String rowsRemaining(int count) {
     return '$count줄 남음';
   }
 
@@ -1216,12 +1161,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get needleSizeHint => '먼저 바늘 종류를 선택하세요';
-
-  @override
-  String get lotNumberHint => '예: A12345';
-
-  @override
-  String get lotNumberDesc => '실의 로트 번호를 입력하세요';
 
   @override
   String get memoHint => '프로젝트에 대한 메모를 작성하세요\n예: 실 종류, 색상, 패턴 정보 등';
@@ -1293,9 +1232,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get projectInfoDesc => '프로젝트의 상세 정보를 확인하세요';
 
   @override
-  String get lotNumberLabel => '실 로트 번호';
-
-  @override
   String get noTagsAssigned => '지정된 태그가 없습니다.';
 
   @override
@@ -1364,13 +1300,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dbForeignKeyError => '참조하는 레코드가 존재하지 않습니다';
 
   @override
-  String get dbRequiredError => '필수 값이 누락되었습니다';
-
-  @override
   String get dbIntegrityError => '데이터 무결성 위반';
-
-  @override
-  String get dbConstraintError => '데이터 제약 조건을 위반했습니다';
 
   @override
   String get dbGeneralError => '데이터베이스 오류가 발생했습니다';
@@ -1394,12 +1324,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get trashHeader => '휴지통';
 
   @override
-  String trashProjectCountInfo(Object count) {
+  String trashProjectCountInfo(int count) {
     return '$count개의 프로젝트 · 30일 후 자동 삭제';
   }
 
   @override
-  String trashStashCountInfo(Object count) {
+  String trashStashCountInfo(int count) {
     return '$count개의 실 · 30일 후 자동 삭제';
   }
 
@@ -1418,9 +1348,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get deleteForeverConfirmMessage =>
       '이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
-
-  @override
-  String get mainCounterTitleAlt => '메인 카운터 (MainCounter)';
 
   @override
   String countByLabel(Object value) {
@@ -1585,11 +1512,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shapingRowsHelper => '코를 증감할 단수를 쉼표로 구분하여 입력하세요';
 
   @override
-  String shapingDirectSubInfo(Object current, Object total) {
-    return '$current/$total회';
-  }
-
-  @override
   String get preview => '미리보기';
 
   @override
@@ -1685,11 +1607,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String deleteProjectFailed(Object error) {
     return '프로젝트 삭제 실패: $error';
-  }
-
-  @override
-  String loadCounterCountFailed(Object error) {
-    return '카운터 수 로드 실패: $error';
   }
 
   @override
@@ -1807,9 +1724,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stash => '보관함';
-
-  @override
-  String get stashTabDesc => '보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.';
 
   @override
   String get noStashesYet => '아직 등록한 실이 없어요.\n보관함에 새 실을 등록해볼까요?';
@@ -1975,17 +1889,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get weightJumbo => 'Jumbo (0-4 wpi)';
 
   @override
-  String get undo => '실행 취소';
-
-  @override
-  String get editSkeinsTitle => '수량 직접 입력';
-
-  @override
-  String skeinsAdjusted(double skeins) {
-    return '수량이 $skeins볼로 변경되었습니다.';
-  }
-
-  @override
   String skeinsCount(num count) {
     final intl.NumberFormat countNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
@@ -1999,9 +1902,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get selectStashYarn => '보관함에서 실 선택';
-
-  @override
-  String get unlink => '연동 해제';
 
   @override
   String get linkedYarn => '연동된 실';
