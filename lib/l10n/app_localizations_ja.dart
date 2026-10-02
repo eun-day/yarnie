@@ -2023,4 +2023,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sessionAbsenceExclude => '含めない';
+
+  @override
+  String get deleteMemoTitle => 'メモを削除';
+
+  @override
+  String get deleteMemoConfirm => 'このメモを削除しますか？\nこの操作は取り消せません。';
 }
