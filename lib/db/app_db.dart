@@ -2623,6 +2623,11 @@ class AppDb extends _$AppDb {
     return (select(tags)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
   }
 
+  /// 모든 태그 스트림 (이름순)
+  Stream<List<Tag>> watchAllTags() {
+    return (select(tags)..orderBy([(t) => OrderingTerm.asc(t.name)])).watch();
+  }
+
   /// 태그 이름으로 검색
   ///
   /// [query]: 검색어
@@ -3014,6 +3019,11 @@ class AppDb extends _$AppDb {
   /// 보관함 태그 전체 조회 (이름순)
   Future<List<StashTag>> getAllStashTags() {
     return (select(stashTags)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+  }
+
+  /// 보관함 태그 전체 스트림 (이름순)
+  Stream<List<StashTag>> watchAllStashTags() {
+    return (select(stashTags)..orderBy([(t) => OrderingTerm.asc(t.name)])).watch();
   }
 
   /// 보관함 태그 이름 검색

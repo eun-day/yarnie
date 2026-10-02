@@ -25,6 +25,12 @@ class SearchYarns extends StashEvent {
   const SearchYarns(this.query);
 }
 
+/// 보관함 태그 목록 업데이트 (stream에서 발행: 태그 이름·색 변경, 삭제 반영)
+class StashTagsUpdated extends StashEvent {
+  final List<StashTag> tags;
+  const StashTagsUpdated(this.tags);
+}
+
 class ClearFilters extends StashEvent {
   const ClearFilters();
 }

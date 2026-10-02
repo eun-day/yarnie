@@ -12,6 +12,7 @@ import 'stash_state.dart';
 
 class StashNotifier extends Notifier<StashState> {
   StreamSubscription<List<StashYarn>>? _stashSubscription;
+  StreamSubscription<List<StashTag>>? _tagsSubscription;
   final _effectController = StreamController<StashEffect>.broadcast();
 
   Stream<StashEffect> get effects => _effectController.stream;
@@ -20,6 +21,7 @@ class StashNotifier extends Notifier<StashState> {
   StashState build() {
     ref.onDispose(() {
       _stashSubscription?.cancel();
+      _tagsSubscription?.cancel();
       _effectController.close();
     });
     return const StashState();
@@ -31,12 +33,20 @@ class StashNotifier extends Notifier<StashState> {
         await _loadData();
 
       case StashUpdatedEvent(:final yarns):
-        final tags = await appDb.getAllStashTags();
+        // 태그 목록은 tags 스트림이 갱신
         state = state.copyWith(
           allYarns: yarns,
-          allTags: tags,
           isLoading: false,
           error: null,
+        );
+        _applyFilters();
+
+      case StashTagsUpdated(:final tags):
+        // 삭제된 태그가 필터에 남으면 결과가 0건이 되는데 선택 칩은 보이지 않으므로 함께 정리
+        final existingIds = tags.map((t) => t.id).toSet();
+        state = state.copyWith(
+          allTags: tags,
+          selectedTagIds: state.selectedTagIds.intersection(existingIds),
         );
         _applyFilters();
 
@@ -85,15 +95,20 @@ class StashNotifier extends Notifier<StashState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final tags = await appDb.getAllStashTags();
       await _stashSubscription?.cancel();
       _stashSubscription = appDb.watchAllStashYarns().listen(
         (yarns) => onEvent(StashUpdatedEvent(yarns)),
         onError: (e) => _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.loadDataFailed(e.toString()))),
       );
-      state = state.copyWith(allTags: tags);
+
+      // 태그 목록 stream 구독 (태그 시트에서 이름·색을 바꾸거나 지워도 바로 반영)
+      await _tagsSubscription?.cancel();
+      _tagsSubscription = appDb.watchAllStashTags().listen(
+        (tags) => onEvent(StashTagsUpdated(tags)),
+      );
     } catch (e) {
       await _stashSubscription?.cancel();
+      await _tagsSubscription?.cancel();
       _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }
