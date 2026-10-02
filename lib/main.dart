@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -29,7 +30,7 @@ void main() async {
 
   var isPremium = false;
   if (apiKey.isNotEmpty) {
-    await Purchases.setLogLevel(LogLevel.debug);
+    await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
     PurchasesConfiguration configuration = PurchasesConfiguration(apiKey);
     await Purchases.configure(configuration);
 
