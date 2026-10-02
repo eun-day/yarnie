@@ -2567,14 +2567,19 @@ class AppDb extends _$AppDb {
   /// [tagId]: Tag ID
   /// [name]: 태그 이름 (선택)
   /// [color]: Flutter Color 값 (선택)
-  Future<void> updateTag({required int tagId, String? name, int? color}) {
-    return (update(tags)..where((t) => t.id.equals(tagId))).write(
-      TagsCompanion(
-        name: name != null ? Value(name) : const Value.absent(),
-        color: color != null ? Value(color) : const Value.absent(),
-        updatedAt: Value(DateTime.now().toUtc()),
-      ),
-    );
+  Future<void> updateTag({required int tagId, String? name, int? color}) async {
+    try {
+      await (update(tags)..where((t) => t.id.equals(tagId))).write(
+        TagsCompanion(
+          name: name != null ? Value(name) : const Value.absent(),
+          color: color != null ? Value(color) : const Value.absent(),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+    } catch (e) {
+      // 이름 중복(UNIQUE) 등을 호출자가 구분할 수 있게 변환 (createTag와 동일)
+      throw _handleDatabaseException(e, 'Update Tag');
+    }
   }
 
   /// Tag 삭제 (모든 프로젝트에서 해당 태그 제거)
