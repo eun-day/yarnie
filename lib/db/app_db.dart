@@ -868,16 +868,24 @@ class AppDb extends _$AppDb {
   }
 
   /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
-  Future<void> cleanupDeletedProjects() async {
+  /// 반환값: 삭제된 프로젝트의 이미지 경로 (호출자가 파일을 정리)
+  Future<List<String>> cleanupDeletedProjects() async {
     final thresholdDate = DateTime.now().toUtc().subtract(
       const Duration(days: 30),
     );
-    await (delete(projects)..where(
-          (t) =>
-              t.deletedAt.isNotNull() &
-              t.deletedAt.isSmallerThanValue(thresholdDate),
-        ))
-        .go();
+    return transaction(() async {
+      final expired = await (select(projects)..where(
+            (t) =>
+                t.deletedAt.isNotNull() &
+                t.deletedAt.isSmallerThanValue(thresholdDate),
+          ))
+          .get();
+      if (expired.isEmpty) return const <String>[];
+
+      await (delete(projects)..where((t) => t.id.isIn(expired.map((p) => p.id))))
+          .go();
+      return [for (final p in expired) if (p.imagePath != null) p.imagePath!];
+    });
   }
 
   /// 휴지통에 있는 프로젝트 목록 스트림
@@ -2730,16 +2738,24 @@ class AppDb extends _$AppDb {
   }
 
   /// 삭제된 지 30일이 지난 실 정보 영구 삭제 (배치용)
-  Future<void> cleanupDeletedStashYarns() async {
+  /// 반환값: 삭제된 실의 이미지 경로 (호출자가 파일을 정리)
+  Future<List<String>> cleanupDeletedStashYarns() async {
     final thresholdDate = DateTime.now().toUtc().subtract(
       const Duration(days: 30),
     );
-    await (delete(stashYarns)..where(
-          (t) =>
-              t.deletedAt.isNotNull() &
-              t.deletedAt.isSmallerThanValue(thresholdDate),
-        ))
-        .go();
+    return transaction(() async {
+      final expired = await (select(stashYarns)..where(
+            (t) =>
+                t.deletedAt.isNotNull() &
+                t.deletedAt.isSmallerThanValue(thresholdDate),
+          ))
+          .get();
+      if (expired.isEmpty) return const <String>[];
+
+      await (delete(stashYarns)..where((t) => t.id.isIn(expired.map((y) => y.id))))
+          .go();
+      return [for (final y in expired) if (y.imagePath != null) y.imagePath!];
+    });
   }
 
   /// 휴지통에 있는 실 목록 스트림

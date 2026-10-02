@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/trash/widgets/empty_trash_view.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/widgets/project_list_tile.dart';
+import 'package:yarnie/core/utils/app_image_utils.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/features/stash/stash_root.dart';
@@ -683,6 +684,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
     if (confirmed == true && context.mounted) {
       try {
         await appDb.permanentlyDeleteProject(project.id);
+        await AppImageUtils.deleteImageIfUnused(project.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)),
@@ -791,6 +793,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
     if (confirmed == true && context.mounted) {
       try {
         await appDb.permanentlyDeleteStashYarn(yarn.id);
+        await AppImageUtils.deleteImageIfUnused(yarn.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)), // 공용 메시지 재사용

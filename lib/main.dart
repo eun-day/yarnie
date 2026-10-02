@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/core/utils/app_image_utils.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
@@ -31,16 +32,20 @@ void main() async {
     await Purchases.configure(configuration);
   }
 
-  // 삭제된지 30일이 지난 프로젝트 영구 삭제
+  // 삭제된지 30일이 지난 프로젝트 영구 삭제 (이미지 파일 포함)
   try {
-    await appDb.cleanupDeletedProjects();
+    for (final imagePath in await appDb.cleanupDeletedProjects()) {
+      await AppImageUtils.deleteImageIfUnused(imagePath);
+    }
   } catch (e) {
     debugPrint('Failed to cleanup deleted projects: $e');
   }
 
-  // 삭제된지 30일이 지난 실 정보 영구 삭제
+  // 삭제된지 30일이 지난 실 정보 영구 삭제 (이미지 파일 포함)
   try {
-    await appDb.cleanupDeletedStashYarns();
+    for (final imagePath in await appDb.cleanupDeletedStashYarns()) {
+      await AppImageUtils.deleteImageIfUnused(imagePath);
+    }
   } catch (e) {
     debugPrint('Failed to cleanup deleted stash yarns: $e');
   }
