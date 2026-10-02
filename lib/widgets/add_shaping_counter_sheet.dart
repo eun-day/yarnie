@@ -225,9 +225,7 @@ class _AddShapingCounterSheetState
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        final message = _isEditing
-            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
-            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        final message = AppLocalizations.of(context)!.errorOccurred(e.toString());
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
