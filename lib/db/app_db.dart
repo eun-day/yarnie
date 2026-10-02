@@ -811,7 +811,7 @@ class AppDb extends _$AppDb {
           );
         }
 
-        // 7. PartNotes 복사
+        // 7. PartNotes 복사 (작성·수정 일시도 원본 그대로)
         final originalNotes = await (select(partNotes)..where((t) => t.partId.equals(originalPart.id))).get();
         for (final note in originalNotes) {
           await into(partNotes).insert(
@@ -819,6 +819,8 @@ class AppDb extends _$AppDb {
               partId: newPartId,
               content: note.content,
               isPinned: Value(note.isPinned),
+              createdAt: Value(note.createdAt),
+              updatedAt: Value(note.updatedAt),
             ),
           );
         }
