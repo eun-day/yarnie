@@ -180,6 +180,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.enterProjectName));
       return;
     }
+    if (state.isSaving) return; // 연타로 프로젝트가 중복 생성되는 것 방지
 
     state = state.copyWith(isSaving: true, error: null);
 

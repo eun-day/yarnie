@@ -1653,6 +1653,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   Duration _elapsed = Duration.zero;
   Session? _session;
   SessionSegment? _currentSegment;
+  bool _isToggling = false;
 
   @override
   void initState() {
@@ -1818,37 +1819,51 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   }
 
   Future<void> _handleToggleSession() async {
-    final partId = widget.partId;
+    // 연타로 같은 요청이 두 번 가면 DB 상태 검증에서 예외가 나므로 처리 중에는 무시
+    if (_isToggling) return;
+    _isToggling = true;
 
-    // MainCounter 값을 알아야 함
-    final mainCounter = await appDb.getMainCounter(partId);
-    final currentMainValue = mainCounter?.currentValue ?? 0;
+    try {
+      final partId = widget.partId;
 
-    if (_session == null) {
-      // Start New Session
-      await appDb.createSession(
-        partId: partId,
-        currentMainValue: currentMainValue,
-      );
-    } else {
-      if (_session!.status == SessionStatus2.running) {
-        // Pause
-        if (_currentSegment != null) {
-          await appDb.pausePartSession(
-            sessionId: _session!.id,
-            currentSegmentId: _currentSegment!.id,
-            currentMainValue: currentMainValue,
-            segmentStartedAt: _currentSegment!.startedAt,
-          );
-        }
-      } else {
-        // Resume
-        await appDb.resumePartSession(
-          sessionId: _session!.id,
+      // MainCounter 값을 알아야 함
+      final mainCounter = await appDb.getMainCounter(partId);
+      final currentMainValue = mainCounter?.currentValue ?? 0;
+
+      if (_session == null) {
+        // Start New Session
+        await appDb.createSession(
           partId: partId,
           currentMainValue: currentMainValue,
         );
+      } else {
+        if (_session!.status == SessionStatus2.running) {
+          // Pause
+          if (_currentSegment != null) {
+            await appDb.pausePartSession(
+              sessionId: _session!.id,
+              currentSegmentId: _currentSegment!.id,
+              currentMainValue: currentMainValue,
+              segmentStartedAt: _currentSegment!.startedAt,
+            );
+          }
+        } else {
+          // Resume
+          await appDb.resumePartSession(
+            sessionId: _session!.id,
+            partId: partId,
+            currentMainValue: currentMainValue,
+          );
+        }
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(e.toString()))),
+        );
+      }
+    } finally {
+      _isToggling = false;
     }
   }
 }
@@ -2350,23 +2365,25 @@ class _AddPartSheetState extends State<_AddPartSheet> {
   Future<void> _handleSave() async {
     final l10n = AppLocalizations.of(context)!;
     final name = _controller.text.trim();
-    if (name.isEmpty) return;
+    // 키보드 완료와 버튼을 빠르게 연달아 누르면 같은 파트가 두 번 만들어지므로 먼저 막는다
+    if (name.isEmpty || _isSaving) return;
+    setState(() {
+      _isSaving = true;
+    });
 
     // 중복 체크
     final exists = await appDb.isPartNameExists(
       projectId: widget.projectId,
       name: name,
     );
+    if (!mounted) return;
     if (exists) {
       setState(() {
         _errorText = l10n.duplicatePartName;
+        _isSaving = false;
       });
       return;
     }
-
-    setState(() {
-      _isSaving = true;
-    });
 
     try {
       final newPartId = await appDb.createPart(
