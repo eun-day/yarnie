@@ -175,18 +175,18 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   // 양방향 자동 계산 로직
   // ============================================================
   void _onSkeinsOrSpecChanged() {
-    final skeins = double.tryParse(_skeinsCtrl.text);
+    final skeins = _parseDecimal(_skeinsCtrl.text);
     if (skeins == null) return;
 
     // 무게 자동 계산
-    final weightPerSkein = double.tryParse(_weightPerSkeinCtrl.text);
+    final weightPerSkein = _parseDecimal(_weightPerSkeinCtrl.text);
     if (weightPerSkein != null) {
       final totalWeight = double.parse((skeins * weightPerSkein).toStringAsFixed(2));
       _totalWeightCtrl.text = totalWeight.toString();
     }
 
     // 길이 자동 계산
-    final lengthPerSkein = double.tryParse(_lengthPerSkeinCtrl.text);
+    final lengthPerSkein = _parseDecimal(_lengthPerSkeinCtrl.text);
     if (lengthPerSkein != null) {
       final totalLength = double.parse((skeins * lengthPerSkein).toStringAsFixed(2));
       _totalLengthCtrl.text = totalLength.toString();
@@ -194,14 +194,14 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   }
 
   void _onTotalWeightChanged() {
-    final totalWeight = double.tryParse(_totalWeightCtrl.text);
-    final weightPerSkein = double.tryParse(_weightPerSkeinCtrl.text);
+    final totalWeight = _parseDecimal(_totalWeightCtrl.text);
+    final weightPerSkein = _parseDecimal(_weightPerSkeinCtrl.text);
     if (totalWeight != null && weightPerSkein != null && weightPerSkein > 0) {
       final skeins = double.parse((totalWeight / weightPerSkein).toStringAsFixed(2));
       _skeinsCtrl.text = skeins.toString();
 
       // 길이에 대해서도 비례하여 세팅 가능하면 자동 세팅
-      final lengthPerSkein = double.tryParse(_lengthPerSkeinCtrl.text);
+      final lengthPerSkein = _parseDecimal(_lengthPerSkeinCtrl.text);
       if (lengthPerSkein != null) {
         final totalLength = double.parse((skeins * lengthPerSkein).toStringAsFixed(2));
         _totalLengthCtrl.text = totalLength.toString();
@@ -210,14 +210,14 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   }
 
   void _onTotalLengthChanged() {
-    final totalLength = double.tryParse(_totalLengthCtrl.text);
-    final lengthPerSkein = double.tryParse(_lengthPerSkeinCtrl.text);
+    final totalLength = _parseDecimal(_totalLengthCtrl.text);
+    final lengthPerSkein = _parseDecimal(_lengthPerSkeinCtrl.text);
     if (totalLength != null && lengthPerSkein != null && lengthPerSkein > 0) {
       final skeins = double.parse((totalLength / lengthPerSkein).toStringAsFixed(2));
       _skeinsCtrl.text = skeins.toString();
 
       // 무게에 대해서도 비례하여 세팅 가능하면 자동 세팅
-      final weightPerSkein = double.tryParse(_weightPerSkeinCtrl.text);
+      final weightPerSkein = _parseDecimal(_weightPerSkeinCtrl.text);
       if (weightPerSkein != null) {
         final totalWeight = double.parse((skeins * weightPerSkein).toStringAsFixed(2));
         _totalWeightCtrl.text = totalWeight.toString();
@@ -266,12 +266,15 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
       ctrl.text = last.original;
       return;
     }
-    final value = double.tryParse(ctrl.text);
+    final value = _parseDecimal(ctrl.text);
     if (value == null) return;
     final converted = double.parse(convert(value).toStringAsFixed(2)).toString();
     _lastConversion[ctrl] = (original: ctrl.text, converted: converted);
     ctrl.text = converted;
   }
+
+  /// 소수점 입력 파싱 (쉼표를 소수점으로 쓰는 지역 설정 키보드의 "2,5"도 2.5로 읽는다)
+  double? _parseDecimal(String text) => double.tryParse(text.trim().replaceAll(',', '.'));
 
   // ============================================================
   // 저장 로직
@@ -298,11 +301,11 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
       brandName: Value(_brandCtrl.text.isEmpty ? null : _brandCtrl.text),
       colorwayName: Value(_colorwayCtrl.text.isEmpty ? null : _colorwayCtrl.text),
       dyeLot: Value(_dyeLotCtrl.text.isEmpty ? null : _dyeLotCtrl.text),
-      skeins: Value(double.tryParse(_skeinsCtrl.text)),
-      yarnLengthPerSkein: Value(double.tryParse(_lengthPerSkeinCtrl.text)),
-      yarnWeightPerSkein: Value(double.tryParse(_weightPerSkeinCtrl.text)),
-      totalLength: Value(double.tryParse(_totalLengthCtrl.text)),
-      totalWeight: Value(double.tryParse(_totalWeightCtrl.text)),
+      skeins: Value(_parseDecimal(_skeinsCtrl.text)),
+      yarnLengthPerSkein: Value(_parseDecimal(_lengthPerSkeinCtrl.text)),
+      yarnWeightPerSkein: Value(_parseDecimal(_weightPerSkeinCtrl.text)),
+      totalLength: Value(_parseDecimal(_totalLengthCtrl.text)),
+      totalWeight: Value(_parseDecimal(_totalWeightCtrl.text)),
       lengthUnit: Value(_lengthUnit),
       weightUnit: Value(_weightUnit),
       yarnWeight: Value(_yarnWeight),
