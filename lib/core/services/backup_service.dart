@@ -54,8 +54,10 @@ class BackupService {
             .whereType<File>();
         for (final imageFile in imageFiles) {
           // 상대 경로 유지 (예: project_images/123456.jpg)
-          final relativePath =
-              p.relative(imageFile.path, from: docDir.path);
+          // ZIP 엔트리 이름은 플랫폼과 무관하게 '/' 구분자를 쓴다.
+          final relativePath = p.posix.joinAll(
+            p.split(p.relative(imageFile.path, from: docDir.path)),
+          );
           final bytes = await imageFile.readAsBytes();
           archive.addFile(ArchiveFile(
             relativePath,
