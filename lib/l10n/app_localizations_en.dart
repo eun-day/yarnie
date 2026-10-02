@@ -2104,6 +2104,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateTagName => 'This tag name already exists.';
 
   @override
+  String get noCounterData => 'No counter data';
+
+  @override
+  String get unknownCounterType => 'Unknown counter type';
+
+  @override
+  String countByRowsChip(int value) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value,
+      locale: localeName,
+      other: '$value rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get defaultPartName => 'Part 1';
+
+  @override
   String saveYarnFailed(Object error) {
     return 'Failed to save yarn: $error';
   }
@@ -2160,4 +2180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumRestoreFailed =>
       'Failed to restore purchases. Please try again.';
+
+  @override
+  String get premiumMemberBadge => 'Premium Member 👑';
 }

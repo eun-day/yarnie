@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
@@ -76,7 +77,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(AppLocalizations.of(context)!.errorText(e)))));
       }
     }
   }

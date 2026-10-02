@@ -38,7 +38,7 @@ class PartCountersNotifier extends Notifier<PartCountersState> {
         .listen(
           (count) => onEvent(TotalCountUpdated(count)),
           onError: (e, st) => state = state.copyWith(
-            error: '카운터 수 로드 실패: $e',
+            error: e.toString(),
             isLoading: false,
           ),
         );

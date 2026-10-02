@@ -35,6 +35,7 @@ import 'package:yarnie/widgets/target_setting_dialog.dart';
 import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/providers/settings_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -315,7 +316,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+                              SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
                             );
                           }
                         }
@@ -1176,7 +1177,11 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         if (runsSnapshot.hasError) {
           return SizedBox(
             height: 160,
-            child: Center(child: Text('Error: ${runsSnapshot.error}')),
+            child: Center(
+              child: Text(
+                AppLocalizations.of(context)!.loadDataFailed(runsSnapshot.error.toString()),
+              ),
+            ),
           );
         }
         if (!runsSnapshot.hasData) {
@@ -1236,7 +1241,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
 
     switch (type) {
       case 'range':
-        if (runs.isEmpty) return Text('No Data');
+        if (runs.isEmpty) return Text(AppLocalizations.of(context)!.noCounterData);
         final run = runs.first;
         final isCompleted =
             effectiveValue >= (run.startRow + run.rowsTotal);
@@ -1547,7 +1552,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       case 'length':
-        if (runs.isEmpty) return Text('No Data');
+        if (runs.isEmpty) return Text(AppLocalizations.of(context)!.noCounterData);
         final runL = runs.first;
 
         final targetLength = (spec['targetLength'] as num? ?? 0.0).toDouble();
@@ -1632,9 +1637,9 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       default:
-        return const SizedBox(
+        return SizedBox(
           height: 160,
-          child: Center(child: Text('Unknown Type')),
+          child: Center(child: Text(AppLocalizations.of(context)!.unknownCounterType)),
         );
     }
   }
@@ -1860,7 +1865,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(AppLocalizations.of(context)!.errorText(e)))),
         );
       }
     } finally {
@@ -2401,7 +2406,7 @@ class _AddPartSheetState extends State<_AddPartSheet> {
           _isSaving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+          SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
         );
       }
     }

@@ -2042,6 +2042,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get duplicateTagName => '이미 존재하는 태그 이름입니다.';
 
   @override
+  String get noCounterData => '카운터 데이터가 없습니다';
+
+  @override
+  String get unknownCounterType => '알 수 없는 카운터 유형입니다';
+
+  @override
+  String countByRowsChip(int value) {
+    return '$value단씩';
+  }
+
+  @override
+  String get defaultPartName => '파트 1';
+
+  @override
   String saveYarnFailed(Object error) {
     return '실 저장 실패: $error';
   }
@@ -2096,4 +2110,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get premiumRestoreFailed => '구매 복원에 실패했습니다. 다시 시도해주세요.';
+
+  @override
+  String get premiumMemberBadge => '프리미엄 회원 👑';
 }

@@ -12,6 +12,7 @@ import 'projects_effect.dart'; // ProjectCreated, ProjectUpdated 이벤트 (Proj
 import 'project_form_state.dart';
 import 'project_form_event.dart';
 import 'project_form_effect.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 class ProjectFormNotifier extends Notifier<ProjectFormState> {
   final _effectController = StreamController<ProjectFormEffect>.broadcast();
@@ -66,8 +67,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         );
       case ToggleTagSelected(:final tagId):
         _toggleTagSelected(tagId);
-      case SaveProject():
-        await _saveProject();
+      case SaveProject(:final defaultPartName):
+        await _saveProject(defaultPartName);
       case UpdateSelectedTags(:final tagIds):
         final allTags = await appDb.getAllTags();
         state = state.copyWith(
@@ -138,7 +139,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
-      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.loadDataFailed(e.toString())));
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.loadDataFailed(l10n.errorText(e))));
     }
   }
 
@@ -175,7 +176,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     state = state.copyWith(selectedTagIds: updatedTags);
   }
 
-  Future<void> _saveProject() async {
+  Future<void> _saveProject(String defaultPartName) async {
     if (!state.isValid) {
       _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.enterProjectName));
       return;
@@ -223,12 +224,13 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
             gaugeRows: state.gaugeRows,
             imagePath: persistedImagePath,
             tagIds: state.selectedTagIds.toList(),
+            defaultPartName: defaultPartName,
           ),
         );
       }
     } catch (e) {
       state = state.copyWith(isSaving: false, error: e.toString());
-      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.saveProjectFailed(l10n.errorText(e))));
     }
   }
 

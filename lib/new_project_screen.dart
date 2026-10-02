@@ -308,7 +308,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                     ? null
                     : () => ref
                           .read(projectFormNotifierProvider.notifier)
-                          .onEvent(const SaveProject()),
+                          .onEvent(SaveProject(defaultPartName: l10n.defaultPartName)),
                 child: Container(
                   height: 36,
                   padding: const EdgeInsets.symmetric(horizontal: 16),

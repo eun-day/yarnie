@@ -665,6 +665,10 @@
   "deleteMemoTitle": "メモを削除",
   "deleteMemoConfirm": "このメモを削除しますか？\nこの操作は取り消せません。",
   "duplicateTagName": "既に存在するタグ名です。",
+  "noCounterData": "カウンターのデータがありません",
+  "unknownCounterType": "不明なカウンタータイプです",
+  "countByRowsChip": "{value}段ずつ",
+  "defaultPartName": "パーツ1",
   "saveYarnFailed": "毛糸の保存失敗: {error}",
   "enterYarnName": "糸の名前を入力してください",
   "restoreYarnTitle": "毛糸を復元",
@@ -681,5 +685,6 @@
   "premiumProductUnavailable": "商品情報を読み込めませんでした。しばらくしてからもう一度お試しください。",
   "premiumPaymentPending": "決済の承認待ちです。承認されるとプレミアムが自動的に適用されます。",
   "premiumAlreadyPurchased": "すでに購入済みです。「購入情報の復元」でプレミアムを再適用してください。",
-  "premiumRestoreFailed": "購入情報の復元に失敗しました。もう一度お試しください。"
+  "premiumRestoreFailed": "購入情報の復元に失敗しました。もう一度お試しください。",
+  "premiumMemberBadge": "プレミアム会員 👑"
 }

@@ -6,6 +6,7 @@ import '../../../../db/di.dart';
 import 'part_manage_state.dart';
 import 'part_manage_event.dart';
 import 'part_manage_effect.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 class PartManageNotifier extends Notifier<PartManageState> {
   StreamSubscription? _partsSubscription;
@@ -57,7 +58,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
           (parts) => onEvent(PartsUpdated(parts)),
           onError: (e, st) {
             state = state.copyWith(isLoading: false);
-            _emit(ShowLocalizedErrorEffect((l10n) => l10n.loadPartsFailed(e.toString())));
+            _emit(ShowLocalizedErrorEffect((l10n) => l10n.loadPartsFailed(l10n.errorText(e))));
           },
         );
   }
@@ -79,7 +80,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
       );
       _emit(PartCreatedEffect(newPartId));
     } catch (e) {
-      _emit(ShowLocalizedErrorEffect((l10n) => l10n.createPartFailed(e.toString())));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.createPartFailed(l10n.errorText(e))));
     }
   }
 
@@ -89,7 +90,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
         PartsCompanion(id: Value(partId), name: Value(name)),
       );
     } catch (e) {
-      _emit(ShowLocalizedErrorEffect((l10n) => l10n.updatePartFailed(e.toString())));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.updatePartFailed(l10n.errorText(e))));
     }
   }
 
@@ -107,7 +108,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
 
       await appDb.reorderParts(projectId: projectId, partIds: partIds);
     } catch (e) {
-      _emit(ShowLocalizedErrorEffect((l10n) => l10n.reorderPartsFailed(e.toString())));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.reorderPartsFailed(l10n.errorText(e))));
     }
   }
 
@@ -115,7 +116,7 @@ class PartManageNotifier extends Notifier<PartManageState> {
     try {
       await appDb.deletePart(partId);
     } catch (e) {
-      _emit(ShowLocalizedErrorEffect((l10n) => l10n.deletePartFailed(e.toString())));
+      _emit(ShowLocalizedErrorEffect((l10n) => l10n.deletePartFailed(l10n.errorText(e))));
     }
   }
 

@@ -5,6 +5,7 @@ import '../../../db/di.dart';
 import 'tags_state.dart';
 import 'tags_event.dart';
 import 'tags_effect.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 /// 태그 관리 Notifier
 class TagsNotifier extends Notifier<TagsState> {
@@ -67,7 +68,7 @@ class TagsNotifier extends Notifier<TagsState> {
       onEvent(TagsUpdated(tags));
     } catch (e) {
       state = state.copyWith(isLoading: false); // 실패 후에도 다시 불러올 수 있게
-      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.loadTagsFailed(e.toString())));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.loadTagsFailed(l10n.errorText(e))));
     }
   }
 
@@ -114,7 +115,7 @@ class TagsNotifier extends Notifier<TagsState> {
     } on UniqueConstraintException {
       _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.duplicateTagName));
     } catch (e) {
-      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.createTagFailed(e.toString())));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.createTagFailed(l10n.errorText(e))));
     }
   }
 
@@ -137,7 +138,7 @@ class TagsNotifier extends Notifier<TagsState> {
     } on UniqueConstraintException {
       _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.duplicateTagName));
     } catch (e) {
-      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.updateTagFailed(e.toString())));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.updateTagFailed(l10n.errorText(e))));
     }
   }
 
@@ -149,7 +150,7 @@ class TagsNotifier extends Notifier<TagsState> {
       // 목록 새로고침
       await _loadTags();
     } catch (e) {
-      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.deleteTagFailed(e.toString())));
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.deleteTagFailed(l10n.errorText(e))));
     }
   }
 
