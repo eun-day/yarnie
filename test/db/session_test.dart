@@ -482,6 +482,33 @@ void main() {
         final session = (await db.getSession(partId))!;
         expect(session.totalDurationSeconds, closeTo(1800, 1));
       });
+
+      test('로컬 자정을 넘긴 세그먼트는 일시정지할 때 날짜별로 나뉜다', () async {
+        final now = DateTime.now();
+        final todayMidnight = DateTime(now.year, now.month, now.day);
+        final start = todayMidnight.subtract(const Duration(minutes: 30));
+        await setCurrentSegmentStart(start);
+
+        await db.pauseRunningSession(partId, at: todayMidnight.add(const Duration(minutes: 20)));
+
+        final segments = await db.getSessionSegments(sessionId);
+        expect(segments, hasLength(2));
+        expect(segments[0].endedAt, todayMidnight);
+        expect(segments[0].durationSeconds, 1800);
+        expect(segments[0].reason, SegmentReason.midnightSplit);
+        expect(segments[1].startedAt, todayMidnight);
+        expect(segments[1].durationSeconds, 1200);
+        expect(segments[1].reason, SegmentReason.pause);
+        expect((await db.getSession(partId))!.totalDurationSeconds, 3000);
+
+        final yesterdayMidnight = DateTime(now.year, now.month, now.day - 1);
+        final daily = await db.getDailyWorkSeconds(
+          startDate: yesterdayMidnight,
+          endDate: DateTime(now.year, now.month, now.day + 1),
+        );
+        expect(daily[yesterdayMidnight], 1800);
+        expect(daily[todayMidnight], 1200);
+      });
     });
   });
 }
