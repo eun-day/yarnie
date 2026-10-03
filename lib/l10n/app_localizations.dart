@@ -3783,6 +3783,30 @@ abstract class AppLocalizations {
   /// **'실 추가'**
   String get addYarn;
 
+  /// No description provided for @sessionAbsenceTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 오셨네요'**
+  String get sessionAbsenceTitle;
+
+  /// No description provided for @sessionAbsenceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱을 떠난 뒤 {minutes}분이 지났어요. 이 시간을 진행 중인 세션에 반영할까요?\n반영하지 않으면 앱을 떠난 시점에 세션을 일시정지합니다.'**
+  String sessionAbsenceMessage(int minutes);
+
+  /// No description provided for @sessionAbsenceInclude.
+  ///
+  /// In ko, this message translates to:
+  /// **'반영'**
+  String get sessionAbsenceInclude;
+
+  /// No description provided for @sessionAbsenceExclude.
+  ///
+  /// In ko, this message translates to:
+  /// **'반영 안 함'**
+  String get sessionAbsenceExclude;
+
   /// No description provided for @sessionPausedByPartChange.
   ///
   /// In ko, this message translates to:
