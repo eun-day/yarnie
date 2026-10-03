@@ -135,8 +135,11 @@ class StashNotifier extends Notifier<StashState> {
 
   Future<void> _updateStashYarn(StashYarnsCompanion companion) async {
     try {
-      await appDb.updateStashYarn(companion);
       final id = companion.id.value;
+      final previousImagePath = (await appDb.getStashYarn(id))?.imagePath;
+      await appDb.updateStashYarn(companion);
+      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+      await AppImageUtils.deleteImageIfUnused(previousImagePath, keep: companion.imagePath.value);
       _emit(StashYarnUpdated(id));
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.editComplete));
     } catch (e) {
