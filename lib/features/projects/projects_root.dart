@@ -192,6 +192,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
     switch (state.viewMode) {
       case ProjectViewMode.largeCard:
         return _LargeCardView(
+          controller: widget.controller,
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
@@ -199,6 +200,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         );
       case ProjectViewMode.smallCard:
         return _SmallCardView(
+          controller: widget.controller,
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
@@ -206,6 +208,7 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         );
       case ProjectViewMode.list:
         return _ListView(
+          controller: widget.controller,
           projects: projects,
           tags: state.allTags,
           onProjectTap: (id) => _openProject(id),
@@ -457,12 +460,14 @@ class _ViewModeIconButton extends StatelessWidget {
 // ============================================================
 
 class _LargeCardView extends StatelessWidget {
+  final ScrollController controller; // 탭을 다시 누르면 맨 위로 (RootScaffold)
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
 
   const _LargeCardView({
+    required this.controller,
     required this.projects,
     required this.tags,
     required this.onProjectTap,
@@ -472,6 +477,7 @@ class _LargeCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: controller,
       padding: EdgeInsets.all(16),
       itemCount: projects.length,
       itemBuilder: (context, index) {
@@ -658,12 +664,14 @@ class _LargeProjectCard extends StatelessWidget {
 // ============================================================
 
 class _SmallCardView extends StatelessWidget {
+  final ScrollController controller; // 탭을 다시 누르면 맨 위로 (RootScaffold)
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
 
   const _SmallCardView({
+    required this.controller,
     required this.projects,
     required this.tags,
     required this.onProjectTap,
@@ -673,6 +681,7 @@ class _SmallCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      controller: controller,
       padding: EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -807,12 +816,14 @@ class _SmallProjectCard extends StatelessWidget {
 // ============================================================
 
 class _ListView extends StatelessWidget {
+  final ScrollController controller; // 탭을 다시 누르면 맨 위로 (RootScaffold)
   final List<Project> projects;
   final List<Tag> tags;
   final ValueChanged<int> onProjectTap;
   final ValueChanged<int> onLongPress;
 
   const _ListView({
+    required this.controller,
     required this.projects,
     required this.tags,
     required this.onProjectTap,
@@ -822,6 +833,7 @@ class _ListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: controller,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: projects.length,
       itemBuilder: (context, index) {
