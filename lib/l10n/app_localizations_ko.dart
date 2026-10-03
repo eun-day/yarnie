@@ -2030,5 +2030,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionAbsenceExclude => '반영 안 함';
 
   @override
+  String get deleteMemoTitle => '메모 삭제';
+
+  @override
+  String get deleteMemoConfirm => '이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+
+  @override
   String get sessionPausedByPartChange => '이전 파트에서 진행 중이던 세션을 일시정지했습니다.';
 }

@@ -3807,6 +3807,18 @@ abstract class AppLocalizations {
   /// **'반영 안 함'**
   String get sessionAbsenceExclude;
 
+  /// No description provided for @deleteMemoTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 삭제'**
+  String get deleteMemoTitle;
+
+  /// No description provided for @deleteMemoConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
+  String get deleteMemoConfirm;
+
   /// No description provided for @sessionPausedByPartChange.
   ///
   /// In ko, this message translates to:

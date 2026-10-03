@@ -699,5 +699,7 @@
   },
   "sessionAbsenceInclude": "반영",
   "sessionAbsenceExclude": "반영 안 함",
+  "deleteMemoTitle": "메모 삭제",
+  "deleteMemoConfirm": "이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
   "sessionPausedByPartChange": "이전 파트에서 진행 중이던 세션을 일시정지했습니다."
 }
