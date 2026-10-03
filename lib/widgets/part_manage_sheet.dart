@@ -172,6 +172,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                     // items 배열을 구성합니다.
                     // adding 상태면 제일 첫 번째 아이템으로 input section을 넣습니다.
                     final List<Widget> listItems = [];
+                    final listOffset = _isAdding ? 1 : 0;
 
                     if (_isAdding) {
                       listItems.add(
@@ -240,7 +241,8 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                         listItems.add(
                           _PartItemTile(
                             key: ValueKey(part.id),
-                            index: i,
+                            // 드래그 핸들은 리스트 인덱스를 쓴다 (맨 위 추가 입력창만큼 밀림)
+                            index: i + listOffset,
                             part: part,
                             projectId: widget.projectId,
                             onRenameRequest: () {
@@ -273,9 +275,13 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
                           }
+                          // 리스트 인덱스 → parts 인덱스 (추가 입력창은 옮길 수 없음)
+                          final from = oldIndex - listOffset;
+                          if (from < 0 || from >= parts.length) return;
+                          final to = (newIndex - listOffset).clamp(0, parts.length - 1);
                           final reordered = List<Part>.from(parts);
-                          final item = reordered.removeAt(oldIndex);
-                          reordered.insert(newIndex, item);
+                          final item = reordered.removeAt(from);
+                          reordered.insert(to, item);
 
                           final partIds = reordered.map((e) => e.id).toList();
                           ref
