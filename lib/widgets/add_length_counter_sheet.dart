@@ -398,7 +398,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                               const SizedBox(height: 4),
                               Text(
                                 l10n.estimatedRowsDisplay(
-                                  estimatedRows.toString(),
+                                  estimatedRows,
                                 ),
                                 style: TextStyle(
                                   fontSize: 24,
