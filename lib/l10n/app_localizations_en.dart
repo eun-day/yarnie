@@ -2119,6 +2119,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByBrand => 'Brand';
 
   @override
+  String get premiumProductUnavailable =>
+      'Couldn\'t load product info. Please try again in a moment.';
+
+  @override
+  String get premiumPaymentPending =>
+      'Your payment is pending. Premium will be applied automatically once it\'s approved.';
+
+  @override
+  String get premiumAlreadyPurchased =>
+      'You already own this. Tap \'Restore Purchases\' to reapply Premium.';
+
+  @override
+  String get premiumRestoreFailed =>
+      'Failed to restore purchases. Please try again.';
+
+  @override
   String get sessionPausedByPartChange =>
       'The session running in the previous part was paused.';
 }

@@ -691,5 +691,9 @@
   "sortNewest": "Newest",
   "sortByName": "Name",
   "sortByBrand": "Brand",
+  "premiumProductUnavailable": "Couldn't load product info. Please try again in a moment.",
+  "premiumPaymentPending": "Your payment is pending. Premium will be applied automatically once it's approved.",
+  "premiumAlreadyPurchased": "You already own this. Tap 'Restore Purchases' to reapply Premium.",
+  "premiumRestoreFailed": "Failed to restore purchases. Please try again.",
   "sessionPausedByPartChange": "The session running in the previous part was paused."
 }

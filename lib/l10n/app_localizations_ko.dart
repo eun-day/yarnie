@@ -2057,5 +2057,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sortByBrand => '브랜드순';
 
   @override
+  String get premiumProductUnavailable => '상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+
+  @override
+  String get premiumPaymentPending =>
+      '결제 승인을 기다리고 있습니다. 승인되면 프리미엄이 자동으로 적용됩니다.';
+
+  @override
+  String get premiumAlreadyPurchased =>
+      '이미 구매한 상품입니다. \'구매 복원\'을 눌러 프리미엄을 다시 적용해주세요.';
+
+  @override
+  String get premiumRestoreFailed => '구매 복원에 실패했습니다. 다시 시도해주세요.';
+
+  @override
   String get sessionPausedByPartChange => '이전 파트에서 진행 중이던 세션을 일시정지했습니다.';
 }

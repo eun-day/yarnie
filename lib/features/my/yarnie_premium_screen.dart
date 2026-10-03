@@ -19,6 +19,7 @@ class YarniePremiumScreen extends ConsumerStatefulWidget {
 
 class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
   Package? _lifetimePackage;
+  bool _isBusy = false; // 결제·복원 진행 중 (중복 탭 방지)
 
   @override
   void initState() {
@@ -38,6 +39,64 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
       }
     } catch (e) {
       debugPrint('Error loading offerings: $e');
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _purchase(AppLocalizations l10n) async {
+    if (_isBusy) return;
+    final package = _lifetimePackage;
+    if (package == null) {
+      // 상품 정보를 못 불러온 경우(오프라인 등): 알리고 다시 불러온다
+      _showSnackBar(l10n.premiumProductUnavailable);
+      _loadOfferings();
+      return;
+    }
+
+    setState(() => _isBusy = true);
+    try {
+      final purchaseResult = await Purchases.purchasePackage(package);
+      // 화면을 떠났으면 ref를 쓸 수 없다 (프리미엄 상태는 CustomerInfo 리스너가 갱신)
+      if (!mounted) return;
+      if (PremiumNotifier.hasPremium(purchaseResult.customerInfo)) {
+        await ref.read(premiumProvider.notifier).refreshStatus();
+        if (mounted) Navigator.pop(context);
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(switch (PurchasesErrorHelper.getErrorCode(e)) {
+        PurchasesErrorCode.purchaseCancelledError => l10n.premiumPurchaseCancelled,
+        PurchasesErrorCode.networkError => l10n.premiumNetworkError,
+        PurchasesErrorCode.paymentPendingError => l10n.premiumPaymentPending,
+        PurchasesErrorCode.productAlreadyPurchasedError => l10n.premiumAlreadyPurchased,
+        _ => l10n.premiumPurchaseFailed,
+      });
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _restore(AppLocalizations l10n) async {
+    if (_isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final customerInfo = await Purchases.restorePurchases();
+      if (!mounted) return;
+      if (PremiumNotifier.hasPremium(customerInfo)) {
+        await ref.read(premiumProvider.notifier).refreshStatus();
+        _showSnackBar(l10n.premiumRestoreSuccess);
+      } else {
+        _showSnackBar(l10n.premiumRestoreNoHistory);
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(PurchasesErrorHelper.getErrorCode(e) == PurchasesErrorCode.networkError
+          ? l10n.premiumNetworkError
+          : l10n.premiumRestoreFailed);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
     }
   }
 
@@ -263,39 +322,7 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                     
                     // CTA Button
                     InkWell(
-                      onTap: () async {
-                        if (_lifetimePackage == null) return;
-
-                        try {
-                          final purchaseResult = await Purchases.purchasePackage(_lifetimePackage!);
-                          final customerInfo = purchaseResult.customerInfo;
-                          if (customerInfo.entitlements.active.containsKey('premium')) {
-                            if (context.mounted) {
-                              await ref.read(premiumProvider.notifier).refreshStatus();
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            }
-                          }
-                        } on PlatformException catch (e) {
-                          if (context.mounted) {
-                            var errorCode = PurchasesErrorHelper.getErrorCode(e);
-                            if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.premiumPurchaseCancelled)),
-                              );
-                            } else if (errorCode == PurchasesErrorCode.networkError) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.premiumNetworkError)),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.premiumPurchaseFailed)),
-                              );
-                            }
-                          }
-                        }
-                      },
+                      onTap: _isBusy ? null : () => _purchase(l10n),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
                         height: 56,
@@ -315,7 +342,15 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                             ),
                           ],
                         ),
-                        child: Row(
+                        child: _isBusy
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                                ),
+                              )
+                            : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SvgPicture.asset(
@@ -350,33 +385,7 @@ class _YarniePremiumScreenState extends ConsumerState<YarniePremiumScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextButton(
-                          onPressed: () async {
-                            try {
-                              final customerInfo = await Purchases.restorePurchases();
-                              if (customerInfo.entitlements.active.containsKey('premium')) {
-                                if (context.mounted) {
-                                  await ref.read(premiumProvider.notifier).refreshStatus();
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(l10n.premiumRestoreSuccess)),
-                                    );
-                                  }
-                                }
-                              } else {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.premiumRestoreNoHistory)),
-                                  );
-                                }
-                              }
-                            } on PlatformException catch (_) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l10n.premiumPurchaseFailed)),
-                                );
-                              }
-                            }
-                          },
+                          onPressed: _isBusy ? null : () => _restore(l10n),
                           child: Text(
                             l10n.premiumRestore,
                             style: AppTextStyles.bodyM.copyWith(
