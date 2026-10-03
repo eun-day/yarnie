@@ -1,4 +1,5 @@
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -613,7 +614,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          SnackBar(content: Text(l10n.exportFailed(e.toString()))),
+          SnackBar(content: Text(l10n.exportFailed(l10n.errorText(e)))),
         );
       }
     }
@@ -749,7 +750,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          SnackBar(content: Text(l10n.restoreFailed(e.toString()))),
+          SnackBar(content: Text(l10n.restoreFailed(l10n.errorText(e)))),
         );
       }
     }

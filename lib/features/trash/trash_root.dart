@@ -1,4 +1,5 @@
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/trash/widgets/empty_trash_view.dart';
@@ -486,7 +487,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -594,7 +595,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -703,7 +704,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -812,7 +813,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }

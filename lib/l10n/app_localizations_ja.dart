@@ -2037,6 +2037,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get duplicateTagName => '既に存在するタグ名です。';
 
   @override
+  String get noCounterData => 'カウンターのデータがありません';
+
+  @override
+  String get unknownCounterType => '不明なカウンタータイプです';
+
+  @override
+  String countByRowsChip(int value) {
+    return '$value段ずつ';
+  }
+
+  @override
+  String get defaultPartName => 'パーツ1';
+
+  @override
   String saveYarnFailed(Object error) {
     return '毛糸の保存失敗: $error';
   }
@@ -2090,6 +2104,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get premiumRestoreFailed => '購入情報の復元に失敗しました。もう一度お試しください。';
+
+  @override
+  String get premiumMemberBadge => 'プレミアム会員 👑';
 
   @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';

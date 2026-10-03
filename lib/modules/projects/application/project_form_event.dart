@@ -64,7 +64,9 @@ class ToggleTagSelected extends ProjectFormEvent {
 
 /// 프로젝트 저장 (생성 또는 업데이트)
 class SaveProject extends ProjectFormEvent {
-  const SaveProject();
+  /// 새 프로젝트에 자동으로 만드는 첫 파트 이름 (화면 언어로 현지화된 값)
+  final String defaultPartName;
+  const SaveProject({required this.defaultPartName});
 }
 
 /// 태그 선택 화면에서 반환된 태그 ID들로 상태 업데이트

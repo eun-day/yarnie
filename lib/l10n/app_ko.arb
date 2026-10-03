@@ -703,6 +703,18 @@
   "deleteMemoTitle": "메모 삭제",
   "deleteMemoConfirm": "이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
   "duplicateTagName": "이미 존재하는 태그 이름입니다.",
+  "noCounterData": "카운터 데이터가 없습니다",
+  "unknownCounterType": "알 수 없는 카운터 유형입니다",
+  "countByRowsChip": "{value}단씩",
+  "@countByRowsChip": {
+    "description": "증감 단위 선택 칩 (예: 2단씩)",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "defaultPartName": "파트 1",
   "saveYarnFailed": "실 저장 실패: {error}",
   "enterYarnName": "실 이름을 입력해주세요",
   "restoreYarnTitle": "실 복원",
@@ -720,5 +732,6 @@
   "premiumPaymentPending": "결제 승인을 기다리고 있습니다. 승인되면 프리미엄이 자동으로 적용됩니다.",
   "premiumAlreadyPurchased": "이미 구매한 상품입니다. '구매 복원'을 눌러 프리미엄을 다시 적용해주세요.",
   "premiumRestoreFailed": "구매 복원에 실패했습니다. 다시 시도해주세요.",
+  "premiumMemberBadge": "프리미엄 회원 👑",
   "sessionPausedByPartChange": "이전 파트에서 진행 중이던 세션을 일시정지했습니다."
 }

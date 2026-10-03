@@ -61,7 +61,7 @@ class _MyRootState extends ConsumerState<MyRoot> {
               if (ref.watch(premiumProvider)) ...[
                 const SizedBox(height: 4),
                 Text(
-                  "Premium Member 👑",
+                  AppLocalizations.of(context)!.premiumMemberBadge,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

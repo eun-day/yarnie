@@ -5,6 +5,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/theme/app_theme.dart';
 
@@ -218,7 +219,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+          SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
         );
       }
     }

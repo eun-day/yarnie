@@ -3831,6 +3831,30 @@ abstract class AppLocalizations {
   /// **'이미 존재하는 태그 이름입니다.'**
   String get duplicateTagName;
 
+  /// No description provided for @noCounterData.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터 데이터가 없습니다'**
+  String get noCounterData;
+
+  /// No description provided for @unknownCounterType.
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없는 카운터 유형입니다'**
+  String get unknownCounterType;
+
+  /// 증감 단위 선택 칩 (예: 2단씩)
+  ///
+  /// In ko, this message translates to:
+  /// **'{value}단씩'**
+  String countByRowsChip(int value);
+
+  /// No description provided for @defaultPartName.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 1'**
+  String get defaultPartName;
+
   /// No description provided for @saveYarnFailed.
   ///
   /// In ko, this message translates to:
@@ -3932,6 +3956,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'구매 복원에 실패했습니다. 다시 시도해주세요.'**
   String get premiumRestoreFailed;
+
+  /// No description provided for @premiumMemberBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리미엄 회원 👑'**
+  String get premiumMemberBadge;
 
   /// No description provided for @sessionPausedByPartChange.
   ///

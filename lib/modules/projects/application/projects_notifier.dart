@@ -8,6 +8,7 @@ import '../../../db/di.dart';
 import 'projects_state.dart';
 import 'projects_event.dart';
 import 'projects_effect.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 // ============================================================
 // JSON 파싱 헬퍼
@@ -124,7 +125,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       _projectsSubscription = appDb.watchAll().listen(
         (projects) => onEvent(ProjectsUpdated(projects)),
         onError: (e, st) =>
-            _emit(ShowLocalizedErrorMessage((l10n) => l10n.loadProjectsFailed(e.toString()))),
+            _emit(ShowLocalizedErrorMessage((l10n) => l10n.loadProjectsFailed(l10n.errorText(e)))),
       );
 
       // 태그 목록 stream 구독 (태그 시트에서 이름·색을 바꾸거나 지워도 바로 반영)
@@ -136,7 +137,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       await _projectsSubscription?.cancel();
       await _tagsSubscription?.cancel();
       state = state.copyWith(isLoading: false);
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(l10n.errorText(e))));
     }
   }
 
@@ -185,7 +186,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
 
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCopied));
     } catch (e) {
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.copyProjectFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.copyProjectFailed(l10n.errorText(e))));
     }
   }
 
@@ -206,7 +207,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       await appDb.updateProjectTags(projectId: projectId, tagIds: tagIds);
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.tagsAssigned));
     } catch (e) {
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.assignTagsFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.assignTagsFailed(l10n.errorText(e))));
     }
   }
 
@@ -249,10 +250,10 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
           );
         }
 
-        // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
+        // 기본 파트 생성 및 현재 파트로 설정 (이름은 화면 언어로 현지화된 값)
         final partId = await appDb.createPart(
           projectId: projectId,
-          name: 'Part 1',
+          name: event.defaultPartName,
         );
         await appDb.updateProjectCurrentPart(
           projectId: projectId,
@@ -267,7 +268,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       // 저장되지 못한 프로젝트용으로 복사해 둔 이미지 정리
       await AppImageUtils.deleteImageIfUnused(event.imagePath);
       _emit(const ProjectSaveFailed());
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.createProjectFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.createProjectFailed(l10n.errorText(e))));
     }
   }
 
@@ -316,7 +317,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
       await AppImageUtils.deleteImageIfUnused(event.imagePath, keep: project.imagePath);
       _emit(const ProjectSaveFailed());
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(l10n.errorText(e))));
       return;
     }
 
@@ -341,7 +342,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       _emit(const ProjectDeleted());
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectDeleted));
     } catch (e) {
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.deleteProjectFailed(e.toString())));
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.deleteProjectFailed(l10n.errorText(e))));
     }
   }
 

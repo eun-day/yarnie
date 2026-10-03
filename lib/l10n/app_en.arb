@@ -686,6 +686,10 @@
   "deleteMemoTitle": "Delete Note",
   "deleteMemoConfirm": "Delete this note?\nThis cannot be undone.",
   "duplicateTagName": "This tag name already exists.",
+  "noCounterData": "No counter data",
+  "unknownCounterType": "Unknown counter type",
+  "countByRowsChip": "{value, plural, =1{1 row} other{{value} rows}}",
+  "defaultPartName": "Part 1",
   "saveYarnFailed": "Failed to save yarn: {error}",
   "enterYarnName": "Please enter yarn name",
   "restoreYarnTitle": "Restore Yarn",
@@ -703,5 +707,6 @@
   "premiumPaymentPending": "Your payment is pending. Premium will be applied automatically once it's approved.",
   "premiumAlreadyPurchased": "You already own this. Tap 'Restore Purchases' to reapply Premium.",
   "premiumRestoreFailed": "Failed to restore purchases. Please try again.",
+  "premiumMemberBadge": "Premium Member 👑",
   "sessionPausedByPartChange": "The session running in the previous part was paused."
 }
