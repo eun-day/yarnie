@@ -30,7 +30,7 @@ void main() {
         final mainCounter = await db.getMainCounter(partId);
         expect(mainCounter, isNotNull);
         expect(mainCounter!.partId, partId);
-        expect(mainCounter.currentValue, 0);
+        expect(mainCounter.currentValue, 1); // 메인 카운터는 1단부터 시작
       });
 
       test('MainCounter 값을 업데이트할 수 있다', () async {
@@ -242,17 +242,17 @@ void main() {
         expect(runs[0].ord, 0);
         expect(runs[0].startRow, 1);
         expect(runs[0].rowsTotal, 5);
-        expect(runs[0].label, '1회차');
+        expect(runs[0].label, 'Repeat 1'); // 내부용 라벨 (화면에는 표시하지 않음)
 
         expect(runs[1].ord, 1);
         expect(runs[1].startRow, 6);
         expect(runs[1].rowsTotal, 5);
-        expect(runs[1].label, '2회차');
+        expect(runs[1].label, 'Repeat 2');
 
         expect(runs[2].ord, 2);
         expect(runs[2].startRow, 11);
         expect(runs[2].rowsTotal, 5);
-        expect(runs[2].label, '3회차');
+        expect(runs[2].label, 'Repeat 3');
       });
 
       test('SectionCounter spec 업데이트 시 SectionRuns가 재전개된다', () async {
