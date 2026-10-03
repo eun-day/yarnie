@@ -1139,6 +1139,9 @@ class _YarnLinkSection extends ConsumerWidget {
     if (yarn.colorwayName != null && yarn.colorwayName!.isNotEmpty) {
       parts.add(yarn.colorwayName!);
     }
+    if (yarn.dyeLot != null && yarn.dyeLot!.isNotEmpty) {
+      parts.add('${l10n.dyeLot}: ${yarn.dyeLot}'); // 같은 로트끼리 써야 색이 맞으므로 표시
+    }
     if (yarn.skeins != null) {
       parts.add(l10n.skeinsCount(yarn.skeins!));
     }
