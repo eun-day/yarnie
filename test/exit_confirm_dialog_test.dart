@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/widgets/exit_confirm_dialog.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+/// 광고·결제 플러그인이 없는 테스트 환경이라 프리미엄 사용자로 두어 광고를 요청하지 않는다
+class _PremiumUser extends PremiumNotifier {
+  @override
+  bool build() => true;
+}
 
 void main() {
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
+
+  Widget withProviders(Widget app) => ProviderScope(
+        overrides: [premiumProvider.overrideWith(_PremiumUser.new)],
+        child: app,
+      );
 
   Widget createTestWidget() {
     return const MaterialApp(
@@ -24,7 +36,7 @@ void main() {
   }
 
   testWidgets('ExitConfirmDialog displays title and buttons', (WidgetTester tester) async {
-    await tester.pumpWidget(createTestWidget());
+    await tester.pumpWidget(withProviders(createTestWidget()));
     await tester.pump();
 
     // Check if title is present (default English)
@@ -41,7 +53,7 @@ void main() {
 
   testWidgets('ExitConfirmDialog returns true when Exit is pressed', (WidgetTester tester) async {
     bool? result;
-    await tester.pumpWidget(
+    await tester.pumpWidget(withProviders(
       MaterialApp(
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -62,7 +74,7 @@ void main() {
           ),
         ),
       ),
-    );
+    ));
 
     await tester.tap(find.text('Show Dialog'));
     await tester.pump();
@@ -75,7 +87,7 @@ void main() {
 
   testWidgets('ExitConfirmDialog returns false when Cancel is pressed', (WidgetTester tester) async {
     bool? result;
-    await tester.pumpWidget(
+    await tester.pumpWidget(withProviders(
       MaterialApp(
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -96,7 +108,7 @@ void main() {
           ),
         ),
       ),
-    );
+    ));
 
     await tester.tap(find.text('Show Dialog'));
     await tester.pump();

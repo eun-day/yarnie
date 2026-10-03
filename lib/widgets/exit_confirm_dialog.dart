@@ -1,25 +1,28 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
-import 'package:yarnie/widgets/ad_visibility_wrapper.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/common/ad_helper.dart';
 
-class ExitConfirmDialog extends StatefulWidget {
+class ExitConfirmDialog extends ConsumerStatefulWidget {
   const ExitConfirmDialog({super.key});
 
   @override
-  State<ExitConfirmDialog> createState() => _ExitConfirmDialogState();
+  ConsumerState<ExitConfirmDialog> createState() => _ExitConfirmDialogState();
 }
 
-class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
-  BannerAd? _bannerAd;
+class _ExitConfirmDialogState extends ConsumerState<ExitConfirmDialog> {
+  static const _adWidth = 300.0; // AdSize.mediumRectangle (300x250)
+
+  BannerAd? _bannerAd; // null이면 광고 영역 없음 (프리미엄 또는 로드 실패)
   bool _isAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    // 프리미엄 회원에게는 광고를 요청하지 않는다
+    if (!ref.read(premiumProvider)) _loadAd();
   }
 
   void _loadAd() {
@@ -31,6 +34,7 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
+          if (!mounted) return;
           setState(() {
             _isAdLoaded = true;
           });
@@ -38,6 +42,11 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
         onAdFailedToLoad: (ad, error) {
           debugPrint('BannerAd failed to load: $error');
           ad.dispose();
+          // 로딩 표시가 계속 남지 않도록 광고 영역을 숨긴다
+          if (!mounted) return;
+          setState(() {
+            _bannerAd = null;
+          });
         },
       ),
     )..load();
@@ -56,11 +65,13 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
 
     return Dialog(
       backgroundColor: colorScheme.surface,
+      // 기본 여백(inset 40 + padding 24)으로는 360dp 폰에서 폭이 232dp라 300dp 광고가 잘린다
+      insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -88,22 +99,28 @@ class _ExitConfirmDialogState extends State<ExitConfirmDialog> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            // 광고 영역 (300x250)
-            AdVisibilityWrapper(
-              child: SizedBox(
-                width: 300,
-                height: 250,
-                child: _isAdLoaded
-                    ? AdWidget(ad: _bannerAd!)
-                    : Container(
-                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
+            // 광고 영역 (300x250). 화면이 너무 좁으면 광고가 잘리므로 표시하지 않는다
+            if (_bannerAd != null)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < _adWidth) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: SizedBox(
+                      width: _adWidth,
+                      height: 250,
+                      child: _isAdLoaded
+                          ? AdWidget(ad: _bannerAd!)
+                          : Container(
+                              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                    ),
+                  );
+                },
               ),
-            ),
-            const SizedBox(height: 20),
             // Buttons
             Row(
               children: [
