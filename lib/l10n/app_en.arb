@@ -677,5 +677,6 @@
   "linkedYarn": "Linked Yarn",
   "noLinkedYarn": "No linked yarn",
   "usingProjects": "Projects using this yarn",
-  "addYarn": "Add Yarn"
+  "addYarn": "Add Yarn",
+  "sessionPausedByPartChange": "The session running in the previous part was paused."
 }

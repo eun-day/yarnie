@@ -2009,4 +2009,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get addYarn => '糸を追加';
+
+  @override
+  String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
 }

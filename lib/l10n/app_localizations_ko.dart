@@ -2014,4 +2014,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get addYarn => '실 추가';
+
+  @override
+  String get sessionPausedByPartChange => '이전 파트에서 진행 중이던 세션을 일시정지했습니다.';
 }

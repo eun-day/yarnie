@@ -687,5 +687,6 @@
   "linkedYarn": "연동된 실",
   "noLinkedYarn": "연동된 실 없음",
   "usingProjects": "이 실을 사용하는 프로젝트",
-  "addYarn": "실 추가"
+  "addYarn": "실 추가",
+  "sessionPausedByPartChange": "이전 파트에서 진행 중이던 세션을 일시정지했습니다."
 }

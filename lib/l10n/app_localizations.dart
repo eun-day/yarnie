@@ -3782,6 +3782,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'실 추가'**
   String get addYarn;
+
+  /// No description provided for @sessionPausedByPartChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'이전 파트에서 진행 중이던 세션을 일시정지했습니다.'**
+  String get sessionPausedByPartChange;
 }
 
 class _AppLocalizationsDelegate

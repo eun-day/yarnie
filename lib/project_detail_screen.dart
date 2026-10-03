@@ -88,6 +88,26 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             });
   }
 
+  /// 사용자가 파트를 바꿀 때 호출: 화면 상태와 현재 파트를 저장하고,
+  /// 이전 파트에서 진행 중이던 세션은 일시정지한다 (기획: 파트 변경 시 현재 세션 일시정지).
+  Future<void> _selectPart(int projectId, int partId) async {
+    final previousPartId = _selectedPartId;
+    setState(() {
+      _selectedPartId = partId;
+      _listenToMainCounter(partId);
+    });
+    appDb.updateProjectCurrentPart(projectId: projectId, partId: partId);
+    if (previousPartId == null || previousPartId == partId) return;
+
+    final paused = await appDb.pauseRunningSession(previousPartId, reason: SegmentReason.partChange);
+    // 세션이 실제로 멈췄을 때만 알린다
+    if (paused && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.sessionPausedByPartChange)),
+      );
+    }
+  }
+
   Future<void> _checkCompletions(int partId, int oldVal, int newVal) async {
     final counters = await appDb.getPartSectionCounters(partId);
 
@@ -630,14 +650,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                             projectId: project.id,
                             onPartChanged: (selectedPartId) {
                               if (selectedPartId != null) {
-                                setState(() {
-                                  _selectedPartId = selectedPartId;
-                                  _listenToMainCounter(selectedPartId);
-                                });
-                                appDb.updateProjectCurrentPart(
-                                  projectId: project.id,
-                                  partId: selectedPartId,
-                                );
+                                _selectPart(project.id, selectedPartId);
                               }
                             },
                           ),
@@ -855,17 +868,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           final isSelected = part.id == _selectedPartId;
                           return GestureDetector(
                             key: ValueKey(part.id), // 필수
-                            onTap: () {
-                              setState(() {
-                                _selectedPartId = part.id;
-                                _listenToMainCounter(part.id);
-                              });
-                              // 파트 변경 시 DB에 현재 파트 저장
-                              appDb.updateProjectCurrentPart(
-                                projectId: project.id,
-                                partId: part.id,
-                              );
-                            },
+                            onTap: () => _selectPart(project.id, part.id),
                             // 롱프레스로 드래그 시작
                             child: Container(
                               margin: EdgeInsets.only(right: 8),
@@ -907,16 +910,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       builder: (sheetContext) {
         return _AddPartSheet(
           projectId: projectId,
-          onPartCreated: (newPartId) {
-            setState(() {
-              _selectedPartId = newPartId;
-              _listenToMainCounter(newPartId);
-            });
-            appDb.updateProjectCurrentPart(
-              projectId: projectId,
-              partId: newPartId,
-            );
-          },
+          onPartCreated: (newPartId) => _selectPart(projectId, newPartId),
         );
       },
     );

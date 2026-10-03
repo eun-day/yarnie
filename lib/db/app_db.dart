@@ -1952,30 +1952,13 @@ class AppDb extends _$AppDb {
           );
         }
 
-        final now = DateTime.now().toUtc();
-        final duration = now.difference(segmentStartedAt).inSeconds;
-
-        // 현재 Segment 종료
-        await (update(
-          sessionSegments,
-        )..where((t) => t.id.equals(currentSegmentId))).write(
-          SessionSegmentsCompanion(
-            endedAt: Value(now),
-            durationSeconds: Value(duration),
-            endCount: Value(currentMainValue),
-            reason: Value(SegmentReason.pause),
-          ),
-        );
-
-        // Session 상태 업데이트 및 totalDuration 누적
-        await (update(sessions)..where((t) => t.id.equals(sessionId))).write(
-          SessionsCompanion(
-            status: Value(SessionStatus2.paused),
-            totalDurationSeconds: Value(
-              session.totalDurationSeconds + duration,
-            ),
-            updatedAt: Value(now),
-          ),
+        await _pauseSession(
+          session,
+          segmentId: currentSegmentId,
+          segmentStartedAt: segmentStartedAt,
+          endCount: currentMainValue,
+          reason: SegmentReason.pause,
+          end: DateTime.now().toUtc(),
         );
       });
     } on DatabaseException {
@@ -1983,6 +1966,63 @@ class AppDb extends _$AppDb {
     } catch (e) {
       throw _handleDatabaseException(e, 'Pause Session');
     }
+  }
+
+  /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
+  ///
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)에 사용한다.
+  /// 반환값: 진행 중이던 세션을 일시정지했으면 true
+  Future<bool> pauseRunningSession(
+    int partId, {
+    SegmentReason reason = SegmentReason.pause,
+  }) {
+    return transaction(() async {
+      final session = await getSession(partId);
+      if (session == null || session.status != SessionStatus2.running) return false;
+
+      final segment = await getCurrentSegment(session.id);
+      final mainCounter = await getMainCounter(partId);
+      await _pauseSession(
+        session,
+        segmentId: segment?.id,
+        segmentStartedAt: segment?.startedAt,
+        endCount: mainCounter?.currentValue ?? 0,
+        reason: reason,
+        end: DateTime.now().toUtc(),
+      );
+      return true;
+    });
+  }
+
+  /// 현재 Segment를 [end]에 종료하고 세션을 일시정지 상태로 바꾼다 (트랜잭션 안에서 호출)
+  Future<void> _pauseSession(
+    Session session, {
+    required int? segmentId,
+    required DateTime? segmentStartedAt,
+    required int endCount,
+    required SegmentReason reason,
+    required DateTime end,
+  }) async {
+    var duration = 0;
+    if (segmentId != null && segmentStartedAt != null) {
+      duration = end.difference(segmentStartedAt).inSeconds;
+      await (update(sessionSegments)..where((t) => t.id.equals(segmentId))).write(
+        SessionSegmentsCompanion(
+          endedAt: Value(end),
+          durationSeconds: Value(duration),
+          endCount: Value(endCount),
+          reason: Value(reason),
+        ),
+      );
+    }
+
+    await (update(sessions)..where((t) => t.id.equals(session.id))).write(
+      SessionsCompanion(
+        status: Value(SessionStatus2.paused),
+        totalDurationSeconds: Value(session.totalDurationSeconds + duration),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
   }
 
   /// 세션 재시작 (새 Segment 시작)
