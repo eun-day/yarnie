@@ -14,6 +14,22 @@ import 'package:yarnie/widgets/app_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/core/utils/app_image_utils.dart';
 
+/// 실 굵기 선택지: 저장 키(Ravelry 표준 이름) → 화면 라벨. 등록 폼과 보관함 굵기 필터가 함께 쓴다.
+Map<String, String> yarnWeightLabels(AppLocalizations l10n) => {
+      'Thread': l10n.weightThread,
+      'Cobweb': l10n.weightCobweb,
+      'Lace': l10n.weightLace,
+      'Light Fingering': l10n.weightLightFingering,
+      'Fingering (14 wpi)': l10n.weightFingering,
+      'Sport (12 wpi)': l10n.weightSport,
+      'DK (11 wpi)': l10n.weightDK,
+      'Worsted (9 wpi)': l10n.weightWorsted,
+      'Aran (8 wpi)': l10n.weightAran,
+      'Bulky (7 wpi)': l10n.weightBulky,
+      'Super Bulky (5-6 wpi)': l10n.weightSuperBulky,
+      'Jumbo (0-4 wpi)': l10n.weightJumbo,
+    };
+
 class NewStashScreen extends ConsumerStatefulWidget {
   final int? stashYarnId;
   final bool isFromSelectionSheet;
@@ -447,20 +463,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
       });
     });
 
-    final Map<String, String> yarnWeightMap = {
-      'Thread': l10n.weightThread,
-      'Cobweb': l10n.weightCobweb,
-      'Lace': l10n.weightLace,
-      'Light Fingering': l10n.weightLightFingering,
-      'Fingering (14 wpi)': l10n.weightFingering,
-      'Sport (12 wpi)': l10n.weightSport,
-      'DK (11 wpi)': l10n.weightDK,
-      'Worsted (9 wpi)': l10n.weightWorsted,
-      'Aran (8 wpi)': l10n.weightAran,
-      'Bulky (7 wpi)': l10n.weightBulky,
-      'Super Bulky (5-6 wpi)': l10n.weightSuperBulky,
-      'Jumbo (0-4 wpi)': l10n.weightJumbo,
-    };
+    final yarnWeightMap = yarnWeightLabels(l10n);
 
     if (_isLoading) {
       return Scaffold(

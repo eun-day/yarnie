@@ -664,5 +664,11 @@
   "deleteMemoTitle": "メモを削除",
   "deleteMemoConfirm": "このメモを削除しますか？\nこの操作は取り消せません。",
   "duplicateTagName": "既に存在するタグ名です。",
+  "searchStashHint": "名前・ブランド・カラーで検索",
+  "allYarnWeights": "すべての太さ",
+  "sortOrder": "並び替え",
+  "sortNewest": "登録が新しい順",
+  "sortByName": "名前順",
+  "sortByBrand": "ブランド順",
   "sessionPausedByPartChange": "前のパーツで進行中だったセッションを一時停止しました。"
 }
