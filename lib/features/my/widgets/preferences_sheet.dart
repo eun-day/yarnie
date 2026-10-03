@@ -759,8 +759,12 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
+      // 뒤로가기로 닫히면 작업 후 pop이 다이얼로그 대신 시트·화면을 닫으므로 막는다
+      builder: (context) => const PopScope(
+        canPop: false,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }
