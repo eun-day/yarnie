@@ -10,6 +10,7 @@ import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/root/root_scaffold.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 import 'package:yarnie/core/providers/theme_provider.dart';
 import 'package:yarnie/theme/app_theme.dart';
 
@@ -25,10 +26,20 @@ void main() async {
     apiKey = 'goog_YYXVYRZQeWDAodvssxJXwOOZonT';
   }
 
+  var isPremium = false;
   if (apiKey.isNotEmpty) {
     await Purchases.setLogLevel(LogLevel.debug);
     PurchasesConfiguration configuration = PurchasesConfiguration(apiKey);
     await Purchases.configure(configuration);
+
+    // 첫 화면부터 프리미엄 여부가 맞도록 미리 읽는다 (보통 캐시라 즉시 반환, 오프라인 첫 실행 대비 타임아웃)
+    try {
+      final customerInfo = await Purchases.getCustomerInfo()
+          .timeout(const Duration(seconds: 2));
+      isPremium = PremiumNotifier.hasPremium(customerInfo);
+    } catch (e) {
+      debugPrint('Failed to read premium status at startup: $e');
+    }
   }
 
   // 삭제된지 30일이 지난 프로젝트 영구 삭제
@@ -51,6 +62,7 @@ void main() async {
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        initialPremiumProvider.overrideWithValue(isPremium),
       ],
       child: const MyApp(),
     ),
