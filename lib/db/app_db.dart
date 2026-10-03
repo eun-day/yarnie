@@ -421,7 +421,7 @@ class AppDb extends _$AppDb {
   AppDb.forTesting(DatabaseConnection connection) : super(connection);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -480,8 +480,68 @@ class AppDb extends _$AppDb {
               'ALTER TABLE projects DROP COLUMN lot_number',
             );
           }
+          if (from < 4) {
+            // v3 업그레이드가 createTable만 호출해 stash_tags_name UNIQUE 인덱스가 빠졌다.
+            // 그사이 생긴 같은 이름의 태그를 합친 뒤 인덱스를 만든다.
+            // (v3를 새로 설치한 기기에는 인덱스가 이미 있으므로 IF NOT EXISTS)
+            await _mergeDuplicateStashTags();
+            await customStatement(
+              'CREATE UNIQUE INDEX IF NOT EXISTS stash_tags_name ON stash_tags (name)',
+            );
+          }
         },
       );
+
+  /// 이름이 같은 보관함 태그를 가장 먼저 만든 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
+  /// 마이그레이션 중에 실행되므로 이후 스키마 변경에 영향받지 않게 SQL로 직접 다룬다.
+  Future<void> _mergeDuplicateStashTags() async {
+    final tags = await customSelect(
+      'SELECT id, name FROM stash_tags ORDER BY id',
+    ).get();
+    final keepIdByName = <String, int>{};
+    final remap = <int, int>{};
+    for (final row in tags) {
+      final id = row.read<int>('id');
+      final keepId = keepIdByName.putIfAbsent(row.read<String>('name'), () => id);
+      if (keepId != id) remap[id] = keepId;
+    }
+    if (remap.isEmpty) return;
+
+    final yarns = await customSelect(
+      'SELECT id, tag_ids FROM stash_yarns WHERE tag_ids IS NOT NULL',
+    ).get();
+    for (final row in yarns) {
+      final tagIds = row.read<String>('tag_ids');
+      final remapped = remapTagIdsJson(tagIds, remap);
+      if (remapped != tagIds) {
+        await customUpdate(
+          'UPDATE stash_yarns SET tag_ids = ?1 WHERE id = ?2',
+          variables: [Variable<String>(remapped), Variable.withInt(row.read<int>('id'))],
+          updates: {stashYarns},
+        );
+      }
+    }
+    await customUpdate(
+      'DELETE FROM stash_tags WHERE id IN (${remap.keys.join(',')})',
+      updates: {stashTags},
+      updateKind: UpdateKind.delete,
+    );
+  }
+
+  /// tagIds JSON('[1,2]')의 ID를 [remap]에 따라 바꾸고 중복을 없앤다. 결과가 비면 null.
+  /// 바꿀 ID가 없으면 원래 문자열을 그대로 돌려준다.
+  static String? remapTagIdsJson(String? json, Map<int, int> remap) {
+    if (json == null) return null;
+    final List<int> ids;
+    try {
+      ids = (jsonDecode(json) as List).cast<num>().map((e) => e.toInt()).toList();
+    } catch (_) {
+      return json;
+    }
+    if (!ids.any(remap.containsKey)) return json;
+    final remapped = {for (final id in ids) remap[id] ?? id}.toList();
+    return remapped.isEmpty ? null : jsonEncode(remapped);
+  }
 
   // ────────────────────────────────────────────────────────────────────────────
   // 에러 처리 헬퍼 메서드들

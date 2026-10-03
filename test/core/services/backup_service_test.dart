@@ -219,4 +219,36 @@ void main() {
     final projects = await db.select(db.projects).get();
     expect(projects.map((e) => e.name), ['기존 프로젝트']);
   });
+
+  test('이름이 같은 보관함 태그가 든 백업도 하나로 합쳐 복원한다', () async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final backup = {
+      'metadata': {'version': 2},
+      'data': {
+        'stashTags': [
+          {'id': 1, 'name': 'Wool', 'color': 1, 'createdAt': now},
+          {'id': 2, 'name': 'Wool', 'color': 2, 'createdAt': now},
+          {'id': 3, 'name': 'Cotton', 'color': 3, 'createdAt': now},
+        ],
+        'stashYarns': [
+          {
+            'id': 1,
+            'yarnName': 'A',
+            'lengthUnit': 'yards',
+            'weightUnit': 'grams',
+            'tagIds': '[2,3]',
+            'createdAt': now,
+          },
+        ],
+      },
+    };
+    final backupFile = File(p.join(tempDir.path, 'duplicate_tags.json'));
+    await backupFile.writeAsString(jsonEncode(backup));
+
+    await backupService.importBackup(backupFile.path);
+
+    final tags = await db.getAllStashTags();
+    expect(tags.map((t) => t.id), unorderedEquals([1, 3]));
+    expect((await db.getStashYarn(1))!.tagIds, '[1,3]');
+  });
 }
