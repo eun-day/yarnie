@@ -157,6 +157,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       needleType: newNeedleType,
       availableNeedleSizes: newAvailableSizes,
       needleSize: newNeedleSize,
+      // 새 종류에 없는 사이즈는 비운다 (null은 copyWith에서 무시되므로 명시)
+      clearNeedleSize: newNeedleSize == null,
     );
   }
 
