@@ -445,7 +445,7 @@ void main() {
       });
     });
 
-    group('진행 중인 세션 일시정지 (파트 전환·복귀 정산)', () {
+    group('진행 중인 세션 일시정지 (파트 전환·휴지통·복귀 정산)', () {
       late int projectId;
       late int partId;
       late int sessionId;
@@ -514,6 +514,12 @@ void main() {
         );
         expect(daily[yesterdayMidnight], 1800);
         expect(daily[todayMidnight], 1200);
+      });
+
+      test('프로젝트를 휴지통으로 보내면 진행 중인 세션이 멈춘다', () async {
+        await db.softDeleteProject(projectId);
+
+        expect((await db.getSession(partId))!.status, SessionStatus2.paused);
       });
     });
   });
