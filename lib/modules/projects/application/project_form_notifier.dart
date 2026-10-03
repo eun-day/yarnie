@@ -12,6 +12,7 @@ import 'projects_effect.dart'; // ProjectCreated, ProjectUpdated 이벤트 (Proj
 import 'project_form_state.dart';
 import 'project_form_event.dart';
 import 'project_form_effect.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 class ProjectFormNotifier extends Notifier<ProjectFormState> {
   final _effectController = StreamController<ProjectFormEffect>.broadcast();
@@ -66,8 +67,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         );
       case ToggleTagSelected(:final tagId):
         _toggleTagSelected(tagId);
-      case SaveProject():
-        await _saveProject();
+      case SaveProject(:final defaultPartName):
+        await _saveProject(defaultPartName);
       case UpdateSelectedTags(:final tagIds):
         final allTags = await appDb.getAllTags();
         state = state.copyWith(
@@ -138,7 +139,7 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
-      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.loadDataFailed(e.toString())));
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.loadDataFailed(l10n.errorText(e))));
     }
   }
 
@@ -175,13 +176,18 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
     state = state.copyWith(selectedTagIds: updatedTags);
   }
 
-  Future<void> _saveProject() async {
+  Future<void> _saveProject(String defaultPartName) async {
     if (!state.isValid) {
       _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.enterProjectName));
       return;
     }
+    if (state.isSaving) return; // 연타로 프로젝트가 중복 생성되는 것 방지
 
     state = state.copyWith(isSaving: true, error: null);
+
+    // 이름은 앞뒤 공백을 빼고, 비운 메모는 null로 저장 (빈 문자열이면 "메모 없음" 대신 빈칸이 보임)
+    final name = state.name.trim();
+    final memo = (state.memo?.trim().isEmpty ?? true) ? null : state.memo;
 
     try {
       // 새로 고른 이미지만 영구 저장소로 복사
@@ -194,11 +200,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         await projectsNotifier.onEvent(
           UpdateProject(
             projectId: state.initialProjectId!,
-            name: state.name,
+            name: name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
             stashYarnIds: state.stashYarnIds,
-            memo: state.memo,
+            memo: memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
             imagePath: persistedImagePath,
@@ -209,21 +215,22 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         // 새 프로젝트 생성
         await projectsNotifier.onEvent(
           CreateProject(
-            name: state.name,
+            name: name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
             stashYarnIds: state.stashYarnIds,
-            memo: state.memo,
+            memo: memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
             imagePath: persistedImagePath,
             tagIds: state.selectedTagIds.toList(),
+            defaultPartName: defaultPartName,
           ),
         );
       }
     } catch (e) {
       state = state.copyWith(isSaving: false, error: e.toString());
-      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
+      _emit(ShowLocalizedProjectFormErrorMessage((l10n) => l10n.saveProjectFailed(l10n.errorText(e))));
     }
   }
 

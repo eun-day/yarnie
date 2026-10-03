@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -67,7 +68,7 @@ class _AddIntervalCounterSheetState
     final startRow = int.tryParse(_startRowController.text);
     final interval = int.tryParse(_intervalController.text);
     final totalCount = int.tryParse(_totalCountController.text);
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         interval != null &&
@@ -200,9 +201,7 @@ class _AddIntervalCounterSheetState
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        final message = _isEditing
-            ? AppLocalizations.of(context)!.restoreFailed(e.toString())
-            : AppLocalizations.of(context)!.deleteFailed(e.toString());
+        final message = AppLocalizations.of(context)!.errorOccurred(AppLocalizations.of(context)!.errorText(e));
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));

@@ -1,4 +1,5 @@
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -613,7 +614,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          SnackBar(content: Text(l10n.exportFailed(e.toString()))),
+          SnackBar(content: Text(l10n.exportFailed(l10n.errorText(e)))),
         );
       }
     }
@@ -749,7 +750,7 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
         
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          SnackBar(content: Text(l10n.restoreFailed(e.toString()))),
+          SnackBar(content: Text(l10n.restoreFailed(l10n.errorText(e)))),
         );
       }
     }
@@ -759,8 +760,12 @@ class _PreferencesSheetState extends ConsumerState<PreferencesSheet> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
+      // 뒤로가기로 닫히면 작업 후 pop이 다이얼로그 대신 시트·화면을 닫으므로 막는다
+      builder: (context) => const PopScope(
+        canPop: false,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }

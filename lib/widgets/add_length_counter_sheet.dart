@@ -5,6 +5,7 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/widgets/number_input_group.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/theme/app_theme.dart';
 
@@ -43,7 +44,8 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
         rowHeight <= 0 ||
         targetLength <= rowHeight)
       return null;
-    return (targetLength / rowHeight).ceil();
+    // 부동소수점 오차 보정 (예: 21 / 0.35 = 60.00000000000001 → 올림하면 61단)
+    return (targetLength / rowHeight - 1e-9).ceil();
   }
 
   String? get _rowHeightError {
@@ -61,7 +63,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     final startRow = int.tryParse(_startRowController.text);
     final rows = _estimatedRows;
 
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         rows != null &&
@@ -217,7 +219,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+          SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
         );
       }
     }
@@ -396,7 +398,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
                               const SizedBox(height: 4),
                               Text(
                                 l10n.estimatedRowsDisplay(
-                                  estimatedRows.toString(),
+                                  estimatedRows,
                                 ),
                                 style: TextStyle(
                                   fontSize: 24,

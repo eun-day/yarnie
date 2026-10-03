@@ -1184,7 +1184,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}개의 프로젝트'**
-  String projectsCount(Object count);
+  String projectsCount(int count);
 
   /// No description provided for @all.
   ///
@@ -1282,12 +1282,6 @@ abstract class AppLocalizations {
   /// **'작업 시간 {time}을 저장하시겠습니까?'**
   String saveSessionConfirm(Object time);
 
-  /// No description provided for @trashProjectCount.
-  ///
-  /// In ko, this message translates to:
-  /// **'{count}개의 프로젝트 · 30일 후 자동 삭제'**
-  String trashProjectCount(Object count);
-
   /// No description provided for @loading.
   ///
   /// In ko, this message translates to:
@@ -1330,35 +1324,11 @@ abstract class AppLocalizations {
   /// **'프로젝트 복원'**
   String get restoreProject;
 
-  /// No description provided for @restoreConfirm.
-  ///
-  /// In ko, this message translates to:
-  /// **'이 프로젝트를 복원하시겠습니까?'**
-  String get restoreConfirm;
-
-  /// No description provided for @projectRestored.
-  ///
-  /// In ko, this message translates to:
-  /// **'프로젝트가 복원되었습니다.'**
-  String get projectRestored;
-
   /// No description provided for @restoreFailed.
   ///
   /// In ko, this message translates to:
   /// **'복원 실패: {error}'**
   String restoreFailed(Object error);
-
-  /// No description provided for @deleteForever.
-  ///
-  /// In ko, this message translates to:
-  /// **'완전 삭제'**
-  String get deleteForever;
-
-  /// No description provided for @deleteForeverConfirm.
-  ///
-  /// In ko, this message translates to:
-  /// **'이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
-  String get deleteForeverConfirm;
 
   /// No description provided for @delete.
   ///
@@ -1551,12 +1521,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'태그 검색...'**
   String get searchTags;
-
-  /// No description provided for @addNewTag.
-  ///
-  /// In ko, this message translates to:
-  /// **'새 태그 추가'**
-  String get addNewTag;
 
   /// No description provided for @tagName.
   ///
@@ -1774,24 +1738,6 @@ abstract class AppLocalizations {
   /// **'남은 길이'**
   String get remainingLength;
 
-  /// No description provided for @stitchIncrease.
-  ///
-  /// In ko, this message translates to:
-  /// **'코 늘림'**
-  String get stitchIncrease;
-
-  /// No description provided for @stitchDecrease.
-  ///
-  /// In ko, this message translates to:
-  /// **'코 줄임'**
-  String get stitchDecrease;
-
-  /// No description provided for @nextRow.
-  ///
-  /// In ko, this message translates to:
-  /// **'다음:{row}행'**
-  String nextRow(Object row);
-
   /// No description provided for @patternRows.
   ///
   /// In ko, this message translates to:
@@ -1851,12 +1797,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'확인'**
   String get confirm;
-
-  /// No description provided for @exitConfirm.
-  ///
-  /// In ko, this message translates to:
-  /// **'한 번 더 누르면 종료됩니다.'**
-  String get exitConfirm;
 
   /// No description provided for @exitAppTitle.
   ///
@@ -1936,42 +1876,6 @@ abstract class AppLocalizations {
   /// **'길이 (Length)'**
   String get length;
 
-  /// No description provided for @addLengthCounter.
-  ///
-  /// In ko, this message translates to:
-  /// **'길이 카운터 추가'**
-  String get addLengthCounter;
-
-  /// No description provided for @editLengthCounter.
-  ///
-  /// In ko, this message translates to:
-  /// **'길이 카운터 수정'**
-  String get editLengthCounter;
-
-  /// No description provided for @lengthCounterDescSimple.
-  ///
-  /// In ko, this message translates to:
-  /// **'특정 길이에 도달할 때까지 추적하는 카운터입니다.'**
-  String get lengthCounterDescSimple;
-
-  /// No description provided for @targetLength.
-  ///
-  /// In ko, this message translates to:
-  /// **'목표 길이'**
-  String get targetLength;
-
-  /// No description provided for @lengthHint.
-  ///
-  /// In ko, this message translates to:
-  /// **'예: 30.0'**
-  String get lengthHint;
-
-  /// No description provided for @lengthHelper.
-  ///
-  /// In ko, this message translates to:
-  /// **'목표로 하는 길이를 입력하세요.'**
-  String get lengthHelper;
-
   /// No description provided for @unit.
   ///
   /// In ko, this message translates to:
@@ -1989,12 +1893,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'inch'**
   String get inch;
-
-  /// No description provided for @countBySetting.
-  ///
-  /// In ko, this message translates to:
-  /// **'Count By 설정'**
-  String get countBySetting;
 
   /// No description provided for @lengthMeasurement.
   ///
@@ -2096,7 +1994,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{rows}단'**
-  String estimatedRowsDisplay(Object rows);
+  String estimatedRowsDisplay(int rows);
 
   /// No description provided for @changeTargetRow.
   ///
@@ -2294,7 +2192,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}줄 남음'**
-  String rowsRemaining(Object count);
+  String rowsRemaining(int count);
 
   /// No description provided for @editProject.
   ///
@@ -2367,18 +2265,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'먼저 바늘 종류를 선택하세요'**
   String get needleSizeHint;
-
-  /// No description provided for @lotNumberHint.
-  ///
-  /// In ko, this message translates to:
-  /// **'예: A12345'**
-  String get lotNumberHint;
-
-  /// No description provided for @lotNumberDesc.
-  ///
-  /// In ko, this message translates to:
-  /// **'실의 로트 번호를 입력하세요'**
-  String get lotNumberDesc;
 
   /// No description provided for @memoHint.
   ///
@@ -2518,12 +2404,6 @@ abstract class AppLocalizations {
   /// **'프로젝트의 상세 정보를 확인하세요'**
   String get projectInfoDesc;
 
-  /// No description provided for @lotNumberLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'실 로트 번호'**
-  String get lotNumberLabel;
-
   /// No description provided for @noTagsAssigned.
   ///
   /// In ko, this message translates to:
@@ -2656,23 +2536,11 @@ abstract class AppLocalizations {
   /// **'참조하는 레코드가 존재하지 않습니다'**
   String get dbForeignKeyError;
 
-  /// No description provided for @dbRequiredError.
-  ///
-  /// In ko, this message translates to:
-  /// **'필수 값이 누락되었습니다'**
-  String get dbRequiredError;
-
   /// No description provided for @dbIntegrityError.
   ///
   /// In ko, this message translates to:
   /// **'데이터 무결성 위반'**
   String get dbIntegrityError;
-
-  /// No description provided for @dbConstraintError.
-  ///
-  /// In ko, this message translates to:
-  /// **'데이터 제약 조건을 위반했습니다'**
-  String get dbConstraintError;
 
   /// No description provided for @dbGeneralError.
   ///
@@ -2720,13 +2588,13 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}개의 프로젝트 · 30일 후 자동 삭제'**
-  String trashProjectCountInfo(Object count);
+  String trashProjectCountInfo(int count);
 
   /// No description provided for @trashStashCountInfo.
   ///
   /// In ko, this message translates to:
   /// **'{count}개의 실 · 30일 후 자동 삭제'**
-  String trashStashCountInfo(Object count);
+  String trashStashCountInfo(int count);
 
   /// No description provided for @restoreProjectTitle.
   ///
@@ -2757,12 +2625,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이 프로젝트를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
   String get deleteForeverConfirmMessage;
-
-  /// No description provided for @mainCounterTitleAlt.
-  ///
-  /// In ko, this message translates to:
-  /// **'메인 카운터 (MainCounter)'**
-  String get mainCounterTitleAlt;
 
   /// No description provided for @countByLabel.
   ///
@@ -3058,12 +2920,6 @@ abstract class AppLocalizations {
   /// **'코를 증감할 단수를 쉼표로 구분하여 입력하세요'**
   String get shapingRowsHelper;
 
-  /// No description provided for @shapingDirectSubInfo.
-  ///
-  /// In ko, this message translates to:
-  /// **'{current}/{total}회'**
-  String shapingDirectSubInfo(Object current, Object total);
-
   /// No description provided for @preview.
   ///
   /// In ko, this message translates to:
@@ -3219,12 +3075,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'프로젝트 삭제 실패: {error}'**
   String deleteProjectFailed(Object error);
-
-  /// No description provided for @loadCounterCountFailed.
-  ///
-  /// In ko, this message translates to:
-  /// **'카운터 수 로드 실패: {error}'**
-  String loadCounterCountFailed(Object error);
 
   /// No description provided for @loadPartsFailed.
   ///
@@ -3392,12 +3242,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'보관함'**
   String get stash;
-
-  /// No description provided for @stashTabDesc.
-  ///
-  /// In ko, this message translates to:
-  /// **'보유하고 있는 뜨개실의 재고와 스펙을 기록하고 관리합니다.'**
-  String get stashTabDesc;
 
   /// No description provided for @noStashesYet.
   ///
@@ -3717,24 +3561,6 @@ abstract class AppLocalizations {
   /// **'Jumbo (0-4 wpi)'**
   String get weightJumbo;
 
-  /// No description provided for @undo.
-  ///
-  /// In ko, this message translates to:
-  /// **'실행 취소'**
-  String get undo;
-
-  /// No description provided for @editSkeinsTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'수량 직접 입력'**
-  String get editSkeinsTitle;
-
-  /// No description provided for @skeinsAdjusted.
-  ///
-  /// In ko, this message translates to:
-  /// **'수량이 {skeins}볼로 변경되었습니다.'**
-  String skeinsAdjusted(double skeins);
-
   /// 실 보유 수량 표시 단위 (볼/타래)
   ///
   /// In ko, this message translates to:
@@ -3752,12 +3578,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'보관함에서 실 선택'**
   String get selectStashYarn;
-
-  /// No description provided for @unlink.
-  ///
-  /// In ko, this message translates to:
-  /// **'연동 해제'**
-  String get unlink;
 
   /// No description provided for @linkedYarn.
   ///
@@ -3807,6 +3627,12 @@ abstract class AppLocalizations {
   /// **'반영 안 함'**
   String get sessionAbsenceExclude;
 
+  /// No description provided for @pauseSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시정지'**
+  String get pauseSession;
+
   /// No description provided for @deleteMemoTitle.
   ///
   /// In ko, this message translates to:
@@ -3824,6 +3650,72 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이미 존재하는 태그 이름입니다.'**
   String get duplicateTagName;
+
+  /// No description provided for @noCounterData.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운터 데이터가 없습니다'**
+  String get noCounterData;
+
+  /// No description provided for @unknownCounterType.
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없는 카운터 유형입니다'**
+  String get unknownCounterType;
+
+  /// 증감 단위 선택 칩 (예: 2단씩)
+  ///
+  /// In ko, this message translates to:
+  /// **'{value}단씩'**
+  String countByRowsChip(int value);
+
+  /// No description provided for @defaultPartName.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트 1'**
+  String get defaultPartName;
+
+  /// No description provided for @saveYarnFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 저장 실패: {error}'**
+  String saveYarnFailed(Object error);
+
+  /// No description provided for @enterYarnName.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이름을 입력해주세요'**
+  String get enterYarnName;
+
+  /// No description provided for @restoreYarnTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 복원'**
+  String get restoreYarnTitle;
+
+  /// No description provided for @restoreYarnConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 복원하시겠습니까?'**
+  String get restoreYarnConfirmMessage;
+
+  /// No description provided for @deleteYarnForeverConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
+  String get deleteYarnForeverConfirmMessage;
+
+  /// No description provided for @yarnDeletedForever.
+  ///
+  /// In ko, this message translates to:
+  /// **'실이 완전히 삭제되었습니다.'**
+  String get yarnDeletedForever;
+
+  /// No description provided for @noDeletedYarns.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제된 실이 없습니다'**
+  String get noDeletedYarns;
 
   /// No description provided for @searchStashHint.
   ///
@@ -3884,6 +3776,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'구매 복원에 실패했습니다. 다시 시도해주세요.'**
   String get premiumRestoreFailed;
+
+  /// No description provided for @premiumMemberBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리미엄 회원 👑'**
+  String get premiumMemberBadge;
 
   /// No description provided for @sessionPausedByPartChange.
   ///

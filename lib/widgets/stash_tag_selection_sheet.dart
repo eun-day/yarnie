@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/model/tag_color_preset.dart';
 
 class StashTagSelectionSheet extends ConsumerStatefulWidget {
@@ -514,7 +515,7 @@ class _StashTagSelectionSheetState extends ConsumerState<StashTagSelectionSheet>
     } on UniqueConstraintException {
       error = l10n.duplicateTagName;
     } catch (e) {
-      error = l10n.createTagFailed(e.toString());
+      error = l10n.createTagFailed(l10n.errorText(e));
     }
     if (!mounted) return;
     if (error != null) {
@@ -766,7 +767,7 @@ class _StashTagActionSheet extends ConsumerWidget {
                   return;
                 } catch (e) {
                   messenger.showSnackBar(
-                    SnackBar(content: Text(l10n.updateTagFailed(e.toString()))),
+                    SnackBar(content: Text(l10n.updateTagFailed(l10n.errorText(e)))),
                   );
                   return;
                 }

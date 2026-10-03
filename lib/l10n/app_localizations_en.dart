@@ -614,8 +614,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projects => 'Projects';
 
   @override
-  String projectsCount(Object count) {
-    return '$count projects';
+  String projectsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects',
+      one: '1 project',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -672,11 +678,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String trashProjectCount(Object count) {
-    return '$count projects · Auto-delete after 30 days';
-  }
-
-  @override
   String get loading => 'Loading...';
 
   @override
@@ -700,22 +701,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreProject => 'Restore Project';
 
   @override
-  String get restoreConfirm => 'Do you want to restore this project?';
-
-  @override
-  String get projectRestored => 'Project restored.';
-
-  @override
   String restoreFailed(Object error) {
     return 'Restore failed: $error';
   }
-
-  @override
-  String get deleteForever => 'Delete Permanently';
-
-  @override
-  String get deleteForeverConfirm =>
-      'Do you want to permanently delete this project?\nThis action cannot be undone.';
 
   @override
   String get delete => 'Delete';
@@ -817,9 +805,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchTags => 'Search tags...';
-
-  @override
-  String get addNewTag => 'Add New Tag';
 
   @override
   String get tagName => 'Tag Name';
@@ -939,17 +924,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remainingLength => 'Remaining';
 
   @override
-  String get stitchIncrease => 'Increase';
-
-  @override
-  String get stitchDecrease => 'Decrease';
-
-  @override
-  String nextRow(Object row) {
-    return 'Next:$row';
-  }
-
-  @override
   String patternRows(Object current, Object total) {
     return 'Row $current of $total';
   }
@@ -985,9 +959,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
-
-  @override
-  String get exitConfirm => 'Press again to exit.';
 
   @override
   String get exitAppTitle => 'Do you want to exit the app?';
@@ -1029,25 +1000,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get length => 'Length';
 
   @override
-  String get addLengthCounter => 'Add Length Counter';
-
-  @override
-  String get editLengthCounter => 'Edit Length Counter';
-
-  @override
-  String get lengthCounterDescSimple =>
-      'Tracks progress until you reach a specific length.';
-
-  @override
-  String get targetLength => 'Target Length';
-
-  @override
-  String get lengthHint => 'e.g., 30.0';
-
-  @override
-  String get lengthHelper => 'Enter the target length.';
-
-  @override
   String get unit => 'Unit';
 
   @override
@@ -1055,9 +1007,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inch => 'inch';
-
-  @override
-  String get countBySetting => 'Count By Setting';
 
   @override
   String get lengthMeasurement => 'Length Counter';
@@ -1113,8 +1062,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expectedRows => 'Expected Rows';
 
   @override
-  String estimatedRowsDisplay(Object rows) {
-    return '$rows rows';
+  String estimatedRowsDisplay(int rows) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rows,
+      locale: localeName,
+      other: '$rows rows',
+      one: '1 row',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1225,8 +1180,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get session => 'Session';
 
   @override
-  String rowsRemaining(Object count) {
-    return '$count rows left';
+  String rowsRemaining(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows left',
+      one: '1 row left',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1264,12 +1225,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get needleSizeHint => 'Select needle type first';
-
-  @override
-  String get lotNumberHint => 'e.g. A12345';
-
-  @override
-  String get lotNumberDesc => 'Enter the yarn lot number';
 
   @override
   String get memoHint =>
@@ -1342,9 +1297,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectInfoDesc => 'Check the detailed project info';
 
   @override
-  String get lotNumberLabel => 'Yarn Lot Number';
-
-  @override
   String get noTagsAssigned => 'No tags assigned.';
 
   @override
@@ -1414,13 +1366,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dbForeignKeyError => 'The referenced record does not exist';
 
   @override
-  String get dbRequiredError => 'A required value is missing';
-
-  @override
   String get dbIntegrityError => 'Data integrity violation';
-
-  @override
-  String get dbConstraintError => 'Data constraint violation';
 
   @override
   String get dbGeneralError => 'A database error occurred';
@@ -1444,13 +1390,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trashHeader => 'Trash';
 
   @override
-  String trashProjectCountInfo(Object count) {
-    return '$count projects · Auto-deleted after 30 days';
+  String trashProjectCountInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects',
+      one: '1 project',
+    );
+    return '$_temp0 · Auto-deleted after 30 days';
   }
 
   @override
-  String trashStashCountInfo(Object count) {
-    return '$count yarns · Auto-deleted after 30 days';
+  String trashStashCountInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count yarns',
+      one: '1 yarn',
+    );
+    return '$_temp0 · Auto-deleted after 30 days';
   }
 
   @override
@@ -1468,9 +1426,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteForeverConfirmMessage =>
       'Permanently delete this project?\nThis cannot be undone.';
-
-  @override
-  String get mainCounterTitleAlt => 'Main Counter (MainCounter)';
 
   @override
   String countByLabel(Object value) {
@@ -1641,11 +1596,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter row numbers for shaping, separated by commas';
 
   @override
-  String shapingDirectSubInfo(Object current, Object total) {
-    return '$current/$total times';
-  }
-
-  @override
   String get preview => 'Preview';
 
   @override
@@ -1742,11 +1692,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String deleteProjectFailed(Object error) {
     return 'Failed to delete project: $error';
-  }
-
-  @override
-  String loadCounterCountFailed(Object error) {
-    return 'Failed to load counter count: $error';
   }
 
   @override
@@ -1865,10 +1810,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stash => 'Stash';
-
-  @override
-  String get stashTabDesc =>
-      'Record and manage your yarn stash inventory and details.';
 
   @override
   String get noStashesYet =>
@@ -1991,7 +1932,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String stashYarnsCount(int count) {
-    return '$count yarns';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count yarns',
+      one: '1 yarn',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2037,23 +1984,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightJumbo => 'Jumbo (0-4 wpi)';
 
   @override
-  String get undo => 'Undo';
-
-  @override
-  String get editSkeinsTitle => 'Enter Quantity';
-
-  @override
-  String skeinsAdjusted(double skeins) {
-    return 'Quantity adjusted to $skeins skein(s).';
-  }
-
-  @override
   String skeinsCount(num count) {
     final intl.NumberFormat countNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
     final String countString = countNumberFormat.format(count);
 
-    return '$countString skeins';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString skeins',
+      one: '1 skein',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2061,9 +2003,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectStashYarn => 'Select Yarn';
-
-  @override
-  String get unlink => 'Unlink';
 
   @override
   String get linkedYarn => 'Linked Yarn';
@@ -2092,6 +2031,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionAbsenceExclude => 'Don\'t add';
 
   @override
+  String get pauseSession => 'Pause';
+
+  @override
   String get deleteMemoTitle => 'Delete Note';
 
   @override
@@ -2099,6 +2041,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duplicateTagName => 'This tag name already exists.';
+
+  @override
+  String get noCounterData => 'No counter data';
+
+  @override
+  String get unknownCounterType => 'Unknown counter type';
+
+  @override
+  String countByRowsChip(int value) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value,
+      locale: localeName,
+      other: '$value rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get defaultPartName => 'Part 1';
+
+  @override
+  String saveYarnFailed(Object error) {
+    return 'Failed to save yarn: $error';
+  }
+
+  @override
+  String get enterYarnName => 'Please enter yarn name';
+
+  @override
+  String get restoreYarnTitle => 'Restore Yarn';
+
+  @override
+  String get restoreYarnConfirmMessage => 'Do you want to restore this yarn?';
+
+  @override
+  String get deleteYarnForeverConfirmMessage =>
+      'Permanently delete this yarn?\nThis cannot be undone.';
+
+  @override
+  String get yarnDeletedForever => 'Yarn permanently deleted.';
+
+  @override
+  String get noDeletedYarns => 'No deleted yarns';
 
   @override
   String get searchStashHint => 'Search name, brand, colorway';
@@ -2133,6 +2119,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumRestoreFailed =>
       'Failed to restore purchases. Please try again.';
+
+  @override
+  String get premiumMemberBadge => 'Premium Member 👑';
 
   @override
   String get sessionPausedByPartChange =>

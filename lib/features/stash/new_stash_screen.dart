@@ -234,26 +234,11 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
       _lengthUnit = newUnit;
     });
 
-    final lengthPerSkein = double.tryParse(_lengthPerSkeinCtrl.text);
-    final totalLength = double.tryParse(_totalLengthCtrl.text);
-
     // Yards ↔ Meters 변환 (1 Yard ≈ 0.9144 Meter)
     const factor = 0.9144;
-    if (newUnit == 'meters') {
-      if (lengthPerSkein != null) {
-        _lengthPerSkeinCtrl.text = double.parse((lengthPerSkein * factor).toStringAsFixed(2)).toString();
-      }
-      if (totalLength != null) {
-        _totalLengthCtrl.text = double.parse((totalLength * factor).toStringAsFixed(2)).toString();
-      }
-    } else {
-      if (lengthPerSkein != null) {
-        _lengthPerSkeinCtrl.text = double.parse((lengthPerSkein / factor).toStringAsFixed(2)).toString();
-      }
-      if (totalLength != null) {
-        _totalLengthCtrl.text = double.parse((totalLength / factor).toStringAsFixed(2)).toString();
-      }
-    }
+    double convert(double v) => newUnit == 'meters' ? v * factor : v / factor;
+    _convertField(_lengthPerSkeinCtrl, convert);
+    _convertField(_totalLengthCtrl, convert);
   }
 
   void _changeWeightUnit(String newUnit) {
@@ -262,26 +247,30 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
       _weightUnit = newUnit;
     });
 
-    final weightPerSkein = double.tryParse(_weightPerSkeinCtrl.text);
-    final totalWeight = double.tryParse(_totalWeightCtrl.text);
-
     // Grams ↔ Ounces 변환 (1 Ounce ≈ 28.3495 Gram)
     const factor = 28.3495;
-    if (newUnit == 'ounces') {
-      if (weightPerSkein != null) {
-        _weightPerSkeinCtrl.text = double.parse((weightPerSkein / factor).toStringAsFixed(2)).toString();
-      }
-      if (totalWeight != null) {
-        _totalWeightCtrl.text = double.parse((totalWeight / factor).toStringAsFixed(2)).toString();
-      }
-    } else {
-      if (weightPerSkein != null) {
-        _weightPerSkeinCtrl.text = double.parse((weightPerSkein * factor).toStringAsFixed(2)).toString();
-      }
-      if (totalWeight != null) {
-        _totalWeightCtrl.text = double.parse((totalWeight * factor).toStringAsFixed(2)).toString();
-      }
+    double convert(double v) => newUnit == 'ounces' ? v / factor : v * factor;
+    _convertField(_weightPerSkeinCtrl, convert);
+    _convertField(_totalWeightCtrl, convert);
+  }
+
+  /// 단위를 바꾼 직후의 값 → 바꾸기 전 입력값 (그대로 되돌리면 반올림 오차 없이 복원)
+  final Map<TextEditingController, ({String original, String converted})>
+      _lastConversion = {};
+
+  /// 입력값을 새 단위로 변환한다. 변환한 값을 고치지 않고 원래 단위로 되돌리면
+  /// 처음 입력값을 그대로 복원한다 (예: 50g → 1.76oz → 49.9g 처럼 값이 바뀌는 것 방지).
+  void _convertField(TextEditingController ctrl, double Function(double) convert) {
+    final last = _lastConversion.remove(ctrl);
+    if (last != null && last.converted == ctrl.text) {
+      ctrl.text = last.original;
+      return;
     }
+    final value = double.tryParse(ctrl.text);
+    if (value == null) return;
+    final converted = double.parse(convert(value).toStringAsFixed(2)).toString();
+    _lastConversion[ctrl] = (original: ctrl.text, converted: converted);
+    ctrl.text = converted;
   }
 
   // ============================================================
@@ -523,7 +512,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
                   isRequired: true,
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
-                      return l10n.enterProjectName; // "이름을 입력해주세요" 번역 재활용
+                      return l10n.enterYarnName;
                     }
                     return null;
                   },

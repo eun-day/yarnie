@@ -35,6 +35,7 @@ import 'package:yarnie/widgets/target_setting_dialog.dart';
 import 'package:yarnie/widgets/project_delete_dialog.dart';
 import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/providers/settings_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -301,7 +302,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
             context: context,
             barrierColor:
                 Colors.transparent, // or Colors.black54 if dimming desired
-            builder: (context) {
+            // 메뉴 다이얼로그는 닫히면 곧 사라지므로, 닫은 뒤에는 화면 쪽 context로 시트·스낵바를 띄운다
+            builder: (dialogContext) {
               return Stack(
                 children: [
                   Positioned(
@@ -309,7 +311,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                     right: 16,
                     child: AddBuddyCounterMenu(
                       onStitchSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         try {
@@ -320,13 +322,13 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+                              SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
                             );
                           }
                         }
                       },
                       onRangeSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -345,7 +347,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onRepeatSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -364,7 +366,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onIntervalSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -383,7 +385,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onShapingSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -402,7 +404,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                         }
                       },
                       onLengthSelected: () async {
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                         if (_selectedPartId == null) return;
 
                         final mainCounter = await appDb.getMainCounter(
@@ -1104,18 +1106,18 @@ class _BuddyCounterListWidgetState extends ConsumerState<BuddyCounterListWidget>
             label: counter.name,
             currentValue: counter.currentValue,
             countBy: counter.countBy,
+            // 화면 값이 아니라 DB 값에 더해 연타해도 증가분이 사라지지 않게 한다
             onIncrement: () {
-              appDb.updateStitchCounter(
+              appDb.incrementStitchCounter(
                 counterId: counter.id,
-                currentValue: counter.currentValue + counter.countBy,
+                delta: counter.countBy,
               );
             },
             onDecrement: () {
               if (counter.currentValue > 0) {
-                final newValue = counter.currentValue - counter.countBy;
-                appDb.updateStitchCounter(
+                appDb.incrementStitchCounter(
                   counterId: counter.id,
-                  currentValue: newValue < 0 ? 0 : newValue,
+                  delta: -counter.countBy,
                 );
               }
             },
@@ -1181,7 +1183,11 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         if (runsSnapshot.hasError) {
           return SizedBox(
             height: 160,
-            child: Center(child: Text('Error: ${runsSnapshot.error}')),
+            child: Center(
+              child: Text(
+                AppLocalizations.of(context)!.loadDataFailed(runsSnapshot.error.toString()),
+              ),
+            ),
           );
         }
         if (!runsSnapshot.hasData) {
@@ -1241,7 +1247,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
 
     switch (type) {
       case 'range':
-        if (runs.isEmpty) return Text('No Data');
+        if (runs.isEmpty) return Text(AppLocalizations.of(context)!.noCounterData);
         final run = runs.first;
         final isCompleted =
             effectiveValue >= (run.startRow + run.rowsTotal);
@@ -1552,7 +1558,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       case 'length':
-        if (runs.isEmpty) return Text('No Data');
+        if (runs.isEmpty) return Text(AppLocalizations.of(context)!.noCounterData);
         final runL = runs.first;
 
         final targetLength = (spec['targetLength'] as num? ?? 0.0).toDouble();
@@ -1637,9 +1643,9 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       default:
-        return const SizedBox(
+        return SizedBox(
           height: 160,
-          child: Center(child: Text('Unknown Type')),
+          child: Center(child: Text(AppLocalizations.of(context)!.unknownCounterType)),
         );
     }
   }
@@ -1659,6 +1665,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   Duration _elapsed = Duration.zero;
   Session? _session;
   SessionSegment? _currentSegment;
+  bool _isToggling = false;
 
   @override
   void initState() {
@@ -1694,11 +1701,12 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   String _formatDuration(Duration d) {
     final hours = d.inHours;
     final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60); // Optional seconds
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    // 1시간 이상은 시:분:초 ("1:05"만 쓰면 1시간 5분인지 1분 5초인지 구분되지 않음)
     if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}';
+      return '$hours:${minutes.toString().padLeft(2, '0')}:$seconds';
     }
-    return '$minutes:${seconds.toString().padLeft(2, '0')}'; // 분:초
+    return '$minutes:$seconds'; // 분:초
   }
 
   @override
@@ -1803,7 +1811,7 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    isRunning ? l10n.paused : (session == null ? l10n.start : l10n.resume),
+                    isRunning ? l10n.pauseSession : (session == null ? l10n.start : l10n.resume),
                     style: TextStyle(
                       color: isRunning
                           ? context.sessionPausedText
@@ -1823,37 +1831,51 @@ class _SessionPanelWidgetState extends State<SessionPanelWidget>
   }
 
   Future<void> _handleToggleSession() async {
-    final partId = widget.partId;
+    // 연타로 같은 요청이 두 번 가면 DB 상태 검증에서 예외가 나므로 처리 중에는 무시
+    if (_isToggling) return;
+    _isToggling = true;
 
-    // MainCounter 값을 알아야 함
-    final mainCounter = await appDb.getMainCounter(partId);
-    final currentMainValue = mainCounter?.currentValue ?? 0;
+    try {
+      final partId = widget.partId;
 
-    if (_session == null) {
-      // Start New Session
-      await appDb.createSession(
-        partId: partId,
-        currentMainValue: currentMainValue,
-      );
-    } else {
-      if (_session!.status == SessionStatus2.running) {
-        // Pause
-        if (_currentSegment != null) {
-          await appDb.pausePartSession(
-            sessionId: _session!.id,
-            currentSegmentId: _currentSegment!.id,
-            currentMainValue: currentMainValue,
-            segmentStartedAt: _currentSegment!.startedAt,
-          );
-        }
-      } else {
-        // Resume
-        await appDb.resumePartSession(
-          sessionId: _session!.id,
+      // MainCounter 값을 알아야 함
+      final mainCounter = await appDb.getMainCounter(partId);
+      final currentMainValue = mainCounter?.currentValue ?? 0;
+
+      if (_session == null) {
+        // Start New Session
+        await appDb.createSession(
           partId: partId,
           currentMainValue: currentMainValue,
         );
+      } else {
+        if (_session!.status == SessionStatus2.running) {
+          // Pause
+          if (_currentSegment != null) {
+            await appDb.pausePartSession(
+              sessionId: _session!.id,
+              currentSegmentId: _currentSegment!.id,
+              currentMainValue: currentMainValue,
+              segmentStartedAt: _currentSegment!.startedAt,
+            );
+          }
+        } else {
+          // Resume
+          await appDb.resumePartSession(
+            sessionId: _session!.id,
+            partId: partId,
+            currentMainValue: currentMainValue,
+          );
+        }
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred(AppLocalizations.of(context)!.errorText(e)))),
+        );
+      }
+    } finally {
+      _isToggling = false;
     }
   }
 }
@@ -1940,9 +1962,10 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                         onTap: () {
                           if (currentValue > 1) {
                             HapticHelper.validateAndFeedback(settings.touchFeedback);
-                            appDb.updateMainCounter(
+                            // DB 값 기준으로 빼고 1단 아래로는 내려가지 않는다
+                            appDb.incrementMainCounter(
                               partId: widget.partId,
-                              newValue: (currentValue - countBy).clamp(1, currentValue),
+                              delta: -countBy,
                             );
                           }
                         },
@@ -1968,9 +1991,10 @@ class _MainCounterWidgetState extends ConsumerState<MainCounterWidget> {
                         highlightColor: context.counterIncHighlight,
                         onTap: () {
                           HapticHelper.validateAndFeedback(settings.touchFeedback);
-                          appDb.updateMainCounter(
+                          // 화면 값이 아니라 DB 값에 더해 연타해도 증가분이 사라지지 않게 한다
+                          appDb.incrementMainCounter(
                             partId: widget.partId,
-                            newValue: currentValue + countBy,
+                            delta: countBy,
                           );
                         },
                         child: Center(
@@ -2353,23 +2377,25 @@ class _AddPartSheetState extends State<_AddPartSheet> {
   Future<void> _handleSave() async {
     final l10n = AppLocalizations.of(context)!;
     final name = _controller.text.trim();
-    if (name.isEmpty) return;
+    // 키보드 완료와 버튼을 빠르게 연달아 누르면 같은 파트가 두 번 만들어지므로 먼저 막는다
+    if (name.isEmpty || _isSaving) return;
+    setState(() {
+      _isSaving = true;
+    });
 
     // 중복 체크
     final exists = await appDb.isPartNameExists(
       projectId: widget.projectId,
       name: name,
     );
+    if (!mounted) return;
     if (exists) {
       setState(() {
         _errorText = l10n.duplicatePartName;
+        _isSaving = false;
       });
       return;
     }
-
-    setState(() {
-      _isSaving = true;
-    });
 
     try {
       final newPartId = await appDb.createPart(
@@ -2386,7 +2412,7 @@ class _AddPartSheetState extends State<_AddPartSheet> {
           _isSaving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorOccurred(e.toString()))),
+          SnackBar(content: Text(l10n.errorOccurred(l10n.errorText(e)))),
         );
       }
     }

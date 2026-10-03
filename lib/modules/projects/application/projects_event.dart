@@ -91,6 +91,7 @@ class CreateProject extends ProjectsEvent {
   final String? gaugeRows;
   final String? imagePath;
   final List<int> tagIds;
+  final String defaultPartName;
 
   const CreateProject({
     required this.name,
@@ -102,6 +103,7 @@ class CreateProject extends ProjectsEvent {
     this.gaugeRows,
     this.imagePath,
     this.tagIds = const [],
+    required this.defaultPartName,
   });
 }
 

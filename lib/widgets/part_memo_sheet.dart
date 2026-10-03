@@ -22,6 +22,7 @@ class PartMemoSheet extends StatefulWidget {
 class _PartMemoSheetState extends State<PartMemoSheet> {
   final TextEditingController _textController = TextEditingController();
   bool _isInputValid = false;
+  bool _isAdding = false;
 
   @override
   void initState() {
@@ -47,12 +48,18 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
 
   Future<void> _addMemo() async {
     final content = _textController.text.trim();
-    if (content.isEmpty) return;
-
-    await appDb.createPartNote(
-      partId: widget.partId,
-      content: content,
-    );
+    // 연타로 같은 메모가 두 번 저장되지 않게 처리 중에는 무시
+    if (content.isEmpty || _isAdding) return;
+    _isAdding = true;
+    try {
+      await appDb.createPartNote(
+        partId: widget.partId,
+        content: content,
+      );
+    } finally {
+      _isAdding = false;
+    }
+    if (!mounted) return;
     _textController.clear();
     FocusScope.of(context).unfocus();
   }

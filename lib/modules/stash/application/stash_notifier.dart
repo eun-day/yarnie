@@ -10,6 +10,7 @@ import '../../../core/utils/app_image_utils.dart';
 import 'stash_effect.dart';
 import 'stash_event.dart';
 import 'stash_state.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 
 class StashNotifier extends Notifier<StashState> {
   StreamSubscription<List<StashYarn>>? _stashSubscription;
@@ -118,7 +119,7 @@ class StashNotifier extends Notifier<StashState> {
       await _stashSubscription?.cancel();
       _stashSubscription = appDb.watchAllStashYarns().listen(
         (yarns) => onEvent(StashUpdatedEvent(yarns)),
-        onError: (e) => _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.loadDataFailed(e.toString()))),
+        onError: (e) => _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.loadDataFailed(l10n.errorText(e)))),
       );
 
       // 태그 목록 stream 구독 (태그 시트에서 이름·색을 바꾸거나 지워도 바로 반영)
@@ -129,7 +130,8 @@ class StashNotifier extends Notifier<StashState> {
     } catch (e) {
       await _stashSubscription?.cancel();
       await _tagsSubscription?.cancel();
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
+      state = state.copyWith(isLoading: false); // 실패 후에도 다시 불러올 수 있게
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.initFailed(l10n.errorText(e))));
     }
   }
 
@@ -192,7 +194,7 @@ class StashNotifier extends Notifier<StashState> {
       // 저장되지 못한 실용으로 복사해 둔 이미지 정리
       await AppImageUtils.deleteImageIfUnused(companion.imagePath.value);
       _emit(const StashYarnSaveFailed());
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString()))); // 기존 번역 키 재활용
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveYarnFailed(l10n.errorText(e))));
     }
   }
 
@@ -207,7 +209,7 @@ class StashNotifier extends Notifier<StashState> {
       // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
       await AppImageUtils.deleteImageIfUnused(newImagePath, keep: previousImagePath);
       _emit(const StashYarnSaveFailed());
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveYarnFailed(l10n.errorText(e))));
       return;
     }
 
@@ -223,7 +225,7 @@ class StashNotifier extends Notifier<StashState> {
       _emit(const StashYarnDeleted());
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.stashDeleted));
     } catch (e) {
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.deleteFailed(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.deleteFailed(l10n.errorText(e))));
     }
   }
 
@@ -256,7 +258,7 @@ class StashNotifier extends Notifier<StashState> {
         ),
       );
     } catch (e) {
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(l10n.errorText(e))));
     }
   }
 
@@ -301,7 +303,7 @@ class StashNotifier extends Notifier<StashState> {
       _emit(StashYarnCreated(newId));
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.addComplete));
     } catch (e) {
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(l10n.errorText(e))));
     }
   }
 
@@ -310,7 +312,7 @@ class StashNotifier extends Notifier<StashState> {
       await appDb.updateStashYarnTags(yarnId: yarnId, tagIds: tagIds);
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.editComplete));
     } catch (e) {
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(l10n.errorText(e))));
     }
   }
 
@@ -320,7 +322,7 @@ class StashNotifier extends Notifier<StashState> {
       final currentTagIds = parseTagIds(yarn.tagIds);
       _emit(ShowAssignStashTagsDialog(yarnId, currentTagIds));
     } catch (e) {
-      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(e.toString())));
+      _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.errorOccurred(l10n.errorText(e))));
     }
   }
 

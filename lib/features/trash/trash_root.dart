@@ -1,4 +1,5 @@
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/common/error_text_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/trash/widgets/empty_trash_view.dart';
@@ -130,7 +131,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                     child: _selectedTab == TrashTab.project
                         ? deletedProjectsAsync.when(
                             data: (projects) => Text(
-                              l10n.trashProjectCountInfo(projects.length.toString()),
+                              l10n.trashProjectCountInfo(projects.length),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,
@@ -156,7 +157,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                           )
                         : deletedStashYarnsAsync.when(
                             data: (yarns) => Text(
-                              l10n.trashStashCountInfo(yarns.length.toString()),
+                              l10n.trashStashCountInfo(yarns.length),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,
@@ -220,7 +221,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                   : deletedStashYarnsAsync.when(
                       data: (yarns) {
                         if (yarns.isEmpty) {
-                          return const Center(child: EmptyTrashView());
+                          return const Center(child: EmptyTrashView(isStash: true));
                         }
 
                         return ListView.builder(
@@ -486,7 +487,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -508,7 +509,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.restoreProjectTitle, // 공용 타이틀 재사용
+                  AppLocalizations.of(context)!.restoreYarnTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -520,7 +521,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.restoreConfirmMessage,
+                  AppLocalizations.of(context)!.restoreYarnConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -594,7 +595,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.restoreFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -703,7 +704,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }
@@ -737,7 +738,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.deleteForeverConfirmMessage,
+                  AppLocalizations.of(context)!.deleteYarnForeverConfirmMessage,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -806,13 +807,13 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
         await AppImageUtils.deleteImageIfUnused(yarn.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)), // 공용 메시지 재사용
+            SnackBar(content: Text(AppLocalizations.of(context)!.yarnDeletedForever)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.deleteFailed(AppLocalizations.of(context)!.errorText(e)))),
           );
         }
       }

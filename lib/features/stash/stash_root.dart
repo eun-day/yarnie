@@ -208,6 +208,7 @@ class _StashRootState extends ConsumerState<StashRoot> {
     switch (state.viewMode) {
       case StashViewMode.smallCard:
         return _SmallCardView(
+          controller: widget.controller,
           yarns: yarns,
           tags: state.allTags,
           onYarnTap: _openStashDetail,
@@ -215,6 +216,7 @@ class _StashRootState extends ConsumerState<StashRoot> {
         );
       case StashViewMode.list:
         return _ListView(
+          controller: widget.controller,
           yarns: yarns,
           tags: state.allTags,
           onYarnTap: _openStashDetail,
@@ -619,12 +621,14 @@ class ColoredStashTagChip extends StatelessWidget {
 // 1. 작은 카드 뷰
 // ============================================================
 class _SmallCardView extends StatelessWidget {
+  final ScrollController controller; // 탭을 다시 누르면 맨 위로 (RootScaffold)
   final List<StashYarn> yarns;
   final List<StashTag> tags;
   final ValueChanged<int> onYarnTap;
   final ValueChanged<int> onLongPress;
 
   const _SmallCardView({
+    required this.controller,
     required this.yarns,
     required this.tags,
     required this.onYarnTap,
@@ -634,6 +638,7 @@ class _SmallCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      controller: controller,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // 검색 중 스크롤하면 키보드 닫기
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -805,12 +810,14 @@ class _SmallStashCard extends StatelessWidget {
 // 2. 리스트 뷰
 // ============================================================
 class _ListView extends StatelessWidget {
+  final ScrollController controller; // 탭을 다시 누르면 맨 위로 (RootScaffold)
   final List<StashYarn> yarns;
   final List<StashTag> tags;
   final ValueChanged<int> onYarnTap;
   final ValueChanged<int> onLongPress;
 
   const _ListView({
+    required this.controller,
     required this.yarns,
     required this.tags,
     required this.onYarnTap,
@@ -820,6 +827,7 @@ class _ListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: controller,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // 검색 중 스크롤하면 키보드 닫기
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: yarns.length,

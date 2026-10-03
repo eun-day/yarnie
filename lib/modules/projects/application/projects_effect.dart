@@ -1,3 +1,5 @@
+import '../../../l10n/app_localizations.dart';
+
 /// 프로젝트 목록 화면 사이드 이펙트 (네비게이션, 토스트 등)
 sealed class ProjectsEffect {
   const ProjectsEffect();
@@ -23,7 +25,7 @@ class ShowErrorMessage extends ProjectsEffect {
 }
 
 class ShowLocalizedErrorMessage extends ProjectsEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedErrorMessage(this.messageBuilder);
 }
 
@@ -34,7 +36,7 @@ class ShowSuccessMessage extends ProjectsEffect {
 }
 
 class ShowLocalizedSuccessMessage extends ProjectsEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedSuccessMessage(this.messageBuilder);
 }
 

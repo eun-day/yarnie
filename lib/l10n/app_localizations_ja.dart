@@ -575,7 +575,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get projects => 'プロジェクト';
 
   @override
-  String projectsCount(Object count) {
+  String projectsCount(int count) {
     return '$count個のプロジェクト';
   }
 
@@ -632,11 +632,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String trashProjectCount(Object count) {
-    return '$count個のプロジェクト · 30日後に自動削除';
-  }
-
-  @override
   String get loading => '読み込み中...';
 
   @override
@@ -660,21 +655,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get restoreProject => 'プロジェクトを復元';
 
   @override
-  String get restoreConfirm => 'このプロジェクトを復元しますか？';
-
-  @override
-  String get projectRestored => 'プロジェクトを復元しました。';
-
-  @override
   String restoreFailed(Object error) {
     return '復元失敗: $error';
   }
-
-  @override
-  String get deleteForever => '完全に削除';
-
-  @override
-  String get deleteForeverConfirm => 'このプロジェクトを完全に削除しますか？\nこの操作は取り消せません。';
 
   @override
   String get delete => '削除';
@@ -775,9 +758,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get searchTags => 'タグを検索...';
-
-  @override
-  String get addNewTag => '新しいタグを追加';
 
   @override
   String get tagName => 'タグ名';
@@ -890,17 +870,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get remainingLength => '残りの長さ';
 
   @override
-  String get stitchIncrease => '増し目';
-
-  @override
-  String get stitchDecrease => '減らし目';
-
-  @override
-  String nextRow(Object row) {
-    return '次:$row段';
-  }
-
-  @override
   String patternRows(Object current, Object total) {
     return '$current/$total段';
   }
@@ -935,9 +904,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get confirm => '確認';
-
-  @override
-  String get exitConfirm => 'もう一度押すと終了します。';
 
   @override
   String get exitAppTitle => 'アプリを終了しますか？';
@@ -979,24 +945,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get length => '長さ (Length)';
 
   @override
-  String get addLengthCounter => '長さカウンターを追加';
-
-  @override
-  String get editLengthCounter => '長さカウンターを編集';
-
-  @override
-  String get lengthCounterDescSimple => '特定の長さに達するまで記録するカウンターです。';
-
-  @override
-  String get targetLength => '目標の長さ';
-
-  @override
-  String get lengthHint => '例：30.0';
-
-  @override
-  String get lengthHelper => '目標とする長さを入力してください。';
-
-  @override
   String get unit => '単位';
 
   @override
@@ -1004,9 +952,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inch => 'inch';
-
-  @override
-  String get countBySetting => '増減単位設定';
 
   @override
   String get lengthMeasurement => '長さカウンター';
@@ -1061,7 +1006,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get expectedRows => '予想必要段数';
 
   @override
-  String estimatedRowsDisplay(Object rows) {
+  String estimatedRowsDisplay(int rows) {
     return '$rows段';
   }
 
@@ -1172,7 +1117,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get session => 'セッション';
 
   @override
-  String rowsRemaining(Object count) {
+  String rowsRemaining(int count) {
     return '残り $count 段';
   }
 
@@ -1211,12 +1156,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get needleSizeHint => 'まず針の種類を選択してください';
-
-  @override
-  String get lotNumberHint => '例：A12345';
-
-  @override
-  String get lotNumberDesc => '糸のロット番号を入力してください';
 
   @override
   String get memoHint => 'プロジェクトに関するメモを入力してください\n例：糸の種類、色、パターン情報など';
@@ -1288,9 +1227,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get projectInfoDesc => 'プロジェクトの詳細情報を確認します';
 
   @override
-  String get lotNumberLabel => '糸のロット番号';
-
-  @override
   String get noTagsAssigned => '指定されたタグはありません。';
 
   @override
@@ -1359,13 +1295,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dbForeignKeyError => '参照するレコードが存在しません';
 
   @override
-  String get dbRequiredError => '必須項目が不足しています';
-
-  @override
   String get dbIntegrityError => 'データの整合性違反';
-
-  @override
-  String get dbConstraintError => 'データの制約違反';
 
   @override
   String get dbGeneralError => 'データベースエラーが発生しました';
@@ -1389,12 +1319,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trashHeader => 'ゴミ箱';
 
   @override
-  String trashProjectCountInfo(Object count) {
+  String trashProjectCountInfo(int count) {
     return '$count個のプロジェクト · 30日後に自動削除';
   }
 
   @override
-  String trashStashCountInfo(Object count) {
+  String trashStashCountInfo(int count) {
     return '$count個の毛糸 · 30日後に自動削除';
   }
 
@@ -1413,9 +1343,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get deleteForeverConfirmMessage =>
       'このプロジェクトを完全に削除しますか？\nこの操作は取り消せません。';
-
-  @override
-  String get mainCounterTitleAlt => 'メインカウンター';
 
   @override
   String countByLabel(Object value) {
@@ -1580,11 +1507,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shapingRowsHelper => '増減目を行う段をカンマで区切って入力してください';
 
   @override
-  String shapingDirectSubInfo(Object current, Object total) {
-    return '$current/$total回';
-  }
-
-  @override
   String get preview => 'プレビュー';
 
   @override
@@ -1680,11 +1602,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String deleteProjectFailed(Object error) {
     return 'プロジェクトの削除失敗: $error';
-  }
-
-  @override
-  String loadCounterCountFailed(Object error) {
-    return 'カウンター数の読み込み失敗: $error';
   }
 
   @override
@@ -1802,9 +1719,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stash => 'ストック';
-
-  @override
-  String get stashTabDesc => '所持している毛糸の在庫とスペックを記録・管理します。';
 
   @override
   String get noStashesYet => 'まだ登録された毛糸がありません。\n新しい毛糸を登録してみましょう。';
@@ -1970,17 +1884,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get weightJumbo => 'Jumbo (0-4 wpi)';
 
   @override
-  String get undo => '元に戻す';
-
-  @override
-  String get editSkeinsTitle => '数量を直接入力';
-
-  @override
-  String skeinsAdjusted(double skeins) {
-    return '数量が$skeins玉に変更されました。';
-  }
-
-  @override
   String skeinsCount(num count) {
     final intl.NumberFormat countNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
@@ -1994,9 +1897,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get selectStashYarn => '保管箱から糸を選択';
-
-  @override
-  String get unlink => '連携解除';
 
   @override
   String get linkedYarn => '連携された糸';
@@ -2025,6 +1925,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionAbsenceExclude => '含めない';
 
   @override
+  String get pauseSession => '一時停止';
+
+  @override
   String get deleteMemoTitle => 'メモを削除';
 
   @override
@@ -2032,6 +1935,44 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get duplicateTagName => '既に存在するタグ名です。';
+
+  @override
+  String get noCounterData => 'カウンターのデータがありません';
+
+  @override
+  String get unknownCounterType => '不明なカウンタータイプです';
+
+  @override
+  String countByRowsChip(int value) {
+    return '$value段ずつ';
+  }
+
+  @override
+  String get defaultPartName => 'パーツ1';
+
+  @override
+  String saveYarnFailed(Object error) {
+    return '毛糸の保存失敗: $error';
+  }
+
+  @override
+  String get enterYarnName => '糸の名前を入力してください';
+
+  @override
+  String get restoreYarnTitle => '毛糸を復元';
+
+  @override
+  String get restoreYarnConfirmMessage => 'この毛糸を復元しますか？';
+
+  @override
+  String get deleteYarnForeverConfirmMessage =>
+      'この毛糸を完全に削除しますか？\nこの操作は取り消せません。';
+
+  @override
+  String get yarnDeletedForever => '毛糸を完全に削除しました。';
+
+  @override
+  String get noDeletedYarns => '削除された毛糸はありません';
 
   @override
   String get searchStashHint => '名前・ブランド・カラーで検索';
@@ -2063,6 +2004,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get premiumRestoreFailed => '購入情報の復元に失敗しました。もう一度お試しください。';
+
+  @override
+  String get premiumMemberBadge => 'プレミアム会員 👑';
 
   @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
