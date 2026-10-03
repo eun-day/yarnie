@@ -16,6 +16,12 @@ class ProjectsUpdated extends ProjectsEvent {
   const ProjectsUpdated(this.projects);
 }
 
+/// 태그 목록 업데이트 (stream에서 발행: 태그 이름·색 변경, 삭제 반영)
+class TagsUpdated extends ProjectsEvent {
+  final List<Tag> tags;
+  const TagsUpdated(this.tags);
+}
+
 /// 에러 발생 (stream에서 발행)
 class ShowError extends ProjectsEvent {
   final String message;

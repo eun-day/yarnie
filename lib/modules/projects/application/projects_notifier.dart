@@ -28,6 +28,7 @@ List<int> _parseTagIds(String? s) {
 /// 프로젝트 목록 Notifier
 class ProjectsNotifier extends Notifier<ProjectsState> {
   StreamSubscription<List<Project>>? _projectsSubscription;
+  StreamSubscription<List<Tag>>? _tagsSubscription;
   final _effectController = StreamController<ProjectsEffect>.broadcast();
 
   Stream<ProjectsEffect> get effects => _effectController.stream;
@@ -37,6 +38,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     // 초기 상태만 반환 (비동기 로드는 UI에서 LoadProjects 이벤트로 시작)
     ref.onDispose(() {
       _projectsSubscription?.cancel();
+      _tagsSubscription?.cancel();
       _effectController.close();
     });
     return const ProjectsState();
@@ -49,9 +51,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         await _loadData();
 
       case ProjectsUpdated(:final projects):
-        // 태그 목록도 갱신 (프로젝트 생성 시 새 태그가 추가될 수 있음)
-        final tags = await appDb.getAllTags();
-        // 필터링과 상태 업데이트를 한 번에 처리
+        // 필터링과 상태 업데이트를 한 번에 처리 (태그 목록은 tags 스트림이 갱신)
         final ids = state.selectedTagIds;
         final filtered = ids.isEmpty
             ? projects
@@ -61,10 +61,18 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         state = state.copyWith(
           allProjects: projects,
           filteredProjects: filtered,
-          allTags: tags,
           isLoading: false,
           error: null,
         );
+
+      case TagsUpdated(:final tags):
+        // 삭제된 태그가 필터에 남으면 결과가 0건이 되는데 선택 칩은 보이지 않으므로 함께 정리
+        final existingIds = tags.map((t) => t.id).toSet();
+        state = state.copyWith(
+          allTags: tags,
+          selectedTagIds: state.selectedTagIds.intersection(existingIds),
+        );
+        _applyFilters();
 
       case ShowError(:final message):
         state = state.copyWith(error: message, isLoading: false);
@@ -111,9 +119,6 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // 태그 목록 로드
-      final tags = await appDb.getAllTags();
-
       // 프로젝트 목록 stream 구독 (자동 반영)
       await _projectsSubscription?.cancel();
       _projectsSubscription = appDb.watchAll().listen(
@@ -122,9 +127,14 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
             _emit(ShowLocalizedErrorMessage((l10n) => l10n.loadProjectsFailed(e.toString()))),
       );
 
-      state = state.copyWith(allTags: tags);
+      // 태그 목록 stream 구독 (태그 시트에서 이름·색을 바꾸거나 지워도 바로 반영)
+      await _tagsSubscription?.cancel();
+      _tagsSubscription = appDb.watchAllTags().listen(
+        (tags) => onEvent(TagsUpdated(tags)),
+      );
     } catch (e) {
       await _projectsSubscription?.cancel();
+      await _tagsSubscription?.cancel();
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }
