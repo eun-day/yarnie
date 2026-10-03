@@ -80,9 +80,10 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Yarnie',
       locale: appLanguage.locale,
+      // 기기 언어가 지원 목록에 없으면 첫 항목으로 표시되므로 영어를 맨 앞에 둔다
       supportedLocales: const [
-        Locale('ko'),
         Locale('en'),
+        Locale('ko'),
         Locale('ja'),
       ],
       localizationsDelegates: const [
