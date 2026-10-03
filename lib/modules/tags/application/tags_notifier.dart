@@ -112,6 +112,8 @@ class TagsNotifier extends Notifier<TagsState> {
       _emit(ShowLocalizedTagSuccessMessage((l10n) => l10n.tagCreated));
       // 목록 새로고침
       await _loadTags();
+    } on UniqueConstraintException {
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.duplicateTagName));
     } catch (e) {
       _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.createTagFailed(l10n.errorText(e))));
     }
@@ -133,6 +135,8 @@ class TagsNotifier extends Notifier<TagsState> {
       _emit(ShowLocalizedTagSuccessMessage((l10n) => l10n.tagUpdated));
       // 목록 새로고침
       await _loadTags();
+    } on UniqueConstraintException {
+      _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.duplicateTagName));
     } catch (e) {
       _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.updateTagFailed(l10n.errorText(e))));
     }
