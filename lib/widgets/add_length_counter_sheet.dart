@@ -43,7 +43,8 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
         rowHeight <= 0 ||
         targetLength <= rowHeight)
       return null;
-    return (targetLength / rowHeight).ceil();
+    // 부동소수점 오차 보정 (예: 21 / 0.35 = 60.00000000000001 → 올림하면 61단)
+    return (targetLength / rowHeight - 1e-9).ceil();
   }
 
   String? get _rowHeightError {
