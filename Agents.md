@@ -27,6 +27,8 @@
 - 사용자 화면에 노출되는 모든 텍스트(알림, 다이얼로그, 문구, 버튼 라벨 등)는 절대로 소스코드 내에 한국어나 영어 등으로 하드코딩하지 않는다.
 - 새로운 텍스트를 추가할 때는 반드시 다국어 번역 리소스 파일(`lib/l10n/app_ko.arb`, `lib/l10n/app_en.arb`, `lib/l10n/app_ja.arb`) 모두에 각각에 맞는 번역(한국어, 영어, 일본어)을 일괄적으로 추가해야 한다.
 - 다국어 리소스 파일(.arb)을 수정/추가한 후에는 반드시 `zsh -ic 'flutter gen-l10n'` 명령어를 실행하여 다국어 지원 클래스(`AppLocalizations`)가 갱신되도록 컴파일해야 한다.
+- 오류를 사용자에게 보여줄 때는 예외 문자열을 그대로 쓰지 않고 `l10n.errorText(e)`(`lib/common/error_text_helper.dart`)를 거쳐, DB 예외가 번역된 문구로 표시되게 한다.
+- 영어 문구에 개수가 들어가면 ICU plural로 단·복수를 맞춘다. (예: `{count, plural, =1{1 project} other{{count} projects}}`)
 
 ## 7. 아키텍처 및 상태 관리 (Architecture & State Management)
 - 이 프로젝트의 상태 관리 및 비즈니스 로직은 **`event-notifier-state`** 구조를 따른다.
@@ -39,6 +41,8 @@
 ## 9. 이미지 저장 및 유틸리티 사용 (Image Persistence & Utilities)
 - 앱 내에 이미지를 저장해야 하는 로직이 있을 때 독자적인 저장 기능을 새로 구현하지 않는다.
 - 프로젝트 내에 정의된 이미지 유틸리티인 `AppImageUtils` 클래스를 우선 사용하여 파일 격리 저장 및 경로 복원 방식을 통일한다.
+- 복사한 프로젝트·실은 원본과 같은 이미지 파일을 공유한다. 이미지 파일을 지울 때는 `AppImageUtils.deleteImage`를 직접 호출하지 않고, DB 저장이 끝난 뒤 `AppImageUtils.deleteImageIfUnused`로 정리한다.
+- 이미지 경로 컬럼을 가진 테이블을 새로 추가하면 `AppDb.isImagePathReferenced`의 참조 검사에도 포함한다. (빠뜨리면 프로젝트·실 쪽에서 이미지를 정리할 때 새 테이블이 아직 쓰는 파일까지 지워진다.)
 
 ## 10. 데이터 백업/복원 (Backup & Restore)
 - DB에 새로운 테이블을 추가하면, 반드시 `lib/core/services/backup_service.dart`의 백업/복원 로직도 함께 업데이트한다.
