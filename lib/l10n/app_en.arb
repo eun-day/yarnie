@@ -678,5 +678,9 @@
   "noLinkedYarn": "No linked yarn",
   "usingProjects": "Projects using this yarn",
   "addYarn": "Add Yarn",
+  "sessionAbsenceTitle": "Welcome back",
+  "sessionAbsenceMessage": "{minutes} min passed since you left the app. Add this time to the running session?\nIf not, the session is paused at the moment you left.",
+  "sessionAbsenceInclude": "Add time",
+  "sessionAbsenceExclude": "Don't add",
   "sessionPausedByPartChange": "The session running in the previous part was paused."
 }

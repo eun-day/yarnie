@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/widgets/exit_confirm_dialog.dart';
+import 'package:yarnie/widgets/session_absence_dialog.dart';
 import 'package:yarnie/core/providers/premium_provider.dart';
+import 'package:yarnie/modules/projects/application/session_absence_event.dart';
+import 'package:yarnie/modules/projects/application/session_absence_notifier.dart';
+import 'package:yarnie/modules/projects/application/session_absence_state.dart';
 import '../../features/home/home_root.dart';
 import '../../features/projects/projects_root.dart';
 import '../../features/stash/stash_root.dart';
@@ -26,13 +30,48 @@ class _RootScaffoldState extends ConsumerState<RootScaffold> {
   final _stashCtrl = ScrollController();
   final _myCtrl = ScrollController();
 
+  // 앱을 떠났다 돌아오면 진행 중인 세션 시간 정산 (기획: 복귀 시 정산 UX)
+  late final AppLifecycleListener _lifecycleListener;
+  bool _isAbsenceDialogOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final absence = ref.read(sessionAbsenceProvider.notifier);
+    _lifecycleListener = AppLifecycleListener(
+      onHide: () => absence.onEvent(const AppWentToBackground()),
+      onResume: () => absence.onEvent(const AppReturnedToForeground()),
+    );
+    // 백그라운드에서 앱이 종료된 뒤 다시 켜진 경우도 확인
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => absence.onEvent(const AppReturnedToForeground()),
+    );
+  }
+
   @override
   void dispose() {
+    _lifecycleListener.dispose();
     _homeCtrl.dispose();
     _projectsCtrl.dispose();
     _stashCtrl.dispose();
     _myCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _showAbsenceDialog(Duration absence) async {
+    if (_isAbsenceDialogOpen) return;
+    _isAbsenceDialogOpen = true;
+    final include = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => SessionAbsenceDialog(absence: absence),
+    );
+    _isAbsenceDialogOpen = false;
+    if (!mounted) return;
+    // 뒤로가기로 닫으면 기본 동작(반영)을 유지
+    await ref
+        .read(sessionAbsenceProvider.notifier)
+        .onEvent(AbsenceResolved(include ?? true));
   }
 
   void _onTap(int i) {
@@ -77,6 +116,13 @@ Future<void> _handleBack(bool didPop, Object? result) async {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<SessionAbsenceState>(sessionAbsenceProvider, (previous, next) {
+      final absence = next.pendingAbsence;
+      if (absence != null && previous?.pendingAbsence == null) {
+        _showAbsenceDialog(absence);
+      }
+    });
+
     return PopScope(
       canPop: false, // 우리가 직접 처리
       onPopInvokedWithResult: _handleBack,
