@@ -359,12 +359,107 @@ class _MemoActionSheet extends StatelessWidget {
                 textColor: const Color(0xFFD4183D),
                 iconColor: const Color(0xFFD4183D),
                 showBorder: true,
-                onTap: () {
-                  appDb.deletePartNote(note.id);
-                  Navigator.pop(context);
+                onTap: () async {
+                  // 기획: 메모 삭제는 사용자 확인 후 제거
+                  final confirmed = await _confirmDelete(context);
+                  if (confirmed != true) return;
+                  await appDb.deletePartNote(note.id);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
               const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 메모 삭제 확인 (파트 삭제 확인 다이얼로그와 같은 형태)
+  Future<bool?> _confirmDelete(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.deleteMemoTitle,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                  letterSpacing: -0.44,
+                  height: 1.55,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.deleteMemoConfirm,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.onSurfaceVariant,
+                  letterSpacing: -0.15,
+                  height: 1.43,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () => Navigator.pop(dialogContext, true),
+                child: Container(
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4183D),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.delete,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => Navigator.pop(dialogContext, false),
+                child: Container(
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: colorScheme.outline,
+                      width: 0.694,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.cancel,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: colorScheme.onSurface,
+                      letterSpacing: -0.15,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
