@@ -702,5 +702,11 @@
   "deleteMemoTitle": "메모 삭제",
   "deleteMemoConfirm": "이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
   "duplicateTagName": "이미 존재하는 태그 이름입니다.",
+  "searchStashHint": "실 이름, 브랜드, 색상 검색",
+  "allYarnWeights": "모든 굵기",
+  "sortOrder": "정렬",
+  "sortNewest": "최신 등록순",
+  "sortByName": "이름순",
+  "sortByBrand": "브랜드순",
   "sessionPausedByPartChange": "이전 파트에서 진행 중이던 세션을 일시정지했습니다."
 }
