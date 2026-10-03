@@ -2101,6 +2101,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateTagName => 'This tag name already exists.';
 
   @override
+  String get searchStashHint => 'Search name, brand, colorway';
+
+  @override
+  String get allYarnWeights => 'All weights';
+
+  @override
+  String get sortOrder => 'Sort';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortByName => 'Name';
+
+  @override
+  String get sortByBrand => 'Brand';
+
+  @override
   String get sessionPausedByPartChange =>
       'The session running in the previous part was paused.';
 }

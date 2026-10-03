@@ -2034,5 +2034,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get duplicateTagName => '既に存在するタグ名です。';
 
   @override
+  String get searchStashHint => '名前・ブランド・カラーで検索';
+
+  @override
+  String get allYarnWeights => 'すべての太さ';
+
+  @override
+  String get sortOrder => '並び替え';
+
+  @override
+  String get sortNewest => '登録が新しい順';
+
+  @override
+  String get sortByName => '名前順';
+
+  @override
+  String get sortByBrand => 'ブランド順';
+
+  @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
 }

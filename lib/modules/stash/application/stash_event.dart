@@ -31,8 +31,25 @@ class StashTagsUpdated extends StashEvent {
   const StashTagsUpdated(this.tags);
 }
 
+/// 굵기 필터 (null이면 전체)
+class FilterYarnWeight extends StashEvent {
+  final String? yarnWeight;
+  const FilterYarnWeight(this.yarnWeight);
+}
+
+/// 정렬 기준 변경
+class ChangeSortOrder extends StashEvent {
+  final StashSortOrder sortOrder;
+  const ChangeSortOrder(this.sortOrder);
+}
+
 class ClearFilters extends StashEvent {
   const ClearFilters();
+}
+
+/// 태그 선택만 해제 ("전체" 칩, 검색어·굵기 필터는 유지)
+class ClearTagFilters extends StashEvent {
+  const ClearTagFilters();
 }
 
 class ChangeViewMode extends StashEvent {

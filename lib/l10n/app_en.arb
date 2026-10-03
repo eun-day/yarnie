@@ -685,5 +685,11 @@
   "deleteMemoTitle": "Delete Note",
   "deleteMemoConfirm": "Delete this note?\nThis cannot be undone.",
   "duplicateTagName": "This tag name already exists.",
+  "searchStashHint": "Search name, brand, colorway",
+  "allYarnWeights": "All weights",
+  "sortOrder": "Sort",
+  "sortNewest": "Newest",
+  "sortByName": "Name",
+  "sortByBrand": "Brand",
   "sessionPausedByPartChange": "The session running in the previous part was paused."
 }
