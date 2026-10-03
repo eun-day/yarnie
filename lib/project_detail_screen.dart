@@ -928,16 +928,27 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     );
   }
 
+  // 파트가 바뀌면 key로 State를 새로 만든다. State를 재사용하면 이전 파트의 세션 스냅샷이나
+  // 메인 카운터 값(_previousValue)이 남아 엉뚱한 세션을 조작하거나 목표 달성 다이얼로그가 다시 뜬다.
   Widget _buildSessionPanel() {
-    return SessionPanelWidget(partId: _selectedPartId!);
+    return SessionPanelWidget(
+      key: ValueKey('session_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 
   Widget _buildMainCounter() {
-    return MainCounterWidget(partId: _selectedPartId!);
+    return MainCounterWidget(
+      key: ValueKey('main_counter_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 
   Widget _buildBuddyCounters() {
-    return BuddyCounterListWidget(partId: _selectedPartId!);
+    return BuddyCounterListWidget(
+      key: ValueKey('buddy_counters_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 }
 
