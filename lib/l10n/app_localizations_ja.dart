@@ -2025,6 +2025,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionAbsenceExclude => '含めない';
 
   @override
+  String get pauseSession => '一時停止';
+
+  @override
   String get deleteMemoTitle => 'メモを削除';
 
   @override
