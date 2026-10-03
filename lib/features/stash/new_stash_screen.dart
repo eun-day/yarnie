@@ -6,6 +6,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/model/tag_color_preset.dart';
 import '../../widgets/stash_tag_selection_sheet.dart';
 import 'package:yarnie/modules/stash/stash_api.dart';
@@ -840,7 +841,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -964,7 +965,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
                     child: Container(
                       height: 36,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F3F5),
+                        color: context.inputFieldBg,
                         borderRadius: BorderRadius.circular(8),
                         border: isFocused 
                             ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) 
@@ -1127,14 +1128,14 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F5),
+        color: context.inputFieldBg,
         borderRadius: BorderRadius.circular(6),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: current,
-          style: const TextStyle(fontSize: 12, color: Colors.black),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
           isDense: true,
           onChanged: (val) {
             if (val != null) onChanged(val);

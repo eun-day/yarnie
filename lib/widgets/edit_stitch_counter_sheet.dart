@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
@@ -252,7 +253,7 @@ class _EditStitchCounterSheetState extends ConsumerState<EditStitchCounterSheet>
           height: 36,
           padding: EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(

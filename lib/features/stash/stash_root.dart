@@ -378,7 +378,7 @@ class _ViewModeIconButton extends StatelessWidget {
       child: IconButton(
         icon: Icon(icon),
         iconSize: 20,
-        color: Colors.black,
+        color: Theme.of(context).colorScheme.onSurface, // 다크모드 (프로젝트 탭과 동일)
         onPressed: onPressed,
         tooltip: tooltip,
         style: const ButtonStyle(
