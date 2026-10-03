@@ -36,19 +36,24 @@ class PremiumUIHelper {
   }
 
   static void showUpsellSnackbar(BuildContext context) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
+    // 바텀시트·메뉴에서 호출한 뒤 그 화면이 닫혀도 버튼이 동작하도록 지금 찾아 둔다
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [
             Expanded(
-              child: Text(AppLocalizations.of(context)!.upsellSnackbarMessage),
+              child: Text(l10n.upsellSnackbarMessage),
             ),
             const SizedBox(width: 8),
             TextButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                Navigator.of(context).push(
+                messenger.hideCurrentSnackBar();
+                navigator.push(
                   MaterialPageRoute(builder: (_) => const YarniePremiumScreen()),
                 );
               },
@@ -56,7 +61,7 @@ class PremiumUIHelper {
                 foregroundColor: const Color(0xFFA8C5B0),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
-              child: Text(AppLocalizations.of(context)!.upsellSnackbarAction),
+              child: Text(l10n.upsellSnackbarAction),
             ),
           ],
         ),
