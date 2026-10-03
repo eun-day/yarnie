@@ -2078,6 +2078,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addYarn => 'Add Yarn';
 
   @override
+  String get sessionAbsenceTitle => 'Welcome back';
+
+  @override
+  String sessionAbsenceMessage(int minutes) {
+    return '$minutes min passed since you left the app. Add this time to the running session?\nIf not, the session is paused at the moment you left.';
+  }
+
+  @override
+  String get sessionAbsenceInclude => 'Add time';
+
+  @override
+  String get sessionAbsenceExclude => 'Don\'t add';
+
+  @override
   String get sessionPausedByPartChange =>
       'The session running in the previous part was paused.';
 }

@@ -2016,5 +2016,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addYarn => '실 추가';
 
   @override
+  String get sessionAbsenceTitle => '다시 오셨네요';
+
+  @override
+  String sessionAbsenceMessage(int minutes) {
+    return '앱을 떠난 뒤 $minutes분이 지났어요. 이 시간을 진행 중인 세션에 반영할까요?\n반영하지 않으면 앱을 떠난 시점에 세션을 일시정지합니다.';
+  }
+
+  @override
+  String get sessionAbsenceInclude => '반영';
+
+  @override
+  String get sessionAbsenceExclude => '반영 안 함';
+
+  @override
   String get sessionPausedByPartChange => '이전 파트에서 진행 중이던 세션을 일시정지했습니다.';
 }
