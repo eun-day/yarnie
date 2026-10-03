@@ -428,7 +428,9 @@ class AppDb extends _$AppDb {
         onCreate: (Migrator m) async {
           await m.createAll();
         },
-        onUpgrade: (Migrator m, int from, int to) async {
+        // Drift는 onUpgrade를 트랜잭션으로 감싸지 않는다. 도중에 중단되면 일부만 반영된 채
+        // 다음 실행에서 다시 돌기 때문에(자동 생성 실 중복, DROP COLUMN 이후 재실행 실패) 직접 묶는다.
+        onUpgrade: (Migrator m, int from, int to) => transaction(() async {
           if (from < 2) {
             await m.addColumn(mainCounters, mainCounters.countBy);
           }
@@ -438,41 +440,36 @@ class AppDb extends _$AppDb {
             await m.createTable(projectStashYarns);
 
             // 기존 lotNumber 데이터 이관 처리 (버전 충돌 방지 및 데이터 보존)
-            try {
-              final rows = await customSelect(
-                "SELECT id, lot_number FROM projects WHERE lot_number IS NOT NULL AND lot_number != ''",
-              ).get();
+            final rows = await customSelect(
+              "SELECT id, lot_number FROM projects WHERE lot_number IS NOT NULL AND lot_number != ''",
+            ).get();
 
-              final now = DateTime.now().toUtc();
+            final now = DateTime.now().toUtc();
 
-              for (final row in rows) {
-                final projectId = row.read<int>('id');
-                final lotNumber = row.read<String>('lot_number');
+            for (final row in rows) {
+              final projectId = row.read<int>('id');
+              final lotNumber = row.read<String>('lot_number');
 
-                // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
-                final stashYarnId = await into(stashYarns).insert(
-                  StashYarnsCompanion.insert(
-                    yarnName: '기존 프로젝트 실 (자동 생성)',
-                    brandName: const Value('이전 로트 번호 실'),
-                    dyeLot: Value(lotNumber),
-                    skeins: const Value(0.0),
-                    lengthUnit: const Value('yards'),
-                    weightUnit: const Value('grams'),
-                    createdAt: Value(now),
-                  ),
-                );
+              // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
+              final stashYarnId = await into(stashYarns).insert(
+                StashYarnsCompanion.insert(
+                  yarnName: '기존 프로젝트 실 (자동 생성)',
+                  brandName: const Value('이전 로트 번호 실'),
+                  dyeLot: Value(lotNumber),
+                  skeins: const Value(0.0),
+                  lengthUnit: const Value('yards'),
+                  weightUnit: const Value('grams'),
+                  createdAt: Value(now),
+                ),
+              );
 
-                // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
-                await into(projectStashYarns).insert(
-                  ProjectStashYarnsCompanion.insert(
-                    projectId: projectId,
-                    stashYarnId: stashYarnId,
-                  ),
-                );
-              }
-            } catch (e) {
-              // 마이그레이션 쿼리 실패 시 앱 크래시 방지 및 재시도 지원을 위한 예외 전달
-              rethrow;
+              // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
+              await into(projectStashYarns).insert(
+                ProjectStashYarnsCompanion.insert(
+                  projectId: projectId,
+                  stashYarnId: stashYarnId,
+                ),
+              );
             }
 
             // 더 이상 사용하지 않는 lot_number 컬럼 제거
@@ -489,7 +486,7 @@ class AppDb extends _$AppDb {
               'CREATE UNIQUE INDEX IF NOT EXISTS stash_tags_name ON stash_tags (name)',
             );
           }
-        },
+        }),
       );
 
   /// 이름이 같은 보관함 태그를 가장 먼저 만든 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
