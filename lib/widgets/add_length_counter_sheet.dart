@@ -62,7 +62,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
     final startRow = int.tryParse(_startRowController.text);
     final rows = _estimatedRows;
 
-    return _labelController.text.isNotEmpty &&
+    return _labelController.text.trim().isNotEmpty &&
         startRow != null &&
         startRow > 0 &&
         rows != null &&

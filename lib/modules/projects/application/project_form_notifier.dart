@@ -183,6 +183,10 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
 
     state = state.copyWith(isSaving: true, error: null);
 
+    // 이름은 앞뒤 공백을 빼고, 비운 메모는 null로 저장 (빈 문자열이면 "메모 없음" 대신 빈칸이 보임)
+    final name = state.name.trim();
+    final memo = (state.memo?.trim().isEmpty ?? true) ? null : state.memo;
+
     try {
       // 새로 고른 이미지만 영구 저장소로 복사
       // (교체된 기존 이미지는 DB 저장이 성공한 뒤 ProjectsNotifier가 정리)
@@ -194,11 +198,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         await projectsNotifier.onEvent(
           UpdateProject(
             projectId: state.initialProjectId!,
-            name: state.name,
+            name: name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
             stashYarnIds: state.stashYarnIds,
-            memo: state.memo,
+            memo: memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
             imagePath: persistedImagePath,
@@ -209,11 +213,11 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
         // 새 프로젝트 생성
         await projectsNotifier.onEvent(
           CreateProject(
-            name: state.name,
+            name: name,
             needleType: state.needleType?.toString().split('.').last,
             needleSize: state.needleSize,
             stashYarnIds: state.stashYarnIds,
-            memo: state.memo,
+            memo: memo,
             gaugeStitches: state.gaugeStitches,
             gaugeRows: state.gaugeRows,
             imagePath: persistedImagePath,
