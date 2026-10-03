@@ -66,6 +66,7 @@ class TagsNotifier extends Notifier<TagsState> {
       final tags = await appDb.getAllTags();
       onEvent(TagsUpdated(tags));
     } catch (e) {
+      state = state.copyWith(isLoading: false); // 실패 후에도 다시 불러올 수 있게
       _emit(ShowLocalizedTagErrorMessage((l10n) => l10n.loadTagsFailed(e.toString())));
     }
   }
