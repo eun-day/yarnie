@@ -8,6 +8,8 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/theme/app_theme.dart';
+import 'package:yarnie/core/premium/premium_policy.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 
 /// Part 관리 시트
 /// - Part 리스트를 보여주고 드래그로 순서 변경
@@ -134,26 +136,42 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // New Part Button (+)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isAdding = true;
-                          _renamingPartId = null;
-                        });
+                    // New Part Button (+) — 탭 바의 "새 파트" 버튼과 같은 무료 한도 적용
+                    Builder(
+                      builder: (context) {
+                        final isLocked = !PremiumPolicy.canCreatePart(
+                          state.parts.length,
+                          ref.watch(premiumProvider),
+                        );
+                        return GestureDetector(
+                          onTap: () {
+                            if (isLocked) {
+                              // 시트 위에서는 스낵바가 가려지므로 닫고 안내
+                              Navigator.pop(context);
+                              PremiumUIHelper.showUpsellSnackbar(context);
+                              return;
+                            }
+                            setState(() {
+                              _isAdding = true;
+                              _renamingPartId = null;
+                            });
+                          },
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              isLocked ? Icons.lock : Icons.add,
+                              size: 20,
+                              color: isLocked
+                                  ? Theme.of(context).colorScheme.outline
+                                  : Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        );
                       },
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
                     ),
                   ],
                 ),
