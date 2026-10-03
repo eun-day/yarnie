@@ -3861,6 +3861,30 @@ abstract class AppLocalizations {
   /// **'브랜드순'**
   String get sortByBrand;
 
+  /// No description provided for @premiumProductUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'**
+  String get premiumProductUnavailable;
+
+  /// No description provided for @premiumPaymentPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 승인을 기다리고 있습니다. 승인되면 프리미엄이 자동으로 적용됩니다.'**
+  String get premiumPaymentPending;
+
+  /// No description provided for @premiumAlreadyPurchased.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 구매한 상품입니다. \'구매 복원\'을 눌러 프리미엄을 다시 적용해주세요.'**
+  String get premiumAlreadyPurchased;
+
+  /// No description provided for @premiumRestoreFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매 복원에 실패했습니다. 다시 시도해주세요.'**
+  String get premiumRestoreFailed;
+
   /// No description provided for @sessionPausedByPartChange.
   ///
   /// In ko, this message translates to:

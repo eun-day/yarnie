@@ -2052,5 +2052,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sortByBrand => 'ブランド順';
 
   @override
+  String get premiumProductUnavailable =>
+      '商品情報を読み込めませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get premiumPaymentPending => '決済の承認待ちです。承認されるとプレミアムが自動的に適用されます。';
+
+  @override
+  String get premiumAlreadyPurchased => 'すでに購入済みです。「購入情報の復元」でプレミアムを再適用してください。';
+
+  @override
+  String get premiumRestoreFailed => '購入情報の復元に失敗しました。もう一度お試しください。';
+
+  @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
 }
