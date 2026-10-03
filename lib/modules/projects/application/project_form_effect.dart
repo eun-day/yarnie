@@ -1,3 +1,5 @@
+import '../../../l10n/app_localizations.dart';
+
 sealed class ProjectFormEffect {
   const ProjectFormEffect();
 }
@@ -20,7 +22,7 @@ class ShowProjectFormErrorMessage extends ProjectFormEffect {
 }
 
 class ShowLocalizedProjectFormErrorMessage extends ProjectFormEffect {
-  final String Function(dynamic l10n) messageBuilder;
+  final String Function(AppLocalizations l10n) messageBuilder;
   const ShowLocalizedProjectFormErrorMessage(this.messageBuilder);
 }
 
