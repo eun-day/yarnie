@@ -1429,6 +1429,24 @@ class AppDb extends _$AppDb {
     }
   }
 
+  /// MainCounter를 [delta]만큼 증감 (1단 미만으로는 내려가지 않음)
+  ///
+  /// 화면에 그려진 값으로 새 값을 계산하면 연타 시 두 번째 탭이 같은 값을 써서 한 번이 사라진다.
+  /// DB에 있는 현재 값에 더해 탭 수만큼 정확히 반영한다.
+  Future<void> incrementMainCounter({required int partId, required int delta}) {
+    return customUpdate(
+      'UPDATE main_counters SET current_value = MAX(1, current_value + ?1), '
+      'updated_at = ?2 WHERE part_id = ?3',
+      variables: [
+        Variable.withInt(delta),
+        Variable.withDateTime(DateTime.now().toUtc()),
+        Variable.withInt(partId),
+      ],
+      updates: {mainCounters},
+      updateKind: UpdateKind.update,
+    );
+  }
+
   /// MainCounter 목표 단수 업데이트
   Future<void> updateMainCounterTarget({
     required int partId,
@@ -1551,6 +1569,21 @@ class AppDb extends _$AppDb {
         name: name != null ? Value(name) : const Value.absent(),
         updatedAt: Value(DateTime.now().toUtc()),
       ),
+    );
+  }
+
+  /// StitchCounter를 [delta]만큼 증감 (0 미만으로는 내려가지 않음, DB 값 기준이라 연타해도 유실 없음)
+  Future<void> incrementStitchCounter({required int counterId, required int delta}) {
+    return customUpdate(
+      'UPDATE stitch_counters SET current_value = MAX(0, current_value + ?1), '
+      'updated_at = ?2 WHERE id = ?3',
+      variables: [
+        Variable.withInt(delta),
+        Variable.withDateTime(DateTime.now().toUtc()),
+        Variable.withInt(counterId),
+      ],
+      updates: {stitchCounters},
+      updateKind: UpdateKind.update,
     );
   }
 
