@@ -37,6 +37,7 @@ import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/providers/settings_provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:yarnie/common/haptic_helper.dart';
 import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
@@ -61,8 +62,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   StreamSubscription<MainCounter?>? _mainCounterSub;
   int? _prevMainValue;
 
+  // 화면 꺼짐 방지(설정)는 작업 화면인 프로젝트 상세에서만 적용한다.
+  // 상세 화면이 겹쳐 열릴 수 있어(실 상세 → 다른 프로젝트) 마지막 상세 화면이 닫힐 때 해제
+  static int _openScreenCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _openScreenCount++;
+    WakelockPlus.toggle(enable: ref.read(settingsProvider).screenAwake);
+  }
+
   @override
   void dispose() {
+    if (--_openScreenCount == 0) WakelockPlus.disable();
     _mainCounterSub?.cancel();
     super.dispose();
   }
