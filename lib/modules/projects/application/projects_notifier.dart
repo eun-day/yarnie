@@ -208,44 +208,47 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     }
   }
 
-  /// 프로젝트 생성
+  /// 프로젝트 생성 (프로젝트와 기본 파트를 한 트랜잭션으로 저장)
   Future<void> _createProject(CreateProject event) async {
     try {
-      final projectId = await appDb.createProject(
-        name: event.name,
-        needleType: event.needleType,
-        needleSize: event.needleSize,
-        stashYarnIds: event.stashYarnIds,
-        memo: event.memo,
-        gaugeStitches: event.gaugeStitches,
-        gaugeRows: event.gaugeRows,
-      );
-
-      // 이미지 설정
-      if (event.imagePath != null) {
-        await appDb.updateProjectImage(
-          projectId: projectId,
-          imagePath: event.imagePath,
+      final projectId = await appDb.transaction(() async {
+        final projectId = await appDb.createProject(
+          name: event.name,
+          needleType: event.needleType,
+          needleSize: event.needleSize,
+          stashYarnIds: event.stashYarnIds,
+          memo: event.memo,
+          gaugeStitches: event.gaugeStitches,
+          gaugeRows: event.gaugeRows,
         );
-      }
 
-      // 태그 지정
-      if (event.tagIds.isNotEmpty) {
-        await appDb.updateProjectTags(
+        // 이미지 설정
+        if (event.imagePath != null) {
+          await appDb.updateProjectImage(
+            projectId: projectId,
+            imagePath: event.imagePath,
+          );
+        }
+
+        // 태그 지정
+        if (event.tagIds.isNotEmpty) {
+          await appDb.updateProjectTags(
+            projectId: projectId,
+            tagIds: event.tagIds,
+          );
+        }
+
+        // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
+        final partId = await appDb.createPart(
           projectId: projectId,
-          tagIds: event.tagIds,
+          name: 'Part 1',
         );
-      }
-
-      // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
-      final partId = await appDb.createPart(
-        projectId: projectId,
-        name: 'Part 1',
-      );
-      await appDb.updateProjectCurrentPart(
-        projectId: projectId,
-        partId: partId,
-      );
+        await appDb.updateProjectCurrentPart(
+          projectId: projectId,
+          partId: partId,
+        );
+        return projectId;
+      });
 
       _emit(ProjectCreated(projectId));
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCreated));
@@ -267,35 +270,37 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     }
 
     try {
-      // ProjectsCompanion으로 업데이트
-      await appDb.updateProject(
-        ProjectsCompanion(
-          id: Value(event.projectId),
-          name: Value(event.name),
-          needleType: Value(event.needleType),
-          needleSize: Value(event.needleSize),
-          memo: Value(event.memo),
-          gaugeStitches: Value(event.gaugeStitches),
-          gaugeRows: Value(event.gaugeRows),
-        ),
-      );
+      await appDb.transaction(() async {
+        // ProjectsCompanion으로 업데이트
+        await appDb.updateProject(
+          ProjectsCompanion(
+            id: Value(event.projectId),
+            name: Value(event.name),
+            needleType: Value(event.needleType),
+            needleSize: Value(event.needleSize),
+            memo: Value(event.memo),
+            gaugeStitches: Value(event.gaugeStitches),
+            gaugeRows: Value(event.gaugeRows),
+          ),
+        );
 
-      // 실 연동 매핑 업데이트
-      if (event.stashYarnIds != null) {
-        await appDb.updateProjectStashYarns(event.projectId, event.stashYarnIds!);
-      }
+        // 실 연동 매핑 업데이트
+        if (event.stashYarnIds != null) {
+          await appDb.updateProjectStashYarns(event.projectId, event.stashYarnIds!);
+        }
 
-      // 이미지 업데이트
-      await appDb.updateProjectImage(
-        projectId: event.projectId,
-        imagePath: event.imagePath,
-      );
+        // 이미지 업데이트
+        await appDb.updateProjectImage(
+          projectId: event.projectId,
+          imagePath: event.imagePath,
+        );
 
-      // 태그 업데이트
-      await appDb.updateProjectTags(
-        projectId: event.projectId,
-        tagIds: event.tagIds,
-      );
+        // 태그 업데이트
+        await appDb.updateProjectTags(
+          projectId: event.projectId,
+          tagIds: event.tagIds,
+        );
+      });
     } catch (e) {
       // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
       await AppImageUtils.deleteImageIfUnused(event.imagePath, keep: project.imagePath);
