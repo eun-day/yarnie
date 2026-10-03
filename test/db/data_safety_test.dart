@@ -82,5 +82,25 @@ void main() {
       await db.permanentlyDeleteStashYarn(yarnId);
       expect(await db.isImagePathReferenced('project_images/1.jpg'), isFalse);
     });
+
+    test('30일 정리는 지운 행의 이미지 경로만 돌려준다', () async {
+      final oldId = await createTestProject(db, name: 'old');
+      final recentId = await createTestProject(db, name: 'recent');
+      await db.updateProjectImage(projectId: oldId, imagePath: 'project_images/old.jpg');
+      await db.updateProjectImage(projectId: recentId, imagePath: 'project_images/recent.jpg');
+      final now = DateTime.now().toUtc();
+      await db.updateProject(ProjectsCompanion(
+        id: Value(oldId),
+        deletedAt: Value(now.subtract(const Duration(days: 31))),
+      ));
+      await db.updateProject(ProjectsCompanion(
+        id: Value(recentId),
+        deletedAt: Value(now.subtract(const Duration(days: 1))),
+      ));
+
+      expect(await db.cleanupDeletedProjects(), ['project_images/old.jpg']);
+      expect(await db.isImagePathReferenced('project_images/old.jpg'), isFalse);
+      expect(await db.isImagePathReferenced('project_images/recent.jpg'), isTrue);
+    });
   });
 }
