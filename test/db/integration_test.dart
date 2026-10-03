@@ -31,7 +31,7 @@ void main() {
       // MainCounter 자동 생성 확인
       final mainCounter = await db.getMainCounter(partId);
       expect(mainCounter, isNotNull);
-      expect(mainCounter!.currentValue, 0);
+      expect(mainCounter!.currentValue, 1); // 메인 카운터는 1단부터 시작
 
       // 3. StitchCounter 추가
       final stitchCounterId = await db.createStitchCounter(

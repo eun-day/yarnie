@@ -1307,6 +1307,7 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         );
 
       case 'repeat':
+        if (runs.isEmpty) return Text(AppLocalizations.of(context)!.noCounterData);
         final rowsPerRepeat = spec['rowsPerRepeat'] as int? ?? 4;
         final startRow = spec['startRow'] as int? ?? 1;
 

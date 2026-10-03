@@ -235,30 +235,27 @@ void main() {
           name: 'Test Part',
         );
 
-        // 첫 번째 세션
-        final sessionId1 = await db.createSession(
+        // Part당 세션은 하나: 일시정지 → 재시작 → 일시정지로 세그먼트 2개를 만든다
+        // (세션을 지우면 세그먼트도 cascade 삭제된다)
+        final sessionId = await db.createSession(
           partId: partId,
           currentMainValue: 0,
         );
-        var segment = await db.getCurrentSegment(sessionId1);
+        var segment = await db.getCurrentSegment(sessionId);
         await db.pausePartSession(
-          sessionId: sessionId1,
+          sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 5,
           segmentStartedAt: segment.startedAt,
         );
-
-        // 두 번째 세션 (첫 번째 세션 삭제 후)
-        await (db.delete(
-          db.sessions,
-        )..where((t) => t.id.equals(sessionId1))).go();
-        final sessionId2 = await db.createSession(
+        await db.resumePartSession(
+          sessionId: sessionId,
           partId: partId,
           currentMainValue: 5,
         );
-        segment = await db.getCurrentSegment(sessionId2);
+        segment = await db.getCurrentSegment(sessionId);
         await db.pausePartSession(
-          sessionId: sessionId2,
+          sessionId: sessionId,
           currentSegmentId: segment!.id,
           currentMainValue: 10,
           segmentStartedAt: segment.startedAt,
@@ -359,8 +356,17 @@ void main() {
           currentMainValue: 0,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // DB는 초 단위로 저장하므로 잠깐 기다리는 대신 시작 시각을 과거로 당긴다
+        Future<void> backdateCurrentSegment(Duration by) async {
+          final current = await db.getCurrentSegment(sessionId);
+          await (db.update(db.sessionSegments)
+                ..where((t) => t.id.equals(current!.id)))
+              .write(SessionSegmentsCompanion(
+            startedAt: Value(DateTime.now().subtract(by)),
+          ));
+        }
 
+        await backdateCurrentSegment(const Duration(seconds: 30));
         var segment = await db.getCurrentSegment(sessionId);
         await db.pausePartSession(
           sessionId: sessionId,
@@ -378,7 +384,7 @@ void main() {
           partId: partId,
           currentMainValue: 5,
         );
-        await Future.delayed(Duration(milliseconds: 100));
+        await backdateCurrentSegment(const Duration(seconds: 30));
 
         segment = await db.getCurrentSegment(sessionId);
         await db.pausePartSession(
@@ -439,7 +445,7 @@ void main() {
       });
     });
 
-    group('진행 중인 세션 일시정지 (파트 전환·복귀 정산)', () {
+    group('진행 중인 세션 일시정지 (파트 전환·휴지통·복귀 정산)', () {
       late int projectId;
       late int partId;
       late int sessionId;
@@ -508,6 +514,12 @@ void main() {
         );
         expect(daily[yesterdayMidnight], 1800);
         expect(daily[todayMidnight], 1200);
+      });
+
+      test('프로젝트를 휴지통으로 보내면 진행 중인 세션이 멈춘다', () async {
+        await db.softDeleteProject(projectId);
+
+        expect((await db.getSession(partId))!.status, SessionStatus2.paused);
       });
     });
   });

@@ -36,7 +36,7 @@ void main() {
         final mainCounter = await db.getMainCounter(partId);
         expect(mainCounter, isNotNull);
         expect(mainCounter!.partId, partId);
-        expect(mainCounter.currentValue, 0);
+        expect(mainCounter.currentValue, 1); // 메인 카운터는 1단부터 시작
       });
 
       test('Part 생성 시 orderIndex가 자동으로 설정된다', () async {

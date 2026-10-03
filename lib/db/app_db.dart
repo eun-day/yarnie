@@ -811,7 +811,7 @@ class AppDb extends _$AppDb {
           );
         }
 
-        // 7. PartNotes 복사
+        // 7. PartNotes 복사 (작성·수정 일시도 원본 그대로)
         final originalNotes = await (select(partNotes)..where((t) => t.partId.equals(originalPart.id))).get();
         for (final note in originalNotes) {
           await into(partNotes).insert(
@@ -819,6 +819,8 @@ class AppDb extends _$AppDb {
               partId: newPartId,
               content: note.content,
               isPinned: Value(note.isPinned),
+              createdAt: Value(note.createdAt),
+              updatedAt: Value(note.updatedAt),
             ),
           );
         }
@@ -893,11 +895,16 @@ class AppDb extends _$AppDb {
   }
 
   /// 프로젝트 휴지통 이동 (소프트 딜리트)
+  /// 휴지통에 있는 동안 시간이 쌓이지 않도록 진행 중인 세션은 일시정지한다.
   Future<void> softDeleteProject(int projectId) async {
-    final now = DateTime.now().toUtc();
-    await (update(projects)..where((t) => t.id.equals(projectId))).write(
-      ProjectsCompanion(deletedAt: Value(now)),
-    );
+    await transaction(() async {
+      for (final part in await getProjectParts(projectId)) {
+        await pauseRunningSession(part.id);
+      }
+      await (update(projects)..where((t) => t.id.equals(projectId))).write(
+        ProjectsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+      );
+    });
   }
 
   /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
@@ -2044,7 +2051,7 @@ class AppDb extends _$AppDb {
 
   /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
   ///
-  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)과
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지), 프로젝트 휴지통 이동,
   /// 앱을 떠난 시간을 반영하지 않기로 한 경우에 사용한다.
   /// [at]: 세그먼트를 끝낼 시각 (기본값: 지금)
   /// 반환값: 진행 중이던 세션을 일시정지했으면 true
@@ -2595,14 +2602,19 @@ class AppDb extends _$AppDb {
   /// [tagId]: Tag ID
   /// [name]: 태그 이름 (선택)
   /// [color]: Flutter Color 값 (선택)
-  Future<void> updateTag({required int tagId, String? name, int? color}) {
-    return (update(tags)..where((t) => t.id.equals(tagId))).write(
-      TagsCompanion(
-        name: name != null ? Value(name) : const Value.absent(),
-        color: color != null ? Value(color) : const Value.absent(),
-        updatedAt: Value(DateTime.now().toUtc()),
-      ),
-    );
+  Future<void> updateTag({required int tagId, String? name, int? color}) async {
+    try {
+      await (update(tags)..where((t) => t.id.equals(tagId))).write(
+        TagsCompanion(
+          name: name != null ? Value(name) : const Value.absent(),
+          color: color != null ? Value(color) : const Value.absent(),
+          updatedAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+    } catch (e) {
+      // 이름 중복(UNIQUE) 등을 호출자가 구분할 수 있게 변환 (createTag와 동일)
+      throw _handleDatabaseException(e, 'Update Tag');
+    }
   }
 
   /// Tag 삭제 (모든 프로젝트에서 해당 태그 제거)
