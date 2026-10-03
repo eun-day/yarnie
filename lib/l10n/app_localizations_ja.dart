@@ -2034,6 +2034,30 @@ class AppLocalizationsJa extends AppLocalizations {
   String get duplicateTagName => '既に存在するタグ名です。';
 
   @override
+  String saveYarnFailed(Object error) {
+    return '毛糸の保存失敗: $error';
+  }
+
+  @override
+  String get enterYarnName => '糸の名前を入力してください';
+
+  @override
+  String get restoreYarnTitle => '毛糸を復元';
+
+  @override
+  String get restoreYarnConfirmMessage => 'この毛糸を復元しますか？';
+
+  @override
+  String get deleteYarnForeverConfirmMessage =>
+      'この毛糸を完全に削除しますか？\nこの操作は取り消せません。';
+
+  @override
+  String get yarnDeletedForever => '毛糸を完全に削除しました。';
+
+  @override
+  String get noDeletedYarns => '削除された毛糸はありません';
+
+  @override
   String get searchStashHint => '名前・ブランド・カラーで検索';
 
   @override

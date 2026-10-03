@@ -3825,6 +3825,48 @@ abstract class AppLocalizations {
   /// **'이미 존재하는 태그 이름입니다.'**
   String get duplicateTagName;
 
+  /// No description provided for @saveYarnFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 저장 실패: {error}'**
+  String saveYarnFailed(Object error);
+
+  /// No description provided for @enterYarnName.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이름을 입력해주세요'**
+  String get enterYarnName;
+
+  /// No description provided for @restoreYarnTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 복원'**
+  String get restoreYarnTitle;
+
+  /// No description provided for @restoreYarnConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 복원하시겠습니까?'**
+  String get restoreYarnConfirmMessage;
+
+  /// No description provided for @deleteYarnForeverConfirmMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 실을 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
+  String get deleteYarnForeverConfirmMessage;
+
+  /// No description provided for @yarnDeletedForever.
+  ///
+  /// In ko, this message translates to:
+  /// **'실이 완전히 삭제되었습니다.'**
+  String get yarnDeletedForever;
+
+  /// No description provided for @noDeletedYarns.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제된 실이 없습니다'**
+  String get noDeletedYarns;
+
   /// No description provided for @searchStashHint.
   ///
   /// In ko, this message translates to:

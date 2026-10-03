@@ -512,7 +512,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
                   isRequired: true,
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
-                      return l10n.enterProjectName; // "이름을 입력해주세요" 번역 재활용
+                      return l10n.enterYarnName;
                     }
                     return null;
                   },
