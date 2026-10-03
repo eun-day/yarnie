@@ -30,6 +30,11 @@ class StashYarnUpdated extends StashEffect {
   const StashYarnUpdated(this.yarnId);
 }
 
+/// 실 등록/수정 실패 (폼을 닫지 않고 저장 버튼을 다시 활성화)
+class StashYarnSaveFailed extends StashEffect {
+  const StashYarnSaveFailed();
+}
+
 class StashYarnDeleted extends StashEffect {
   const StashYarnDeleted();
 }
