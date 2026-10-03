@@ -2031,5 +2031,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteMemoConfirm => 'このメモを削除しますか？\nこの操作は取り消せません。';
 
   @override
+  String get duplicateTagName => '既に存在するタグ名です。';
+
+  @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
 }
