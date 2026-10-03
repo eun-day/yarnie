@@ -663,5 +663,6 @@
   "sessionAbsenceExclude": "含めない",
   "deleteMemoTitle": "メモを削除",
   "deleteMemoConfirm": "このメモを削除しますか？\nこの操作は取り消せません。",
+  "duplicateTagName": "既に存在するタグ名です。",
   "sessionPausedByPartChange": "前のパーツで進行中だったセッションを一時停止しました。"
 }
