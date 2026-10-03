@@ -212,11 +212,16 @@ class _StashRootState extends ConsumerState<StashRoot> {
           SnackBar(content: Text(messageBuilder(l10n))),
         );
       case StashYarnCreated(:final yarnId, :final isFromSelectionSheet):
+        // 등록 폼이 같은 effect를 받아 스스로 닫히므로, 닫힌 뒤(다음 프레임)에 상세를 연다.
+        // 바로 push하면 폼의 pop이 방금 연 상세 화면을 닫아 버린다.
         if (!isFromSelectionSheet) {
-          _openStashDetail(yarnId);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _openStashDetail(yarnId);
+          });
         }
       case StashYarnUpdated():
       case StashYarnDeleted():
+      case StashYarnSaveFailed():
         break;
       case ShowAssignStashTagsDialog(:final yarnId, :final currentTagIds):
         _showTagAssignmentSheet(context, yarnId, currentTagIds);

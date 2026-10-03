@@ -144,22 +144,32 @@ class StashNotifier extends Notifier<StashState> {
       _emit(StashYarnCreated(id, isFromSelectionSheet: isFromSelectionSheet));
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.addComplete));
     } catch (e) {
+      // 저장되지 못한 실용으로 복사해 둔 이미지 정리
+      await AppImageUtils.deleteImageIfUnused(companion.imagePath.value);
+      _emit(const StashYarnSaveFailed());
       _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString()))); // 기존 번역 키 재활용
     }
   }
 
   Future<void> _updateStashYarn(StashYarnsCompanion companion) async {
+    final id = companion.id.value;
+    final newImagePath = companion.imagePath.value;
+    String? previousImagePath;
     try {
-      final id = companion.id.value;
-      final previousImagePath = (await appDb.getStashYarn(id))?.imagePath;
+      previousImagePath = (await appDb.getStashYarn(id))?.imagePath;
       await appDb.updateStashYarn(companion);
-      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
-      await AppImageUtils.deleteImageIfUnused(previousImagePath, keep: companion.imagePath.value);
-      _emit(StashYarnUpdated(id));
-      _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.editComplete));
     } catch (e) {
+      // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
+      await AppImageUtils.deleteImageIfUnused(newImagePath, keep: previousImagePath);
+      _emit(const StashYarnSaveFailed());
       _emit(ShowStashLocalizedErrorMessage((l10n) => l10n.saveProjectFailed(e.toString())));
+      return;
     }
+
+    // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+    await AppImageUtils.deleteImageIfUnused(previousImagePath, keep: newImagePath);
+    _emit(StashYarnUpdated(id));
+    _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.editComplete));
   }
 
   Future<void> _deleteStashYarn(int id) async {

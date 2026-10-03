@@ -309,14 +309,15 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
           : const Value.absent(),
     );
 
-    if (widget.stashYarnId == null) {
-      ref.read(stashProvider.notifier).onEvent(CreateStashYarnEvent(companion, isFromSelectionSheet: widget.isFromSelectionSheet));
-    } else {
-      ref.read(stashProvider.notifier).onEvent(UpdateStashYarnEvent(companion));
-    }
-
+    // 저장 결과를 기다린다: 성공하면 효과(StashYarnCreated/Updated)를 받아 폼을 닫고,
+    // 실패하면 폼을 그대로 두어 입력이 사라지지 않게 한다 (build의 ref.listen 참고)
     FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
+    final notifier = ref.read(stashProvider.notifier);
+    if (widget.stashYarnId == null) {
+      await notifier.onEvent(CreateStashYarnEvent(companion, isFromSelectionSheet: widget.isFromSelectionSheet));
+    } else {
+      await notifier.onEvent(UpdateStashYarnEvent(companion));
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -433,6 +434,18 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    // 저장 결과에 따라 폼을 닫거나(성공) 저장 버튼을 다시 켠다(실패)
+    ref.listen(stashEffectsProvider, (_, asyncEffect) {
+      asyncEffect.whenData((effect) {
+        if (!_isSaving) return;
+        if (effect is StashYarnCreated || effect is StashYarnUpdated) {
+          Navigator.of(context).pop();
+        } else if (effect is StashYarnSaveFailed) {
+          setState(() => _isSaving = false);
+        }
+      });
+    });
 
     final Map<String, String> yarnWeightMap = {
       'Thread': l10n.weightThread,
