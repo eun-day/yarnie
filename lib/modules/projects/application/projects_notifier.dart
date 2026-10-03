@@ -250,19 +250,23 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
       _emit(ProjectCreated(projectId));
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCreated));
     } catch (e) {
+      // 저장되지 못한 프로젝트용으로 복사해 둔 이미지 정리
+      await AppImageUtils.deleteImageIfUnused(event.imagePath);
+      _emit(const ProjectSaveFailed());
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.createProjectFailed(e.toString())));
     }
   }
 
   /// 프로젝트 수정
   Future<void> _updateProject(UpdateProject event) async {
-    try {
-      final project = _projectById(event.projectId);
-      if (project == null) {
-        _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
-        return;
-      }
+    final project = _projectById(event.projectId);
+    if (project == null) {
+      _emit(const ProjectSaveFailed());
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
+      return;
+    }
 
+    try {
       // ProjectsCompanion으로 업데이트
       await appDb.updateProject(
         ProjectsCompanion(
@@ -292,14 +296,18 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         projectId: event.projectId,
         tagIds: event.tagIds,
       );
-
-      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
-      await AppImageUtils.deleteImageIfUnused(project.imagePath, keep: event.imagePath);
-      _emit(ProjectUpdated(event.projectId));
-      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
     } catch (e) {
+      // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
+      await AppImageUtils.deleteImageIfUnused(event.imagePath, keep: project.imagePath);
+      _emit(const ProjectSaveFailed());
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(e.toString())));
+      return;
     }
+
+    // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+    await AppImageUtils.deleteImageIfUnused(project.imagePath, keep: event.imagePath);
+    _emit(ProjectUpdated(event.projectId));
+    _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
   }
 
   /// 프로젝트 삭제

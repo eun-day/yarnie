@@ -30,6 +30,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           _emit(GoToProjectDetail(effect.projectId));
         } else if (effect is ProjectUpdated) {
           _emit(const CloseEditForm());
+        } else if (effect is ProjectSaveFailed) {
+          // 실패 메시지는 ProjectsNotifier가 표시하므로 저장 버튼만 다시 활성화
+          state = state.copyWith(isSaving: false);
         }
       });
     });

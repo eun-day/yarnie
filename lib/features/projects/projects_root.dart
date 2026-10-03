@@ -265,6 +265,8 @@ class _ProjectsRootState extends ConsumerState<ProjectsRoot> {
         break;
       case ProjectDeleted():
         break;
+      case ProjectSaveFailed():
+        break;
     }
   }
 

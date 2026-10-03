@@ -54,3 +54,8 @@ class ProjectUpdated extends ProjectsEffect {
 class ProjectDeleted extends ProjectsEffect {
   const ProjectDeleted();
 }
+
+/// 프로젝트 생성/수정 실패 (폼의 저장 중 상태 해제)
+class ProjectSaveFailed extends ProjectsEffect {
+  const ProjectSaveFailed();
+}
