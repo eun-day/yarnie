@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:archive/archive.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -183,5 +184,39 @@ void main() {
     if (tempBackupFile.existsSync()) {
       tempBackupFile.deleteSync();
     }
+  });
+
+  test('DB 복원에 실패하면 기존 이미지와 데이터가 그대로 남는다', () async {
+    // 기존 데이터와 이미지
+    final projImgDir = Directory(p.join(docDir.path, 'project_images'));
+    await projImgDir.create(recursive: true);
+    final existingImage = File(p.join(projImgDir.path, 'existing.jpg'));
+    await existingImage.writeAsString('existing-image');
+    await db.createProject(name: '기존 프로젝트');
+
+    // 깨진 데이터(필수 값 name 누락) + 새 이미지 + 문서 폴더 밖을 가리키는 엔트리
+    final archive = Archive()
+      ..addFile(ArchiveFile.string('data.json', jsonEncode({
+        'metadata': {'version': 2},
+        'data': {
+          'projects': [
+            {'id': 99},
+          ],
+        },
+      })))
+      ..addFile(ArchiveFile.string('project_images/new.jpg', 'new-image'))
+      ..addFile(ArchiveFile.string('project_images/../../escaped.txt', 'escaped'));
+    final backupFile = File(p.join(tempDir.path, 'broken_backup.zip'));
+    await backupFile.writeAsBytes(ZipEncoder().encode(archive));
+
+    await expectLater(backupService.importBackup(backupFile.path), throwsA(anything));
+
+    expect(await existingImage.readAsString(), 'existing-image');
+    expect(File(p.join(projImgDir.path, 'new.jpg')).existsSync(), isFalse);
+    expect(File(p.join(docDir.path, 'escaped.txt')).existsSync(), isFalse);
+    expect(File(p.join(docDir.parent.path, 'escaped.txt')).existsSync(), isFalse);
+    expect(Directory(p.join(docDir.path, '.restore_staging')).existsSync(), isFalse);
+    final projects = await db.select(db.projects).get();
+    expect(projects.map((e) => e.name), ['기존 프로젝트']);
   });
 }
