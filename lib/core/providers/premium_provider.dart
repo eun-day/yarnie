@@ -3,13 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+/// 앱 시작 시 main()에서 미리 읽어 둔 프리미엄 여부 (RevenueCat 캐시)
+final initialPremiumProvider = Provider<bool>((ref) => false);
+
 class PremiumNotifier extends Notifier<bool> {
   AppLifecycleListener? _lifecycleListener;
+
+  /// 'premium'은 RevenueCat 대시보드에서 설정한 Entitlement ID
+  static bool hasPremium(CustomerInfo customerInfo) =>
+      customerInfo.entitlements.active.containsKey('premium');
 
   @override
   bool build() {
     _init();
-    return false;
+    // 상태를 다시 확인하는 동안 프리미엄 사용자에게 광고·잠금이 잠깐 보이지 않도록 미리 읽은 값으로 시작
+    return ref.read(initialPremiumProvider);
   }
 
   Future<void> _init() async {
@@ -33,10 +41,7 @@ class PremiumNotifier extends Notifier<bool> {
   }
 
   void _updatePurchaseStatus(CustomerInfo customerInfo) {
-    // 'premium'은 RevenueCat 대시보드에서 설정한 Entitlement ID여야 합니다.
-    // 여기서는 요구사항에 따라 isPremium 상태를 관리하는 로직만 구축합니다.
-    final isPremium = customerInfo.entitlements.active.containsKey('premium');
-    state = isPremium;
+    state = hasPremium(customerInfo);
   }
 
   Future<void> refreshStatus() async {
