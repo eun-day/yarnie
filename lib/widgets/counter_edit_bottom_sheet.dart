@@ -19,7 +19,10 @@ class CounterEditBottomSheet extends StatefulWidget {
 
 class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
   late TextEditingController _controller;
-  late int _currentValue;
+  int? _currentValue;
+
+  /// 메인 카운터는 1단부터 시작하므로 1 미만(빈칸 포함)은 저장하지 않는다.
+  bool get _isValid => (_currentValue ?? 0) >= 1;
 
   @override
   void initState() {
@@ -101,7 +104,7 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                     ),
                     onChanged: () {
                       setState(() {
-                        _currentValue = int.tryParse(_controller.text) ?? 1;
+                        _currentValue = int.tryParse(_controller.text);
                       });
                     },
                   ),
@@ -156,14 +159,18 @@ class _CounterEditBottomSheetState extends State<CounterEditBottomSheet> {
                       // Save Button
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
-                            widget.onSave(_currentValue);
-                            Navigator.of(context).pop();
-                          },
+                          onTap: _isValid
+                              ? () {
+                                  widget.onSave(_currentValue!);
+                                  Navigator.of(context).pop();
+                                }
+                              : null,
                           child: Container(
                             height: 36,
                             decoration: BoxDecoration(
-                              color: context.saveBtnBg,
+                              color: _isValid
+                                  ? context.saveBtnBg
+                                  : context.saveBtnBg.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             alignment: Alignment.center,

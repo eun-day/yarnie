@@ -18,7 +18,10 @@ class TargetSettingDialog extends StatefulWidget {
 
 class _TargetSettingDialogState extends State<TargetSettingDialog> {
   late TextEditingController _controller;
-  late int _currentValue;
+  int? _currentValue;
+
+  /// 목표 단수는 1 이상이어야 한다. (0·음수는 메인 카운터 진행률 계산을 깨뜨린다)
+  bool get _isValid => (_currentValue ?? 0) >= 1;
 
   @override
   void initState() {
@@ -105,7 +108,7 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
               ),
               onChanged: () {
                 setState(() {
-                  _currentValue = int.tryParse(_controller.text) ?? 1;
+                  _currentValue = int.tryParse(_controller.text);
                 });
               },
             ),
@@ -116,14 +119,18 @@ class _TargetSettingDialogState extends State<TargetSettingDialog> {
             Column(
               children: [
                 GestureDetector(
-                  onTap: () {
-                    widget.onSave(_currentValue);
-                    Navigator.of(context).pop();
-                  },
+                  onTap: _isValid
+                      ? () {
+                          widget.onSave(_currentValue!);
+                          Navigator.of(context).pop();
+                        }
+                      : null,
                   child: Container(
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6FB96F),
+                      color: _isValid
+                          ? const Color(0xFF6FB96F)
+                          : const Color(0xFF6FB96F).withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
