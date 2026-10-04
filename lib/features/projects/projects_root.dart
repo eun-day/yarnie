@@ -438,7 +438,7 @@ class _ViewModeIconButton extends StatelessWidget {
       child: IconButton(
         icon: Icon(icon),
         iconSize: 20,
-        color: Colors.black,
+        color: Theme.of(context).colorScheme.onSurface,
         onPressed: onPressed,
         tooltip: tooltip,
         style: ButtonStyle(
@@ -556,7 +556,8 @@ class _LargeProjectCard extends StatelessWidget {
                             fontFamily: 'Inter',
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.surface,
+                            // 이미지·그라데이션 위 글자라 테마와 무관하게 흰색
+                            color: Colors.white,
                             letterSpacing: -0.3125,
                           ),
                           maxLines: 1,
@@ -568,9 +569,7 @@ class _LargeProjectCard extends StatelessWidget {
                             Icon(
                               Icons.calendar_today,
                               size: 14,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surface.withOpacity(0.8),
+                              color: Colors.white.withOpacity(0.8),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -581,9 +580,7 @@ class _LargeProjectCard extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surface.withOpacity(0.8),
+                                color: Colors.white.withOpacity(0.8),
                                 letterSpacing: -0.15,
                               ),
                             ),
@@ -763,7 +760,8 @@ class _SmallProjectCard extends StatelessWidget {
                           fontFamily: 'Inter',
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
-                          color: Theme.of(context).colorScheme.surface,
+                          // 반투명 검정 바 위 글자라 테마와 무관하게 흰색
+                          color: Colors.white,
                           height: 1.33,
                         ),
                         maxLines: 1,
@@ -773,7 +771,7 @@ class _SmallProjectCard extends StatelessWidget {
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 12,
-                      color: Theme.of(context).colorScheme.surface,
+                      color: Colors.white,
                     ),
                   ],
                 ),

@@ -14,6 +14,9 @@ class BackupService {
 
   BackupService(this._db);
 
+  /// 백업에 포함하는 이미지 폴더 (Documents 하위)
+  static const _imageSubDirs = ['project_images', 'stash_images'];
+
   /// 모든 DB 데이터 + 앱 이미지를 ZIP으로 묶어 내보냅니다.
   /// 반환: 임시 디렉토리에 생성된 .zip 파일 경로
   Future<String> exportBackup() async {
@@ -42,9 +45,8 @@ class BackupService {
 
     // 2) 앱 이미지 파일 수집 및 추가
     final docDir = await getApplicationDocumentsDirectory();
-    final imageSubDirs = ['project_images', 'stash_images'];
 
-    for (final subDir in imageSubDirs) {
+    for (final subDir in _imageSubDirs) {
       final imageDir = Directory(p.join(docDir.path, subDir));
       if (await imageDir.exists()) {
         final imageFiles = imageDir
@@ -127,34 +129,51 @@ class BackupService {
 
     final data = backupData['data'] as Map<String, dynamic>;
 
-    // 2) 기존 이미지 디렉토리 정리
+    // 2) 이미지는 임시 폴더에 먼저 풀어 둔다.
+    //    DB 복원이 실패하면 기존 DB와 기존 이미지가 그대로 남아야 하기 때문이다.
     final docDir = await getApplicationDocumentsDirectory();
-    for (final subDir in ['project_images', 'stash_images']) {
-      final imageDir = Directory(p.join(docDir.path, subDir));
-      if (await imageDir.exists()) {
-        await imageDir.delete(recursive: true);
-      }
+    final stagingDir = Directory(p.join(docDir.path, '.restore_staging'));
+    if (await stagingDir.exists()) {
+      await stagingDir.delete(recursive: true);
     }
+    await stagingDir.create(recursive: true);
 
-    // 3) 아카이브에서 이미지 파일 복원
-    for (final entry in archive) {
-      if (entry.name == 'data.json') continue;
-      if (!entry.isFile) continue;
+    try {
+      for (final entry in archive) {
+        if (entry.name == 'data.json' || !entry.isFile) continue;
 
-      // project_images/ 또는 stash_images/ 로 시작하는 파일만 복원
-      if (entry.name.startsWith('project_images/') ||
-          entry.name.startsWith('stash_images/')) {
-        final destPath = p.join(docDir.path, entry.name);
+        // project_images/ 또는 stash_images/ 로 시작하는 파일만 복원
+        if (!_imageSubDirs.any((dir) => entry.name.startsWith('$dir/'))) {
+          continue;
+        }
+        // '../' 가 들어간 엔트리로 임시 폴더 밖에 쓰는 것(zip-slip)을 막는다.
+        final destPath = p.normalize(p.join(stagingDir.path, entry.name));
+        if (!p.isWithin(stagingDir.path, destPath)) continue;
+
         final destFile = File(destPath);
-
-        // 디렉토리 생성
         await destFile.parent.create(recursive: true);
         await destFile.writeAsBytes(entry.content as List<int>);
       }
-    }
 
-    // 4) DB 복원
-    await _restoreDatabase(data);
+      // 3) DB 복원 (트랜잭션: 실패 시 기존 데이터 유지)
+      await _restoreDatabase(data);
+
+      // 4) DB 복원이 성공한 뒤에만 기존 이미지 폴더를 교체
+      for (final subDir in _imageSubDirs) {
+        final imageDir = Directory(p.join(docDir.path, subDir));
+        if (await imageDir.exists()) {
+          await imageDir.delete(recursive: true);
+        }
+        final stagedDir = Directory(p.join(stagingDir.path, subDir));
+        if (await stagedDir.exists()) {
+          await stagedDir.rename(imageDir.path);
+        }
+      }
+    } finally {
+      if (await stagingDir.exists()) {
+        await stagingDir.delete(recursive: true);
+      }
+    }
   }
 
   /// DB 데이터 복원 (공통 로직)
@@ -264,10 +283,19 @@ class BackupService {
       }
 
       // StashTags
+      // v3 업그레이드 사용자의 백업에는 이름이 같은 태그가 있을 수 있다(stash_tags_name 인덱스 누락).
+      // 같은 이름은 먼저 나온 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
+      final stashTagIdRemap = <int, int>{};
+      final stashTagIdByName = <String, int>{};
       final stashTagsData = data['stashTags'] ?? data['stash_tags'];
       if (stashTagsData != null) {
         for (var e in (stashTagsData as List)) {
           final item = StashTag.fromJson(e);
+          final keepId = stashTagIdByName.putIfAbsent(item.name, () => item.id);
+          if (keepId != item.id) {
+            stashTagIdRemap[item.id] = keepId;
+            continue;
+          }
           await _db.into(_db.stashTags).insert(item);
         }
       }
@@ -276,7 +304,12 @@ class BackupService {
       final stashYarnsData = data['stashYarns'] ?? data['stash_yarns'];
       if (stashYarnsData != null) {
         for (var e in (stashYarnsData as List)) {
-          final item = StashYarn.fromJson(e);
+          var item = StashYarn.fromJson(e);
+          if (stashTagIdRemap.isNotEmpty) {
+            item = item.copyWith(
+              tagIds: Value(AppDb.remapTagIdsJson(item.tagIds, stashTagIdRemap)),
+            );
+          }
           await _db.into(_db.stashYarns).insert(item);
         }
       }

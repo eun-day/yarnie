@@ -2076,4 +2076,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addYarn => 'Add Yarn';
+
+  @override
+  String get sessionPausedByPartChange =>
+      'The session running in the previous part was paused.';
 }

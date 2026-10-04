@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:yarnie/db/di.dart';
 
 /// 앱 내 로컬 이미지 경로 관리 유틸리티
 ///
@@ -69,6 +70,22 @@ class AppImageUtils {
 
     // 상대 경로 반환
     return p.join(subDir, fileName);
+  }
+
+  /// 어떤 프로젝트·실도 더 이상 참조하지 않을 때만 이미지 파일 삭제
+  ///
+  /// 복사한 프로젝트·실은 원본과 같은 파일을 공유하므로, DB 저장이 끝난 뒤 이 메서드로 정리합니다.
+  /// [keep]과 같은 파일(교체되지 않은 이미지)이면 삭제하지 않습니다.
+  static Future<void> deleteImageIfUnused(String? imagePath, {String? keep}) async {
+    if (imagePath == null) return;
+    try {
+      if (keep != null &&
+          (await toAbsolutePath(imagePath)) == (await toAbsolutePath(keep))) {
+        return;
+      }
+      if (await appDb.isImagePathReferenced(imagePath)) return;
+      await deleteImage(imagePath);
+    } catch (_) {}
   }
 
   /// 기존 이미지 파일 삭제 (상대 경로 또는 절대 경로 모두 처리)

@@ -6,6 +6,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/model/tag_color_preset.dart';
 import '../../widgets/stash_tag_selection_sheet.dart';
 import 'package:yarnie/modules/stash/stash_api.dart';
@@ -275,25 +276,12 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
 
     setState(() => _isSaving = true);
 
-    String? oldImagePath;
-    if (widget.stashYarnId != null) {
-      final existing = await appDb.getStashYarn(widget.stashYarnId!);
-      oldImagePath = existing?.imagePath;
-    }
-
-    String? persistedImagePath;
-    if (_imagePath == null) {
-      if (oldImagePath != null) {
-        await AppImageUtils.deleteImage(oldImagePath);
-      }
-    } else if (!_imagePath!.startsWith('/')) {
-      persistedImagePath = _imagePath;
-    } else {
-      persistedImagePath = await AppImageUtils.persistImage(_imagePath!, subDir: 'stash_images');
-      if (oldImagePath != null && oldImagePath != persistedImagePath) {
-        await AppImageUtils.deleteImage(oldImagePath);
-      }
-    }
+    // 새로 고른 이미지만 영구 저장소로 복사한다.
+    // (교체·제거된 기존 이미지는 DB 저장이 성공한 뒤 StashNotifier가 정리)
+    final persistedImagePath = (_imagePath != null && _imagePath!.startsWith('/'))
+        ? await AppImageUtils.persistImage(_imagePath!, subDir: 'stash_images')
+        : _imagePath;
+    if (!mounted) return;
 
     final tagsJson = _selectedTagIds.isEmpty ? null : jsonEncode(_selectedTagIds.toList());
 
@@ -853,7 +841,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -977,7 +965,7 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
                     child: Container(
                       height: 36,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F3F5),
+                        color: context.inputFieldBg,
                         borderRadius: BorderRadius.circular(8),
                         border: isFocused 
                             ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) 
@@ -1140,14 +1128,14 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F5),
+        color: context.inputFieldBg,
         borderRadius: BorderRadius.circular(6),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: current,
-          style: const TextStyle(fontSize: 12, color: Colors.black),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
           isDense: true,
           onChanged: (val) {
             if (val != null) onChanged(val);

@@ -135,8 +135,11 @@ class StashNotifier extends Notifier<StashState> {
 
   Future<void> _updateStashYarn(StashYarnsCompanion companion) async {
     try {
-      await appDb.updateStashYarn(companion);
       final id = companion.id.value;
+      final previousImagePath = (await appDb.getStashYarn(id))?.imagePath;
+      await appDb.updateStashYarn(companion);
+      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+      await AppImageUtils.deleteImageIfUnused(previousImagePath, keep: companion.imagePath.value);
       _emit(StashYarnUpdated(id));
       _emit(ShowStashLocalizedSuccessMessage((l10n) => l10n.editComplete));
     } catch (e) {
@@ -165,23 +168,21 @@ class StashNotifier extends Notifier<StashState> {
       newSkeins = double.parse(newSkeins.toStringAsFixed(2));
 
       // 지능형 양방향 계산 로직 반영:
-      // skeins가 변경되었으므로 totalLength와 totalWeight도 비례하여 자동 계산해야 함
-      double? newTotalLength;
-      double? newTotalWeight;
-
-      if (yarn.yarnLengthPerSkein != null) {
-        newTotalLength = double.parse((newSkeins * yarn.yarnLengthPerSkein!).toStringAsFixed(2));
-      }
-      if (yarn.yarnWeightPerSkein != null) {
-        newTotalWeight = double.parse((newSkeins * yarn.yarnWeightPerSkein!).toStringAsFixed(2));
-      }
+      // skeins가 변경되었으므로 1볼당 규격이 있는 총량은 비례하여 다시 계산한다.
+      // 규격이 없으면 사용자가 직접 입력한 총량이므로 건드리지 않는다.
+      final lengthPerSkein = yarn.yarnLengthPerSkein;
+      final weightPerSkein = yarn.yarnWeightPerSkein;
 
       await appDb.updateStashYarn(
         StashYarnsCompanion(
           id: Value(yarnId),
           skeins: Value(newSkeins),
-          totalLength: Value(newTotalLength),
-          totalWeight: Value(newTotalWeight),
+          totalLength: lengthPerSkein != null
+              ? Value(double.parse((newSkeins * lengthPerSkein).toStringAsFixed(2)))
+              : const Value.absent(),
+          totalWeight: weightPerSkein != null
+              ? Value(double.parse((newSkeins * weightPerSkein).toStringAsFixed(2)))
+              : const Value.absent(),
         ),
       );
     } catch (e) {

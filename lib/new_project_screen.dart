@@ -11,6 +11,7 @@ import 'package:yarnie/widgets/tag_selection_sheet.dart';
 import 'package:yarnie/widgets/stash_yarn_selection_sheet.dart';
 import 'package:yarnie/modules/stash/stash_api.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 
 class NewProjectScreen extends ConsumerStatefulWidget {
@@ -321,7 +322,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             strokeWidth: 2,
                           ),
                         )
@@ -330,7 +331,7 @@ class _NewProjectScreenState extends ConsumerState<NewProjectScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                 ),
@@ -608,26 +609,27 @@ class _ProjectImageSection extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
   }) {
+    // 사진 위에 겹쳐 그리는 버튼이라 테마와 무관하게 흰색 계열을 쓴다
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 40,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.2), width: 0.7),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 0.7),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Theme.of(context).colorScheme.surface, size: 16),
+            Icon(icon, color: Colors.white, size: 16),
             const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.surface,
+                color: Colors.white,
                 letterSpacing: -0.15,
               ),
             ),
@@ -705,7 +707,7 @@ class _ProjectNameSectionState extends State<_ProjectNameSection> {
         Container(
           height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -885,7 +887,7 @@ class _NeedleInfoSection extends StatelessWidget {
               child: Container(
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F3F5),
+                  color: context.inputFieldBg,
                   borderRadius: BorderRadius.circular(8),
                   border: isFocused 
                       ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) 
@@ -1227,7 +1229,7 @@ class _MemoSectionState extends State<_MemoSection> {
         Container(
           constraints: const BoxConstraints(minHeight: 65),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F5),
+            color: context.inputFieldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.all(12),
@@ -1444,7 +1446,7 @@ class _GaugeSectionState extends ConsumerState<_GaugeSection> {
                     child: Container(
                       height: 36,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F3F5),
+                        color: context.inputFieldBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1493,7 +1495,7 @@ class _GaugeSectionState extends ConsumerState<_GaugeSection> {
                     child: Container(
                       height: 36,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F3F5),
+                        color: context.inputFieldBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 12),

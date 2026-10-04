@@ -421,7 +421,7 @@ class AppDb extends _$AppDb {
   AppDb.forTesting(DatabaseConnection connection) : super(connection);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -480,8 +480,68 @@ class AppDb extends _$AppDb {
               'ALTER TABLE projects DROP COLUMN lot_number',
             );
           }
+          if (from < 4) {
+            // v3 업그레이드가 createTable만 호출해 stash_tags_name UNIQUE 인덱스가 빠졌다.
+            // 그사이 생긴 같은 이름의 태그를 합친 뒤 인덱스를 만든다.
+            // (v3를 새로 설치한 기기에는 인덱스가 이미 있으므로 IF NOT EXISTS)
+            await _mergeDuplicateStashTags();
+            await customStatement(
+              'CREATE UNIQUE INDEX IF NOT EXISTS stash_tags_name ON stash_tags (name)',
+            );
+          }
         },
       );
+
+  /// 이름이 같은 보관함 태그를 가장 먼저 만든 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
+  /// 마이그레이션 중에 실행되므로 이후 스키마 변경에 영향받지 않게 SQL로 직접 다룬다.
+  Future<void> _mergeDuplicateStashTags() async {
+    final tags = await customSelect(
+      'SELECT id, name FROM stash_tags ORDER BY id',
+    ).get();
+    final keepIdByName = <String, int>{};
+    final remap = <int, int>{};
+    for (final row in tags) {
+      final id = row.read<int>('id');
+      final keepId = keepIdByName.putIfAbsent(row.read<String>('name'), () => id);
+      if (keepId != id) remap[id] = keepId;
+    }
+    if (remap.isEmpty) return;
+
+    final yarns = await customSelect(
+      'SELECT id, tag_ids FROM stash_yarns WHERE tag_ids IS NOT NULL',
+    ).get();
+    for (final row in yarns) {
+      final tagIds = row.read<String>('tag_ids');
+      final remapped = remapTagIdsJson(tagIds, remap);
+      if (remapped != tagIds) {
+        await customUpdate(
+          'UPDATE stash_yarns SET tag_ids = ?1 WHERE id = ?2',
+          variables: [Variable<String>(remapped), Variable.withInt(row.read<int>('id'))],
+          updates: {stashYarns},
+        );
+      }
+    }
+    await customUpdate(
+      'DELETE FROM stash_tags WHERE id IN (${remap.keys.join(',')})',
+      updates: {stashTags},
+      updateKind: UpdateKind.delete,
+    );
+  }
+
+  /// tagIds JSON('[1,2]')의 ID를 [remap]에 따라 바꾸고 중복을 없앤다. 결과가 비면 null.
+  /// 바꿀 ID가 없으면 원래 문자열을 그대로 돌려준다.
+  static String? remapTagIdsJson(String? json, Map<int, int> remap) {
+    if (json == null) return null;
+    final List<int> ids;
+    try {
+      ids = (jsonDecode(json) as List).cast<num>().map((e) => e.toInt()).toList();
+    } catch (_) {
+      return json;
+    }
+    if (!ids.any(remap.containsKey)) return json;
+    final remapped = {for (final id in ids) remap[id] ?? id}.toList();
+    return remapped.isEmpty ? null : jsonEncode(remapped);
+  }
 
   // ────────────────────────────────────────────────────────────────────────────
   // 에러 처리 헬퍼 메서드들
@@ -1892,30 +1952,13 @@ class AppDb extends _$AppDb {
           );
         }
 
-        final now = DateTime.now().toUtc();
-        final duration = now.difference(segmentStartedAt).inSeconds;
-
-        // 현재 Segment 종료
-        await (update(
-          sessionSegments,
-        )..where((t) => t.id.equals(currentSegmentId))).write(
-          SessionSegmentsCompanion(
-            endedAt: Value(now),
-            durationSeconds: Value(duration),
-            endCount: Value(currentMainValue),
-            reason: Value(SegmentReason.pause),
-          ),
-        );
-
-        // Session 상태 업데이트 및 totalDuration 누적
-        await (update(sessions)..where((t) => t.id.equals(sessionId))).write(
-          SessionsCompanion(
-            status: Value(SessionStatus2.paused),
-            totalDurationSeconds: Value(
-              session.totalDurationSeconds + duration,
-            ),
-            updatedAt: Value(now),
-          ),
+        await _pauseSession(
+          session,
+          segmentId: currentSegmentId,
+          segmentStartedAt: segmentStartedAt,
+          endCount: currentMainValue,
+          reason: SegmentReason.pause,
+          end: DateTime.now().toUtc(),
         );
       });
     } on DatabaseException {
@@ -1923,6 +1966,63 @@ class AppDb extends _$AppDb {
     } catch (e) {
       throw _handleDatabaseException(e, 'Pause Session');
     }
+  }
+
+  /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
+  ///
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)에 사용한다.
+  /// 반환값: 진행 중이던 세션을 일시정지했으면 true
+  Future<bool> pauseRunningSession(
+    int partId, {
+    SegmentReason reason = SegmentReason.pause,
+  }) {
+    return transaction(() async {
+      final session = await getSession(partId);
+      if (session == null || session.status != SessionStatus2.running) return false;
+
+      final segment = await getCurrentSegment(session.id);
+      final mainCounter = await getMainCounter(partId);
+      await _pauseSession(
+        session,
+        segmentId: segment?.id,
+        segmentStartedAt: segment?.startedAt,
+        endCount: mainCounter?.currentValue ?? 0,
+        reason: reason,
+        end: DateTime.now().toUtc(),
+      );
+      return true;
+    });
+  }
+
+  /// 현재 Segment를 [end]에 종료하고 세션을 일시정지 상태로 바꾼다 (트랜잭션 안에서 호출)
+  Future<void> _pauseSession(
+    Session session, {
+    required int? segmentId,
+    required DateTime? segmentStartedAt,
+    required int endCount,
+    required SegmentReason reason,
+    required DateTime end,
+  }) async {
+    var duration = 0;
+    if (segmentId != null && segmentStartedAt != null) {
+      duration = end.difference(segmentStartedAt).inSeconds;
+      await (update(sessionSegments)..where((t) => t.id.equals(segmentId))).write(
+        SessionSegmentsCompanion(
+          endedAt: Value(end),
+          durationSeconds: Value(duration),
+          endCount: Value(endCount),
+          reason: Value(reason),
+        ),
+      );
+    }
+
+    await (update(sessions)..where((t) => t.id.equals(session.id))).write(
+      SessionsCompanion(
+        status: Value(SessionStatus2.paused),
+        totalDurationSeconds: Value(session.totalDurationSeconds + duration),
+        updatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
   }
 
   /// 세션 재시작 (새 Segment 시작)
@@ -2555,6 +2655,18 @@ class AppDb extends _$AppDb {
         updatedAt: Value(DateTime.now().toUtc()),
       ),
     );
+  }
+
+  /// 이미지 경로를 참조하는 프로젝트·실이 있는지 확인
+  /// (복사한 프로젝트·실은 원본과 같은 이미지 파일을 공유한다)
+  Future<bool> isImagePathReferenced(String imagePath) async {
+    final row = await customSelect(
+      'SELECT EXISTS(SELECT 1 FROM projects WHERE image_path = ?1) '
+      'OR EXISTS(SELECT 1 FROM stash_yarns WHERE image_path = ?1) AS used',
+      variables: [Variable.withString(imagePath)],
+      readsFrom: {projects, stashYarns},
+    ).getSingle();
+    return row.read<int>('used') != 0;
   }
 
   /// 프로젝트의 현재 선택된 파트 ID 업데이트

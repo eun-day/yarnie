@@ -438,5 +438,39 @@ void main() {
         expect(segments.length, 3);
       });
     });
+
+    group('진행 중인 세션 일시정지 (파트 전환)', () {
+      late int projectId;
+      late int partId;
+      late int sessionId;
+
+      setUp(() async {
+        projectId = await createTestProject(db);
+        partId = await db.createPart(projectId: projectId, name: 'Test Part');
+        sessionId = await db.createSession(partId: partId, currentMainValue: 1);
+      });
+
+      Future<void> setCurrentSegmentStart(DateTime startedAt) async {
+        final current = await db.getCurrentSegment(sessionId);
+        await (db.update(db.sessionSegments)
+              ..where((t) => t.id.equals(current!.id)))
+            .write(SessionSegmentsCompanion(startedAt: Value(startedAt)));
+      }
+
+      test('파트 전환 이유로 일시정지하고, 이미 멈춘 세션은 그대로 둔다', () async {
+        await setCurrentSegmentStart(DateTime.now().subtract(const Duration(minutes: 10)));
+
+        // 진행 중이면 멈추고 true, 이미 멈춘 세션이면 그대로 두고 false
+        expect(await db.pauseRunningSession(partId, reason: SegmentReason.partChange), isTrue);
+        expect(await db.pauseRunningSession(partId, reason: SegmentReason.partChange), isFalse);
+
+        final session = (await db.getSession(partId))!;
+        final segments = await db.getSessionSegments(sessionId);
+        expect(session.status, SessionStatus2.paused);
+        expect(segments, hasLength(1));
+        expect(segments.single.reason, SegmentReason.partChange);
+        expect(session.totalDurationSeconds, closeTo(600, 2));
+      });
+    });
   });
 }

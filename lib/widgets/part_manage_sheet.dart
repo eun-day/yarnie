@@ -7,6 +7,7 @@ import 'package:yarnie/modules/projects/application/part_manage_effect.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 
 /// Part 관리 시트
 /// - Part 리스트를 보여주고 드래그로 순서 변경
@@ -219,13 +220,14 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                             projectId: widget.projectId,
                             initialText: part.name,
                             onSave: (newName) {
+                              // 이름만 바꾼다. 탭 이름은 파트 스트림으로 갱신되며,
+                              // 현재 파트를 바꾸면 진행 중인 세션까지 일시정지되므로 전환하지 않는다.
                               ref
                                   .read(partManageProvider.notifier)
                                   .onEvent(UpdatePart(part.id, newName));
                               setState(() {
                                 _renamingPartId = null;
                               });
-                              widget.onPartChanged?.call(part.id);
                             },
                             onCancel: () {
                               setState(() {
@@ -525,7 +527,7 @@ class _PartActionSheet extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Colors.white, // 빨간 삭제 버튼 글자 (다크모드에서도 흰색)
                             letterSpacing: -0.15,
                           ),
                         ),
@@ -650,7 +652,7 @@ class _PartInputSectionState extends State<_PartInputSection> {
             Container(
               height: _errorText != null ? null : 36,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F5),
+                color: context.inputFieldBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12),

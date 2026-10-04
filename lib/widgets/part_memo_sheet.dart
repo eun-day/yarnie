@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
+import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/common/time_helper.dart';
@@ -126,7 +127,7 @@ class _PartMemoSheetState extends State<PartMemoSheet> {
                     height: 80,
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF3F3F5),
+                      color: context.inputFieldBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: TextField(
@@ -422,7 +423,7 @@ class _MemoActionSheet extends StatelessWidget {
                       height: 120,
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F3F5),
+                        color: context.inputFieldBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: TextField(
