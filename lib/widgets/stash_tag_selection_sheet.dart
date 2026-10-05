@@ -309,7 +309,9 @@ class _StashTagSelectionSheetState extends ConsumerState<StashTagSelectionSheet>
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(_selectedIds);
+                        // 시트에서 삭제한 태그가 선택된 채 남아 다시 저장되지 않도록 존재하는 태그만 돌려준다
+                        final existingIds = _allTags.map((t) => t.id).toSet();
+                        Navigator.of(context).pop(_selectedIds.intersection(existingIds));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5C6B5D),
@@ -499,28 +501,36 @@ class _StashTagSelectionSheetState extends ConsumerState<StashTagSelectionSheet>
   }
 
   Future<void> _handleCreateTag() async {
-    if (_newTagNameController.text.isNotEmpty) {
-      try {
-        await appDb.createStashTag(
-          name: _newTagNameController.text,
-          color: _newTagColor.value,
-        );
-        _newTagNameController.clear();
-        setState(() {
-          _isAdding = false;
-        });
-        await _loadTags();
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-        }
-      }
+    // 프로젝트 태그(TagsNotifier)와 같은 검증: 앞뒤 공백 제거, 빈 이름·중복 이름 안내
+    final name = _newTagNameController.text.trim();
+    if (name.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
+    String? error;
+    try {
+      await appDb.createStashTag(
+        name: name,
+        color: _newTagColor.value,
+      );
+    } on UniqueConstraintException {
+      error = l10n.duplicateTagName;
+    } catch (e) {
+      error = l10n.createTagFailed(e.toString());
     }
+    if (!mounted) return;
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+    _newTagNameController.clear();
+    setState(() {
+      _isAdding = false;
+    });
+    await _loadTags();
   }
 
   void _showColorPicker() {
@@ -738,12 +748,29 @@ class _StashTagActionSheet extends ConsumerWidget {
             TextButton(
               child: Text(l10n.save),
               onPressed: () async {
-                await appDb.updateStashTag(
-                  tagId: tag.id,
-                  name: nameController.text,
-                  color: selectedColor.value,
-                );
-                Navigator.of(dialogContext).pop();
+                // 프로젝트 태그(TagsNotifier)와 같은 검증: 앞뒤 공백 제거, 빈 이름·중복 이름 안내
+                final messenger = ScaffoldMessenger.of(dialogContext);
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  messenger.showSnackBar(SnackBar(content: Text(l10n.enterTagName)));
+                  return;
+                }
+                try {
+                  await appDb.updateStashTag(
+                    tagId: tag.id,
+                    name: name,
+                    color: selectedColor.value,
+                  );
+                } on UniqueConstraintException {
+                  messenger.showSnackBar(SnackBar(content: Text(l10n.duplicateTagName)));
+                  return;
+                } catch (e) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(l10n.updateTagFailed(e.toString()))),
+                  );
+                  return;
+                }
+                if (dialogContext.mounted) Navigator.of(dialogContext).pop();
                 onTagUpdated();
               },
             ),

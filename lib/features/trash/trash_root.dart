@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yarnie/features/trash/widgets/empty_trash_view.dart';
 import 'package:yarnie/modules/projects/projects_api.dart';
 import 'package:yarnie/widgets/project_list_tile.dart';
+import 'package:yarnie/core/premium/premium_policy.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
+import 'package:yarnie/core/utils/app_image_utils.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/features/stash/stash_root.dart';
@@ -375,6 +378,14 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
   }
 
   Future<void> _confirmProjectRestore(BuildContext context, Project project) async {
+    // 복원도 프로젝트를 하나 더 갖게 되는 것이므로 새로 만들 때와 같은 무료 한도를 적용
+    final activeProjectCount = (await appDb.watchAll().first).length;
+    if (!context.mounted) return;
+    if (!PremiumPolicy.canCreateProject(activeProjectCount, ref.read(premiumProvider))) {
+      PremiumUIHelper.showUpsellSnackbar(context);
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
@@ -683,6 +694,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
     if (confirmed == true && context.mounted) {
       try {
         await appDb.permanentlyDeleteProject(project.id);
+        await AppImageUtils.deleteImageIfUnused(project.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)),
@@ -791,6 +803,7 @@ class _TrashRootState extends ConsumerState<TrashRoot> {
     if (confirmed == true && context.mounted) {
       try {
         await appDb.permanentlyDeleteStashYarn(yarn.id);
+        await AppImageUtils.deleteImageIfUnused(yarn.imagePath);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context)!.projectDeletedForever)), // 공용 메시지 재사용

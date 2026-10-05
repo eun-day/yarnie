@@ -2016,5 +2016,60 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addYarn => '실 추가';
 
   @override
+  String get sessionAbsenceTitle => '다시 오셨네요';
+
+  @override
+  String sessionAbsenceMessage(int minutes) {
+    return '앱을 떠난 뒤 $minutes분이 지났어요. 이 시간을 진행 중인 세션에 반영할까요?\n반영하지 않으면 앱을 떠난 시점에 세션을 일시정지합니다.';
+  }
+
+  @override
+  String get sessionAbsenceInclude => '반영';
+
+  @override
+  String get sessionAbsenceExclude => '반영 안 함';
+
+  @override
+  String get deleteMemoTitle => '메모 삭제';
+
+  @override
+  String get deleteMemoConfirm => '이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+
+  @override
+  String get duplicateTagName => '이미 존재하는 태그 이름입니다.';
+
+  @override
+  String get searchStashHint => '실 이름, 브랜드, 색상 검색';
+
+  @override
+  String get allYarnWeights => '모든 굵기';
+
+  @override
+  String get sortOrder => '정렬';
+
+  @override
+  String get sortNewest => '최신 등록순';
+
+  @override
+  String get sortByName => '이름순';
+
+  @override
+  String get sortByBrand => '브랜드순';
+
+  @override
+  String get premiumProductUnavailable => '상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+
+  @override
+  String get premiumPaymentPending =>
+      '결제 승인을 기다리고 있습니다. 승인되면 프리미엄이 자동으로 적용됩니다.';
+
+  @override
+  String get premiumAlreadyPurchased =>
+      '이미 구매한 상품입니다. \'구매 복원\'을 눌러 프리미엄을 다시 적용해주세요.';
+
+  @override
+  String get premiumRestoreFailed => '구매 복원에 실패했습니다. 다시 시도해주세요.';
+
+  @override
   String get sessionPausedByPartChange => '이전 파트에서 진행 중이던 세션을 일시정지했습니다.';
 }

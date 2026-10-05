@@ -8,6 +8,8 @@ import 'package:yarnie/db/app_db.dart';
 import 'package:yarnie/db/di.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/theme/app_theme.dart';
+import 'package:yarnie/core/premium/premium_policy.dart';
+import 'package:yarnie/core/providers/premium_provider.dart';
 
 /// Part 관리 시트
 /// - Part 리스트를 보여주고 드래그로 순서 변경
@@ -134,26 +136,42 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // New Part Button (+)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isAdding = true;
-                          _renamingPartId = null;
-                        });
+                    // New Part Button (+) — 탭 바의 "새 파트" 버튼과 같은 무료 한도 적용
+                    Builder(
+                      builder: (context) {
+                        final isLocked = !PremiumPolicy.canCreatePart(
+                          state.parts.length,
+                          ref.watch(premiumProvider),
+                        );
+                        return GestureDetector(
+                          onTap: () {
+                            if (isLocked) {
+                              // 시트 위에서는 스낵바가 가려지므로 닫고 안내
+                              Navigator.pop(context);
+                              PremiumUIHelper.showUpsellSnackbar(context);
+                              return;
+                            }
+                            setState(() {
+                              _isAdding = true;
+                              _renamingPartId = null;
+                            });
+                          },
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              isLocked ? Icons.lock : Icons.add,
+                              size: 20,
+                              color: isLocked
+                                  ? Theme.of(context).colorScheme.outline
+                                  : Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        );
                       },
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -172,6 +190,7 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                     // items 배열을 구성합니다.
                     // adding 상태면 제일 첫 번째 아이템으로 input section을 넣습니다.
                     final List<Widget> listItems = [];
+                    final listOffset = _isAdding ? 1 : 0;
 
                     if (_isAdding) {
                       listItems.add(
@@ -240,7 +259,8 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                         listItems.add(
                           _PartItemTile(
                             key: ValueKey(part.id),
-                            index: i,
+                            // 드래그 핸들은 리스트 인덱스를 쓴다 (맨 위 추가 입력창만큼 밀림)
+                            index: i + listOffset,
                             part: part,
                             projectId: widget.projectId,
                             onRenameRequest: () {
@@ -273,9 +293,13 @@ class _PartManageSheetState extends ConsumerState<PartManageSheet> {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
                           }
+                          // 리스트 인덱스 → parts 인덱스 (추가 입력창은 옮길 수 없음)
+                          final from = oldIndex - listOffset;
+                          if (from < 0 || from >= parts.length) return;
+                          final to = (newIndex - listOffset).clamp(0, parts.length - 1);
                           final reordered = List<Part>.from(parts);
-                          final item = reordered.removeAt(oldIndex);
-                          reordered.insert(newIndex, item);
+                          final item = reordered.removeAt(from);
+                          reordered.insert(to, item);
 
                           final partIds = reordered.map((e) => e.id).toList();
                           ref

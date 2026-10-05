@@ -439,7 +439,7 @@ void main() {
       });
     });
 
-    group('진행 중인 세션 일시정지 (파트 전환)', () {
+    group('진행 중인 세션 일시정지 (파트 전환·복귀 정산)', () {
       late int projectId;
       late int partId;
       late int sessionId;
@@ -470,6 +470,44 @@ void main() {
         expect(segments, hasLength(1));
         expect(segments.single.reason, SegmentReason.partChange);
         expect(session.totalDurationSeconds, closeTo(600, 2));
+        expect(await db.getRunningSessions(), isEmpty);
+      });
+
+      test('지정한 시각(앱을 떠난 시각)에 세그먼트를 끝낸다', () async {
+        final start = DateTime.now().subtract(const Duration(hours: 2));
+        await setCurrentSegmentStart(start);
+
+        await db.pauseRunningSession(partId, at: start.add(const Duration(minutes: 30)));
+
+        final session = (await db.getSession(partId))!;
+        expect(session.totalDurationSeconds, closeTo(1800, 1));
+      });
+
+      test('로컬 자정을 넘긴 세그먼트는 일시정지할 때 날짜별로 나뉜다', () async {
+        final now = DateTime.now();
+        final todayMidnight = DateTime(now.year, now.month, now.day);
+        final start = todayMidnight.subtract(const Duration(minutes: 30));
+        await setCurrentSegmentStart(start);
+
+        await db.pauseRunningSession(partId, at: todayMidnight.add(const Duration(minutes: 20)));
+
+        final segments = await db.getSessionSegments(sessionId);
+        expect(segments, hasLength(2));
+        expect(segments[0].endedAt, todayMidnight);
+        expect(segments[0].durationSeconds, 1800);
+        expect(segments[0].reason, SegmentReason.midnightSplit);
+        expect(segments[1].startedAt, todayMidnight);
+        expect(segments[1].durationSeconds, 1200);
+        expect(segments[1].reason, SegmentReason.pause);
+        expect((await db.getSession(partId))!.totalDurationSeconds, 3000);
+
+        final yesterdayMidnight = DateTime(now.year, now.month, now.day - 1);
+        final daily = await db.getDailyWorkSeconds(
+          startDate: yesterdayMidnight,
+          endDate: DateTime(now.year, now.month, now.day + 1),
+        );
+        expect(daily[yesterdayMidnight], 1800);
+        expect(daily[todayMidnight], 1200);
       });
     });
   });

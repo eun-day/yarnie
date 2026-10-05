@@ -14,6 +14,22 @@ import 'package:yarnie/widgets/app_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yarnie/core/utils/app_image_utils.dart';
 
+/// 실 굵기 선택지: 저장 키(Ravelry 표준 이름) → 화면 라벨. 등록 폼과 보관함 굵기 필터가 함께 쓴다.
+Map<String, String> yarnWeightLabels(AppLocalizations l10n) => {
+      'Thread': l10n.weightThread,
+      'Cobweb': l10n.weightCobweb,
+      'Lace': l10n.weightLace,
+      'Light Fingering': l10n.weightLightFingering,
+      'Fingering (14 wpi)': l10n.weightFingering,
+      'Sport (12 wpi)': l10n.weightSport,
+      'DK (11 wpi)': l10n.weightDK,
+      'Worsted (9 wpi)': l10n.weightWorsted,
+      'Aran (8 wpi)': l10n.weightAran,
+      'Bulky (7 wpi)': l10n.weightBulky,
+      'Super Bulky (5-6 wpi)': l10n.weightSuperBulky,
+      'Jumbo (0-4 wpi)': l10n.weightJumbo,
+    };
+
 class NewStashScreen extends ConsumerStatefulWidget {
   final int? stashYarnId;
   final bool isFromSelectionSheet;
@@ -309,14 +325,15 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
           : const Value.absent(),
     );
 
-    if (widget.stashYarnId == null) {
-      ref.read(stashProvider.notifier).onEvent(CreateStashYarnEvent(companion, isFromSelectionSheet: widget.isFromSelectionSheet));
-    } else {
-      ref.read(stashProvider.notifier).onEvent(UpdateStashYarnEvent(companion));
-    }
-
+    // 저장 결과를 기다린다: 성공하면 효과(StashYarnCreated/Updated)를 받아 폼을 닫고,
+    // 실패하면 폼을 그대로 두어 입력이 사라지지 않게 한다 (build의 ref.listen 참고)
     FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
+    final notifier = ref.read(stashProvider.notifier);
+    if (widget.stashYarnId == null) {
+      await notifier.onEvent(CreateStashYarnEvent(companion, isFromSelectionSheet: widget.isFromSelectionSheet));
+    } else {
+      await notifier.onEvent(UpdateStashYarnEvent(companion));
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -434,20 +451,19 @@ class _NewStashScreenState extends ConsumerState<NewStashScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final Map<String, String> yarnWeightMap = {
-      'Thread': l10n.weightThread,
-      'Cobweb': l10n.weightCobweb,
-      'Lace': l10n.weightLace,
-      'Light Fingering': l10n.weightLightFingering,
-      'Fingering (14 wpi)': l10n.weightFingering,
-      'Sport (12 wpi)': l10n.weightSport,
-      'DK (11 wpi)': l10n.weightDK,
-      'Worsted (9 wpi)': l10n.weightWorsted,
-      'Aran (8 wpi)': l10n.weightAran,
-      'Bulky (7 wpi)': l10n.weightBulky,
-      'Super Bulky (5-6 wpi)': l10n.weightSuperBulky,
-      'Jumbo (0-4 wpi)': l10n.weightJumbo,
-    };
+    // 저장 결과에 따라 폼을 닫거나(성공) 저장 버튼을 다시 켠다(실패)
+    ref.listen(stashEffectsProvider, (_, asyncEffect) {
+      asyncEffect.whenData((effect) {
+        if (!_isSaving) return;
+        if (effect is StashYarnCreated || effect is StashYarnUpdated) {
+          Navigator.of(context).pop();
+        } else if (effect is StashYarnSaveFailed) {
+          setState(() => _isSaving = false);
+        }
+      });
+    });
+
+    final yarnWeightMap = yarnWeightLabels(l10n);
 
     if (_isLoading) {
       return Scaffold(

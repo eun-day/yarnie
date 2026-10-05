@@ -2011,5 +2011,59 @@ class AppLocalizationsJa extends AppLocalizations {
   String get addYarn => '糸を追加';
 
   @override
+  String get sessionAbsenceTitle => 'おかえりなさい';
+
+  @override
+  String sessionAbsenceMessage(int minutes) {
+    return 'アプリを離れてから$minutes分が経ちました。この時間を進行中のセッションに含めますか？\n含めない場合、アプリを離れた時点でセッションを一時停止します。';
+  }
+
+  @override
+  String get sessionAbsenceInclude => '含める';
+
+  @override
+  String get sessionAbsenceExclude => '含めない';
+
+  @override
+  String get deleteMemoTitle => 'メモを削除';
+
+  @override
+  String get deleteMemoConfirm => 'このメモを削除しますか？\nこの操作は取り消せません。';
+
+  @override
+  String get duplicateTagName => '既に存在するタグ名です。';
+
+  @override
+  String get searchStashHint => '名前・ブランド・カラーで検索';
+
+  @override
+  String get allYarnWeights => 'すべての太さ';
+
+  @override
+  String get sortOrder => '並び替え';
+
+  @override
+  String get sortNewest => '登録が新しい順';
+
+  @override
+  String get sortByName => '名前順';
+
+  @override
+  String get sortByBrand => 'ブランド順';
+
+  @override
+  String get premiumProductUnavailable =>
+      '商品情報を読み込めませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get premiumPaymentPending => '決済の承認待ちです。承認されるとプレミアムが自動的に適用されます。';
+
+  @override
+  String get premiumAlreadyPurchased => 'すでに購入済みです。「購入情報の復元」でプレミアムを再適用してください。';
+
+  @override
+  String get premiumRestoreFailed => '購入情報の復元に失敗しました。もう一度お試しください。';
+
+  @override
   String get sessionPausedByPartChange => '前のパーツで進行中だったセッションを一時停止しました。';
 }

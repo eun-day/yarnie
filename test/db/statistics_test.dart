@@ -121,8 +121,8 @@ void main() {
           name: 'Test Part',
         );
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
 
         // 오늘 세션 생성
         final sessionId = await db.createSession(
@@ -164,24 +164,20 @@ void main() {
           name: 'Test Part',
         );
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
-        final yesterday = today.subtract(Duration(days: 1));
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-        // 어제 세션
-        final sessionId1 = await db.createSession(
+        // Part당 세션은 하나이므로 같은 세션에 어제 세그먼트를 추가한다
+        final sessionId = await db.createSession(
           partId: partId,
-          currentMainValue: 0,
+          currentMainValue: 5,
         );
-        await (db.delete(
-          db.sessions,
-        )..where((t) => t.id.equals(sessionId1))).go();
-
         await db
             .into(db.sessionSegments)
             .insert(
               SessionSegmentsCompanion.insert(
-                sessionId: sessionId1,
+                sessionId: sessionId,
                 partId: partId,
                 startedAt: yesterday,
                 endedAt: Value(yesterday.add(Duration(seconds: 50))),
@@ -191,12 +187,8 @@ void main() {
               ),
             );
 
-        // 오늘 세션
-        final sessionId2 = await db.createSession(
-          partId: partId,
-          currentMainValue: 5,
-        );
-        final segment = await db.getCurrentSegment(sessionId2);
+        // 오늘 세그먼트
+        final segment = await db.getCurrentSegment(sessionId);
         await (db.update(
           db.sessionSegments,
         )..where((t) => t.id.equals(segment!.id))).write(
@@ -216,13 +208,8 @@ void main() {
         );
 
         // Then
-        expect(dailyStats.length, greaterThanOrEqualTo(1));
-        if (dailyStats.containsKey(yesterday)) {
-          expect(dailyStats[yesterday], 50);
-        }
-        if (dailyStats.containsKey(today)) {
-          expect(dailyStats[today], 100);
-        }
+        expect(dailyStats[yesterday], 50);
+        expect(dailyStats[today], 100);
       });
 
       test('작업 시간이 없는 날짜는 결과에 포함되지 않는다', () async {
@@ -230,8 +217,8 @@ void main() {
         final projectId = await createTestProject(db);
         await db.createPart(projectId: projectId, name: 'Test Part');
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
 
         // When
         final startDate = today;
@@ -253,8 +240,8 @@ void main() {
           name: 'Test Part',
         );
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
 
         // 세션 생성
         final sessionId = await db.createSession(
@@ -294,8 +281,8 @@ void main() {
           name: 'Test Part',
         );
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
 
         // 세션 생성
         final sessionId = await db.createSession(
@@ -330,8 +317,8 @@ void main() {
           name: 'Test Part',
         );
 
-        final now = DateTime.now().toUtc();
-        final today = DateTime(now.year, now.month, now.day).toUtc();
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
         final tomorrow = today.add(Duration(days: 1));
 
         // 오늘 세션 생성

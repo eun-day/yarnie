@@ -3783,6 +3783,108 @@ abstract class AppLocalizations {
   /// **'실 추가'**
   String get addYarn;
 
+  /// No description provided for @sessionAbsenceTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 오셨네요'**
+  String get sessionAbsenceTitle;
+
+  /// No description provided for @sessionAbsenceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱을 떠난 뒤 {minutes}분이 지났어요. 이 시간을 진행 중인 세션에 반영할까요?\n반영하지 않으면 앱을 떠난 시점에 세션을 일시정지합니다.'**
+  String sessionAbsenceMessage(int minutes);
+
+  /// No description provided for @sessionAbsenceInclude.
+  ///
+  /// In ko, this message translates to:
+  /// **'반영'**
+  String get sessionAbsenceInclude;
+
+  /// No description provided for @sessionAbsenceExclude.
+  ///
+  /// In ko, this message translates to:
+  /// **'반영 안 함'**
+  String get sessionAbsenceExclude;
+
+  /// No description provided for @deleteMemoTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모 삭제'**
+  String get deleteMemoTitle;
+
+  /// No description provided for @deleteMemoConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 메모를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'**
+  String get deleteMemoConfirm;
+
+  /// No description provided for @duplicateTagName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 존재하는 태그 이름입니다.'**
+  String get duplicateTagName;
+
+  /// No description provided for @searchStashHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'실 이름, 브랜드, 색상 검색'**
+  String get searchStashHint;
+
+  /// No description provided for @allYarnWeights.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 굵기'**
+  String get allYarnWeights;
+
+  /// No description provided for @sortOrder.
+  ///
+  /// In ko, this message translates to:
+  /// **'정렬'**
+  String get sortOrder;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 등록순'**
+  String get sortNewest;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름순'**
+  String get sortByName;
+
+  /// No description provided for @sortByBrand.
+  ///
+  /// In ko, this message translates to:
+  /// **'브랜드순'**
+  String get sortByBrand;
+
+  /// No description provided for @premiumProductUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'**
+  String get premiumProductUnavailable;
+
+  /// No description provided for @premiumPaymentPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 승인을 기다리고 있습니다. 승인되면 프리미엄이 자동으로 적용됩니다.'**
+  String get premiumPaymentPending;
+
+  /// No description provided for @premiumAlreadyPurchased.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 구매한 상품입니다. \'구매 복원\'을 눌러 프리미엄을 다시 적용해주세요.'**
+  String get premiumAlreadyPurchased;
+
+  /// No description provided for @premiumRestoreFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'구매 복원에 실패했습니다. 다시 시도해주세요.'**
+  String get premiumRestoreFailed;
+
   /// No description provided for @sessionPausedByPartChange.
   ///
   /// In ko, this message translates to:
