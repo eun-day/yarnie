@@ -85,6 +85,10 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
   bool _initialized = false;
 
+  /// 수정할 때는 카운터를 만든 단위를 그대로 쓴다. 값은 그 단위로 저장되어 있어서,
+  /// 앱 단위 설정을 따라 단위만 바꿔 저장하면 길이가 2.54배 틀어진다. (새로 만들 때는 null)
+  LengthUnit? _specUnit;
+
   void _initializeControllers() {
     if (_initialized) return;
     final l10n = AppLocalizations.of(context)!;
@@ -96,11 +100,13 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
 
     if (_isEditing) {
       label = widget.existingCounter!.name;
+      _specUnit = LengthUnit.cm; // units가 없는 예전 spec은 카드와 같이 cm로 본다
       try {
         final spec = jsonDecode(widget.existingCounter!.specJson);
         startRow = spec['startRow']?.toString() ?? startRow;
         targetLength = spec['targetLength']?.toString() ?? '';
         rowHeight = spec['rowHeight']?.toString() ?? '';
+        if (spec['units'] == LengthUnit.inch.name) _specUnit = LengthUnit.inch;
       } catch (_) {}
     }
 
@@ -156,7 +162,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   Future<void> _handleSave() async {
     if (!_isValid) return;
     final l10n = AppLocalizations.of(context)!;
-    final unitSetting = ref.read(lengthUnitProvider);
+    final LengthUnit unitSetting = _specUnit ?? ref.read(lengthUnitProvider);
 
     final name = _labelController.text.trim();
     final startRow = int.parse(_startRowController.text);
@@ -221,7 +227,7 @@ class _AddLengthCounterSheetState extends ConsumerState<AddLengthCounterSheet> {
   Widget build(BuildContext context) {
     _initializeControllers();
     final l10n = AppLocalizations.of(context)!;
-    final unitSetting = ref.watch(lengthUnitProvider);
+    final LengthUnit unitSetting = _specUnit ?? ref.watch(lengthUnitProvider);
     final estimatedRows = _estimatedRows;
 
     return Container(

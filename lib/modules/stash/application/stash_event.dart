@@ -25,8 +25,31 @@ class SearchYarns extends StashEvent {
   const SearchYarns(this.query);
 }
 
+/// 보관함 태그 목록 업데이트 (stream에서 발행: 태그 이름·색 변경, 삭제 반영)
+class StashTagsUpdated extends StashEvent {
+  final List<StashTag> tags;
+  const StashTagsUpdated(this.tags);
+}
+
+/// 굵기 필터 (null이면 전체)
+class FilterYarnWeight extends StashEvent {
+  final String? yarnWeight;
+  const FilterYarnWeight(this.yarnWeight);
+}
+
+/// 정렬 기준 변경
+class ChangeSortOrder extends StashEvent {
+  final StashSortOrder sortOrder;
+  const ChangeSortOrder(this.sortOrder);
+}
+
 class ClearFilters extends StashEvent {
   const ClearFilters();
+}
+
+/// 태그 선택만 해제 ("전체" 칩, 검색어·굵기 필터는 유지)
+class ClearTagFilters extends StashEvent {
+  const ClearTagFilters();
 }
 
 class ChangeViewMode extends StashEvent {

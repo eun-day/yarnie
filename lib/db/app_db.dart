@@ -428,7 +428,9 @@ class AppDb extends _$AppDb {
         onCreate: (Migrator m) async {
           await m.createAll();
         },
-        onUpgrade: (Migrator m, int from, int to) async {
+        // Drift는 onUpgrade를 트랜잭션으로 감싸지 않는다. 도중에 중단되면 일부만 반영된 채
+        // 다음 실행에서 다시 돌기 때문에(자동 생성 실 중복, DROP COLUMN 이후 재실행 실패) 직접 묶는다.
+        onUpgrade: (Migrator m, int from, int to) => transaction(() async {
           if (from < 2) {
             await m.addColumn(mainCounters, mainCounters.countBy);
           }
@@ -438,41 +440,36 @@ class AppDb extends _$AppDb {
             await m.createTable(projectStashYarns);
 
             // 기존 lotNumber 데이터 이관 처리 (버전 충돌 방지 및 데이터 보존)
-            try {
-              final rows = await customSelect(
-                "SELECT id, lot_number FROM projects WHERE lot_number IS NOT NULL AND lot_number != ''",
-              ).get();
+            final rows = await customSelect(
+              "SELECT id, lot_number FROM projects WHERE lot_number IS NOT NULL AND lot_number != ''",
+            ).get();
 
-              final now = DateTime.now().toUtc();
+            final now = DateTime.now().toUtc();
 
-              for (final row in rows) {
-                final projectId = row.read<int>('id');
-                final lotNumber = row.read<String>('lot_number');
+            for (final row in rows) {
+              final projectId = row.read<int>('id');
+              final lotNumber = row.read<String>('lot_number');
 
-                // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
-                final stashYarnId = await into(stashYarns).insert(
-                  StashYarnsCompanion.insert(
-                    yarnName: '기존 프로젝트 실 (자동 생성)',
-                    brandName: const Value('이전 로트 번호 실'),
-                    dyeLot: Value(lotNumber),
-                    skeins: const Value(0.0),
-                    lengthUnit: const Value('yards'),
-                    weightUnit: const Value('grams'),
-                    createdAt: Value(now),
-                  ),
-                );
+              // stash_yarns에 기존 로트 번호를 가진 임시 실 삽입
+              final stashYarnId = await into(stashYarns).insert(
+                StashYarnsCompanion.insert(
+                  yarnName: '기존 프로젝트 실 (자동 생성)',
+                  brandName: const Value('이전 로트 번호 실'),
+                  dyeLot: Value(lotNumber),
+                  skeins: const Value(0.0),
+                  lengthUnit: const Value('yards'),
+                  weightUnit: const Value('grams'),
+                  createdAt: Value(now),
+                ),
+              );
 
-                // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
-                await into(projectStashYarns).insert(
-                  ProjectStashYarnsCompanion.insert(
-                    projectId: projectId,
-                    stashYarnId: stashYarnId,
-                  ),
-                );
-              }
-            } catch (e) {
-              // 마이그레이션 쿼리 실패 시 앱 크래시 방지 및 재시도 지원을 위한 예외 전달
-              rethrow;
+              // project_stash_yarns 교차 테이블에 생성된 실과 프로젝트의 ID 연동
+              await into(projectStashYarns).insert(
+                ProjectStashYarnsCompanion.insert(
+                  projectId: projectId,
+                  stashYarnId: stashYarnId,
+                ),
+              );
             }
 
             // 더 이상 사용하지 않는 lot_number 컬럼 제거
@@ -489,7 +486,7 @@ class AppDb extends _$AppDb {
               'CREATE UNIQUE INDEX IF NOT EXISTS stash_tags_name ON stash_tags (name)',
             );
           }
-        },
+        }),
       );
 
   /// 이름이 같은 보관함 태그를 가장 먼저 만든 태그 하나로 합치고, 실의 tagIds도 그 ID로 바꾼다.
@@ -729,15 +726,16 @@ class AppDb extends _$AppDb {
       int? newCurrentPartId;
 
       for (final originalPart in originalParts) {
-        // 새 파트 생성
+        // 새 파트 생성 (buddyCounterOrder는 카운터를 복사한 뒤 새 ID로 바꿔 저장)
         final newPartId = await into(parts).insert(
           PartsCompanion.insert(
             projectId: newProjectId,
             name: originalPart.name,
             orderIndex: originalPart.orderIndex,
-            buddyCounterOrder: Value(originalPart.buddyCounterOrder),
           ),
         );
+        final stitchIdMap = <int, int>{};
+        final sectionIdMap = <int, int>{};
 
         if (firstNewPartId == null) firstNewPartId = newPartId;
         if (originalProject.currentPartId == originalPart.id) newCurrentPartId = newPartId;
@@ -758,7 +756,7 @@ class AppDb extends _$AppDb {
         // 5. StitchCounters 복사
         final originalStitchCounters = await (select(stitchCounters)..where((t) => t.partId.equals(originalPart.id))).get();
         for (final sc in originalStitchCounters) {
-          await into(stitchCounters).insert(
+          stitchIdMap[sc.id] = await into(stitchCounters).insert(
             StitchCountersCompanion.insert(
               partId: newPartId,
               name: sc.name,
@@ -780,6 +778,7 @@ class AppDb extends _$AppDb {
               frozenMainAt: Value(secC.frozenMainAt),
             ),
           );
+          sectionIdMap[secC.id] = newSecCId;
 
           // SectionRuns 복사
           final originalRuns = await (select(sectionRuns)..where((t) => t.sectionCounterId.equals(secC.id))).get();
@@ -795,6 +794,21 @@ class AppDb extends _$AppDb {
               ),
             );
           }
+        }
+
+        // 버디 카운터 순서: 원본 카운터 ID를 새 ID로 바꿔 저장 (원본 ID를 두면 복사본 순서가 무너짐)
+        if (originalPart.buddyCounterOrder != null) {
+          await (update(parts)..where((t) => t.id.equals(newPartId))).write(
+            PartsCompanion(
+              buddyCounterOrder: Value(
+                _remapBuddyCounterOrder(
+                  originalPart.buddyCounterOrder!,
+                  stitchIdMap: stitchIdMap,
+                  sectionIdMap: sectionIdMap,
+                ),
+              ),
+            ),
+          );
         }
 
         // 7. PartNotes 복사
@@ -820,6 +834,25 @@ class AppDb extends _$AppDb {
 
       return newProjectId;
     });
+  }
+
+  /// buddyCounterOrder JSON의 카운터 ID를 복사본의 새 ID로 바꾼다. 매핑이 없는 항목(이미 삭제된 카운터)은 뺀다.
+  String? _remapBuddyCounterOrder(
+    String orderJson, {
+    required Map<int, int> stitchIdMap,
+    required Map<int, int> sectionIdMap,
+  }) {
+    try {
+      final remapped = <Map<String, Object?>>[];
+      for (final item in (jsonDecode(orderJson) as List).cast<Map<String, dynamic>>()) {
+        final idMap = item['type'] == 'stitch' ? stitchIdMap : sectionIdMap;
+        final newId = idMap[item['id']];
+        if (newId != null) remapped.add({'type': item['type'], 'id': newId});
+      }
+      return jsonEncode(remapped);
+    } catch (_) {
+      return null; // 깨진 JSON이면 기본 순서로 표시
+    }
   }
 
   Future<bool> updateProject(ProjectsCompanion entity) async {
@@ -868,16 +901,24 @@ class AppDb extends _$AppDb {
   }
 
   /// 삭제된 지 30일이 지난 프로젝트 영구 삭제 (배치용)
-  Future<void> cleanupDeletedProjects() async {
+  /// 반환값: 삭제된 프로젝트의 이미지 경로 (호출자가 파일을 정리)
+  Future<List<String>> cleanupDeletedProjects() async {
     final thresholdDate = DateTime.now().toUtc().subtract(
       const Duration(days: 30),
     );
-    await (delete(projects)..where(
-          (t) =>
-              t.deletedAt.isNotNull() &
-              t.deletedAt.isSmallerThanValue(thresholdDate),
-        ))
-        .go();
+    return transaction(() async {
+      final expired = await (select(projects)..where(
+            (t) =>
+                t.deletedAt.isNotNull() &
+                t.deletedAt.isSmallerThanValue(thresholdDate),
+          ))
+          .get();
+      if (expired.isEmpty) return const <String>[];
+
+      await (delete(projects)..where((t) => t.id.isIn(expired.map((p) => p.id))))
+          .go();
+      return [for (final p in expired) if (p.imagePath != null) p.imagePath!];
+    });
   }
 
   /// 휴지통에 있는 프로젝트 목록 스트림
@@ -1970,11 +2011,14 @@ class AppDb extends _$AppDb {
 
   /// Part의 진행 중인 세션을 일시정지한다. 진행 중이 아니면 아무것도 하지 않는다.
   ///
-  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)에 사용한다.
+  /// 파트 전환(기획: 파트를 바꾸면 현재 세션은 일시정지)과
+  /// 앱을 떠난 시간을 반영하지 않기로 한 경우에 사용한다.
+  /// [at]: 세그먼트를 끝낼 시각 (기본값: 지금)
   /// 반환값: 진행 중이던 세션을 일시정지했으면 true
   Future<bool> pauseRunningSession(
     int partId, {
     SegmentReason reason = SegmentReason.pause,
+    DateTime? at,
   }) {
     return transaction(() async {
       final session = await getSession(partId);
@@ -1988,10 +2032,17 @@ class AppDb extends _$AppDb {
         segmentStartedAt: segment?.startedAt,
         endCount: mainCounter?.currentValue ?? 0,
         reason: reason,
-        end: DateTime.now().toUtc(),
+        end: (at ?? DateTime.now()).toUtc(),
       );
       return true;
     });
+  }
+
+  /// 진행 중인 세션들 (앱 복귀 시 정산용)
+  Future<List<Session>> getRunningSessions() {
+    return (select(sessions)
+          ..where((t) => t.status.equalsValue(SessionStatus2.running)))
+        .get();
   }
 
   /// 현재 Segment를 [end]에 종료하고 세션을 일시정지 상태로 바꾼다 (트랜잭션 안에서 호출)
@@ -2005,14 +2056,15 @@ class AppDb extends _$AppDb {
   }) async {
     var duration = 0;
     if (segmentId != null && segmentStartedAt != null) {
-      duration = end.difference(segmentStartedAt).inSeconds;
-      await (update(sessionSegments)..where((t) => t.id.equals(segmentId))).write(
-        SessionSegmentsCompanion(
-          endedAt: Value(end),
-          durationSeconds: Value(duration),
-          endCount: Value(endCount),
-          reason: Value(reason),
-        ),
+      duration = await _closeSegment(
+        segmentId: segmentId,
+        sessionId: session.id,
+        partId: session.partId,
+        startedAt: segmentStartedAt,
+        // 세그먼트 시작 이전 시각으로는 끝내지 않는다
+        end: end.isBefore(segmentStartedAt) ? segmentStartedAt : end,
+        endCount: endCount,
+        reason: reason,
       );
     }
 
@@ -2023,6 +2075,59 @@ class AppDb extends _$AppDb {
         updatedAt: Value(DateTime.now().toUtc()),
       ),
     );
+  }
+
+  /// Segment를 [end]에 종료한다. 로컬 자정을 넘겼으면 날짜별 세그먼트로 나눠 기록한다
+  /// (기획: 자정 교차 시 세그먼트 자동 분리, 히트맵은 세그먼트를 일자별로 합산).
+  /// 반환값: 기록된 총 시간(초)
+  Future<int> _closeSegment({
+    required int segmentId,
+    required int sessionId,
+    required int partId,
+    required DateTime startedAt,
+    required DateTime end,
+    required int endCount,
+    required SegmentReason reason,
+  }) async {
+    var pieceStart = startedAt.toLocal();
+    final endLocal = end.toLocal();
+    var pieceId = segmentId;
+    var total = 0;
+
+    while (true) {
+      final nextMidnight = DateTime(
+        pieceStart.year,
+        pieceStart.month,
+        pieceStart.day + 1,
+      );
+      final isLast = !endLocal.isAfter(nextMidnight);
+      final pieceEnd = isLast ? endLocal : nextMidnight;
+      final seconds = pieceEnd.isAfter(pieceStart)
+          ? pieceEnd.difference(pieceStart).inSeconds
+          : 0;
+      total += seconds;
+
+      await (update(sessionSegments)..where((t) => t.id.equals(pieceId))).write(
+        SessionSegmentsCompanion(
+          endedAt: Value(pieceEnd.toUtc()),
+          durationSeconds: Value(seconds),
+          endCount: Value(endCount),
+          reason: Value(isLast ? reason : SegmentReason.midnightSplit),
+        ),
+      );
+      if (isLast) return total;
+
+      pieceId = await into(sessionSegments).insert(
+        SessionSegmentsCompanion.insert(
+          sessionId: sessionId,
+          partId: partId,
+          startedAt: nextMidnight.toUtc(),
+          startCount: Value(endCount),
+          reason: const Value(SegmentReason.midnightSplit),
+        ),
+      );
+      pieceStart = nextMidnight;
+    }
   }
 
   /// 세션 재시작 (새 Segment 시작)
@@ -2159,13 +2264,12 @@ class AppDb extends _$AppDb {
         return null; // 진행 중인 Segment가 없음
       }
 
+      // 날짜 비교와 자정 계산은 모두 로컬 시각 기준 (UTC 날짜와 섞으면 KST 00~09시에 오판)
       final now = DateTime.now().toUtc();
-      final segmentStartDate = DateTime(
-        currentSegment.startedAt.year,
-        currentSegment.startedAt.month,
-        currentSegment.startedAt.day,
-      );
-      final nowDate = DateTime(now.year, now.month, now.day);
+      final startedAt = currentSegment.startedAt.toLocal();
+      final nowLocal = now.toLocal();
+      final segmentStartDate = DateTime(startedAt.year, startedAt.month, startedAt.day);
+      final nowDate = DateTime(nowLocal.year, nowLocal.month, nowLocal.day);
 
       // 같은 날이면 분할 불필요
       if (segmentStartDate == nowDate) {
@@ -2174,9 +2278,9 @@ class AppDb extends _$AppDb {
 
       // 자정 시각 계산 (Segment 시작일의 다음날 00:00:00)
       final midnight = DateTime(
-        currentSegment.startedAt.year,
-        currentSegment.startedAt.month,
-        currentSegment.startedAt.day + 1,
+        startedAt.year,
+        startedAt.month,
+        startedAt.day + 1,
       ).toUtc();
 
       // 현재 Segment를 자정에서 종료
@@ -2231,12 +2335,9 @@ class AppDb extends _$AppDb {
       return false;
     }
 
-    final now = DateTime.now().toUtc();
-    final segmentStartDate = DateTime(
-      currentSegment.startedAt.year,
-      currentSegment.startedAt.month,
-      currentSegment.startedAt.day,
-    );
+    final now = DateTime.now();
+    final startedAt = currentSegment.startedAt.toLocal();
+    final segmentStartDate = DateTime(startedAt.year, startedAt.month, startedAt.day);
     final nowDate = DateTime(now.year, now.month, now.day);
 
     return segmentStartDate != nowDate;
@@ -2252,34 +2353,32 @@ class AppDb extends _$AppDb {
   /// [startDate]: 조회 시작 날짜 (포함)
   /// [endDate]: 조회 종료 날짜 (미포함)
   ///
-  /// 반환값: Map<DateTime, int> - 날짜(00:00:00 UTC)를 키로, 총 작업 시간(초)을 값으로
+  /// 반환값: Map<DateTime, int> - 로컬 날짜(00:00:00)를 키로, 총 작업 시간(초)을 값으로 (날짜순)
+  ///
+  /// started_at은 unix 초 정수라 SQL의 DATE()로는 바로 묶을 수 없고, 'localtime' 수식어는
+  /// SQLite 빌드에 따라 NULL을 돌려주므로 Dart에서 로컬 날짜로 합산한다.
+  /// (세그먼트는 일시정지할 때 로컬 자정에서 나뉘므로 시작 날짜 기준 합산이 정확하다)
   Future<Map<DateTime, int>> getDailyWorkSeconds({
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final result = await customSelect(
-      '''
-      SELECT 
-        DATE(started_at) as date,
-        SUM(duration_seconds) as total_seconds
-      FROM session_segments
-      WHERE started_at >= ?1 AND started_at < ?2
-        AND duration_seconds IS NOT NULL
-      GROUP BY DATE(started_at)
-      ORDER BY date
-      ''',
-      variables: [
-        Variable.withDateTime(startDate),
-        Variable.withDateTime(endDate),
-      ],
-      readsFrom: {sessionSegments},
-    ).get();
+    final segments = await (select(sessionSegments)
+          ..where(
+            (t) =>
+                t.startedAt.isBiggerOrEqualValue(startDate) &
+                t.startedAt.isSmallerThanValue(endDate) &
+                t.durationSeconds.isNotNull(),
+          )
+          ..orderBy([(t) => OrderingTerm.asc(t.startedAt)]))
+        .get();
 
-    return {
-      for (var row in result)
-        DateTime.parse(row.data['date'] as String):
-            row.data['total_seconds'] as int,
-    };
+    final result = <DateTime, int>{};
+    for (final segment in segments) {
+      final local = segment.startedAt.toLocal();
+      final day = DateTime(local.year, local.month, local.day);
+      result[day] = (result[day] ?? 0) + segment.durationSeconds!;
+    }
+    return result;
   }
 
   /// 프로젝트별 총 작업 시간 (Sessions 기반)
@@ -2517,6 +2616,11 @@ class AppDb extends _$AppDb {
   /// 반환값: Tag 리스트
   Future<List<Tag>> getAllTags() {
     return (select(tags)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+  }
+
+  /// 모든 태그 스트림 (이름순)
+  Stream<List<Tag>> watchAllTags() {
+    return (select(tags)..orderBy([(t) => OrderingTerm.asc(t.name)])).watch();
   }
 
   /// 태그 이름으로 검색
@@ -2770,16 +2874,24 @@ class AppDb extends _$AppDb {
   }
 
   /// 삭제된 지 30일이 지난 실 정보 영구 삭제 (배치용)
-  Future<void> cleanupDeletedStashYarns() async {
+  /// 반환값: 삭제된 실의 이미지 경로 (호출자가 파일을 정리)
+  Future<List<String>> cleanupDeletedStashYarns() async {
     final thresholdDate = DateTime.now().toUtc().subtract(
       const Duration(days: 30),
     );
-    await (delete(stashYarns)..where(
-          (t) =>
-              t.deletedAt.isNotNull() &
-              t.deletedAt.isSmallerThanValue(thresholdDate),
-        ))
-        .go();
+    return transaction(() async {
+      final expired = await (select(stashYarns)..where(
+            (t) =>
+                t.deletedAt.isNotNull() &
+                t.deletedAt.isSmallerThanValue(thresholdDate),
+          ))
+          .get();
+      if (expired.isEmpty) return const <String>[];
+
+      await (delete(stashYarns)..where((t) => t.id.isIn(expired.map((y) => y.id))))
+          .go();
+      return [for (final y in expired) if (y.imagePath != null) y.imagePath!];
+    });
   }
 
   /// 휴지통에 있는 실 목록 스트림
@@ -2902,6 +3014,11 @@ class AppDb extends _$AppDb {
   /// 보관함 태그 전체 조회 (이름순)
   Future<List<StashTag>> getAllStashTags() {
     return (select(stashTags)..orderBy([(t) => OrderingTerm.asc(t.name)])).get();
+  }
+
+  /// 보관함 태그 전체 스트림 (이름순)
+  Stream<List<StashTag>> watchAllStashTags() {
+    return (select(stashTags)..orderBy([(t) => OrderingTerm.asc(t.name)])).watch();
   }
 
   /// 보관함 태그 이름 검색

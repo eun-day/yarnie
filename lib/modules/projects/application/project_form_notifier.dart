@@ -30,6 +30,9 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
           _emit(GoToProjectDetail(effect.projectId));
         } else if (effect is ProjectUpdated) {
           _emit(const CloseEditForm());
+        } else if (effect is ProjectSaveFailed) {
+          // 실패 메시지는 ProjectsNotifier가 표시하므로 저장 버튼만 다시 활성화
+          state = state.copyWith(isSaving: false);
         }
       });
     });
@@ -157,6 +160,8 @@ class ProjectFormNotifier extends Notifier<ProjectFormState> {
       needleType: newNeedleType,
       availableNeedleSizes: newAvailableSizes,
       needleSize: newNeedleSize,
+      // 새 종류에 없는 사이즈는 비운다 (null은 copyWith에서 무시되므로 명시)
+      clearNeedleSize: newNeedleSize == null,
     );
   }
 

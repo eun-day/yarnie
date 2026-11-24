@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yarnie/core/providers/locale_provider.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 enum TouchFeedbackType { vibration, sound, both, none }
 
@@ -34,7 +33,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
   @override
   AppSettings build() {
     _prefs = ref.watch(sharedPreferencesProvider);
-    final screenAwake = _prefs.getBool(_screenAwakeKey) ?? true;
+    // 기획: 화면 켜짐 유지는 Off 기본. 실제 적용은 프로젝트 상세(작업) 화면에서만 한다
+    final screenAwake = _prefs.getBool(_screenAwakeKey) ?? false;
     final touchFeedbackIndex = _prefs.getInt(_touchFeedbackKey) ?? TouchFeedbackType.vibration.index;
     
     // Ensure index is within range
@@ -42,25 +42,15 @@ class SettingsNotifier extends Notifier<AppSettings> {
         ? touchFeedbackIndex 
         : TouchFeedbackType.vibration.index;
 
-    final settings = AppSettings(
+    return AppSettings(
       screenAwake: screenAwake,
       touchFeedback: TouchFeedbackType.values[safeTouchFeedbackIndex],
     );
-
-    // Apply initial wakelock state
-    _updateWakelock(screenAwake);
-
-    return settings;
   }
 
   Future<void> setScreenAwake(bool value) async {
     state = state.copyWith(screenAwake: value);
     await _prefs.setBool(_screenAwakeKey, value);
-    _updateWakelock(value);
-  }
-
-  void _updateWakelock(bool enable) {
-    WakelockPlus.toggle(enable: enable);
   }
 
   Future<void> setTouchFeedback(TouchFeedbackType type) async {

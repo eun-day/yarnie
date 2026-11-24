@@ -37,6 +37,7 @@ import 'package:yarnie/project_info_screen.dart';
 import 'package:yarnie/l10n/app_localizations.dart';
 import 'package:yarnie/core/providers/length_unit_provider.dart';
 import 'package:yarnie/core/providers/settings_provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:yarnie/common/haptic_helper.dart';
 import 'package:yarnie/theme/app_theme.dart';
 import 'package:yarnie/modules/projects/application/projects_notifier.dart';
@@ -61,8 +62,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   StreamSubscription<MainCounter?>? _mainCounterSub;
   int? _prevMainValue;
 
+  // 화면 꺼짐 방지(설정)는 작업 화면인 프로젝트 상세에서만 적용한다.
+  // 상세 화면이 겹쳐 열릴 수 있어(실 상세 → 다른 프로젝트) 마지막 상세 화면이 닫힐 때 해제
+  static int _openScreenCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _openScreenCount++;
+    WakelockPlus.toggle(enable: ref.read(settingsProvider).screenAwake);
+  }
+
   @override
   void dispose() {
+    if (--_openScreenCount == 0) WakelockPlus.disable();
     _mainCounterSub?.cancel();
     super.dispose();
   }
@@ -157,20 +170,8 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         wasCompleted = count(oldVal) >= runs.length;
         isCompleted = count(newVal) >= runs.length;
       } else if (type == 'shaping') {
-        // Shaping completion: shapingCompleted >= runs.length
-        // Logic same as interval
-        int count(int val) {
-          int c = 0;
-          for (final r in runs) {
-            // Shaping action usually at end of interval
-            if (val >= r.startRow + r.rowsTotal) {
-              c++;
-            } else {
-              break;
-            }
-          }
-          return c;
-        }
+        // 증감은 각 run의 시작 행에서 일어나므로, 현재 행보다 앞선 시작 행 수가 끝낸 증감 수 (카드와 같은 기준)
+        int count(int val) => runs.where((r) => val > r.startRow).length;
 
         wasCompleted = count(oldVal) >= runs.length;
         isCompleted = count(newVal) >= runs.length;
@@ -940,16 +941,27 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     );
   }
 
+  // 파트가 바뀌면 key로 State를 새로 만든다. State를 재사용하면 이전 파트의 세션 스냅샷이나
+  // 메인 카운터 값(_previousValue)이 남아 엉뚱한 세션을 조작하거나 목표 달성 다이얼로그가 다시 뜬다.
   Widget _buildSessionPanel() {
-    return SessionPanelWidget(partId: _selectedPartId!);
+    return SessionPanelWidget(
+      key: ValueKey('session_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 
   Widget _buildMainCounter() {
-    return MainCounterWidget(partId: _selectedPartId!);
+    return MainCounterWidget(
+      key: ValueKey('main_counter_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 
   Widget _buildBuddyCounters() {
-    return BuddyCounterListWidget(partId: _selectedPartId!);
+    return BuddyCounterListWidget(
+      key: ValueKey('buddy_counters_$_selectedPartId'),
+      partId: _selectedPartId!,
+    );
   }
 }
 
@@ -1474,30 +1486,12 @@ class SectionCounterCardWrapper extends ConsumerWidget {
         final startRowShaping = spec['startRow'] as int? ?? 1;
         final isDirect = spec['mode'] == 'direct';
 
-        int shapingCompleted = 0;
-        int nextActionRow = startRowShaping;
-
-        for (int i = 0; i < runs.length; i++) {
-          final r = runs[i];
-          final runEndRow = r.startRow + r.rowsTotal;
-
-          if (effectiveValue >= runEndRow) {
-            shapingCompleted++;
-          } else {
-            if (effectiveValue <= r.startRow) {
-              nextActionRow = r.startRow;
-            } else {
-              nextActionRow = runEndRow;
-            }
-            break;
-          }
-        }
-
-        if (shapingCompleted >= runs.length) {
-          nextActionRow = 0;
-        }
-
+        // 증감은 각 run의 시작 행에서 일어난다 (패턴·직접 입력 모두 같은 기준).
+        // 현재 행보다 앞선 시작 행 = 이미 끝낸 증감, 현재 행 이후 첫 시작 행 = 다음 증감 행.
+        final shapingCompleted =
+            runs.where((r) => effectiveValue > r.startRow).length;
         final isCompleted = shapingCompleted >= runs.length;
+        final nextActionRow = isCompleted ? 0 : runs[shapingCompleted].startRow;
         final backgroundColor = isCompleted
             ? completedColor
             : (counter.linkState == LinkState.linked ? null : unlinkedColor);

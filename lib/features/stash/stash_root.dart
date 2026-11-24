@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../db/app_db.dart';
 import '../../widgets/tag_chip.dart';
 import '../../model/tag_color_preset.dart';
+import '../../theme/app_theme.dart';
 import '../../core/providers/premium_provider.dart';
 import '../../widgets/ad_visibility_wrapper.dart';
 import '../../widgets/common_banner_ad.dart';
@@ -28,6 +29,8 @@ class StashRoot extends ConsumerStatefulWidget {
 }
 
 class _StashRootState extends ConsumerState<StashRoot> {
+  final _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,18 @@ class _StashRootState extends ConsumerState<StashRoot> {
       ref.read(stashProvider.notifier).onEvent(const LoadStash());
       _loadViewMode();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // 검색어도 필터에 포함되므로 검색창 글자를 함께 비운다
+  void _clearFilters() {
+    _searchController.clear();
+    ref.read(stashProvider.notifier).onEvent(const ClearFilters());
   }
 
   Future<void> _loadViewMode() async {
@@ -58,6 +73,7 @@ class _StashRootState extends ConsumerState<StashRoot> {
     });
 
     final state = ref.watch(stashProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +118,14 @@ class _StashRootState extends ConsumerState<StashRoot> {
         top: false,
         child: Column(
           children: [
-
+            // 검색창 (제품명·별명·브랜드·색상명)
+            _SearchField(
+              controller: _searchController,
+              hasQuery: state.searchQuery.isNotEmpty,
+              onChanged: (query) {
+                ref.read(stashProvider.notifier).onEvent(SearchYarns(query));
+              },
+            ),
             // 태그 필터 바
             _TagFilterBar(
               tags: state.allTags,
@@ -111,16 +134,46 @@ class _StashRootState extends ConsumerState<StashRoot> {
                 ref.read(stashProvider.notifier).onEvent(ToggleTagFilter(tagId));
               },
               onClearFilters: () {
-                ref.read(stashProvider.notifier).onEvent(const ClearFilters());
+                // "전체" 칩은 태그 선택만 해제 (검색어·굵기 필터는 유지)
+                ref.read(stashProvider.notifier).onEvent(const ClearTagFilters());
               },
             ),
-            // 뷰 모드 바
+            // 뷰 모드 바 (오른쪽: 굵기 필터, 정렬)
             _ViewModeBar(
               viewMode: state.viewMode,
               onViewModeChanged: (mode) {
                 ref.read(stashProvider.notifier).onEvent(ChangeViewMode(mode));
                 _saveViewMode(mode);
               },
+              actions: [
+                _BarMenuButton<String>(
+                  icon: Icons.filter_list_rounded,
+                  tooltip: l10n.yarnWeight,
+                  isActive: state.yarnWeightFilter != null,
+                  // PopupMenuButton은 null 선택을 취소로 처리하므로 ''를 "전체"로 쓴다
+                  selected: state.yarnWeightFilter ?? '',
+                  options: {'': l10n.allYarnWeights, ...yarnWeightLabels(l10n)},
+                  onSelected: (weight) {
+                    ref.read(stashProvider.notifier).onEvent(
+                          FilterYarnWeight(weight.isEmpty ? null : weight),
+                        );
+                  },
+                ),
+                _BarMenuButton<StashSortOrder>(
+                  icon: Icons.sort_rounded,
+                  tooltip: l10n.sortOrder,
+                  isActive: false,
+                  selected: state.sortOrder,
+                  options: {
+                    StashSortOrder.newest: l10n.sortNewest,
+                    StashSortOrder.name: l10n.sortByName,
+                    StashSortOrder.brand: l10n.sortByBrand,
+                  },
+                  onSelected: (order) {
+                    ref.read(stashProvider.notifier).onEvent(ChangeSortOrder(order));
+                  },
+                ),
+              ],
             ),
             // 바디 영역
             Expanded(child: _buildBody(state)),
@@ -147,11 +200,7 @@ class _StashRootState extends ConsumerState<StashRoot> {
     }
 
     if (state.isFilteredEmpty) {
-      return _FilteredEmptyView(
-        onClearFilters: () {
-          ref.read(stashProvider.notifier).onEvent(const ClearFilters());
-        },
-      );
+      return _FilteredEmptyView(onClearFilters: _clearFilters);
     }
 
     final yarns = state.displayYarns;
@@ -212,11 +261,16 @@ class _StashRootState extends ConsumerState<StashRoot> {
           SnackBar(content: Text(messageBuilder(l10n))),
         );
       case StashYarnCreated(:final yarnId, :final isFromSelectionSheet):
+        // 등록 폼이 같은 effect를 받아 스스로 닫히므로, 닫힌 뒤(다음 프레임)에 상세를 연다.
+        // 바로 push하면 폼의 pop이 방금 연 상세 화면을 닫아 버린다.
         if (!isFromSelectionSheet) {
-          _openStashDetail(yarnId);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _openStashDetail(yarnId);
+          });
         }
       case StashYarnUpdated():
       case StashYarnDeleted():
+      case StashYarnSaveFailed():
         break;
       case ShowAssignStashTagsDialog(:final yarnId, :final currentTagIds):
         _showTagAssignmentSheet(context, yarnId, currentTagIds);
@@ -298,13 +352,91 @@ class _TagFilterBar extends StatelessWidget {
 }
 
 // ============================================================
+// 검색창 (실 등록 폼의 입력칸과 같은 배경·모서리)
+// ============================================================
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final bool hasQuery;
+  final ValueChanged<String> onChanged;
+
+  const _SearchField({
+    required this.controller,
+    required this.hasQuery,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.inputFieldBg,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Row(
+          children: [
+            Icon(Icons.search, size: 20, color: colorScheme.onSurfaceVariant),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: controller,
+                style: const TextStyle(fontSize: 15),
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchStashHint,
+                  hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
+                onChanged: onChanged,
+              ),
+            ),
+            if (hasQuery)
+              GestureDetector(
+                onTap: () {
+                  controller.clear();
+                  onChanged('');
+                },
+                child: Icon(Icons.close, size: 18, color: colorScheme.onSurfaceVariant),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
 // 뷰 모드 바 (LargeCardView 제외, 2개 버튼만 노출)
 // ============================================================
 class _ViewModeBar extends StatelessWidget {
   final StashViewMode viewMode;
   final ValueChanged<StashViewMode> onViewModeChanged;
+  final List<Widget> actions; // 오른쪽 버튼 묶음 (굵기 필터, 정렬)
 
-  const _ViewModeBar({required this.viewMode, required this.onViewModeChanged});
+  const _ViewModeBar({
+    required this.viewMode,
+    required this.onViewModeChanged,
+    required this.actions,
+  });
+
+  // 뷰 모드 버튼과 오른쪽 버튼 묶음이 같은 테두리 박스를 쓴다
+  Widget _buttonBox(BuildContext context, List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: children),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -320,33 +452,90 @@ class _ViewModeBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                width: 1,
+          _buttonBox(context, [
+            _ViewModeIconButton(
+              icon: Icons.grid_on_rounded,
+              isSelected: viewMode == StashViewMode.smallCard,
+              onPressed: () => onViewModeChanged(StashViewMode.smallCard),
+              tooltip: AppLocalizations.of(context)!.smallCard,
+            ),
+            _ViewModeIconButton(
+              icon: Icons.view_list_rounded,
+              isSelected: viewMode == StashViewMode.list,
+              onPressed: () => onViewModeChanged(StashViewMode.list),
+              tooltip: AppLocalizations.of(context)!.list,
+            ),
+          ]),
+          const Spacer(),
+          _buttonBox(context, actions),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 굵기 필터 / 정렬 메뉴 버튼 (뷰 모드 버튼과 같은 크기·선택 배경,
+// 메뉴는 실 상세 화면의 더보기 메뉴와 같은 스타일)
+// ============================================================
+class _BarMenuButton<T> extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final bool isActive;
+  final T selected;
+  final Map<T, String> options;
+  final ValueChanged<T> onSelected;
+
+  const _BarMenuButton({
+    required this.icon,
+    required this.tooltip,
+    required this.isActive,
+    required this.selected,
+    required this.options,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: isActive ? colorScheme.primary.withOpacity(0.1) : Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: PopupMenuButton<T>(
+        icon: Icon(icon),
+        iconSize: 20,
+        iconColor: colorScheme.onSurface,
+        tooltip: tooltip,
+        style: const ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity(horizontal: -2, vertical: -2),
+        ),
+        position: PopupMenuPosition.under,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: colorScheme.outline, width: 0.7),
+        ),
+        color: colorScheme.surface,
+        elevation: 2,
+        onSelected: onSelected,
+        itemBuilder: (_) => [
+          for (final option in options.entries)
+            PopupMenuItem<T>(
+              value: option.key,
+              height: 32,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                option.value,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: option.key == selected ? FontWeight.w600 : FontWeight.w400,
+                  color: option.key == selected ? colorScheme.primary : colorScheme.onSurface,
+                  letterSpacing: -0.15,
+                ),
               ),
-              borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _ViewModeIconButton(
-                  icon: Icons.grid_on_rounded,
-                  isSelected: viewMode == StashViewMode.smallCard,
-                  onPressed: () => onViewModeChanged(StashViewMode.smallCard),
-                  tooltip: AppLocalizations.of(context)!.smallCard,
-                ),
-                _ViewModeIconButton(
-                  icon: Icons.view_list_rounded,
-                  isSelected: viewMode == StashViewMode.list,
-                  onPressed: () => onViewModeChanged(StashViewMode.list),
-                  tooltip: AppLocalizations.of(context)!.list,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -445,6 +634,7 @@ class _SmallCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // 검색 중 스크롤하면 키보드 닫기
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -630,6 +820,7 @@ class _ListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // 검색 중 스크롤하면 키보드 닫기
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: yarns.length,
       itemBuilder: (context, index) {

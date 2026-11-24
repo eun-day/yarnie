@@ -44,8 +44,8 @@ class _MyRootState extends ConsumerState<MyRoot> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeProvider);
-    final isDarkMode = themeMode == ThemeMode.dark;
+    // 시스템 설정을 따르는 중에도 실제로 보이는 밝기를 스위치에 표시
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return CustomScrollView(
       controller: widget.controller,
@@ -98,8 +98,13 @@ class _MyRootState extends ConsumerState<MyRoot> {
                     isSwitch: true,
                     initialSwitchValue: isDarkMode,
                     onSwitchChanged: (value) {
+                      // 기기 설정과 같은 값을 고르면 다시 시스템 설정을 따른다
+                      final systemIsDark =
+                          MediaQuery.platformBrightnessOf(context) == Brightness.dark;
                       ref.read(themeProvider.notifier).setThemeMode(
-                            value ? ThemeMode.dark : ThemeMode.light,
+                            value == systemIsDark
+                                ? ThemeMode.system
+                                : (value ? ThemeMode.dark : ThemeMode.light),
                           );
                     },
                   ),

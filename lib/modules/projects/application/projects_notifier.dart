@@ -28,6 +28,7 @@ List<int> _parseTagIds(String? s) {
 /// 프로젝트 목록 Notifier
 class ProjectsNotifier extends Notifier<ProjectsState> {
   StreamSubscription<List<Project>>? _projectsSubscription;
+  StreamSubscription<List<Tag>>? _tagsSubscription;
   final _effectController = StreamController<ProjectsEffect>.broadcast();
 
   Stream<ProjectsEffect> get effects => _effectController.stream;
@@ -37,6 +38,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     // 초기 상태만 반환 (비동기 로드는 UI에서 LoadProjects 이벤트로 시작)
     ref.onDispose(() {
       _projectsSubscription?.cancel();
+      _tagsSubscription?.cancel();
       _effectController.close();
     });
     return const ProjectsState();
@@ -49,9 +51,7 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         await _loadData();
 
       case ProjectsUpdated(:final projects):
-        // 태그 목록도 갱신 (프로젝트 생성 시 새 태그가 추가될 수 있음)
-        final tags = await appDb.getAllTags();
-        // 필터링과 상태 업데이트를 한 번에 처리
+        // 필터링과 상태 업데이트를 한 번에 처리 (태그 목록은 tags 스트림이 갱신)
         final ids = state.selectedTagIds;
         final filtered = ids.isEmpty
             ? projects
@@ -61,10 +61,18 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
         state = state.copyWith(
           allProjects: projects,
           filteredProjects: filtered,
-          allTags: tags,
           isLoading: false,
           error: null,
         );
+
+      case TagsUpdated(:final tags):
+        // 삭제된 태그가 필터에 남으면 결과가 0건이 되는데 선택 칩은 보이지 않으므로 함께 정리
+        final existingIds = tags.map((t) => t.id).toSet();
+        state = state.copyWith(
+          allTags: tags,
+          selectedTagIds: state.selectedTagIds.intersection(existingIds),
+        );
+        _applyFilters();
 
       case ShowError(:final message):
         state = state.copyWith(error: message, isLoading: false);
@@ -111,9 +119,6 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // 태그 목록 로드
-      final tags = await appDb.getAllTags();
-
       // 프로젝트 목록 stream 구독 (자동 반영)
       await _projectsSubscription?.cancel();
       _projectsSubscription = appDb.watchAll().listen(
@@ -122,9 +127,14 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
             _emit(ShowLocalizedErrorMessage((l10n) => l10n.loadProjectsFailed(e.toString()))),
       );
 
-      state = state.copyWith(allTags: tags);
+      // 태그 목록 stream 구독 (태그 시트에서 이름·색을 바꾸거나 지워도 바로 반영)
+      await _tagsSubscription?.cancel();
+      _tagsSubscription = appDb.watchAllTags().listen(
+        (tags) => onEvent(TagsUpdated(tags)),
+      );
     } catch (e) {
       await _projectsSubscription?.cancel();
+      await _tagsSubscription?.cancel();
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.initFailed(e.toString())));
     }
   }
@@ -208,98 +218,111 @@ class ProjectsNotifier extends Notifier<ProjectsState> {
     }
   }
 
-  /// 프로젝트 생성
+  /// 프로젝트 생성 (프로젝트와 기본 파트를 한 트랜잭션으로 저장)
   Future<void> _createProject(CreateProject event) async {
     try {
-      final projectId = await appDb.createProject(
-        name: event.name,
-        needleType: event.needleType,
-        needleSize: event.needleSize,
-        stashYarnIds: event.stashYarnIds,
-        memo: event.memo,
-        gaugeStitches: event.gaugeStitches,
-        gaugeRows: event.gaugeRows,
-      );
-
-      // 이미지 설정
-      if (event.imagePath != null) {
-        await appDb.updateProjectImage(
-          projectId: projectId,
-          imagePath: event.imagePath,
+      final projectId = await appDb.transaction(() async {
+        final projectId = await appDb.createProject(
+          name: event.name,
+          needleType: event.needleType,
+          needleSize: event.needleSize,
+          stashYarnIds: event.stashYarnIds,
+          memo: event.memo,
+          gaugeStitches: event.gaugeStitches,
+          gaugeRows: event.gaugeRows,
         );
-      }
 
-      // 태그 지정
-      if (event.tagIds.isNotEmpty) {
-        await appDb.updateProjectTags(
+        // 이미지 설정
+        if (event.imagePath != null) {
+          await appDb.updateProjectImage(
+            projectId: projectId,
+            imagePath: event.imagePath,
+          );
+        }
+
+        // 태그 지정
+        if (event.tagIds.isNotEmpty) {
+          await appDb.updateProjectTags(
+            projectId: projectId,
+            tagIds: event.tagIds,
+          );
+        }
+
+        // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
+        final partId = await appDb.createPart(
           projectId: projectId,
-          tagIds: event.tagIds,
+          name: 'Part 1',
         );
-      }
-
-      // 기본 파트 생성 (Part 1) 및 현재 파트로 설정
-      final partId = await appDb.createPart(
-        projectId: projectId,
-        name: 'Part 1',
-      );
-      await appDb.updateProjectCurrentPart(
-        projectId: projectId,
-        partId: partId,
-      );
+        await appDb.updateProjectCurrentPart(
+          projectId: projectId,
+          partId: partId,
+        );
+        return projectId;
+      });
 
       _emit(ProjectCreated(projectId));
       _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectCreated));
     } catch (e) {
+      // 저장되지 못한 프로젝트용으로 복사해 둔 이미지 정리
+      await AppImageUtils.deleteImageIfUnused(event.imagePath);
+      _emit(const ProjectSaveFailed());
       _emit(ShowLocalizedErrorMessage((l10n) => l10n.createProjectFailed(e.toString())));
     }
   }
 
   /// 프로젝트 수정
   Future<void> _updateProject(UpdateProject event) async {
-    try {
-      final project = _projectById(event.projectId);
-      if (project == null) {
-        _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
-        return;
-      }
-
-      // ProjectsCompanion으로 업데이트
-      await appDb.updateProject(
-        ProjectsCompanion(
-          id: Value(event.projectId),
-          name: Value(event.name),
-          needleType: Value(event.needleType),
-          needleSize: Value(event.needleSize),
-          memo: Value(event.memo),
-          gaugeStitches: Value(event.gaugeStitches),
-          gaugeRows: Value(event.gaugeRows),
-        ),
-      );
-
-      // 실 연동 매핑 업데이트
-      if (event.stashYarnIds != null) {
-        await appDb.updateProjectStashYarns(event.projectId, event.stashYarnIds!);
-      }
-
-      // 이미지 업데이트
-      await appDb.updateProjectImage(
-        projectId: event.projectId,
-        imagePath: event.imagePath,
-      );
-
-      // 태그 업데이트
-      await appDb.updateProjectTags(
-        projectId: event.projectId,
-        tagIds: event.tagIds,
-      );
-
-      // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
-      await AppImageUtils.deleteImageIfUnused(project.imagePath, keep: event.imagePath);
-      _emit(ProjectUpdated(event.projectId));
-      _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
-    } catch (e) {
-      _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(e.toString())));
+    final project = _projectById(event.projectId);
+    if (project == null) {
+      _emit(const ProjectSaveFailed());
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.projectNotFound));
+      return;
     }
+
+    try {
+      await appDb.transaction(() async {
+        // ProjectsCompanion으로 업데이트
+        await appDb.updateProject(
+          ProjectsCompanion(
+            id: Value(event.projectId),
+            name: Value(event.name),
+            needleType: Value(event.needleType),
+            needleSize: Value(event.needleSize),
+            memo: Value(event.memo),
+            gaugeStitches: Value(event.gaugeStitches),
+            gaugeRows: Value(event.gaugeRows),
+          ),
+        );
+
+        // 실 연동 매핑 업데이트
+        if (event.stashYarnIds != null) {
+          await appDb.updateProjectStashYarns(event.projectId, event.stashYarnIds!);
+        }
+
+        // 이미지 업데이트
+        await appDb.updateProjectImage(
+          projectId: event.projectId,
+          imagePath: event.imagePath,
+        );
+
+        // 태그 업데이트
+        await appDb.updateProjectTags(
+          projectId: event.projectId,
+          tagIds: event.tagIds,
+        );
+      });
+    } catch (e) {
+      // 저장 실패: 새로 복사한 이미지만 정리하고 기존 이미지는 그대로 둔다
+      await AppImageUtils.deleteImageIfUnused(event.imagePath, keep: project.imagePath);
+      _emit(const ProjectSaveFailed());
+      _emit(ShowLocalizedErrorMessage((l10n) => l10n.updateProjectFailed(e.toString())));
+      return;
+    }
+
+    // 교체·제거된 기존 이미지 정리 (복사본이 같은 파일을 쓰고 있으면 남겨둔다)
+    await AppImageUtils.deleteImageIfUnused(project.imagePath, keep: event.imagePath);
+    _emit(ProjectUpdated(event.projectId));
+    _emit(ShowLocalizedSuccessMessage((l10n) => l10n.projectUpdated));
   }
 
   /// 프로젝트 삭제
